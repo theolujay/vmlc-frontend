@@ -1,6 +1,131 @@
 @import "tailwindcss";
 
+
+
+
+
+
+
+@theme {
+
+
+  /* primary blue color scale */
+  --color-blue-50: #f7f7fb;
+  --color-blue-75: #f9fcf6;
+  --color-blue-100: #e7f2de;
+  --color-blue-200: #b7d89c;
+  --color-blue-300: #94c56c;
+  --color-blue-400-base: #60a824;
+  --color-blue-500: #579921;
+  --color-blue-600: #467b1a;
+  --color-blue-700: #223b0d;
+  --color-blue-800: #182a09;
+  --color-blue-900: #0b1204;
+
+
+  /*secondary blue color scale*/
+
+  --color-secondary-blue-50: #fdfefd;
+  --color-secondary-blue-75: #f9fcf6;
+  --color-secondary-blue-100: #e7f2de;
+  --color-secondary-blue-200: #b7d89c;
+  --color-secondary-blue-300: #94c56c;
+  --color-secondary-blue-400-base: #60a824;
+  --color-secondary-blue-500: #579921;
+  --color-secondary-blue-600: #467b1a;
+  --color-secondary-blue-700: #223b0d;
+  --color-secondary-blue-800: #182a09;
+  --color-secondary-blue-900: #0b1204;
+
+
+
+  /* success green color scale */
+  --color-green-50: #e7f6ec;
+  --color-green-75: #b5e3c4;
+  --color-green-100: #91d6a8;
+  --color-green-200: #5fc381;
+  --color-green-300: #40b869;
+  --color-green-400-base: #0f973d;
+  --color-green-500: #099137;
+  --color-green-600: #04802e;
+  --color-green-700: #036b26;
+  --color-green-800: #015b20;
+  --color-green-900: #04172b;
+
+
+
+  /* warning orange color scale */
+  --color-orange-50: #fef6e7;
+  --color-orange-75: #fbe2b7;
+  --color-orange-100: #f7d394;
+  --color-orange-200: #f7c164;
+  --color-orange-300: #f5b546;
+  --color-orange-400-base: #f3a218;
+  --color-orange-500: #dd900d;
+  --color-orange-600: #ad6f07;
+  --color-orange-700: #865503;
+  --color-orange-800: #664101;
+  --color-orange-900: #523300;
+
+
+
+  /*error red color scale*/
+  --color-red-50: #fbeae9;
+  --color-red-75: #f2bcba;
+  --color-red-100: #eb9b98;
+  --color-red-200: #e26e6a;
+  --color-red-300: #dd524d;
+  --color-red-base-400: #d42620;
+  --color-red-500: #cb1a14;
+  --color-red-600: #ba110b;
+  --color-red-700: #9e0a05;
+  --color-red-800: #800501;
+  --color-red-900: #591000;
+
+  /* neutral grey color scale */
+
+  --color-grey-50: #f9fafb;
+  --color-grey-75: #f7f9fc;
+  --color-grey-100: #f0f2f5;
+  --color-grey-200: #e4e7ec;
+  --color-grey-300: #d0d5dd;
+  --color-grey-base-400: #98a2b3;
+  --color-grey-500: #667185;
+  --color-grey-600: #475367;
+  --color-grey-700: #344054;
+  --color-grey-800: #1d2739;
+  --color-grey-900: #101928;
+
+
+  /* shades */
+
+  --color-white: #ffffff;
+  --color-black: #000000;
+
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 :root {
+
   --background: #ffffff;
   --foreground: #171717;
 }
@@ -20,7 +145,16 @@
 }
 
 body {
+
+  display: block;
+  font-size: 16px;
+  margin: 0 auto;
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+}
+
+
+.PhoneInputInput {
+  outline: none;
 }
