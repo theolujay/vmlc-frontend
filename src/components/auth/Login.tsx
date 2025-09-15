@@ -38,7 +38,7 @@ export default function Login() {
            <div className="flex flex-col gap-3 items-center mt-6">
            
            <div className='flex gap-2'>
-           <span>Don't have an account?</span>
+           <span>{`Don't`} have an account?</span>
            <Link href='/auth/login' className=' text-[#3E4095] font-[700]'>REGISTER</Link>
            </div>
           </div>
