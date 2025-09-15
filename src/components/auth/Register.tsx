@@ -1,0 +1,55 @@
+
+import Link from 'next/link'
+import AuthButton from '../ui/AuthButton'
+import Input, { PasswordInput, PhoneNumberInput } from '../ui/Input'
+import { MailIcon, PasswordIcon, PersonIcon, SchoolIcon } from '../ui/SvgAsset/GeneralAsset'
+import AuthLayout from './Layout/Layout'
+
+export default function Register() {
+  return (
+    <AuthLayout>
+      <div className="flex flex-col w-[50%] gap-3 items-center justify-center mx-auto p-4 ">
+        <div className="flex flex-col p-5 rounded-[12px] bg-[#FFFFFF99]">
+
+        <div className="flex gap-1 items-center flex-col">
+          <h2 className='text-[28px] font-700]'>Welcome to the candidate portal!</h2>
+          <p>Enter your credentials to register as a candidate</p>
+        </div>
+        <div className="form-wrapper flex flex-col gap-2">
+          <div className="grid grid-cols-2 gap-2">
+            <Input label='FIRST NAME' placeholder='Input first name (e.g John)' className='border-[#D0D5DD]' icon={<PersonIcon />} />
+            <Input label='LAST NAME' placeholder='Input last name (e.g Doe)' className='border-[#D0D5DD]' icon={<PersonIcon />} />
+          </div>
+          <div className="grid">
+            <PhoneNumberInput placeholder='+234 810 000 0000' className='border-[#D0D5DD]' label='PHONE NUMBER' />
+          </div>
+          <div className="grid">
+            <Input icon={<MailIcon />} label='EMAIL' placeholder='Input your mail (e.g johndoe@gmail.com)' className='border-[#D0D5DD]' />
+          </div>
+          <div className="grid">
+            <Input icon={<SchoolIcon />} label='SCHOOL' placeholder="Input your school (e.g King's college, Yaba, Lagos)" className='border-[#D0D5DD]' />
+          </div>
+          <div className="grid">
+            <PasswordInput icon={<PasswordIcon />} label='PASSWORD' placeholder='Input your password' className='border-[#D0D5DD]' />
+          </div>
+          <div className="grid">
+            <PasswordInput icon={<PasswordIcon />} label='CONFIRM PASSWORD' placeholder='Confirm your password' className='border-[#D0D5DD]' />
+          </div>
+           <div className="grid mt-6">
+            <AuthButton>Register</AuthButton>
+          </div>
+           <div className="flex flex-col gap-3 items-center mt-6">
+           <p>By registering, you agree to {`VMLC’s`} <Link href='/' className='text-[#018ABB]'>Terms & conditions</Link> and <Link href='/' className='text-[#018ABB]'>Privacy Policy</Link></p>
+           <div className='flex gap-2'>
+           <span>Have an account?</span>
+           <Link href='/auth/login' className=' text-[#3E4095] font-[700]'>LOGIN</Link>
+           </div>
+          </div>
+        </div>
+        </div>
+      </div>
+
+
+    </AuthLayout>
+  )
+}
