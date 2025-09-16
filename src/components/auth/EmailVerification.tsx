@@ -31,6 +31,10 @@ export default function EmailVerification() {
                                         </div>
 
 
+
+                                        
+
+
                                         <div className="grid mt-6">
                                             <AuthButton
                                             // onClick={handleSubmit}

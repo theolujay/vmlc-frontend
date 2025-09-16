@@ -81,7 +81,7 @@ export function OTP({ className, label }: Readonly<{ className?: string, label: 
             <span className='text-[14px] ml-1'>{label}</span>
             <div className="flex gap-3 w-full">
 
-                {Array.from({ length: 6 }).map((_, index) => <div key={`otpfield-${index}`} className={clsx('flex border-2 w-1/6  bg-white focus=within:outline-1 focus-within:border-[#01ACEA] focus:outline-[#01ACEA] gap-1 items-center px-2 rounded-[8px]', className)}>
+                {Array.from({ length: 6 }).map((_, index) => <div key={`otpfield-${index}`} className={clsx('flex border-2 w-1/6  bg-white focus-within:outline-1 focus-within:border-[#01ACEA] focus:outline-[#01ACEA] gap-1 items-center px-2 rounded-[8px]', className)}>
 
                     <input type="text" maxLength={1} onChange={e => handleChange(e, index)} onKeyDown={e => handleKeyDown(e, index)} ref={el => {
                         inputs.current[index] = el;
