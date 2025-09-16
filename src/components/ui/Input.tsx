@@ -2,7 +2,7 @@
 import clsx from 'clsx'
 import 'react-phone-number-input/style.css'
 import PhoneInput from 'react-phone-number-input'
-import React, { useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { E164Number } from 'libphonenumber-js/core';
 import { EyeClosedIcon, EyeOpenIcon } from './SvgAsset/GeneralAsset'
 
@@ -76,6 +76,11 @@ export function OTP({ className, label }: Readonly<{ className?: string, label: 
             inputs.current[index - 1]?.focus();
         }
     }
+
+
+    useEffect(() => {
+        inputs.current[0]?.focus();
+    }, []);
     return (
         <div className="flex flex-col gap-1 w-full">
             <span className='text-[14px] ml-1'>{label}</span>
