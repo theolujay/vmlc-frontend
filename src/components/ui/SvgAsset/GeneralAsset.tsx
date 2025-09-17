@@ -68,11 +68,19 @@ export function NotificationIcon(props: Readonly<React.SVGProps<SVGSVGElement>>)
 
 }
 
+export function SupportIcon(props:Readonly<React.SVGProps<SVGSVGElement>>){
+    return  <svg {...props} width="44" height="44" viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg">
+<rect width="44" height="44" rx="12" fill="#E6F7FD"/>
+<path d="M19.09 19C19.3251 18.3317 19.7892 17.7681 20.4 17.4091C21.0108 17.0502 21.7289 16.9189 22.4272 17.0387C23.1255 17.1585 23.7588 17.5215 24.2151 18.0635C24.6713 18.6055 24.9211 19.2915 24.92 20C24.92 22 21.92 23 21.92 23M22 27H22.01M32 22C32 27.5228 27.5228 32 22 32C16.4772 32 12 27.5228 12 22C12 16.4772 16.4772 12 22 12C27.5228 12 32 16.4772 32 22Z" stroke="#018ABB" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+</svg>
+
+}
+
 
 export function AccountCreationIcon(props: Readonly<React.SVGProps<SVGSVGElement>>) {
     return <svg {...props} width="44" height="45" viewBox="0 0 44 45" fill="none" xmlns="http://www.w3.org/2000/svg">
         <rect y="0.5" width="44" height="44" rx="22" fill="#E6F7FD" />
-        <path d="M26 31.5V30.3C26 28.6198 26 27.7798 25.673 27.138C25.3854 26.5735 24.9265 26.1146 24.362 25.827C23.7202 25.5 22.8802 25.5 21.2 25.5H16.8C15.1198 25.5 14.2798 25.5 13.638 25.827C13.0735 26.1146 12.6146 26.5735 12.327 27.138C12 27.7798 12 28.6198 12 30.3V31.5M26 16.5L28 18.5L32 14.5M22.5 18C22.5 19.933 20.933 21.5 19 21.5C17.067 21.5 15.5 19.933 15.5 18C15.5 16.067 17.067 14.5 19 14.5C20.933 14.5 22.5 16.067 22.5 18Z" stroke="#018ABB" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+        <path d="M26 31.5V30.3C26 28.6198 26 27.7798 25.673 27.138C25.3854 26.5735 24.9265 26.1146 24.362 25.827C23.7202 25.5 22.8802 25.5 21.2 25.5H16.8C15.1198 25.5 14.2798 25.5 13.638 25.827C13.0735 26.1146 12.6146 26.5735 12.327 27.138C12 27.7798 12 28.6198 12 30.3V31.5M26 16.5L28 18.5L32 14.5M22.5 18C22.5 19.933 20.933 21.5 19 21.5C17.067 21.5 15.5 19.933 15.5 18C15.5 16.067 17.067 14.5 19 14.5C20.933 14.5 22.5 16.067 22.5 18Z" stroke="#018ABB" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
 
 }
@@ -80,9 +88,9 @@ export function AccountCreationIcon(props: Readonly<React.SVGProps<SVGSVGElement
 
 export function LockedIcon(props:Readonly<React.SVGProps<SVGSVGElement>>){
     return <svg {...props} width="16" height="17" viewBox="0 0 16 17" fill="none" xmlns="http://www.w3.org/2000/svg">
-<path d="M4 7.16536V5.83203C4 3.62536 4.66667 1.83203 8 1.83203C11.3333 1.83203 12 3.62536 12 5.83203V7.16536" stroke="#475367" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M7.99967 12.8333C8.92015 12.8333 9.66634 12.0871 9.66634 11.1667C9.66634 10.2462 8.92015 9.5 7.99967 9.5C7.0792 9.5 6.33301 10.2462 6.33301 11.1667C6.33301 12.0871 7.0792 12.8333 7.99967 12.8333Z" stroke="#475367" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M11.333 15.168H4.66634C1.99967 15.168 1.33301 14.5013 1.33301 11.8346V10.5013C1.33301 7.83464 1.99967 7.16797 4.66634 7.16797H11.333C13.9997 7.16797 14.6663 7.83464 14.6663 10.5013V11.8346C14.6663 14.5013 13.9997 15.168 11.333 15.168Z" stroke="#475367" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M4 7.16536V5.83203C4 3.62536 4.66667 1.83203 8 1.83203C11.3333 1.83203 12 3.62536 12 5.83203V7.16536" stroke="#475367" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+<path d="M7.99967 12.8333C8.92015 12.8333 9.66634 12.0871 9.66634 11.1667C9.66634 10.2462 8.92015 9.5 7.99967 9.5C7.0792 9.5 6.33301 10.2462 6.33301 11.1667C6.33301 12.0871 7.0792 12.8333 7.99967 12.8333Z" stroke="#475367" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+<path d="M11.333 15.168H4.66634C1.99967 15.168 1.33301 14.5013 1.33301 11.8346V10.5013C1.33301 7.83464 1.99967 7.16797 4.66634 7.16797H11.333C13.9997 7.16797 14.6663 7.83464 14.6663 10.5013V11.8346C14.6663 14.5013 13.9997 15.168 11.333 15.168Z" stroke="#475367" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
 </svg>
 
 }

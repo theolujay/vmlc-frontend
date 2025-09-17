@@ -1,7 +1,7 @@
 
 
 import Link from 'next/link'
-import AuthButton from '../ui/AuthButton'
+import AuthButton from '../ui/Button'
 import { OTP } from '../ui/Input'
 import AuthLayout from './Layout/Layout'
 
