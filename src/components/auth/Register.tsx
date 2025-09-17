@@ -1,6 +1,6 @@
 
 import Link from 'next/link'
-import AuthButton from '../ui/AuthButton'
+import AuthButton from '../ui/Button'
 import Input, { PasswordInput, PhoneNumberInput } from '../ui/Input'
 import { MailIcon, PasswordIcon, PersonIcon, SchoolIcon } from '../ui/SvgAsset/GeneralAsset'
 import AuthLayout from './Layout/Layout'

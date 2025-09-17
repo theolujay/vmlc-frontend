@@ -2,7 +2,7 @@
 import * as Tabs from '@radix-ui/react-tabs'
 import Link from 'next/link'
 import { useState } from 'react'
-import AuthButton from '../ui/AuthButton'
+import AuthButton from '../ui/Button'
 import Input, { OTP, PasswordInput } from '../ui/Input'
 import { DoneIcon, MailIcon, PasswordIcon } from '../ui/SvgAsset/GeneralAsset'
 import AuthLayout from './Layout/Layout'
