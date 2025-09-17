@@ -692,7 +692,7 @@ export default function CaptureDialog({ open, close }: { open: boolean, close: (
     }, []);
 
     useEffect(() => {
-        let interval: NodeJS.Timeout;
+        // let interval: NodeJS.Timeout;
         if (!modelsLoaded) return
         const detect = async () => {
             if (webcamRef.current && webcamRef.current.video && webcamRef.current.video.readyState === 4) {
@@ -723,7 +723,7 @@ export default function CaptureDialog({ open, close }: { open: boolean, close: (
                 }
             }
         };
-        interval = setInterval(detect, 300);
+        const interval = setInterval(detect, 300);
         return () => clearInterval(interval);
     }, [modelsLoaded]);
 

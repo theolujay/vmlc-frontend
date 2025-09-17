@@ -5,9 +5,8 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { GreaterThanIcon, HomeIcon } from '../GettingStarted/GettingStartedAssets'
 import PageLayout from '../Layout/PageLayout'
-import Steps from './Steps'
-import UploadCard from './UploadCard'
 import CaptureFaceCard from './CaptureFace'
+import Steps from './Steps'
 
 export default function VerificationInformation() {
     return (
