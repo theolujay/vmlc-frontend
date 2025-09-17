@@ -50,7 +50,7 @@ export function GotoIcon(props:Readonly<React.SVGProps<SVGSVGElement>>){
 
 export function GreaterThanIcon(props:Readonly<React.SVGProps<SVGSVGElement>>){
   return <svg {...props} width="6" height="11" viewBox="0 0 6 11" fill="none" xmlns="http://www.w3.org/2000/svg">
-<path d="M0.75 10L5.25 5.5L0.75 1" stroke="#1D2739" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M0.75 10L5.25 5.5L0.75 1" stroke="#1D2739" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
 </svg>
 
 }

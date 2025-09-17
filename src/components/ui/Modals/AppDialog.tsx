@@ -1,0 +1,23 @@
+import React from 'react'
+import * as Dialog from '@radix-ui/react-dialog'
+import * as VisuallyHidden from "@radix-ui/react-visually-hidden";
+export default function AppDialog({ open, onOpenChange,children }: { open?: boolean, onOpenChange?: (open: boolean) => void,children:React.ReactNode }) {
+    return (
+        <Dialog.Root open={open}
+            onOpenChange={(open) => {
+                onOpenChange?.(open)
+            }}
+        >
+            <Dialog.Portal>
+                <Dialog.Overlay className="fixed inset-0 bg-blackA6 data-[state=open]:animate-overlayShow"  />
+                <Dialog.Content className="fixed left-1/2 top-1/2 max-h-[85vh] w-[90vw] max-w-[500px] -translate-x-1/2 -translate-y-1/2 rounded-md bg-gray1 p-[25px] shadow-[var(--shadow-6)] focus:outline-none data-[state=open]:animate-contentShow">
+                <VisuallyHidden.Root>
+
+                    <Dialog.Title>Capture</Dialog.Title>
+                </VisuallyHidden.Root>
+                    {children}
+                </Dialog.Content>
+            </Dialog.Portal>
+        </Dialog.Root>
+    )
+}
