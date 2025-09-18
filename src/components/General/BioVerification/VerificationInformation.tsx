@@ -1,8 +1,8 @@
 "use client"
 import Button from '@/components/ui/Button'
+import useGetBreadCrumbs from '@/hooks/useGetBreadCrumbs'
 import { capitalizeWord } from '@/utils/capitalizeWords'
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
 import { GreaterThanIcon, HomeIcon } from '../GettingStarted/GettingStartedAssets'
 import PageLayout from '../Layout/PageLayout'
 import CaptureFaceCard from './CaptureFace'
@@ -23,9 +23,10 @@ export default function VerificationInformation() {
 
 
 function BreadCrumbHeader() {
-    const pathName = usePathname()
-    const pathSegments = pathName.split('/').filter(Boolean);
+   
+    const pathSegments=useGetBreadCrumbs();
 
+    
     return <div className='flex justify-between items-center'>
         <div className="flex flex-col gap-0.5">
             <p className='font-normal text-2xl'>Provide Verification Information</p>
