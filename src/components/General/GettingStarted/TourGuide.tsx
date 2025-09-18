@@ -1,4 +1,4 @@
-import ResponsiveContainer from '@/components/ui/RoundedContainer'
+import ResponsiveContainer from '@/components/ui/ResponsiveContainer'
 import React from 'react'
 import { GotoIcon, ReadIcon } from './GettingStartedAssets'
 import Link from 'next/link'

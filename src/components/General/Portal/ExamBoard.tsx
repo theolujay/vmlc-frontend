@@ -1,5 +1,5 @@
 "use client"
-import ResponsiveContainer from '@/components/ui/RoundedContainer'
+import ResponsiveContainer from '@/components/ui/ResponsiveContainer'
 import React, { useState } from 'react'
 import { ExamCardGoTo } from '../GeneralIcon'
 import clsx from 'clsx'

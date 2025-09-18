@@ -1,4 +1,4 @@
-import ResponsiveContainer from '@/components/ui/RoundedContainer'
+import ResponsiveContainer from '@/components/ui/ResponsiveContainer'
 import React from 'react'
 import { DeleteIcon, TrustIcon, UploadDocumentIcon, UploadIcon } from '../GeneralIcon'
 
