@@ -36,13 +36,13 @@ export function TrustIcon(props:Readonly<React.SVGProps<SVGSVGElement>>){
 
 export function ExamCardGoTo(props:Readonly<React.SVGProps<SVGSVGElement>>){
     return <svg {...props} width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-<path d="M4 12H20M20 12L14 6M20 12L14 18" stroke="#1D2739" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M4 12H20M20 12L14 6M20 12L14 18" stroke="#1D2739" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
 </svg>
 
 }
 
 export function VerifiedSuccessIcon(props:Readonly<React.SVGProps<SVGSVGElement>>){
-    return <svg width="76" height="76" viewBox="0 0 76 76" fill="none" xmlns="http://www.w3.org/2000/svg">
+    return <svg {...props} width="76" height="76" viewBox="0 0 76 76" fill="none" xmlns="http://www.w3.org/2000/svg">
 <rect x="6" y="6" width="64" height="64" rx="32" fill="#D1FADF"/>
 <rect x="6" y="6" width="64" height="64" rx="32" stroke="#ECFDF3" stroke-width="12"/>
 <path d="M32.0013 37.9974L36.0013 41.9974L44.0013 33.9974M51.3346 37.9974C51.3346 45.3612 45.3651 51.3307 38.0013 51.3307C30.6375 51.3307 24.668 45.3612 24.668 37.9974C24.668 30.6336 30.6375 24.6641 38.0013 24.6641C45.3651 24.6641 51.3346 30.6336 51.3346 37.9974Z" stroke="#039855" stroke-width="2.28571" stroke-linecap="round" stroke-linejoin="round"/>

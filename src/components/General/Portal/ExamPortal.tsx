@@ -2,12 +2,14 @@ import React from 'react'
 import PageLayout from '../Layout/PageLayout'
 import ResponsiveContainer from '@/components/ui/RoundedContainer'
 import ExamBoard from './ExamBoard'
+import LeaderBoard from './LeaderBoard'
 
 export default function ExamPortal() {
   return (
     <PageLayout>
        <WelcomeBanner/>
        <ExamBoard/>
+       <LeaderBoard/>
     </PageLayout>
   )
 }
