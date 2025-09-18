@@ -1,4 +1,4 @@
-import ResponsiveContainer from '@/components/ui/RoundedContainer'
+import ResponsiveContainer from '@/components/ui/ResponsiveContainer'
 import { SupportIcon } from '@/components/ui/SvgAsset/GeneralAsset'
 import Link from 'next/link'
 import { GotoIcon } from './GettingStartedAssets'

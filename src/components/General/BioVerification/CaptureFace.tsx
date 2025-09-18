@@ -1,5 +1,5 @@
 "use client"
-import ResponsiveContainer from "@/components/ui/RoundedContainer";
+import ResponsiveContainer from "@/components/ui/ResponsiveContainer";
 import { useState } from "react";
 import { CaptureZoneIcon, TrustIcon } from "../GeneralIcon";
 import CaptureDialog from "./CaptureDialog";

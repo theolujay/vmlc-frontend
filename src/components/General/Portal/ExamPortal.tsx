@@ -1,6 +1,6 @@
 import React from 'react'
 import PageLayout from '../Layout/PageLayout'
-import ResponsiveContainer from '@/components/ui/RoundedContainer'
+import ResponsiveContainer from '@/components/ui/ResponsiveContainer'
 import ExamBoard from './ExamBoard'
 import LeaderBoard from './LeaderBoard'
 

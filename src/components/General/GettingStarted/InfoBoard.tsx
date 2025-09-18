@@ -1,4 +1,4 @@
-import ResponsiveContainer from '@/components/ui/RoundedContainer'
+import ResponsiveContainer from '@/components/ui/ResponsiveContainer'
 import { AccountCreationIcon, LockedIcon } from '@/components/ui/SvgAsset/GeneralAsset';
 import React from 'react'
 import { ApprovalIcon, ExamsIcon, VerificationIcon } from './GettingStartedAssets';
