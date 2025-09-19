@@ -11,7 +11,7 @@ export default function ExamBoard() {
             <h2 className='font-bold text-xl'>League Exams</h2>
             <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
                 {
-                    Array.from({ length: 6 }).map((_, index) => <ExamCard key={`exam-index-${index}`} />)
+                    Array.from({ length: 2 }).map((_, index) => <ExamCard key={`exam-index-${index}`} />)
                 }
 
 

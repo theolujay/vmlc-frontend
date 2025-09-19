@@ -8,12 +8,10 @@ export default function LeaderBoard() {
   return (
     <ResponsiveContainer className='gap-3 px-0'>
         <h2 className='font-bold p-2 border-b border-[#E4E7EC] text-xl'>Results/Leader board</h2>
-        
         <Board/>
     </ResponsiveContainer>
   )
 }
-
 
 
 function Board(){

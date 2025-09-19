@@ -1,6 +1,7 @@
 import React from 'react'
+import { TableIcon } from '../General/GeneralIcon'
 
-export default function Table({ tablehead }: { tablehead: string[] }) {
+export default function Table({ tablehead }: Readonly<{ tablehead: string[] }>) {
     return (
         <div className="flex flex-col">
             <table className='overflow-auto'>
@@ -13,7 +14,7 @@ export default function Table({ tablehead }: { tablehead: string[] }) {
                 </thead>
                 <tbody>
                     {
-                        Array.from({ length: 16 }).map((_, index) => <tr key={index} className='border-b  border-[#E4E7EC] last:border-0'>
+                        Array.from({ length: 3 }).map((_, index) => <tr key={index} className='border-b  border-[#E4E7EC] last:border-0'>
                             <td className='text-center py-2'>1</td>
                             <td className='text-center py-2'><div className="flex justify-center gap-0.5 items-center">
                                 <div className=" w-12 h-12 rounded-full gap-1">
@@ -27,4 +28,15 @@ export default function Table({ tablehead }: { tablehead: string[] }) {
             </table>
         </div>
     )
+}
+
+
+function EmptyRecords() {
+    return <div className="w-full grid place-content-center min-h-[80vh]">
+        <div className="flex items-center flex-col">
+            <span><TableIcon /></span>
+            <h2 className='text-xl'>Result not available yet</h2>
+            <p className='text-balance text-center'>Arrangement of result based on the highest score gotten by <br /> candidates on the platform would appear here </p>
+        </div>
+    </div>
 }
