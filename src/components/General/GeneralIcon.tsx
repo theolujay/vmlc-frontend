@@ -7,7 +7,7 @@ export function DocumentIcon(props:Readonly<React.SVGProps<SVGSVGElement>>){
 
 export function DeleteIcon(props:Readonly<React.SVGProps<SVGSVGElement>>){
     return <svg {...props} width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-<path d="M10.6667 3.9987V3.46536C10.6667 2.71863 10.6667 2.34526 10.5213 2.06004C10.3935 1.80916 10.1895 1.60519 9.93865 1.47736C9.65344 1.33203 9.28007 1.33203 8.53333 1.33203H7.46667C6.71993 1.33203 6.34656 1.33203 6.06135 1.47736C5.81046 1.60519 5.60649 1.80916 5.47866 2.06004C5.33333 2.34526 5.33333 2.71863 5.33333 3.46536V3.9987M6.66667 7.66536V10.9987M9.33333 7.66536V10.9987M2 3.9987H14M12.6667 3.9987V11.4654C12.6667 12.5855 12.6667 13.1455 12.4487 13.5733C12.2569 13.9497 11.951 14.2556 11.5746 14.4474C11.1468 14.6654 10.5868 14.6654 9.46667 14.6654H6.53333C5.41323 14.6654 4.85318 14.6654 4.42535 14.4474C4.04903 14.2556 3.74307 13.9497 3.55132 13.5733C3.33333 13.1455 3.33333 12.5855 3.33333 11.4654V3.9987" stroke="#D42620" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M10.6667 3.9987V3.46536C10.6667 2.71863 10.6667 2.34526 10.5213 2.06004C10.3935 1.80916 10.1895 1.60519 9.93865 1.47736C9.65344 1.33203 9.28007 1.33203 8.53333 1.33203H7.46667C6.71993 1.33203 6.34656 1.33203 6.06135 1.47736C5.81046 1.60519 5.60649 1.80916 5.47866 2.06004C5.33333 2.34526 5.33333 2.71863 5.33333 3.46536V3.9987M6.66667 7.66536V10.9987M9.33333 7.66536V10.9987M2 3.9987H14M12.6667 3.9987V11.4654C12.6667 12.5855 12.6667 13.1455 12.4487 13.5733C12.2569 13.9497 11.951 14.2556 11.5746 14.4474C11.1468 14.6654 10.5868 14.6654 9.46667 14.6654H6.53333C5.41323 14.6654 4.85318 14.6654 4.42535 14.4474C4.04903 14.2556 3.74307 13.9497 3.55132 13.5733C3.33333 13.1455 3.33333 12.5855 3.33333 11.4654V3.9987" stroke="#D42620" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round"/>
 </svg>
 
 }
@@ -386,6 +386,59 @@ export function CaptureZoneIcon(props:Readonly<React.SVGProps<SVGSVGElement>>){
 </svg>
 
 }
+
+ export function TableIcon(props:Readonly<React.SVGProps<SVGSVGElement>>){
+    return <svg {...props} width="155" height="135" viewBox="0 0 155 135" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M77.0426 113.985C107.266 113.985 131.769 89.482 131.769 59.1505C131.769 28.8191 107.158 4.31641 77.0426 4.31641C46.8191 4.31641 22.3164 28.8191 22.3164 59.1505C22.3164 89.482 46.8191 113.985 77.0426 113.985Z" fill="#EAEEF9"/>
+<path d="M127.775 23.316C130.219 23.316 132.201 21.3346 132.201 18.8904C132.201 16.4462 130.219 14.4648 127.775 14.4648C125.331 14.4648 123.35 16.4462 123.35 18.8904C123.35 21.3346 125.331 23.316 127.775 23.316Z" fill="#EAEEF9"/>
+<path d="M134.251 6.0447C135.92 6.0447 137.273 4.69155 137.273 3.02235C137.273 1.35315 135.92 0 134.251 0C132.582 0 131.229 1.35315 131.229 3.02235C131.229 4.69155 132.582 6.0447 134.251 6.0447Z" fill="#EAEEF9"/>
+<path d="M24.7997 23.2088C26.4689 23.2088 27.822 21.8556 27.822 20.1864C27.822 18.5172 26.4689 17.1641 24.7997 17.1641C23.1305 17.1641 21.7773 18.5172 21.7773 20.1864C21.7773 21.8556 23.1305 23.2088 24.7997 23.2088Z" fill="#F1F3F9"/>
+<path d="M6.34146 81.4954C9.4414 81.4954 11.9544 78.9824 11.9544 75.8825C11.9544 72.7825 9.4414 70.2695 6.34146 70.2695C3.24151 70.2695 0.728516 72.7825 0.728516 75.8825C0.728516 78.9824 3.24151 81.4954 6.34146 81.4954Z" fill="#EAEEF9"/>
+<g filter="url(#filter0_d_324_14624)">
+<path d="M42.2137 101.464H127.375C130.156 101.464 132.416 99.2082 132.416 96.4341V22.2991C132.416 19.5249 130.156 17.2695 127.375 17.2695H41.6983C29.8428 27.3202 22.3164 42.3403 22.3164 59.1508C22.3164 76.2037 30.0614 91.4141 42.2137 101.464Z" fill="url(#paint0_linear_324_14624)"/>
+</g>
+<path d="M119.585 33.2852H51.3945V45.7676H119.585V33.2852Z" fill="#D6DCE8"/>
+<path d="M51.0553 45.7461H33.9004V85.4507H51.0553V45.7461Z" fill="white"/>
+<path d="M119.562 33.2852H51.0547V85.4722H119.562V33.2852Z" fill="#F1F3F9" stroke="#D5DDEA" strokeWidth="2" strokeMiterlimit="10" strokeLinecap="round" strokeLinejoin="round"/>
+<path d="M102.678 85.4507H33.9004V45.7461H119.585" stroke="#D5DDEA" strokeWidth="2" strokeMiterlimit="10" strokeLinecap="round" strokeLinejoin="round"/>
+<path d="M119.585 59.3555H33.9004" stroke="#D5DDEA" strokeWidth="2" strokeMiterlimit="10" strokeLinecap="round" strokeLinejoin="round"/>
+<path d="M119.585 72.4023H33.9004" stroke="#D5DDEA" strokeWidth="2" strokeMiterlimit="10" strokeLinecap="round" strokeLinejoin="round"/>
+<path d="M68.3457 33.2852V85.4497" stroke="#D5DDEA" strokeWidth="2" strokeMiterlimit="10" strokeLinecap="round" strokeLinejoin="round"/>
+<path d="M85.4551 33.2852V85.4497" stroke="#D5DDEA" strokeWidth="2" strokeMiterlimit="10" strokeLinecap="round" strokeLinejoin="round"/>
+<path d="M102.564 33.2852V85.4497" stroke="#D5DDEA" strokeWidth="2" strokeMiterlimit="10" strokeLinecap="round" strokeLinejoin="round"/>
+<path d="M101.636 115.142C101.241 116.824 100.647 118.605 99.9545 120.089C98.0747 123.749 95.1065 126.619 91.4458 128.498C87.6861 130.378 83.2339 131.17 78.7816 130.18C68.2941 128.004 61.5663 117.714 63.743 107.227C65.9196 96.7391 76.1103 89.9124 86.5978 92.1879C90.3575 92.9795 93.6224 94.8593 96.3927 97.4317C101.043 102.082 103.022 108.81 101.636 115.142Z" fill="url(#paint1_linear_324_14624)"/>
+<path d="M88.8742 109.501H84.4219V105.049C84.4219 104.159 83.7294 103.367 82.74 103.367C81.8495 103.367 81.058 104.06 81.058 105.049V109.501H76.6058C75.7153 109.501 74.9238 110.194 74.9238 111.183C74.9238 112.173 75.6164 112.865 76.6058 112.865H81.058V117.318C81.058 118.208 81.7506 118.999 82.74 118.999C83.6304 118.999 84.4219 118.307 84.4219 117.318V112.865H88.8742C89.7646 112.865 90.5561 112.173 90.5561 111.183C90.5561 110.194 89.7646 109.501 88.8742 109.501Z" fill="white"/>
+<defs>
+<filter id="filter0_d_324_14624" x="0.316406" y="6.26953" width="154.1" height="128.195" filterUnits="userSpaceOnUse" colorInterpolationFilters="sRGB">
+<feFlood floodOpacity="0" result="BackgroundImageFix"/>
+<feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
+<feOffset dy="11"/>
+<feGaussianBlur stdDeviation="11"/>
+<feColorMatrix type="matrix" values="0 0 0 0 0.397708 0 0 0 0 0.47749 0 0 0 0 0.575 0 0 0 0.27 0"/>
+<feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_324_14624"/>
+<feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_324_14624" result="shape"/>
+</filter>
+<linearGradient id="paint0_linear_324_14624" x1="77.3305" y1="15.322" x2="77.3305" y2="102.371" gradientUnits="userSpaceOnUse">
+<stop stopColor="#FDFEFF"/>
+<stop offset="0.9964" stopColor="#ECF0F5"/>
+</linearGradient>
+<linearGradient id="paint1_linear_324_14624" x1="63.3162" y1="111.184" x2="102.078" y2="111.184" gradientUnits="userSpaceOnUse">
+<stop stopColor="#B0BACC"/>
+<stop offset="1" stopColor="#969EAE"/>
+</linearGradient>
+</defs>
+</svg>
+
+ }
+
+
+ export function InfoIcon(props:Readonly<React.SVGProps<SVGSVGElement>>){
+    return <svg {...props} width="80" height="81" viewBox="0 0 80 81" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M39.9954 73.8327C58.4049 73.8327 73.3288 58.9088 73.3288 40.4994C73.3288 22.0899 58.4049 7.16602 39.9954 7.16602C21.586 7.16602 6.66211 22.0899 6.66211 40.4994C6.66211 58.9088 21.586 73.8327 39.9954 73.8327Z" fill="white"/>
+<path d="M40 53.8327V40.4994M40 27.166H40.0333" stroke="#099137" strokeWidth="6.66667" strokeLinecap="round" strokeLinejoin="round"/>
+</svg>
+
+ }
 
 
 export function ScreeningIcon(props:Readonly<React.SVGProps<SVGSVGElement>>){
