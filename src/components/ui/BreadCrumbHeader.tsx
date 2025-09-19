@@ -4,11 +4,11 @@ import { GreaterThanIcon, HomeIcon } from "../General/GettingStarted/GettingStar
 import { capitalizeWord } from "@/utils/capitalizeWords";
 import Button from "./Button";
 
-export default function BreadCrumbHeader() {
-   
-    const pathSegments=useGetBreadCrumbs();
+export default function BreadCrumbHeader({ button }: { button: React.ReactNode }) {
 
-    
+    const pathSegments = useGetBreadCrumbs();
+
+
     return <div className='flex justify-between items-center'>
         <div className="flex flex-col gap-0.5">
             <p className='font-normal text-2xl'>Provide Verification Information</p>
@@ -35,8 +35,9 @@ export default function BreadCrumbHeader() {
 
         </div>
         <div>
-            <Button className='px-2 text-sm'>Upload</Button>
+            {button}
+            {/* <Button className='px-2 text-sm'>Upload</Button> */}
         </div>
-       
+
     </div>
 }
