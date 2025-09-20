@@ -1,11 +1,7 @@
 "use client"
+import { ExamContextType } from '@/types/Index'
 import React, { createContext, useContext, useState } from 'react'
 
-
-type ExamContextType = {
-    showNav: boolean;
-    setShowNav: React.Dispatch<React.SetStateAction<boolean>>;
-};
 const ExamContext = createContext<ExamContextType | null>(null)
 
 export default function ExamNavigationProvider({ children }: Readonly<{ children: React.ReactNode }>) {
