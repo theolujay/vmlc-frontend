@@ -10,7 +10,7 @@ export default function ExamLayout({ children }: Readonly<{ children: React.Reac
             <Header />
             <ExamNavigationProvider>
             <HeaderTimer  />
-            <main className='min-h-[100vh]'>
+            <main className='h-[75vh]'>
                 <div className="flex gap-2 flex-col  mx-auto">
                     {children}
                 </div>

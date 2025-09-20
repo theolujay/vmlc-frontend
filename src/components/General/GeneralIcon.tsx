@@ -5,6 +5,27 @@ export function DocumentIcon(props:Readonly<React.SVGProps<SVGSVGElement>>){
 
 }
 
+
+export function SubmissionIcon(props:Readonly<React.SVGProps<SVGSVGElement>>){
+    return <svg {...props} width="76" height="76" viewBox="0 0 76 76" fill="none" xmlns="http://www.w3.org/2000/svg">
+<rect x="6" y="6" width="64" height="64" rx="32" fill="#F0F2F5"/>
+<rect x="6" y="6" width="64" height="64" rx="32" stroke="#F9FAFB" strokeWidth="12"/>
+<path d="M37.9974 43.3307V37.9974M37.9974 32.6641H38.0107M51.3307 37.9974C51.3307 45.3612 45.3612 51.3307 37.9974 51.3307C30.6336 51.3307 24.6641 45.3612 24.6641 37.9974C24.6641 30.6336 30.6336 24.6641 37.9974 24.6641C45.3612 24.6641 51.3307 30.6336 51.3307 37.9974Z" stroke="#475467" strokeWidth="2.28571" strokeLinecap="round" strokeLinejoin="round"/>
+</svg>
+
+}
+
+
+export function OverviewIcon(props:Readonly<React.SVGProps<SVGSVGElement>>){
+    return <svg {...props} width="76" height="76" viewBox="0 0 76 76" fill="none" xmlns="http://www.w3.org/2000/svg">
+<rect x="6" y="6" width="64" height="64" rx="32" fill="#D1FADF"/>
+<rect x="6" y="6" width="64" height="64" rx="32" stroke="#ECFDF3" stroke-width="12"/>
+<path d="M31.9974 37.9974L35.9974 41.9974L43.9974 33.9974M51.3307 37.9974C51.3307 45.3612 45.3612 51.3307 37.9974 51.3307C30.6336 51.3307 24.6641 45.3612 24.6641 37.9974C24.6641 30.6336 30.6336 24.6641 37.9974 24.6641C45.3612 24.6641 51.3307 30.6336 51.3307 37.9974Z" stroke="#039855" stroke-width="2.28571" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
+
+
+}
+
 export function InstructionIcon(props:Readonly<React.SVGProps<SVGSVGElement>>){
     return <svg {...props} width="19" height="22" viewBox="0 0 19 22" fill="none" xmlns="http://www.w3.org/2000/svg">
 <path d="M17 8.5V5.8C17 4.11984 17 3.27976 16.673 2.63803C16.3854 2.07354 15.9265 1.6146 15.362 1.32698C14.7202 1 13.8802 1 12.2 1H5.8C4.11984 1 3.27976 1 2.63803 1.32698C2.07354 1.6146 1.6146 2.07354 1.32698 2.63803C1 3.27976 1 4.11984 1 5.8V16.2C1 17.8802 1 18.7202 1.32698 19.362C1.6146 19.9265 2.07354 20.3854 2.63803 20.673C3.27976 21 4.11984 21 5.8 21H11M11 10H5M7 14H5M13 6H5M13.5 14.0022C13.6762 13.5014 14.024 13.079 14.4817 12.81C14.9395 12.5409 15.4777 12.4426 16.001 12.5324C16.5243 12.6221 16.999 12.8942 17.3409 13.3004C17.6829 13.7066 17.87 14.2207 17.8692 14.7517C17.8692 16.2506 15.6209 17 15.6209 17M15.6499 20H15.6599" stroke="#018ABB" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>

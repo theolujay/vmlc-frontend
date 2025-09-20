@@ -48,6 +48,15 @@ export function GotoIcon(props:Readonly<React.SVGProps<SVGSVGElement>>){
 
 }
 
+
+export function BackIcon(props:Readonly<React.SVGProps<SVGSVGElement>>){
+  return <svg {...props} width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M12.8327 7.0013H1.16602M1.16602 7.0013L6.99935 12.8346M1.16602 7.0013L6.99935 1.16797" stroke="#344054" strokeWidth="1.67" strokeLinecap="round" strokeLinejoin="round"/>
+</svg>
+
+
+}
+
 export function GreaterThanIcon(props:Readonly<React.SVGProps<SVGSVGElement>>){
   return <svg {...props} width="6" height="11" viewBox="0 0 6 11" fill="none" xmlns="http://www.w3.org/2000/svg">
 <path d="M0.75 10L5.25 5.5L0.75 1" stroke="#1D2739" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
