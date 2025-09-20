@@ -7,6 +7,7 @@ export default function Exam() {
     <ExamLayout>
        
         <Questions/>
+        
     </ExamLayout>
   )
 }

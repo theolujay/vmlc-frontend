@@ -1,8 +1,11 @@
 "use client"
-import { useState } from "react";
+
+import { useExamContext } from "@/contexts/ExamNavigationProvider"
 
 export default function HeaderTimer() {
-    const [open, setOpen] = useState(false);
+    // const [open, setOpen] = useState(false);
+
+    const {showNav,setShowNav}=useExamContext()
     return <div className='flex bg-white justify-between px-6 items-center'>
         <h2 className="text-[1.75rem] font-normal">Screening Exam</h2>
         <div className="flex flex-col">
@@ -14,24 +17,24 @@ export default function HeaderTimer() {
             <span>QUIZ NAVIGATION</span>
           
              <button
-      onClick={() => setOpen(!open)}
+      onClick={() => setShowNav(!showNav)}
       aria-label="Toggle menu"
       className="flex flex-col gap-1 w-6 cursor-pointer focus:outline-none"
     //   className="flex flex-col gap-1 w-6 cursor-pointer"
     >
       <span
         className={`h-0.5 w-full bg-black rounded-md transform transition duration-300 ${
-          open ? "rotate-45 translate-y-1.5" : ""
+          showNav ? "rotate-45 translate-y-1.5" : ""
         }`}
       />
       <span
         className={`h-0.5 w-full bg-black rounded-md transition duration-300 ${
-          open ? "opacity-0" : ""
+          showNav ? "opacity-0" : ""
         }`}
       />
       <span
         className={`h-0.5 w-full bg-black rounded-md transform transition duration-300 ${
-          open ? "-rotate-45 -translate-y-1.5" : ""
+          showNav ? "-rotate-45 -translate-y-1.5" : ""
         }`}
       />
     </button>
