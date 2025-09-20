@@ -13,7 +13,6 @@ export default function SubmissionConfirmationModal({ open, close }: { open: boo
             <span><SubmissionIcon/></span>
             <h2>Submission Confirmation</h2>
             <p>You have answered 30 of 30 questions. Do you wish to proceed to submit your exam responses?</p>
-
              <div className="flex gap-2 mt-4 w-full">
                     <button
                         onClick={handleClose}
@@ -21,9 +20,8 @@ export default function SubmissionConfirmationModal({ open, close }: { open: boo
                     >
                         CANCEL
                     </button>
-                    <button
-                       
-                        className={clsx("px-4 py-2 rounded-lg cursor-pointer flex-1 text-white bg-green-600" )}
+                    <button         
+                        className={clsx("px-4 py-2 rounded-lg cursor-pointer flex-1 text-white bg-[#3E4095]" )}
                     >
                     PROCEED TO SUBMIT
                     </button>
