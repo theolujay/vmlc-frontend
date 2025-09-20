@@ -1,35 +1,44 @@
 "use client";
-
+import { useExamContext } from "@/contexts/ExamNavigationProvider";
+import clsx from "clsx";
 import React, { useState } from "react";
 
-type Option = {
-  value: string;
-  label: string;
-};
 
-type QuestionProps = {
-  question: string;
-  options: Option[];
-  correctAnswer: string;
-  questionNumber: number;
-  totalQuestions: number;
-};
+export default function Questions() {
+    const { showNav } = useExamContext()
+    // console.log(examContext,'what is here')
+    return <div className="grid grid-cols-6 min-h-[70vh] ">
+        <div className={clsx("bg-[#f7f9fc] flex col-span-4 ", showNav ? 'col-span-4' : 'col-span-6')}>
+
+            <EachQuestion />
+            <Options />
+        </div>
+        <NumberGrid showNav={showNav} />
+    </div>
+}
 
 
-export default function Questions(){
-    return <div className="grid grid-cols-6 min-h-[60vh] bg-[#F7F9FC]">
-        <EachQuestion/>
-        <Options/>
+function NumberGrid({showNav}:{showNav:boolean}) {
+   
+    return <div className={clsx(showNav ? 'block' : 'hidden', "col-span-2 bg-white p-6 h-fit")}>
+        <div className="grid grid-cols-5 gap-3">
+            {Array.from({ length: 30 }, (_, i) => i + 1).map((num) => (
+                <div key={num} className="w-10 h-10 flex items-center justify-center border rounded-lg cursor-pointer hover:bg-gray-100">
+                    {num}
+                </div>
+            ))}
+        </div>
     </div>
 }
 
 
 
-function EachQuestion(){
-    return <div className="col-span-3 flex flex-col gap-5 p-6 ">
+
+function EachQuestion() {
+    return <div className=" flex m-6 flex-col flex-1 gap-5 p-6 ">
         <h4 className="text-sm font-bold text-[#3E4095]">QUESTION 1 OF 30</h4>
         <h2 className="text-2xl font-semibold mt-3">What is the capital of France?</h2>
-        </div>
+    </div>
 }
 
 // function Options(){
@@ -48,30 +57,30 @@ function EachQuestion(){
 
 
 export function Options() {
-  const [selected, setSelected] = useState<string | null>(null);
-  const options = ["Berlin", "Madrid", "Paris", "Rome"];
+    const [selected, setSelected] = useState<string | null>(null);
+    const options = ["Berlin", "Madrid", "Paris", "Rome"];
 
-  return (
-    <div className="col-span-3 flex flex-col gap-3 p-6">
-      {options.map((option, idx) => (
-        <label
-          key={idx}
-          className={`flex items-center p-3 gap-2 border rounded-md cursor-pointer transition
+    return (
+        <div className="flex-1 flex flex-col gap-3 p-6">
+            {options.map((option, idx) => (
+                <label
+                    key={idx}
+                    className={`flex items-center p-3 gap-2 border rounded-md cursor-pointer transition
             ${selected === option ? "border-[#3E4095] " : "border-gray-300 hover:bg-gray-100"}`}
-        >
-          <input
-            type="radio"
-            name="option"
-            value={option}
-            checked={selected === option}
-            onChange={() => setSelected(option)}
-            className="" // hide the default radio
-          />
-          <span className="text-gray-800">{option}</span>
-        </label>
-      ))}
-    </div>
-  );
+                >
+                    <input
+                        type="radio"
+                        name="option"
+                        value={option}
+                        checked={selected === option}
+                        onChange={() => setSelected(option)}
+                        className="" // hide the default radio
+                    />
+                    <span className="text-gray-800">{option}</span>
+                </label>
+            ))}
+        </div>
+    );
 }
 
 
