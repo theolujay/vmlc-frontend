@@ -1,6 +1,8 @@
-import React from "react"
+"use client"
+import React, { useCallback } from "react"
 import * as Tabs from "@radix-ui/react-tabs"
 import { TabWrapperProps } from "@/types/TabType"
+import { useRouter, useSearchParams } from "next/navigation"
 
 
 
@@ -10,8 +12,20 @@ export default function TabWrapper({
   tabListClassName = "flex gap-4 justify-between",
   triggerClassName = "px-4 py-2 rounded-md data-[state=active]:text-[#3E4095] text-black data-[state=active]:cursor-pointer font-bold"
 }: Readonly<TabWrapperProps>) {
+
+
+  const router=useRouter()
+  const searchParams=useSearchParams()
+
+  const activeTab=searchParams.get('tab')||tabs[0]?.value;
+  const handleTabChange=useCallback((value:string)=>{
+    router.push(`?tab=${value}`,{scroll:false});
+
+  },[router])
   return (
     <Tabs.Root
+    onValueChange={handleTabChange}
+    value={activeTab}
       defaultValue={defaultValue ?? tabs[0]?.value}
       className="flex flex-col"
     >

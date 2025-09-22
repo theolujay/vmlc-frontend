@@ -1,7 +1,7 @@
 import React from 'react'
 import { TableIcon } from '../General/GeneralIcon'
 
-export default function Table({ columns, data }: Readonly<{ columns: string[], data:any[] }>) {
+export default function Table({ columns, data }: Readonly<{ columns: string[], data:string[] }>) {
     return (
         <div className="flex flex-col">
             <table className='overflow-x-auto'>

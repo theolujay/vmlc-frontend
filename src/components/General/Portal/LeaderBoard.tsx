@@ -29,7 +29,7 @@ function Board(){
 function ScreeningTab(){
     return <div className="flex flex-col">
         <InfoDesk/>
-        <Table tablehead={['Position','Name','Score']} />
+        <Table data={[]} columns={['Position','Name','Score']} />
     </div>
 }
 
