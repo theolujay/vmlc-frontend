@@ -1,14 +1,16 @@
 "use client"
+import clsx from 'clsx'
+import Link from 'next/link'
 import React, { useState } from 'react'
-import AdminHeader from './AdminHeader'
+import { ExamCardGoTo } from '../General/GeneralIcon'
+import { GotoIcon } from '../General/GettingStarted/GettingStartedAssets'
 import Button from '../ui/Button'
 import ResponsiveContainer from '../ui/ResponsiveContainer'
-import { ExamCardGoTo, TableIcon } from '../General/GeneralIcon'
-import clsx from 'clsx'
+import AdminHeader from './AdminHeader'
 import { SummaryIcon } from './AdminIcons'
-import { GotoIcon } from '../General/GettingStarted/GettingStartedAssets'
 import CreateExamSessionModal from './CreateExamSessionModal'
-import Link from 'next/link'
+import EmptySession from './EmptySession'
+import { usePathname, useSearchParams } from 'next/navigation'
 
 export default function ExamSection() {
   const [open, setOpen] = React.useState(false)
@@ -27,17 +29,26 @@ export default function ExamSection() {
 
 function ExamSummary() {
   return <ResponsiveContainer className='grid grid-cols-1 md:grid-cols-4 gap-3'>
-    <SummaryCard label='TOTAL QUESTION POOL' value={0} className='bg-[#E6F7FD] p-3' textColor='text-[#018ABB]' />
-    <SummaryCard label='EASY QUESTION LEVEL' value={0} className='bg-[#E7F6EC] p-3' textColor='text-[#099137]' />
-    <SummaryCard label='MODERATE QUESTION LEVEL' value={0} className='bg-[#FEF6E7] p-3' textColor='text-[#AD6F07]' />
-    <SummaryCard label='HARD QUESTION LEVEL' value={0} className='bg-[#FBEAE9] p-3' textColor='text-[#CB1A14]' />
+    <SummaryCard link='total-question' label='TOTAL QUESTION POOL' value={0} className='bg-[#E6F7FD] p-3' textColor='text-[#018ABB]' />
+    <SummaryCard link='easy-question' label='EASY QUESTION LEVEL' value={0} className='bg-[#E7F6EC] p-3' textColor='text-[#099137]' />
+    <SummaryCard link='moderate-question' label='MODERATE QUESTION LEVEL' value={0} className='bg-[#FEF6E7] p-3' textColor='text-[#AD6F07]' />
+    <SummaryCard link='hard-question' label='HARD QUESTION LEVEL' value={0} className='bg-[#FBEAE9] p-3' textColor='text-[#CB1A14]' />
 
   </ResponsiveContainer>
 }
 
 
-function SummaryCard({ label, className, textColor = 'text-black', value }: Readonly<{ className?: string, textColor?: string, value: number, label: string }>) {
-  return <div className={clsx("flex flex-col p-4 gap-2 rounded-[10px]", className)}>
+function SummaryCard({ label, className, textColor = 'text-black', value ,link}: Readonly<{ className?: string, textColor?: string, value: number, label: string,link:string }>) {
+  const pathName=usePathname();
+  const searchParams=useSearchParams()
+  
+  const href = (() => {
+  const params = new URLSearchParams(searchParams.toString())
+  params.set("view", link) 
+  return `${pathName}?${params.toString()}`
+})()
+
+  return <Link href={href} className={clsx("flex cursor-pointer flex-col p-4 gap-2 rounded-[10px]", className)}>
     <div className="flex flex-col gap-1">
       <span><SummaryIcon /></span>
       <span className={clsx(textColor, 'text-sm font-bold ')}>{label}</span>
@@ -46,19 +57,14 @@ function SummaryCard({ label, className, textColor = 'text-black', value }: Read
       <span className='text-2xl font-bold'>{value}</span>
       <span className={clsx('text-sm font-bold', textColor)}><GotoIcon /></span>
     </div>
-  </div>
+  </Link>
 }
 
 function QuestionSession({ sessions }: Readonly<{ sessions: string[] }>) {
   return <ResponsiveContainer className='gap-3'>
     {
-      sessions.length == 0 && <div className='w-full grid place-content-center min-h-[50vh]'>
-        <div className="flex items-center gap-2 flex-col">
-          <span><TableIcon /></span>
-          <h2 className='text-xl'>No question session has been created yet</h2>
-          <p className='text-balance text-center text-sm text-[#667185]'>Question session set on the platform would appear here </p>
-        </div>
-      </div>
+      sessions.length == 0 && <EmptySession/>
+      
     }
 
 
