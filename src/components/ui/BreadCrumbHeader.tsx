@@ -1,10 +1,9 @@
 import useGetBreadCrumbs from "@/hooks/useGetBreadCrumbs";
+import { capitalizeWord } from "@/utils/capitalizeWords";
 import Link from "next/link";
 import { GreaterThanIcon, HomeIcon } from "../General/GettingStarted/GettingStartedAssets";
-import { capitalizeWord } from "@/utils/capitalizeWords";
-import Button from "./Button";
 
-export default function BreadCrumbHeader({ button }: { button: React.ReactNode }) {
+export default function BreadCrumbHeader({ button }: Readonly<{ button: React.ReactNode }>) {
 
     const pathSegments = useGetBreadCrumbs();
 

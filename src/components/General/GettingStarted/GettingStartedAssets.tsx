@@ -43,7 +43,7 @@ export function ReadIcon(props:Readonly<React.SVGProps<SVGSVGElement>>){
 
 export function GotoIcon(props:Readonly<React.SVGProps<SVGSVGElement>>){
   return <svg {...props} width="16" height="12" viewBox="0 0 16 12" fill="none" xmlns="http://www.w3.org/2000/svg">
-<path d="M1.33301 6H14.6663M14.6663 6L9.66634 1M14.6663 6L9.66634 11" stroke="#018ABB" strokeWidth="1.66667" strokeLinecap="round" strokeLinejoin="round"/>
+<path d="M1.33301 6H14.6663M14.6663 6L9.66634 1M14.6663 6L9.66634 11" stroke="#000000" strokeWidth="1.66667" strokeLinecap="round" strokeLinejoin="round"/>
 </svg>
 
 }
