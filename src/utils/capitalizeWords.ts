@@ -1,20 +1,8 @@
-export function capitalizeWordInformally(word: string): string {
-    return word.split(' ').map((val) => {
-        const wordToUpperCase = val.split('')
-        const capitalize = wordToUpperCase.map((val, index) => {
-            if (index == 0) {
-                return val.toUpperCase()
-            }
-            return val
-        }).join('')
-        return capitalize;
-    }).join(' ')
-    
-}
 
 
 
-export function capitalizeWord(word: string) {
+
+export function capitalizeWord(word: string):string {
 
     return word
         .split(" ")
