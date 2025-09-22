@@ -3,6 +3,7 @@ import TabWrapper from '../ui/Tabs/TabWrapper'
 import { AnnouncementIcon, ExamSystemIcon, LeaderboardIcon, OverviewIcon, UserManagementIcon } from './AdminIcons'
 import AdminLayout from './AdminLayout'
 import OverviewSection from './OverviewSection'
+import ExamSection from './ExamSection'
 const tabs:Tab[]=[
     {
         value:'Overview',
@@ -12,7 +13,7 @@ const tabs:Tab[]=[
      {
         value:'Exam System',
         label:<ExamSystemLabel/>,
-        content:<OverviewSection/>
+        content:<ExamSection/>
     },
      {
         value:'Leaderboards',
