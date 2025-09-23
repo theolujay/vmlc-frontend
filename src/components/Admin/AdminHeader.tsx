@@ -5,8 +5,9 @@ import { GreaterThanIcon, HomeIcon } from "../General/GettingStarted/GettingStar
 import Link from "next/link";
 import { capitalizeWord } from "@/utils/capitalizeWords";
 import { DownloadIcon } from "./AdminIcons";
+import { ReactNode } from "react";
 
-export default function AdminHeader({ label, actionButton, isExport = true }:Readonly< { label: string, actionButton: React.ReactNode, isExport?: boolean }>) {
+export default function AdminHeader({ label, actionButton, isExport = true }: Readonly<{ label: string, actionButton: ReactNode | ReactNode[], isExport?: boolean }>) {
 
     const pathSegments = useGetBreadCrumbs();
 
@@ -41,7 +42,8 @@ export default function AdminHeader({ label, actionButton, isExport = true }:Rea
                 isExport &&
                 <Button className="inline-flex gap-2 border px-2 items-center"><span><DownloadIcon /></span><span>EXPORT</span></Button>
             }
-            {actionButton}
+            {Array.isArray(actionButton) ? actionButton.map((button, index) => <span key={index}>{button}</span>) : actionButton}
+            {/* {actionButton} */}
             {/* <Button className='px-2 text-sm'>CREATE EXAM SESSION</Button> */}
         </div>
 
