@@ -8,12 +8,15 @@ import Button from '../ui/Button'
 import ResponsiveContainer from '../ui/ResponsiveContainer'
 import AdminHeader from './AdminHeader'
 import { SummaryIcon } from './AdminIcons'
-import CreateExamSessionModal from './CreateExamSessionModal'
 import EmptySession from './EmptySession'
 import { usePathname, useSearchParams } from 'next/navigation'
+import CreateExamSessionModal from './Modals/CreateExamSessionModal'
 
 export default function ExamSection() {
-  const [open, setOpen] = React.useState(false)
+
+
+  const [open, setOpen] = React.useState(false);
+
   return (
     <div className='flex flex-col gap-1 '>
       <AdminHeader isExport={false} label='Exam System' actionButton={<Button onClick={() => setOpen(true)} className="inline-flex gap-2 border px-2 items-center text-sm">CREATE EXAM SESSION</Button>} />
@@ -38,15 +41,14 @@ function ExamSummary() {
 }
 
 
-function SummaryCard({ label, className, textColor = 'text-black', value ,link}: Readonly<{ className?: string, textColor?: string, value: number, label: string,link:string }>) {
-  const pathName=usePathname();
-  const searchParams=useSearchParams()
-  
+function SummaryCard({ label, className, textColor = 'text-black', value, link }: Readonly<{ className?: string, textColor?: string, value: number, label: string, link: string }>) {
+  const pathName = usePathname();
+  const searchParams = useSearchParams()
   const href = (() => {
-  const params = new URLSearchParams(searchParams.toString())
-  params.set("view", link) 
-  return `${pathName}?${params.toString()}`
-})()
+    const params = new URLSearchParams(searchParams.toString())
+    params.set("view", link)
+    return `${pathName}?${params.toString()}`
+  })()
 
   return <Link href={href} className={clsx("flex cursor-pointer flex-col p-4 gap-2 rounded-[10px]", className)}>
     <div className="flex flex-col gap-1">
@@ -63,8 +65,7 @@ function SummaryCard({ label, className, textColor = 'text-black', value ,link}:
 function QuestionSession({ sessions }: Readonly<{ sessions: string[] }>) {
   return <ResponsiveContainer className='gap-3'>
     {
-      sessions.length == 0 && <EmptySession/>
-      
+      sessions.length == 0 && <EmptySession label='No question session has been created yet' desc='Question session set on the platform would appear here ' />
     }
 
 
@@ -75,8 +76,6 @@ function QuestionSession({ sessions }: Readonly<{ sessions: string[] }>) {
 
       </div>
     }
-
-
   </ResponsiveContainer>
 }
 

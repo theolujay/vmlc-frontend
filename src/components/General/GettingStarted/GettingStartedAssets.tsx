@@ -49,6 +49,15 @@ export function GotoIcon(props:Readonly<React.SVGProps<SVGSVGElement>>){
 }
 
 
+export function AddIcon(props:Readonly<React.SVGProps<SVGSVGElement>>){
+  return <svg {...props} width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M6.99984 1.16699V12.8337M1.1665 7.00033H12.8332" stroke="#344054" strokeWidth="1.66667" strokeLinecap="round" strokeLinejoin="round"/>
+</svg>
+
+}
+
+
+
 export function BackIcon(props:Readonly<React.SVGProps<SVGSVGElement>>){
   return <svg {...props} width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
 <path d="M12.8327 7.0013H1.16602M1.16602 7.0013L6.99935 12.8346M1.16602 7.0013L6.99935 1.16797" stroke="#344054" strokeWidth="1.67" strokeLinecap="round" strokeLinejoin="round"/>
