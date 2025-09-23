@@ -117,6 +117,15 @@ export function FilterIcon(props:Readonly<React.SVGProps<SVGSVGElement>>){
 
 }
 
+export function ModalDeleteIcon(props:Readonly<React.SVGProps<SVGSVGElement>>){
+    return <svg  {...props} width="76" height="76" viewBox="0 0 76 76" fill="none" xmlns="http://www.w3.org/2000/svg">
+<rect x="6" y="6" width="64" height="64" rx="32" fill="#F0F2F5"/>
+<rect x="6" y="6" width="64" height="64" rx="32" stroke="#F9FAFB" stroke-width="12"/>
+<path d="M34 26H42M26 30H50M47.3333 30L46.3983 44.0257C46.258 46.13 46.1879 47.1822 45.7334 47.98C45.3332 48.6824 44.7297 49.247 44.0022 49.5996C43.176 50 42.1215 50 40.0125 50H35.9875C33.8785 50 32.824 50 31.9978 49.5996C31.2703 49.247 30.6668 48.6824 30.2666 47.98C29.8121 47.1822 29.742 46.13 29.6017 44.0257L28.6667 30M35.3333 36V42.6667M40.6667 36V42.6667" stroke="#475467" stroke-width="2.28571" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
+
+}
+
 
 export function SummaryIcon(props:Readonly<React.SVGProps<SVGSVGElement>>){
     return <svg {...props} width="20" height="18" viewBox="0 0 20 18" fill="none" xmlns="http://www.w3.org/2000/svg">

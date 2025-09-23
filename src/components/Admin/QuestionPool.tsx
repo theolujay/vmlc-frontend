@@ -9,17 +9,21 @@ import { FilterIcon, SortIcon, SummaryIcon } from './AdminIcons'
 import EmptySession from './EmptySession'
 import Table from '../ui/Table'
 import { useState } from 'react'
+import QuestionsTable from './QuestionsTable'
+import AddQuestionModal from './Modals/AddQuestionModal'
 
 export default function QuestionPool() {
   const [questions] = useState<string[]>([])
+  const [open, setOpen] = useState(false);
   return (
     <div className='flex flex-col gap-1 '>
-      <AdminHeader isExport={false} label='Exam System' actionButton={<Button className="inline-flex gap-2 border px-2 items-center text-sm"><span><AddIcon /></span><span>ADD QUESTION</span></Button>} />
+      <AdminHeader isExport={false} label='Exam System' actionButton={<Button onClick={()=>setOpen(true)} className="inline-flex gap-2 border px-2 items-center text-sm"><span><AddIcon /></span><span>ADD QUESTION</span></Button>} />
       <div className="flex flex-col gap-3 mt-3 w-[96%] mx-auto">
         <QuestionSummaryCard />
         {questions.length == 0 ? <EmptyState /> : <QuestionsTable />}
 
       </div>
+      <AddQuestionModal open={open} close={setOpen} />
     </div>
   )
 }
@@ -70,22 +74,22 @@ function EmptyState() {
 //   </div>
 // }
 
-function QuestionsTable() {
-  const columns = ['S/N', 'Question', 'Difficulty', 'Date Added', 'Action']
-  return <ResponsiveContainer className='flex gap-4 py-3 px-0 flex-col mx-auto'>
-    <div className="flex justify-between px-3">
-      <div className="flex gap-1 flex-col">
-        <h2 className='font-bold'>Questions</h2>
-        <p>Questions added to the platform</p>
-      </div>
-      <div className="flex justify-between gap-2">
-        <div className="flex">
-          <input type="text" placeholder='Search questions' className='border px-2 py-1 rounded-md border-[#E4E7EC] outline-none' />
-        </div>
-        <button className='inline-flex items-center gap-2 border rounded-md px-2 py-1 border-[#E4E7EC] cursor-pointer '   ><span><SortIcon /></span><span className='text-[#344054]'>Sort</span></button>
-        <button className='inline-flex items-center gap-2 border rounded-md px-2 py-1 border-[#E4E7EC] cursor-pointer ' ><span><FilterIcon /></span><span className='text-[#344054]'>Filter</span></button>
-      </div>
-    </div>
-    <Table data={[]} columns={columns} />
-  </ResponsiveContainer>
-}
+// function QuestionsTable() {
+//   const columns = ['S/N', 'Question', 'Difficulty', 'Date Added', 'Action']
+//   return <ResponsiveContainer className='flex gap-4 py-3 px-0 flex-col mx-auto'>
+//     <div className="flex justify-between px-3">
+//       <div className="flex gap-1 flex-col">
+//         <h2 className='font-bold'>Questions</h2>
+//         <p>Questions added to the platform</p>
+//       </div>
+//       <div className="flex justify-between gap-2">
+//         <div className="flex">
+//           <input type="text" placeholder='Search questions' className='border px-2 py-1 rounded-md border-[#E4E7EC] outline-none' />
+//         </div>
+//         <button className='inline-flex items-center gap-2 border rounded-md px-2 py-1 border-[#E4E7EC] cursor-pointer '   ><span><SortIcon /></span><span className='text-[#344054]'>Sort</span></button>
+//         <button className='inline-flex items-center gap-2 border rounded-md px-2 py-1 border-[#E4E7EC] cursor-pointer ' ><span><FilterIcon /></span><span className='text-[#344054]'>Filter</span></button>
+//       </div>
+//     </div>
+//     <Table data={[]} columns={columns} />
+//   </ResponsiveContainer>
+// }
