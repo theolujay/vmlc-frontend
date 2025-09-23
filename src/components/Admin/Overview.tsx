@@ -4,6 +4,7 @@ import { AnnouncementIcon, ExamSystemIcon, LeaderboardIcon, OverviewIcon, UserMa
 import AdminLayout from './AdminLayout'
 import OverviewSection from './OverviewSection'
 import ExamSection from './ExamSection'
+import ExamSectionWrapper from './ExamSectionWrapper'
 const tabs:Tab[]=[
     {
         value:'Overview',
@@ -13,7 +14,8 @@ const tabs:Tab[]=[
      {
         value:'Exam System',
         label:<ExamSystemLabel/>,
-        content:<ExamSection/>
+        content:<ExamSectionWrapper/>
+        // content:<ExamSection/>
     },
      {
         value:'Leaderboards',

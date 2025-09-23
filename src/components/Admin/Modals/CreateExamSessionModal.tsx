@@ -1,7 +1,7 @@
 import React from 'react'
-import AppDialog from '../ui/Modals/AppDialog'
-import ResponsiveContainer from '../ui/ResponsiveContainer'
 import clsx from 'clsx'
+import AppDialog from '@/components/ui/Modals/AppDialog'
+import ResponsiveContainer from '@/components/ui/ResponsiveContainer'
 
 export default function CreateExamSessionModal({ open, close }: Readonly<{ open: boolean, close: (close: boolean) => void }>) {
       function handleClose() {
