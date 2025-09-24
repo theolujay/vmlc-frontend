@@ -1,20 +1,19 @@
 "use client"
-import clsx from 'clsx'
 import { useSearchParams } from 'next/navigation'
-import { AddIcon, GotoIcon } from '../General/GettingStarted/GettingStartedAssets'
+import { useState } from 'react'
+import { AddIcon } from '../General/GettingStarted/GettingStartedAssets'
 import Button from '../ui/Button'
 import ResponsiveContainer from '../ui/ResponsiveContainer'
 import AdminHeader from './AdminHeader'
-import { FilterIcon, SortIcon, SummaryIcon } from './AdminIcons'
 import EmptySession from './EmptySession'
-import Table from '../ui/Table'
-import { useState } from 'react'
-import QuestionsTable from './QuestionsTable'
 import AddQuestionModal from './Modals/AddQuestionModal'
+import QuestionsTable from './QuestionsTable'
+import SummaryCard from './SummaryCard'
 
 export default function QuestionPool() {
   const [questions] = useState<string[]>([])
   const [open, setOpen] = useState(false);
+  // const [openDrawer, setOpenDrawer] = useState(true);
   return (
     <div className='flex flex-col gap-1 '>
       <AdminHeader isExport={false} label='Exam System' actionButton={<Button onClick={()=>setOpen(true)} className="inline-flex gap-2 border px-2 items-center text-sm"><span><AddIcon /></span><span>ADD QUESTION</span></Button>} />
@@ -24,6 +23,8 @@ export default function QuestionPool() {
 
       </div>
       <AddQuestionModal open={open} close={setOpen} />
+      {/* <QuestionInformation difficulty='easy' /> */}
+      {/* <Drawer open={openDrawer} onClose={() => setOpenDrawer(false)} /> */}
     </div>
   )
 }
@@ -41,18 +42,6 @@ function QuestionSummaryCard() {
 
 
 
-function SummaryCard({ label, value, isActive = false }: Readonly<{ textColor?: string, value: number, label: string, isActive?: boolean }>) {
-  return <div className={clsx("flex flex-col p-4 gap-2 rounded-[10px] ", isActive ? 'bg-[#3E4095] text-white' : 'bg-[#F7F9FC] text-[#344054]')}>
-    <div className="flex gap-2">
-      <span><SummaryIcon /></span>
-      <span className={clsx('text-sm  ')}>{label}</span>
-    </div>
-    <div className="flex justify-between items-center">
-      <span className={clsx('text-2xl font-bold', isActive ? 'text-white' : 'text-black')}>{value}</span>
-      <span className={clsx('text-sm font-bold',)}><GotoIcon /></span>
-    </div>
-  </div>
-}
 
 
 
