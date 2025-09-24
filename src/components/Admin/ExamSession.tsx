@@ -3,6 +3,8 @@ import AdminHeader from './AdminHeader'
 import Button from '../ui/Button'
 import ResponsiveContainer from '../ui/ResponsiveContainer'
 import QuestionsTable from './QuestionsTable'
+import { useSearchParams } from 'next/navigation'
+import SummaryCard from './SummaryCard'
 // import { AddIcon } from '../General/GettingStarted/GettingStartedAssets'
 
 
@@ -19,6 +21,8 @@ export default function ExamSession() {
         </Button>]} />
       <div className="flex flex-col gap-3 mt-3 w-[96%] mx-auto">
         <SessionDetails/>
+        <QuestionSummaryCard />
+        <QuestionsTable />
       </div>
     </div>
   )
@@ -41,6 +45,17 @@ function SessionDetails(){
             <p className='text-sm'>DESCRIPTION</p>
         <p>Preliminary exam to determine candidates qualified for the league stage.</p>
         </div>
-        <QuestionsTable/>
+        
     </ResponsiveContainer>
+}
+
+
+function QuestionSummaryCard() {
+  const currentView = useSearchParams().get('view');
+  return <ResponsiveContainer className='grid gap-3 grid-cols-1 md:grid-cols-4 p-4'>
+    <SummaryCard isActive={currentView == 'total-question'} label='TOTAL QUESTION POOL' value={0} textColor='text-[#018ABB]' />
+    <SummaryCard isActive={currentView == 'easy-question'} label='EASY QUESTION LEVEL' value={0} textColor='text-[#099137]' />
+    <SummaryCard isActive={currentView == 'moderate-question'} label='MODERATE QUESTION LEVEL' value={0} textColor='text-[#AD6F07]' />
+    <SummaryCard isActive={currentView == 'hard-question'} label='HARD QUESTION LEVEL' value={0} textColor='text-[#CB1A14]' />
+  </ResponsiveContainer>
 }
