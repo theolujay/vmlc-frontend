@@ -9,7 +9,7 @@ export default function CreateExamSessionModal({ open, close }: Readonly<{ open:
     }
   return (
     <AppDialog open={open}>
-        <div className="flex bg-[#f0f2f5] rounded-md flex-col  gap-2 ">
+        <div className="flex bg-[#f0f2f5] rounded-md z-50 flex-col  gap-2 ">
             <div className="header rounded-tl-md rounded-tr-md bg-white p-3 shadow-sm">
                 <h2 className='text-2xl'>Create an Exam Session</h2>
             </div>

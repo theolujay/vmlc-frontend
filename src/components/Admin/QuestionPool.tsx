@@ -9,6 +9,7 @@ import EmptySession from './EmptySession'
 import AddQuestionModal from './Modals/AddQuestionModal'
 import QuestionsTable from './QuestionsTable'
 import SummaryCard from './SummaryCard'
+// import QuestionInformation from './Drawer/QuestionInformation'
 
 export default function QuestionPool() {
   const [questions] = useState<string[]>([])
@@ -23,7 +24,7 @@ export default function QuestionPool() {
 
       </div>
       <AddQuestionModal open={open} close={setOpen} />
-      {/* <QuestionInformation difficulty='easy' /> */}
+      {/* <QuestionInformation open={openDrawer} setOpen={setOpenDrawer} question='What is colonoscopy' difficulty='easy' /> */}
       {/* <Drawer open={openDrawer} onClose={() => setOpenDrawer(false)} /> */}
     </div>
   )

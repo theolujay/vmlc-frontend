@@ -21,7 +21,7 @@ export default function ExamSection() {
     <div className='flex flex-col gap-1 '>
       <AdminHeader isExport={false} label='Exam System' actionButton={<Button onClick={() => setOpen(true)} className="inline-flex gap-2 border px-2 items-center text-sm">CREATE EXAM SESSION</Button>} />
       <div className="flex flex-col gap-3 mt-3 w-[96%] mx-auto">
-        <QuestionSession sessions={[]} />
+        <QuestionSession sessions={['Abbey','Ojomu','Deborah']} />
         <ExamSummary />
       </div>
       <CreateExamSessionModal open={open} close={setOpen} />
@@ -71,7 +71,8 @@ function QuestionSession({ sessions }: Readonly<{ sessions: string[] }>) {
 
     {sessions.length > 0 &&
       <div className="grid gap-3 grid-cols-1 md:grid-cols-4">
-        {Array.from({ length: 10 }).map((_, index) => <ExamSession key={index} />)}
+        <ExamSession/>
+        {/* {Array.from({ length: 10 }).map((_, index) => <ExamSession key={index} />)} */}
 
 
       </div>
@@ -85,7 +86,19 @@ function QuestionSession({ sessions }: Readonly<{ sessions: string[] }>) {
 
 function ExamSession() {
   const [isActive] = useState(true)
-  return <Link href='/' className='flex relative mt-8 justify-center flex-col'>
+
+   const pathName = usePathname();
+  const searchParams = useSearchParams()
+  const href = (() => {
+    const params = new URLSearchParams(searchParams.toString())
+    // params.set("view", link)
+    params.set('view','exam-session')
+    return `${pathName}?${params.toString()}`
+  })()
+
+
+
+  return <Link href={href} className='flex relative mt-8 justify-center flex-col'>
     <div className={clsx('pt-2 pb-7 p-2 absolute w-full -top-8   text-white rounded-t-2xl', isActive ? 'bg-[#00455E]' : 'bg-[#667185]')}>
       <div className="flex justify-between">
         <span className='text-sm'>12 Days to exam</span>

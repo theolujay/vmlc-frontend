@@ -1,13 +1,9 @@
 "use client"
-import useGetBreadCrumbs from '@/hooks/useGetBreadCrumbs';
-import { capitalizeWord } from '@/utils/capitalizeWords';
-import Link from 'next/link';
-import { GreaterThanIcon, HomeIcon } from '../General/GettingStarted/GettingStartedAssets';
 import Button from '../ui/Button';
 import ResponsiveContainer from '../ui/ResponsiveContainer';
-import { ActiveIcon, AngleIcon, BroadcastIcon, FilterIcon, InactiveIcon, ManageQuestionIcon, PendingIcon, RegisteredIcon, SortIcon, ViewLeaderBoardIcon } from './AdminIcons';
 import Table from '../ui/Table';
 import AdminHeader from './AdminHeader';
+import { ActiveIcon, AngleIcon, BroadcastIcon, FilterIcon, InactiveIcon, ManageQuestionIcon, PendingIcon, RegisteredIcon, SortIcon, ViewLeaderBoardIcon } from './AdminIcons';
 
 export default function OverviewSection() {
     return (
