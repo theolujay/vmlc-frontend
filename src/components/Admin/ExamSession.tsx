@@ -1,11 +1,13 @@
-import React, { useState } from 'react'
-import AdminHeader from './AdminHeader'
+import { useSearchParams } from 'next/navigation'
 import Button from '../ui/Button'
 import ResponsiveContainer from '../ui/ResponsiveContainer'
+import AdminHeader from './AdminHeader'
 import QuestionsTable from './QuestionsTable'
-import { useSearchParams } from 'next/navigation'
-import SummaryCard from './SummaryCard'
-// import { AddIcon } from '../General/GettingStarted/GettingStartedAssets'
+import { SummaryIcon } from './AdminIcons'
+import clsx from 'clsx'
+import { GotoIcon } from '../General/GettingStarted/GettingStartedAssets'
+// import SummaryCard from './SummaryCard'
+
 
 
 
@@ -58,4 +60,18 @@ function QuestionSummaryCard() {
     <SummaryCard isActive={currentView == 'moderate-question'} label='MODERATE QUESTION LEVEL' value={0} textColor='text-[#AD6F07]' />
     <SummaryCard isActive={currentView == 'hard-question'} label='HARD QUESTION LEVEL' value={0} textColor='text-[#CB1A14]' />
   </ResponsiveContainer>
+}
+
+
+function SummaryCard({ label, value, isActive = false }: Readonly<{ textColor?: string, value: number, label: string, isActive?: boolean }>) {
+  return <div className={clsx("flex flex-col p-4 gap-2 rounded-[10px] ", isActive ? 'bg-[#018ABB] text-white' : 'bg-[#F0F2F5] text-[#344054]')}>
+    <div className="flex gap-2">
+      <span><SummaryIcon /></span>
+      <span className={clsx('text-sm  ')}>{label}</span>
+    </div>
+    <div className="flex justify-between items-center">
+      <span className={clsx('text-2xl font-bold', isActive ? 'text-white' : 'text-black')}>{value}</span>
+      <span className={clsx('text-sm font-bold',)}><GotoIcon /></span>
+    </div>
+  </div>
 }

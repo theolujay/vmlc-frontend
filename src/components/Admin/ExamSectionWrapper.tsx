@@ -3,14 +3,27 @@ import { useSearchParams } from 'next/navigation'
 import React from 'react'
 import ExamSection from './ExamSection';
 import QuestionPool from './QuestionPool';
+import ExamSession from './ExamSession';
 
 export default function ExamSectionWrapper() {
     const currentView = useSearchParams().get('view');
-    if (!currentView) {
-        return <ExamSection />
-    }
-    return <QuestionPool />
+    return renderComponent(currentView);
+
 }
 
 
 
+
+function renderComponent(view: string | null) {
+    switch (view) {
+        case 'exam-session':
+            return <ExamSession />
+        case 'easy-question':
+        case 'moderate-question':
+        case 'hard-question':
+        case 'total-question':
+            return <QuestionPool />
+        default:
+            return <ExamSection />
+    }
+}

@@ -1,10 +1,10 @@
 import Drawer from '@/components/ui/Drawer/Drawer'
-import React from 'react'
 import { CloseIcon } from '../AdminIcons'
 
-export default function QuestionInformation({difficulty,question}:{difficulty:string,question:string}) {
+export default function QuestionInformation({difficulty,question,open,setOpen}:{difficulty:string,question:string,open:boolean,setOpen?:(open:boolean)=>void}) {
+    
   return (
-    <Drawer open={true} onClose={() => {}}>
+    <Drawer open={open} onClose={setOpen!}>
         <div className="flex flex-col">
             <div className="header border-b py-1 justify-between border-[#E4E7EC] flex ">
                 <div className="flex flex-col gap-0.5">

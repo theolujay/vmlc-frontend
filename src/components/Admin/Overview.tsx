@@ -1,10 +1,11 @@
+"use client"
 import { Tab } from '@/types/TabType'
 import TabWrapper from '../ui/Tabs/TabWrapper'
 import { AnnouncementIcon, ExamSystemIcon, LeaderboardIcon, OverviewIcon, UserManagementIcon } from './AdminIcons'
 import AdminLayout from './AdminLayout'
-import OverviewSection from './OverviewSection'
-import ExamSection from './ExamSection'
 import ExamSectionWrapper from './ExamSectionWrapper'
+import LeaderBoardSection from './LeaderBoardSection'
+import OverviewSection from './OverviewSection'
 const tabs:Tab[]=[
     {
         value:'Overview',
@@ -15,12 +16,12 @@ const tabs:Tab[]=[
         value:'Exam System',
         label:<ExamSystemLabel/>,
         content:<ExamSectionWrapper/>
-        // content:<ExamSection/>
+        
     },
      {
         value:'Leaderboards',
         label:<LeaderboardsLabel/>,
-        content:<OverviewSection/>
+        content:<LeaderBoardSection/>
     },
      {
         value:'User Management',

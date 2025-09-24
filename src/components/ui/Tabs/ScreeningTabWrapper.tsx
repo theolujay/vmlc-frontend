@@ -1,8 +1,6 @@
 "use client"
-import React, { useCallback } from "react"
-import * as Tabs from "@radix-ui/react-tabs"
 import { TabWrapperProps } from "@/types/TabType"
-import { useRouter, useSearchParams } from "next/navigation"
+import * as Tabs from "@radix-ui/react-tabs"
 
 
 
@@ -14,18 +12,11 @@ export default function TabWrapper({
 }: Readonly<TabWrapperProps>) {
 
 
-  const router=useRouter()
-  const searchParams=useSearchParams()
 
-  const activeTab=searchParams.get('tab')||tabs[0]?.value;
-  const handleTabChange=useCallback((value:string)=>{
-    router.push(`?tab=${value}`,{scroll:false});
-
-  },[router])
   return (
     <Tabs.Root
-    onValueChange={handleTabChange}
-    value={activeTab}
+    // onValueChange={handleTabChange}
+    // value={activeTab}
       defaultValue={defaultValue ?? tabs[0]?.value}
       className="flex flex-col"
     >
