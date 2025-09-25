@@ -3,10 +3,12 @@ import { Tab } from '@/types/TabType'
 import TabWrapper from '../ui/Tabs/TabWrapper'
 import { AnnouncementIcon, ExamSystemIcon, LeaderboardIcon, OverviewIcon, UserManagementIcon } from './AdminIcons'
 import AdminLayout from './AdminLayout'
-import ExamSectionWrapper from './ExamSectionWrapper'
+// import ExamSectionWrapper from './ExamSectionWrapper'
 import LeaderBoardSection from './Leaderboard/LeaderBoardSection'
 import OverviewSection from './OverviewSection'
 import UserManagement from './UserManagement/UserManagement'
+import ExamSectionWrapper from './ExamSystem/ExamSectionWrapper'
+import Announcement from './Announcement/Announcement'
 const tabs:Tab[]=[
     {
         value:'Overview',
@@ -32,7 +34,7 @@ const tabs:Tab[]=[
      {
         value:'Announcement',
         label:<AnnouncementLabel/>,
-        content:<OverviewSection/>
+        content:<Announcement/>
     }
 ]
 

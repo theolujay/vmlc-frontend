@@ -1,11 +1,11 @@
 import { useSearchParams } from 'next/navigation'
-import Button from '../ui/Button'
-import ResponsiveContainer from '../ui/ResponsiveContainer'
-import AdminHeader from './AdminHeader'
-import QuestionsTable from './QuestionsTable'
-import { SummaryIcon } from './AdminIcons'
+import Button from '../../ui/Button'
+import ResponsiveContainer from '../../ui/ResponsiveContainer'
+import AdminHeader from '../AdminHeader'
+import QuestionsTable from '../QuestionsTable'
+import { SummaryIcon } from '../AdminIcons'
 import clsx from 'clsx'
-import { GotoIcon } from '../General/GettingStarted/GettingStartedAssets'
+import { GotoIcon } from '../../General/GettingStarted/GettingStartedAssets'
 // import SummaryCard from './SummaryCard'
 
 
@@ -16,11 +16,14 @@ export default function ExamSession() {
   
   return (
     <div className='flex flex-col gap-1 '>
-      <AdminHeader isExport={false} label='Exam System' actionButton={[<Button key='button-one' className="inline-flex gap-2 border px-2 items-center text-sm"><span>UPLOAD</span></Button>,<Button key='button-two' className='inline-flex flex-col p-2 border rounded-lg border-[#D0D5DD]'>
-        <span className='w-1 h-1 rounded-md bg-black'></span>
-        <span className='w-1 h-1 rounded-md bg-black'></span>
-        <span className='w-1 h-1 rounded-md bg-black' ></span>
-        </Button>]} />
+      <AdminHeader isExport={false} label='Exam System' actionButton={[<Button key='button-one' className="inline-flex gap-2 border px-2 items-center text-sm"><span>UPLOAD</span></Button>,
+      
+      <button key='button-two' className="flex flex-col items-center justify-center w-10 h-full rounded-md border border-gray-300 hover:bg-gray-100">
+      <span className=" w-1 h-1 bg-gray-700 rounded-full"></span>
+      <span className="w-1 h-1 bg-gray-700 rounded-full my-0.5"></span>
+      <span className="w-1 h-1 bg-gray-700 rounded-full"></span>
+    </button>
+      ]} />
       <div className="flex flex-col gap-3 mt-3 w-[96%] mx-auto">
         <SessionDetails/>
         <QuestionSummaryCard />

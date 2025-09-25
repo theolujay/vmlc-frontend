@@ -1,14 +1,15 @@
 "use client"
 import { useSearchParams } from 'next/navigation'
 import { useState } from 'react'
-import { AddIcon } from '../General/GettingStarted/GettingStartedAssets'
-import Button from '../ui/Button'
-import ResponsiveContainer from '../ui/ResponsiveContainer'
-import AdminHeader from './AdminHeader'
-import EmptySession from './EmptySession'
-import AddQuestionModal from './Modals/AddQuestionModal'
-import QuestionsTable from './QuestionsTable'
-import SummaryCard from './SummaryCard'
+import { AddIcon } from '../../General/GettingStarted/GettingStartedAssets'
+import Button from '../../ui/Button'
+import ResponsiveContainer from '../../ui/ResponsiveContainer'
+import AdminHeader from '../AdminHeader'
+// import EmptySession from './EmptySession'
+import AddQuestionModal from '../Modals/AddQuestionModal'
+import QuestionsTable from '../QuestionsTable'
+import SummaryCard from '../SummaryCard'
+import EmptySession from '../EmptySession'
 // import QuestionInformation from './Drawer/QuestionInformation'
 
 export default function QuestionPool() {
