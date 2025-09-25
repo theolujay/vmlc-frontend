@@ -6,7 +6,7 @@ import { VerifiedSuccessIcon } from '../GeneralIcon';
 export default function VerificationSuccessfulDialog({open,close}:{open:boolean,close:(close:boolean)=>void}) {
      const webcamRef = useRef<Webcam>(null);
   const [capturedImage, setCapturedImage] = useState<string | null>(null);
-  const [circleColor, setCircleColor] = useState("red"); // toggle to green when conditions met
+  // const [circleColor, setCircleColor] = useState("red"); // toggle to green when conditions met
 
   const capture = () => {
     if (webcamRef.current) {
