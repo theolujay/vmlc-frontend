@@ -6,8 +6,8 @@ export function ProgressRing({
     bg = "#EFF0F6",
     labelStyle = {},
   }) {
-    let normalizedRadius = radius - strokeWidth * 2;
-    let circumference = normalizedRadius * 2 * Math.PI;
+    const normalizedRadius = radius - strokeWidth * 2;
+    const circumference = normalizedRadius * 2 * Math.PI;
   
     const strokeDashoffset = circumference - (progress / 100) * circumference;
   

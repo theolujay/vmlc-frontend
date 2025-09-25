@@ -36,14 +36,14 @@ function UserCard({ header }: { header: ReactNode }) {
         <div className="flex header p-2 bg-[#F7F9FC]  rounded-tr-2xl rounded-tl-2xl">
             {header}
         </div>
-        <div className="flex px-3 justify-between">
+        <div className="flex px-3 justify-between items-center">
             {/* <DoughnutChart /> */}
             <div className="flex">
 
             <ProgressRing/>
             </div>
             <div className="flex-1 gap-1">
-                <div className="flex justify-between">
+                <div className="flex justify-between items-center">
                     <div className="flex items-center gap-1">
                         <span className="w-3 rounded-full bg-[#01ACEA] h-3"></span>
                         <span>Active</span>

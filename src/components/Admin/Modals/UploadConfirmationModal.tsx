@@ -13,7 +13,7 @@ export default function UploadConfirmationModal({ open, close }: { open: boolean
     <AppDialog open={open}>
         <div className="flex flex-col gap-3 p-4 bg-white items-center shadow-sm rounded-lg">
             <span><ModalDeleteIcon/></span>
-            <h2>You're about to upload the leaderboard results</h2>
+            <h2>{`You're`} about to upload the leaderboard results</h2>
             <p>Are you sure you want to upload the leaderboard results to all participants? Please confirm if you want to proceed.</p>
              <div className="flex gap-2 mt-4 w-full">
                     <button

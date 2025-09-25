@@ -7,7 +7,7 @@ import { capitalizeWord } from "@/utils/capitalizeWords";
 import { DownloadIcon } from "./AdminIcons";
 import { ReactNode } from "react";
 
-export default function AdminHeader({ label, actionButton, isExport = true }: Readonly<{ label: string, actionButton: ReactNode | ReactNode[], isExport?: boolean }>) {
+export default function AdminHeader({ label, actionButton, isExport = false}: Readonly<{ label: string, actionButton: ReactNode | ReactNode[], isExport?: boolean }>) {
 
     const pathSegments = useGetBreadCrumbs();
 
