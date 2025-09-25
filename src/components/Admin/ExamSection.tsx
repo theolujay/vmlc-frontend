@@ -99,13 +99,13 @@ function ExamSession() {
 
 
   return <Link href={href} className='flex relative mt-8 justify-center flex-col'>
-    <div className={clsx('pt-2 pb-7 p-2 absolute w-full -top-8   text-white rounded-t-2xl', isActive ? 'bg-[#00455E]' : 'bg-[#667185]')}>
+    <div className={clsx('pt-2 pb-7 p-2  absolute w-full -top-8   text-white rounded-t-2xl', isActive ? 'bg-[#00455E]' : 'bg-[#667185]')}>
       <div className="flex justify-between">
         <span className='text-sm'>12 Days to exam</span>
         <span className='font-bold text-sm'>21 - 09 - 2025</span>
       </div>
     </div>
-    <div className={clsx("flex flex-col z-10  rounded-2xl p-2", isActive ? 'bg-[#E6F7FD]' : 'bg-[#F0F2F5]')}>
+    <div className={clsx("flex flex-col z-10   rounded-2xl p-2", isActive ? 'bg-[#E6F7FD]' : 'bg-[#F0F2F5]')}>
       <div className={clsx("flex  flex-col gap-1 rounded-lg")}>
         <span className='text-[0.875rem]'>SCREENING EXAM</span>
 

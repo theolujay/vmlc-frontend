@@ -4,8 +4,9 @@ import TabWrapper from '../ui/Tabs/TabWrapper'
 import { AnnouncementIcon, ExamSystemIcon, LeaderboardIcon, OverviewIcon, UserManagementIcon } from './AdminIcons'
 import AdminLayout from './AdminLayout'
 import ExamSectionWrapper from './ExamSectionWrapper'
-import LeaderBoardSection from './LeaderBoardSection'
+import LeaderBoardSection from './Leaderboard/LeaderBoardSection'
 import OverviewSection from './OverviewSection'
+import UserManagement from './UserManagement/UserManagement'
 const tabs:Tab[]=[
     {
         value:'Overview',
@@ -26,7 +27,7 @@ const tabs:Tab[]=[
      {
         value:'User Management',
         label:<UserManagementLabel/>,
-        content:<OverviewSection/>
+        content:<UserManagement/>
     },
      {
         value:'Announcement',
@@ -40,7 +41,7 @@ const tabs:Tab[]=[
 export default function Overview() {
   return (
     <AdminLayout>
-        <TabWrapper tabListClassName='flex overflow-y-auto  gap-2 bg-white px-6' tabs={tabs} />
+        <TabWrapper tabListClassName='flex overflow-y-auto border-b  border-gray-300 gap-2 bg-white px-6' tabs={tabs} />
     </AdminLayout>
   )
 }

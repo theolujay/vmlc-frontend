@@ -7,10 +7,11 @@ export default function AppDialog({ open, onOpenChange,children }: { open?: bool
             onOpenChange={(open) => {
                 onOpenChange?.(open)
             }}
+        
         >
             <Dialog.Portal>
-                <Dialog.Overlay className="fixed inset-0 bg-black/60 data-[state=open]:animate-overlayShow"  />
-                <Dialog.Content className="fixed left-1/2 top-1/2 max-h-[85vh] w-[90vw] max-w-[500px] -translate-x-1/2 -translate-y-1/2 rounded-md bg-gray p-[25px] shadow-[var(--shadow-6)] focus:outline-none data-[state=open]:animate-contentShow">
+                <Dialog.Overlay className="fixed inset-0 z-20  bg-black/60 data-[state=open]:animate-overlayShow"  />
+                <Dialog.Content className="fixed z-50 left-1/2 top-1/2 max-h-[85vh] w-[90vw] max-w-[500px] -translate-x-1/2 -translate-y-1/2 rounded-md bg-gray p-[25px] shadow-[var(--shadow-6)] focus:outline-none data-[state=open]:animate-contentShow">
                 <VisuallyHidden.Root>
 
                     <Dialog.Title>Capture</Dialog.Title>
