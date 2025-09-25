@@ -1,10 +1,9 @@
-import React, { ReactNode } from 'react'
-import AdminHeader from '../AdminHeader'
 import { AddIcon } from '@/components/General/GettingStarted/GettingStartedAssets'
 import Button from '@/components/ui/Button'
 import ResponsiveContainer from '@/components/ui/ResponsiveContainer'
-import DoughnutChart from '../Charts/Doughnut'
 import Table from '@/components/ui/Table'
+import { ReactNode } from 'react'
+import AdminHeader from '../AdminHeader'
 import { FilterIcon, SortIcon } from '../AdminIcons'
 import { ProgressRing } from '../Charts/ProgressRing'
 
@@ -31,7 +30,7 @@ function UserSummaryCard() {
     </ResponsiveContainer>
 }
 
-function UserCard({ header }: { header: ReactNode }) {
+function UserCard({ header }:Readonly< { header: ReactNode }>) {
     return <div className='flex flex-col gap-2 rounded-2xl border-[#E4E7EC] border'>
         <div className="flex header p-2 bg-[#F7F9FC]  rounded-tr-2xl rounded-tl-2xl">
             {header}

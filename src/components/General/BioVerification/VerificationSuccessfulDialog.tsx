@@ -3,7 +3,7 @@ import { useRef, useState } from 'react';
 import Webcam from 'react-webcam';
 import { VerifiedSuccessIcon } from '../GeneralIcon';
 
-export default function VerificationSuccessfulDialog({open,close}:{open:boolean,close:(close:boolean)=>void}) {
+export default function VerificationSuccessfulDialog({open,close}:Readonly<{open:boolean,close:(close:boolean)=>void}>) {
      const webcamRef = useRef<Webcam>(null);
   const [capturedImage, setCapturedImage] = useState<string | null>(null);
   // const [circleColor, setCircleColor] = useState("red"); // toggle to green when conditions met

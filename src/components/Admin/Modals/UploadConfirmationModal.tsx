@@ -1,11 +1,9 @@
 import React from 'react'
-// import AppDialog from '../ui/Modals/AppDialog'
 import clsx from 'clsx'
-// import { SubmissionIcon } from '../General/GeneralIcon'
 import { ModalDeleteIcon } from '../AdminIcons'
 import AppDialog from '@/components/ui/Modals/AppDialog'
 
-export default function UploadConfirmationModal({ open, close }: { open: boolean, close: (close: boolean) => void }) {
+export default function UploadConfirmationModal({ open, close }: Readonly<{ open: boolean, close: (close: boolean) => void }>) {
      function handleClose() {
         close(!open)
     }
