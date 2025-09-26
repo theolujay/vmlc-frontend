@@ -5,7 +5,7 @@ import Table from '@/components/ui/Table'
 import { ReactNode } from 'react'
 import AdminHeader from '../AdminHeader'
 import { FilterIcon, SortIcon } from '../AdminIcons'
-import { ProgressRing } from '../Charts/ProgressRing'
+import { DoughnutChart } from '../Charts/ProgressRing'
 
 export default function UserManagement() {
     return (
@@ -30,16 +30,36 @@ function UserSummaryCard() {
     </ResponsiveContainer>
 }
 
+
+
+
+
+
+const chartData = [
+  { value: 30, color: "#0088cc" }, // blue
+  { value: 12, color: "#f4a300" }, // orange
+  { value: 4, color: "#e04c4c" },  // red
+];
+
+
+
+
+
+
+
+
+
+
 function UserCard({ header }:Readonly< { header: ReactNode }>) {
     return <div className='flex flex-col gap-2 rounded-2xl border-[#E4E7EC] border'>
         <div className="flex header p-2 bg-[#F7F9FC]  rounded-tr-2xl rounded-tl-2xl">
             {header}
         </div>
-        <div className="flex px-3 justify-between items-center">
+        <div className="flex px-3 gap-3 pb-2 justify-between items-center">
             {/* <DoughnutChart /> */}
             <div className="flex">
-
-            <ProgressRing/>
+                <DoughnutChart data={chartData} total={46} />
+            {/* <ProgressRing/> */}
             </div>
             <div className="flex-1 gap-1">
                 <div className="flex justify-between items-center">
@@ -52,7 +72,7 @@ function UserCard({ header }:Readonly< { header: ReactNode }>) {
                 </div>
                 <div className="flex justify-between">
                     <div className="flex items-center gap-1">
-                        <span className="w-3 rounded-full bg-[#01ACEA] h-3"></span>
+                        <span className="w-3 rounded-full bg-[#F3A218] h-3"></span>
                         <span>Not Assigned</span>
 
                     </div>
@@ -60,7 +80,7 @@ function UserCard({ header }:Readonly< { header: ReactNode }>) {
                 </div>
                 <div className="flex justify-between">
                     <div className="flex items-center gap-1">
-                        <span className="w-3 rounded-full bg-[#01ACEA] h-3"></span>
+                        <span className="w-3 rounded-full bg-[#DD524D] h-3"></span>
                         <span>Deactivated</span>
 
                     </div>

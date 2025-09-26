@@ -1,17 +1,20 @@
+import React from 'react'
+// import AppDialog from '../ui/Modals/AppDialog'
 import clsx from 'clsx'
+// import { SubmissionIcon } from '../General/GeneralIcon'
+import { ModalDeleteIcon } from '../Admin/AdminIcons'
 import AppDialog from '@/components/ui/Modals/AppDialog'
-import { LogoutIcon } from '../Admin/AdminIcons'
 
-export default function LogOutModal({ open, close }:Readonly< { open: boolean, close: (close: boolean) => void }>) {
+export default function AddStaffConfirmationModal({ open, close }: { open: boolean, close: (close: boolean) => void }) {
      function handleClose() {
         close(!open)
     }
   return (
     <AppDialog open={open}>
         <div className="flex flex-col gap-3 p-4 bg-white items-center shadow-sm rounded-lg">
-            <span><LogoutIcon/></span>
-            <h2>Are you sure you want to log out?</h2>
-            <p>You are about to log out of your account. If you continue, you will be signed out and redirected to the login page.Do you wish to proceed?</p>
+            <span><ModalDeleteIcon/></span>
+            <h2>Action Confirmation</h2>
+            <p>Please confirm that you want to add joedoe@gmail.com as an super administrator on the platform</p>
              <div className="flex gap-2 mt-4 w-full">
                     <button
                         onClick={handleClose}
@@ -22,7 +25,7 @@ export default function LogOutModal({ open, close }:Readonly< { open: boolean, c
                     <button         
                         className={clsx("px-4 py-2 rounded-lg cursor-pointer flex-1 text-white bg-[#3E4095]" )}
                     >
-                    PROCEED TO LOG OUT
+                    CONFIRM INVITE
                     </button>
                 </div>
         </div>
