@@ -1,11 +1,9 @@
 import React from 'react'
-// import AppDialog from '../ui/Modals/AppDialog'
 import clsx from 'clsx'
-// import { SubmissionIcon } from '../General/GeneralIcon'
-import { ModalDeleteIcon } from '../AdminIcons'
+import { ModalDeleteIcon } from '../Admin/AdminIcons'
 import AppDialog from '@/components/ui/Modals/AppDialog'
 
-export default function SubmissionConfirmationModal({ open, close }: { open: boolean, close: (close: boolean) => void }) {
+export default function UploadConfirmationModal({ open, close }: Readonly<{ open: boolean, close: (close: boolean) => void }>) {
      function handleClose() {
         close(!open)
     }
@@ -13,8 +11,8 @@ export default function SubmissionConfirmationModal({ open, close }: { open: boo
     <AppDialog open={open}>
         <div className="flex flex-col gap-3 p-4 bg-white items-center shadow-sm rounded-lg">
             <span><ModalDeleteIcon/></span>
-            <h2>Delete exam session</h2>
-            <p>Pressing the delete session button will permanently remove this session. Are you sure you want to continue?</p>
+            <h2>{`You're`} about to upload the leaderboard results</h2>
+            <p>Are you sure you want to upload the leaderboard results to all participants? Please confirm if you want to proceed.</p>
              <div className="flex gap-2 mt-4 w-full">
                     <button
                         onClick={handleClose}
@@ -25,7 +23,7 @@ export default function SubmissionConfirmationModal({ open, close }: { open: boo
                     <button         
                         className={clsx("px-4 py-2 rounded-lg cursor-pointer flex-1 text-white bg-[#3E4095]" )}
                     >
-                    DELETE EXAM SESSION
+                    CONFIRM UPLOAD
                     </button>
                 </div>
         </div>

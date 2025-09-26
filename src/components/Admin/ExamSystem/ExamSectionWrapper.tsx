@@ -4,9 +4,7 @@ import React from 'react'
 import ExamSession from './ExamSession';
 import QuestionPool from './QuestionPool';
 import ExamSection from './ExamSection';
-// import ExamSection from './ExamSystem/ExamSection';
-// import QuestionPool from './QuestionPool';
-// import ExamSession from './ExamSystem/ExamSession';
+
 
 export default function ExamSectionWrapper() {
     const currentView = useSearchParams().get('view');

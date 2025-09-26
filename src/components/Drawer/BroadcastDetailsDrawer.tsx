@@ -1,6 +1,6 @@
 import Drawer from '@/components/ui/Drawer/Drawer'
 import React from 'react'
-import { CloseIcon } from '../AdminIcons'
+import { CloseIcon } from '../Admin/AdminIcons'
 
 export default function BroadcastDetailsDrawer({difficulty,question,open,setOpen}:Readonly<{difficulty:string,question:string,open:boolean,setOpen?:(open:boolean)=>void}>) {
   return (

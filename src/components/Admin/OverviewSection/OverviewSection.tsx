@@ -1,15 +1,15 @@
 "use client"
-import Button from '../ui/Button';
-import ResponsiveContainer from '../ui/ResponsiveContainer';
-import Table from '../ui/Table';
-import AdminHeader from './AdminHeader';
-import { ActiveIcon, AngleIcon, BroadcastIcon, FilterIcon, InactiveIcon, ManageQuestionIcon, PendingIcon, RegisteredIcon, SortIcon, ViewLeaderBoardIcon } from './AdminIcons';
+import Button from '../../ui/Button';
+import ResponsiveContainer from '../../ui/ResponsiveContainer';
+import Table from '../../ui/Table';
+import AdminHeader from '../AdminHeader';
+import { ActiveIcon, AngleIcon, BroadcastIcon, FilterIcon, InactiveIcon, ManageQuestionIcon, PendingIcon, RegisteredIcon, SortIcon, ViewLeaderBoardIcon } from '../AdminIcons';
 
 export default function OverviewSection() {
     return (
         <div className='flex flex-col gap-1 '>
             {/* <OverviewHeader /> */}
-            <AdminHeader label='Overview' actionButton={<Button className="inline-flex gap-2 border px-2 items-center text-sm">SEND BROADCAST</Button> } />
+            <AdminHeader isExport label='Overview' actionButton={<Button className="inline-flex gap-2 border px-2 items-center text-sm">SEND BROADCAST</Button> } />
             <div className="flex flex-col gap-3 mt-3 w-[96%] mx-auto">
                 <OverviewSummaryCard />
                 <QuickActionsCard />
@@ -35,7 +35,7 @@ function ActivityHistoryCard(){
                 <button className='inline-flex items-center gap-2 border rounded-md px-2 py-1 border-[#E4E7EC] cursor-pointer ' ><span><FilterIcon/></span><span className='text-[#344054]'>Filter</span></button>
             </div>
         </div>
-        <Table data={[]} columns={['Submission ID','Name','User Type','Email Address','Application Date','Status','Action']} />
+        <Table label='No activity has been made yet' desc={<>All application made on the platform would appear here </>} data={[]} columns={['Submission ID','Name','User Type','Email Address','Application Date','Status','Action']} />
     </ResponsiveContainer>
 }
 
