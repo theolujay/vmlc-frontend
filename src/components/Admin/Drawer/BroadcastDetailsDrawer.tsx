@@ -2,7 +2,7 @@ import Drawer from '@/components/ui/Drawer/Drawer'
 import React from 'react'
 import { CloseIcon } from '../AdminIcons'
 
-export default function BroadcastDetailsDrawer({difficulty,question,open,setOpen}:{difficulty:string,question:string,open:boolean,setOpen?:(open:boolean)=>void}) {
+export default function BroadcastDetailsDrawer({difficulty,question,open,setOpen}:Readonly<{difficulty:string,question:string,open:boolean,setOpen?:(open:boolean)=>void}>) {
   return (
     <Drawer open={open} onClose={setOpen!}>
            <div className="flex flex-col">
