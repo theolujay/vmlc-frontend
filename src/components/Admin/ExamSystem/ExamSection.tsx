@@ -10,7 +10,7 @@ import AdminHeader from '../AdminHeader'
 import { SummaryIcon } from '../AdminIcons'
 // import EmptySession from '../EmptySession'
 import { usePathname, useSearchParams } from 'next/navigation'
-import CreateExamSessionModal from '../Modals/CreateExamSessionModal'
+import CreateExamSessionModal from '../../Modals/CreateExamSessionModal'
 import EmptySession from '../EmptySession'
 
 export default function ExamSection() {

@@ -5,7 +5,7 @@ import { AnnouncementIcon, ExamSystemIcon, LeaderboardIcon, OverviewIcon, UserMa
 import AdminLayout from './AdminLayout'
 // import ExamSectionWrapper from './ExamSectionWrapper'
 import LeaderBoardSection from './Leaderboard/LeaderBoardSection'
-import OverviewSection from './OverviewSection'
+import OverviewSection from './OverviewSection/OverviewSection'
 import UserManagement from './UserManagement/UserManagement'
 import ExamSectionWrapper from './ExamSystem/ExamSectionWrapper'
 import Announcement from './Announcement/Announcement'

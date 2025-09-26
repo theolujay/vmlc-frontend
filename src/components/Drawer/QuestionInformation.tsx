@@ -1,5 +1,5 @@
 import Drawer from '@/components/ui/Drawer/Drawer'
-import { CloseIcon } from '../AdminIcons'
+import { CloseIcon } from '../Admin/AdminIcons'
 
 export default function QuestionInformation({difficulty,question,open,setOpen}:{difficulty:string,question:string,open:boolean,setOpen?:(open:boolean)=>void}) {
     

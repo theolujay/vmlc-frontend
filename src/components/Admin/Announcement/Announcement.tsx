@@ -5,7 +5,7 @@ import ResponsiveContainer from '@/components/ui/ResponsiveContainer'
 import { BroadcastAnnouncementIcon, EmailChannelIcon, PlatformChannelIcon, SMSIcon } from './AnnouncementIconts'
 import Table from '@/components/ui/Table'
 import { FilterIcon, SortIcon } from '../AdminIcons'
-import SendBulkMessageModal from '../Modals/SendBulkMessageModal'
+import SendBulkMessageModal from '../../Modals/SendBulkMessageModal'
 // import { BroadcastIcon } from './AnnouncementIconts'
 // import { BroadcastIcon } from '../AdminIcons'
 

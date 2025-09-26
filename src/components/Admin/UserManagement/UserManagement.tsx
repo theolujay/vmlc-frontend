@@ -76,7 +76,7 @@ function UserCard({ header }:Readonly< { header: ReactNode }>) {
 
 
 
-export function ActivityHistoryTable() {
+function ActivityHistoryTable() {
   const columns = ['S/N', 'Question', 'Difficulty', 'Date Added', 'Action']
   return <ResponsiveContainer className='flex gap-4 py-3 px-0 flex-col mx-auto'>
     <div className="flex justify-between px-3">
@@ -92,6 +92,6 @@ export function ActivityHistoryTable() {
         <button className='inline-flex items-center gap-2 border rounded-md px-2 py-1 border-[#E4E7EC] cursor-pointer ' ><span><FilterIcon /></span><span className='text-[#344054]'>Filter</span></button>
       </div>
     </div>
-    <Table data={[]} columns={columns} />
+    <Table label='No activity has been made yet' desc={<>All application made on the platform would appear here </>} data={[]} columns={columns} />
   </ResponsiveContainer>
 }
