@@ -126,6 +126,14 @@ export function ModalDeleteIcon(props:Readonly<React.SVGProps<SVGSVGElement>>){
 
 }
 
+
+export function SendIcon(props:Readonly<React.SVGProps<SVGSVGElement>>){
+    return <svg {...props} width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M7.74928 10.2501L16.4993 1.50014M7.85559 10.5235L10.0457 16.1552C10.2386 16.6513 10.3351 16.8994 10.4741 16.9718C10.5946 17.0346 10.7381 17.0347 10.8587 16.972C10.9978 16.8998 11.0946 16.6518 11.2881 16.1559L16.78 2.08281C16.9547 1.63516 17.0421 1.41133 16.9943 1.26831C16.9528 1.1441 16.8553 1.04663 16.7311 1.00514C16.5881 0.957356 16.3643 1.0447 15.9166 1.21939L1.84349 6.71134C1.34759 6.90486 1.09965 7.00163 1.02739 7.14071C0.964749 7.26129 0.964833 7.40483 1.02761 7.52533C1.10004 7.66433 1.3481 7.7608 1.84422 7.95373L7.47589 10.1438C7.5766 10.183 7.62695 10.2026 7.66935 10.2328C7.70693 10.2596 7.7398 10.2925 7.7666 10.3301C7.79685 10.3725 7.81643 10.4228 7.85559 10.5235Z" stroke="white" stroke-width="1.67" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
+
+}
+
 export function LogoutIcon(props:Readonly<React.SVGProps<SVGSVGElement>>){
     return <svg {...props} width="76" height="76" viewBox="0 0 76 76" fill="none" xmlns="http://www.w3.org/2000/svg">
 <rect x="6" y="6" width="64" height="64" rx="32" fill="#F0F2F5"/>

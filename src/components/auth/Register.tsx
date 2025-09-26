@@ -12,7 +12,7 @@ export default function Register() {
         <div className="flex flex-col p-5 rounded-[12px] bg-[#FFFFFF99]">
 
         <div className="flex gap-1 items-center flex-col">
-          <h2 className='text-[28px] font-700]'>Welcome to the candidate portal!</h2>
+          <h2 className='text-[28px] font-bold'>Welcome to the candidate portal!</h2>
           <p>Enter your credentials to register as a candidate</p>
         </div>
         <div className="form-wrapper flex flex-col gap-2">

@@ -40,7 +40,7 @@ function ActivityHistoryCard(){
 }
 
 function QuickActionsCard() {
-    return <ResponsiveContainer className='flex gap-4 p-3 flex-col mx-auto'>
+    return <ResponsiveContainer className='flex overflow-x-auto w-full gap-4 p-3 flex-col mx-auto'>
         <h2 className='capitalize text-xl font-bold'>quick actions</h2>
         <div className="flex justify-between">
             <div className="flex gap-2 items-center">
