@@ -25,8 +25,8 @@ export default function UserManagement() {
 
 function UserSummaryCard() {
     return <ResponsiveContainer className='grid grid-cols-1 md:grid-cols-2 gap-2'>
-        <UserCard header='Total Staff' />
-        <UserCard header='Total Staff' />
+        <UserCard header='TOTAL STAFFS' />
+        <UserCard header='TOTAL STUDENTS' />
     </ResponsiveContainer>
 }
 
@@ -52,7 +52,7 @@ const chartData = [
 
 function UserCard({ header }:Readonly< { header: ReactNode }>) {
     return <div className='flex flex-col gap-2 rounded-2xl border-[#E4E7EC] border'>
-        <div className="flex header p-2 bg-[#F7F9FC]  rounded-tr-2xl rounded-tl-2xl">
+        <div className="flex header p-2 font-bold bg-[#F7F9FC]  rounded-tr-2xl rounded-tl-2xl">
             {header}
         </div>
         <div className="flex px-3 gap-3 pb-2 justify-between items-center">
