@@ -8,7 +8,7 @@ import AdminHeader from '../AdminHeader'
 // import EmptySession from './EmptySession'
 import AddQuestionModal from '../../Modals/AddQuestionModal'
 import QuestionsTable from '../QuestionsTable'
-import SummaryCard from '../SummaryCard'
+import SummaryCard from './SummaryCard'
 import EmptySession from '../EmptySession'
 // import QuestionInformation from './Drawer/QuestionInformation'
 

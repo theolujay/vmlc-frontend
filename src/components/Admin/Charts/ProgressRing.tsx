@@ -56,14 +56,14 @@
 
 import React from "react";
 
-type DonutChartProps = {
+type DoughnutChartProps = {
   data: { value: number; color: string }[];
   total: number;
   radius?: number;
   strokeWidth?: number;
 };
 
-export const DoughnutChart: React.FC<DonutChartProps> = ({
+export const DoughnutChart: React.FC<DoughnutChartProps> = ({
   data,
   total,
   radius = 50,
