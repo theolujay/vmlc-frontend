@@ -2,34 +2,68 @@
 import clsx from 'clsx'
 import 'react-phone-number-input/style.css'
 import PhoneInput from 'react-phone-number-input'
-import React, { useEffect, useRef, useState } from 'react'
+import React, { memo, useEffect, useRef, useState } from 'react'
 import { E164Number } from 'libphonenumber-js/core';
 import { EyeClosedIcon, EyeOpenIcon } from './SvgAsset/GeneralAsset'
+import { Controller, useFormContext } from 'react-hook-form'
 
-export default function Input({ icon, placeholder, className, label }: Readonly<{ icon: React.ReactNode, placeholder?: string, className?: string, label: string }>) {
+// export default function Input({ icon, placeholder, className, label }: Readonly<{ icon: React.ReactNode, placeholder?: string, className?: string, label: string }>) {
+//     return (
+//         <div className="flex flex-col gap-1">
+//             <span className='text-[14px] ml-1'>{label}</span>
+//             <div className={clsx('flex border-2 bg-white focus:outline-1 outline-amber-300 gap-1 items-center px-2 rounded-[8px]', className)}>
+//                 <span>{icon}</span>
+//                 <input type="text" placeholder={placeholder} className={clsx('border-0 flex-1 accent-amber-400 p-2 bg-white outline-0')} />
+//             </div>
+//         </div>
+//     )
+// }
+
+
+
+
+
+
+function InputBase({ name, icon, placeholder, className, label }: Readonly<{ icon: React.ReactNode, placeholder?: string, className?: string, label: string, name: string }>) {
+    const { register, formState: { isDirty } } = useFormContext()
     return (
         <div className="flex flex-col gap-1">
             <span className='text-[14px] ml-1'>{label}</span>
             <div className={clsx('flex border-2 bg-white focus:outline-1 outline-amber-300 gap-1 items-center px-2 rounded-[8px]', className)}>
                 <span>{icon}</span>
-                <input type="text" placeholder={placeholder} className={clsx('border-0 flex-1 accent-amber-400 p-2 bg-white outline-0')} />
+                <input type="text" {...register(name)} placeholder={placeholder} className={clsx('border-0 flex-1 accent-amber-400 p-2 bg-white outline-0')} />
             </div>
         </div>
     )
 }
 
+const Input = memo(InputBase, (prev, next) => prev.name === next.name);
 
 
 
+export default Input;
 
-export function PhoneNumberInput({ placeholder, className, label }: Readonly<{ placeholder?: string, className?: string, label: string }>) {
+
+
+export function PhoneNumberInput({ name, placeholder, className, label }: Readonly<{ placeholder?: string, className?: string, label: string, name: string }>) {
     const [value, setValue] = useState<E164Number | undefined>(undefined)
+    const { control, register, formState: { isDirty } } = useFormContext()
     return (
         <div className="flex flex-col gap-1">
             <span className='text-[14px] ml-1'>{label}</span>
             <div className={clsx('flex border-2 bg-white focus:outline-1 outline-amber-300 gap-1 items-center px-2 rounded-[8px]', className)}>
                 {/* <span>{icon}</span> */}
-                <PhoneInput defaultCountry='NG' className={clsx('flex p-2 bg-white focus:outline-1 outline-amber-300 gap-1 items-center  rounded-[8px]', className)} placeholder={placeholder} value={value} onChange={val => setValue(val)} />
+                <Controller
+                    name={name}
+                    control={control}
+                    render={
+                        ({ field }) =>
+                            <PhoneInput {...field} value={field.value ?? value} defaultCountry='NG' className={clsx('flex p-2 bg-white focus:outline-1 outline-amber-300 gap-1 items-center  rounded-[8px]', className)} placeholder={placeholder} onChange={val => {
+                                field.onChange(val)
+                                setValue(val ?? undefined);
+                            }} />
+                    }
+                />
                 {/* <input type="text" placeholder={placeholder} className={clsx('border-0 flex-1 accent-amber-400 p-2 bg-white outline-0')} /> */}
             </div>
         </div>
@@ -42,8 +76,9 @@ export function PhoneNumberInput({ placeholder, className, label }: Readonly<{ p
 
 
 
-export function PasswordInput({ icon, placeholder, className, label }: Readonly<{ icon: React.ReactNode, placeholder?: string, className?: string, label: string }>) {
+export function PasswordInput({ name, icon, placeholder, className, label }: Readonly<{ icon: React.ReactNode, placeholder?: string, className?: string, label: string, name: string }>) {
     const [showPassword, setShowPassword] = useState(false)
+    const { register, formState: { isDirty } } = useFormContext()
 
     function handleToggle() {
         setShowPassword((val) => !val)
@@ -53,8 +88,8 @@ export function PasswordInput({ icon, placeholder, className, label }: Readonly<
             <span className='text-[14px] ml-1'>{label}</span>
             <div className={clsx('flex border-2 bg-white focus:outline-1 outline-amber-300 gap-1 items-center px-2 rounded-[8px]', className)}>
                 <span>{icon}</span>
-                <input type={showPassword ? 'text' : 'password'} placeholder={placeholder} className={clsx('border-0 flex-1 accent-amber-400 p-2 bg-white outline-0')} />
-                <button className='cursor-pointer outline-0' onClick={handleToggle}>{showPassword ? <EyeOpenIcon /> : <EyeClosedIcon />}</button>
+                <input {...register(name)} type={showPassword ? 'text' : 'password'} placeholder={placeholder} className={clsx('border-0 flex-1 accent-amber-400 p-2 bg-white outline-0')} />
+                <button type='button' className='cursor-pointer outline-0' onClick={handleToggle}>{showPassword ? <EyeOpenIcon /> : <EyeClosedIcon />}</button>
             </div>
         </div>
     )
