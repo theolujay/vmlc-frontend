@@ -28,17 +28,17 @@ function AddStaffMemberForm() {
         <form className='grid grid-cols-2' action="">
             <div className="col-span-1 flex flex-col">
                 <div className="grid grid-cols-2 gap-2">
-                    <Input label='STAFF FIRST NAME' placeholder='Input first name (e.g John)' className='border-[#D0D5DD]' icon={<PersonIcon />} />
-                    <Input label='STAFF LAST NAME' placeholder='Input last name (e.g Doe)' className='border-[#D0D5DD]' icon={<PersonIcon />} />
+                    <Input name='fname' label='STAFF FIRST NAME' placeholder='Input first name (e.g John)' className='border-[#D0D5DD]' icon={<PersonIcon />} />
+                    <Input name='lname' label='STAFF LAST NAME' placeholder='Input last name (e.g Doe)' className='border-[#D0D5DD]' icon={<PersonIcon />} />
                 </div>
                 <div className="grid">
-                    <Input icon={<MailIcon />} label='STAFF EMAIL' placeholder='Input your mail (e.g johndoe@gmail.com)' className='border-[#D0D5DD]' />
+                    <Input name='email' icon={<MailIcon />} label='STAFF EMAIL' placeholder='Input your mail (e.g johndoe@gmail.com)' className='border-[#D0D5DD]' />
                 </div>
                 <div className="grid">
-                    <PhoneNumberInput placeholder='+234 810 000 0000' className='border-[#D0D5DD]' label='STAFF PHONE NUMBER' />
+                    <PhoneNumberInput name='phone' placeholder='+234 810 000 0000' className='border-[#D0D5DD]' label='STAFF PHONE NUMBER' />
                 </div>
                 <div className="grid">
-                    <PasswordInput icon={<PasswordIcon />} label='PASSWORD' placeholder='Input your password' className='border-[#D0D5DD]' />
+                    <PasswordInput name='password' icon={<PasswordIcon />} label='PASSWORD' placeholder='Input your password' className='border-[#D0D5DD]' />
                 </div>
             </div>
         </form>

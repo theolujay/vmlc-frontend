@@ -8,7 +8,7 @@ import AuthLayout from './Layout/Layout'
 export default function Login() {
   return (
     <AuthLayout>
-      <div className="flex flex-col w-[50%] h-screen gap-3 items-center justify-center mx-auto p-4 ">
+      <div className="flex flex-col md:w-[50%] h-screen gap-3 items-center justify-center mx-auto p-4 ">
          <div className="flex flex-col p-5 rounded-[12px] bg-[#FFFFFF99]">
 
         <div className="flex gap-1 items-center flex-col">
@@ -18,11 +18,11 @@ export default function Login() {
         <div className="form-wrapper flex flex-col gap-2">
          
           <div className="grid">
-            <Input icon={<MailIcon />} label='EMAIL' placeholder='Input your mail (e.g johndoe@gmail.com)' className='border-[#D0D5DD]' />
+            <Input name='email' icon={<MailIcon />} label='EMAIL' placeholder='Input your mail (e.g johndoe@gmail.com)' className='border-[#D0D5DD]' />
           </div>
          
           <div className="grid">
-            <PasswordInput icon={<PasswordIcon />} label='PASSWORD' placeholder='Input your password' className='border-[#D0D5DD]' />
+            <PasswordInput name='password' icon={<PasswordIcon />} label='PASSWORD' placeholder='Input your password' className='border-[#D0D5DD]' />
           </div>
           <div className="flex justify-between">
             <div className="checkbox flex gap-1 items-center">

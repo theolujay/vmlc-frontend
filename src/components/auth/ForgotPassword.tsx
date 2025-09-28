@@ -50,7 +50,7 @@ export default function ForgotPassword() {
 
 
                                         <div className="grid">
-                                            <Input icon={<MailIcon />} label='EMAIL' placeholder='Input your mail (e.g johndoe@gmail.com)' className='border-[#D0D5DD]' />
+                                            <Input name='email' icon={<MailIcon />} label='EMAIL' placeholder='Input your mail (e.g johndoe@gmail.com)' className='border-[#D0D5DD]' />
                                         </div>
 
 
@@ -112,11 +112,11 @@ export default function ForgotPassword() {
 
 
                                         <div className="grid">
-                                            <PasswordInput icon={<PasswordIcon />} label='CREATE NEW PASSWORD' placeholder='Create your password' className='border-[#D0D5DD]' />
+                                            <PasswordInput name='password' icon={<PasswordIcon />} label='CREATE NEW PASSWORD' placeholder='Create your password' className='border-[#D0D5DD]' />
                                         </div>
 
                                         <div className="grid">
-                                            <PasswordInput icon={<PasswordIcon />} label='CONFIRM NEW PASSWORD' placeholder='Confirm your password' className='border-[#D0D5DD]' />
+                                            <PasswordInput name='confirmPassword' icon={<PasswordIcon />} label='CONFIRM NEW PASSWORD' placeholder='Confirm your password' className='border-[#D0D5DD]' />
                                         </div>
 
                                         <div className="grid mt-6">
