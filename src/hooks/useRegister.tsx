@@ -46,7 +46,7 @@ export default function useRegister() {
         console.log(value)
         const transformedValue: RegisterRequest = {
             user: {
-                email: value.email,
+                email: value.email.toLowerCase(),
                 first_name: value.first_name,
                 last_name: value.last_name,
                 phone: value.phone

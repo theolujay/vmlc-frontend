@@ -13,7 +13,6 @@ import Spinner from '../ui/spinner/spinner'
 
 
 
-
 export default function Register() {
   
   const { form, onSubmit, isPending } = useRegister()
@@ -27,7 +26,7 @@ export default function Register() {
           <div className="flex gap-1 items-center flex-col">
             <h2 className='text-[18px] md:text-[28px] font-bold'>Welcome to the candidate portal!</h2>
             <p>Enter your credentials to register as a candidate</p>
-           
+          
           </div>
           <FormProvider {...form}>
 
