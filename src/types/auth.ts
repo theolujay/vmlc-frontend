@@ -10,8 +10,33 @@ export type RegisterRequest = {
     school: string
 }
 
-export type AuthResponse={
-    
-  message: string
+export type LoginRequest = {
+    email: string,
+    password: string
+}
 
+export type AuthRegisterResponse = {
+
+    message: string
+
+}
+
+
+
+
+export type AuthLoginResponse = {
+    refresh: string;
+    access: string;
+    profile: {
+        user: {
+            id: string;
+            email: string;
+            first_name: string;
+            last_name: string;
+            phone: string;
+            date_joined: Date;
+        },
+        school: string;
+        role: string;
+    }
 }
