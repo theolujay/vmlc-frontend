@@ -8,13 +8,16 @@ import * as z from 'zod';
 
 const registerSchema = z.object({
     email: z.email(),
-    password: z.string(),
+    password: z.string().min(8, "Password must be at least 8 characters"),
     password2: z.string(),
     first_name: z.string(),
     phone: z.string(),
     last_name: z.string(),
     school: z.string()
-})
+}).refine((data) => data.password === data.password2, {
+    path: ["password2"], // put the error on the confirm field
+    message: "Passwords do not match",
+  });
 
 const defaultValues = {
     email: '',
@@ -56,7 +59,7 @@ export default function useRegister() {
             school:value.school,
             password2: value.password2
         }
-        console.log(transformedValue,'oba ogo')
+        
         mutate(transformedValue);
     }
 

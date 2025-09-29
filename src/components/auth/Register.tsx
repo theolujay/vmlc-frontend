@@ -4,7 +4,7 @@ import clsx from 'clsx'
 import Link from 'next/link'
 import { FormProvider } from 'react-hook-form'
 import AuthButton from '../ui/Button'
-import Input, { PasswordInput, PhoneNumberInput } from '../ui/Input'
+import Input, { ConfirmPasswordInput, PasswordInput, PhoneNumberInput } from '../ui/Input'
 import { MailIcon, PasswordIcon, PersonIcon, SchoolIcon } from '../ui/SvgAsset/GeneralAsset'
 import AuthLayout from './Layout/Layout'
 import Spinner from '../ui/spinner/spinner'
@@ -48,7 +48,7 @@ export default function Register() {
                 <PasswordInput name='password' icon={<PasswordIcon />} label='PASSWORD' placeholder='Input your password' className='border-[#D0D5DD]' />
               </div>
               <div className="grid">
-                <PasswordInput name='password2' icon={<PasswordIcon />} label='CONFIRM PASSWORD' placeholder='Confirm your password' className='border-[#D0D5DD]' />
+                <ConfirmPasswordInput name='password2' icon={<PasswordIcon />} label='CONFIRM PASSWORD' placeholder='Confirm your password' className='border-[#D0D5DD]' />
               </div>
               <div className="grid mt-6">
                 <AuthButton className={clsx(isPending ? 'bg-grey-base-400' : 'bg-[#3E4095]')} isPending={isPending}>{isPending ? <Spinner/> : 'Register'}</AuthButton>
