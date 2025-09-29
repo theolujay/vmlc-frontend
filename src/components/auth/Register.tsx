@@ -1,49 +1,40 @@
 "use client"
+import useRegister from '@/hooks/useRegister'
+import clsx from 'clsx'
 import Link from 'next/link'
-import { FormProvider, useForm } from 'react-hook-form'
+import { FormProvider } from 'react-hook-form'
 import AuthButton from '../ui/Button'
 import Input, { PasswordInput, PhoneNumberInput } from '../ui/Input'
 import { MailIcon, PasswordIcon, PersonIcon, SchoolIcon } from '../ui/SvgAsset/GeneralAsset'
 import AuthLayout from './Layout/Layout'
-import z from 'zod'
-import useRegister from '@/hooks/useRegister'
+import Spinner from '../ui/spinner/spinner'
 
 
-// const registerSchema = z.object({
-// email:z.email(),
-// password:z.string(),
-// confirmPassword:z.string(),
-// fname:z.string(),
-// lname:z.string(),
-// school:z.string()
-// })
+
+
+
 
 export default function Register() {
-  // const methods = useForm({
-  //   defaultValues: {
-  //     email: '',
-  //     password: '',
-  //     fname: '', lname: '', school: ''
-  //   }
-  // })
-  const {form,onSubmit}=useRegister()
+  
+  const { form, onSubmit, isPending } = useRegister()
   return (
     <AuthLayout>
 
 
-      <div className="flex flex-col md:w-[50%] gap-3 items-center justify-center mx-auto p-4 ">
+      <div className="flex flex-col lg:w-[50%] gap-3 items-center justify-center mx-auto p-4 ">
         <div className="flex flex-col p-5 rounded-[12px] bg-[#FFFFFF99]">
 
           <div className="flex gap-1 items-center flex-col">
-            <h2 className='text-[28px] font-bold'>Welcome to the candidate portal!</h2>
+            <h2 className='text-[18px] md:text-[28px] font-bold'>Welcome to the candidate portal!</h2>
             <p>Enter your credentials to register as a candidate</p>
+           
           </div>
           <FormProvider {...form}>
 
             <form onSubmit={form.handleSubmit(onSubmit)} className="form-wrapper flex flex-col gap-2">
-              <div className="grid md:grid-cols-2 gap-2">
-                <Input name='fname' label='FIRST NAME' placeholder='Input first name (e.g John)' className='border-[#D0D5DD]' icon={<PersonIcon />} />
-                <Input name='lname' label='LAST NAME' placeholder='Input last name (e.g Doe)' className='border-[#D0D5DD]' icon={<PersonIcon />} />
+              <div className="grid lg:grid-cols-2 gap-2">
+                <Input name='first_name' label='FIRST NAME' placeholder='Input first name (e.g John)' className='border-[#D0D5DD]' icon={<PersonIcon />} />
+                <Input name='last_name' label='LAST NAME' placeholder='Input last name (e.g Doe)' className='border-[#D0D5DD]' icon={<PersonIcon />} />
               </div>
               <div className="grid">
                 <PhoneNumberInput name='phone' placeholder='+234 810 000 0000' className='border-[#D0D5DD]' label='PHONE NUMBER' />
@@ -58,10 +49,10 @@ export default function Register() {
                 <PasswordInput name='password' icon={<PasswordIcon />} label='PASSWORD' placeholder='Input your password' className='border-[#D0D5DD]' />
               </div>
               <div className="grid">
-                <PasswordInput name='confirmPassword' icon={<PasswordIcon />} label='CONFIRM PASSWORD' placeholder='Confirm your password' className='border-[#D0D5DD]' />
+                <PasswordInput name='password2' icon={<PasswordIcon />} label='CONFIRM PASSWORD' placeholder='Confirm your password' className='border-[#D0D5DD]' />
               </div>
               <div className="grid mt-6">
-                <AuthButton>Register</AuthButton>
+                <AuthButton className={clsx(isPending ? 'bg-grey-base-400' : 'bg-[#3E4095]')} isPending={isPending}>{isPending ? <Spinner/> : 'Register'}</AuthButton>
               </div>
               <div className="flex flex-col gap-3 items-center mt-6">
                 <p>By registering, you agree to {`VMLC’s`} <Link href='/' className='text-[#018ABB]'>Terms & conditions</Link> and <Link href='/' className='text-[#018ABB]'>Privacy Policy</Link></p>
