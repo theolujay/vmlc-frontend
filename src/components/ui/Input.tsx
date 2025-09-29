@@ -6,6 +6,7 @@ import React, { memo, useEffect, useRef, useState } from 'react'
 import { E164Number } from 'libphonenumber-js/core';
 import { EyeClosedIcon, EyeOpenIcon } from './SvgAsset/GeneralAsset'
 import { Controller, useFormContext } from 'react-hook-form'
+import { maxLength, minLength } from 'zod'
 
 // export default function Input({ icon, placeholder, className, label }: Readonly<{ icon: React.ReactNode, placeholder?: string, className?: string, label: string }>) {
 //     return (
@@ -78,7 +79,10 @@ export function PhoneNumberInput({ name, placeholder, className, label }: Readon
 
 export function PasswordInput({ name, icon, placeholder, className, label }: Readonly<{ icon: React.ReactNode, placeholder?: string, className?: string, label: string, name: string }>) {
     const [showPassword, setShowPassword] = useState(false)
-    const { register, formState: { isDirty } } = useFormContext()
+    const { register, watch, formState: { errors, isDirty } } = useFormContext()
+
+
+    const passwordValue = watch(name)
 
     function handleToggle() {
         setShowPassword((val) => !val)
@@ -88,9 +92,89 @@ export function PasswordInput({ name, icon, placeholder, className, label }: Rea
             <span className='text-[14px] ml-1'>{label}</span>
             <div className={clsx('flex border-2 bg-white focus:outline-1 outline-amber-300 gap-1 items-center px-2 rounded-[8px]', className)}>
                 <span>{icon}</span>
-                <input {...register(name)} type={showPassword ? 'text' : 'password'} placeholder={placeholder} className={clsx('border-0 flex-1 accent-amber-400 p-2 bg-white outline-0')} />
+                <input {...register(name, {
+                    required: "Password is required",
+                    validate: {
+                        minLength: (v) => v.length >= 8 || "Must be at least 8 characters long",
+                        maxLength: (v) => v.length <= 32 || "Must be at most 32 characters long",
+                        hasLower: (v) => /[a-z]/.test(v) || "Must contain at least 1 lowercase letter",
+                        hasUpper: (v) => /[A-Z]/.test(v) || "Must contain at least 1 uppercase letter",
+                        hasNumber: (v) =>
+                            /\d/.test(v) || "Must contain at least 1 number",
+                        hasSpecial: (v) =>
+                            /[!@#$%^&*(),.?":{}|<>]/.test(v) ||
+                            "Must contain at least 1 special character",
+
+                    }
+                })} type={showPassword ? 'text' : 'password'} placeholder={placeholder} className={clsx('border-0 flex-1 accent-amber-400 p-2 bg-white outline-0')} />
                 <button type='button' className='cursor-pointer outline-0' onClick={handleToggle}>{showPassword ? <EyeOpenIcon /> : <EyeClosedIcon />}</button>
             </div>
+
+
+            {/* Checklist feedback */}
+            {
+                isDirty&&
+            <div className="text-sm mt-2">
+                <p className={passwordValue?.length >= 8 ? "text-[#0F973D]" : "text-gray-500"}>
+                    • 8 - 32 characters long
+                </p>
+                <p className={/[a-z]/.test(passwordValue) ? "text-[#0F973D]" : "text-gray-500"}>
+                    • 1 lowercase character (a-z)
+                </p>
+                <p className={/[A-Z]/.test(passwordValue) ? "text-[#0F973D]" : "text-gray-500"}>
+                    • 1 uppercase character (A-Z)
+                </p>
+                <p className={/\d/.test(passwordValue) ? "text-[#0F973D]" : "text-gray-500"}>
+                    • 1 number (0-9)
+                </p>
+                <p className={/[!@#$%^&*(),.?":{}|<>]/.test(passwordValue) ? "text-green-600" : "text-gray-500"}>
+                    • 1 special character (e.g., ! @ # $ %)
+                </p>
+            </div>
+                
+            }
+
+            {errors[name] && (
+                <span className="text-red-500 text-xs">{errors[name].message as string}</span>
+            )}
+        </div>
+    )
+}
+
+
+
+export function ConfirmPasswordInput({ name, icon, placeholder, className, label }: Readonly<{ icon: React.ReactNode, placeholder?: string, className?: string, label: string, name: string }>) {
+    const [showPassword, setShowPassword] = useState(false)
+    const { register, watch, formState: { errors, isDirty } } = useFormContext()
+
+
+    const passwordValue = watch(name)
+
+    function handleToggle() {
+        setShowPassword((val) => !val)
+    }
+    return (
+        <div className="flex flex-col gap-1">
+            <span className='text-[14px] ml-1'>{label}</span>
+            <div className={clsx('flex border-2 bg-white focus:outline-1 outline-amber-300 gap-1 items-center px-2 rounded-[8px]', className)}>
+                <span>{icon}</span>
+                <input {...register(name,  {
+  required: "Confirm password is required",
+  validate: (val) => {
+    if (watch("password") !== val) {
+      return "Passwords do not match"
+    }
+  },
+})} type={showPassword ? 'text' : 'password'} placeholder={placeholder} className={clsx('border-0 flex-1 accent-amber-400 p-2 bg-white outline-0')} />
+                <button type='button' className='cursor-pointer outline-0' onClick={handleToggle}>{showPassword ? <EyeOpenIcon /> : <EyeClosedIcon />}</button>
+            </div>
+
+
+        
+
+            {errors[name] && (
+                <span className="text-red-500 text-sm">{errors[name].message as string}</span>
+            )}
         </div>
     )
 }
