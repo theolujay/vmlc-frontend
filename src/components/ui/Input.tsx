@@ -115,19 +115,19 @@ export function PasswordInput({ name, icon, placeholder, className, label }: Rea
             {
                 isDirty&&
             <div className="text-sm mt-2">
-                <p className={passwordValue?.length >= 8 ? "text-[#0F973D]" : "text-gray-500"}>
+                <p className={passwordValue?.length >= 8 ? "text-[#0F973D]" : "text-[#344054]"}>
                     • 8 - 32 characters long
                 </p>
-                <p className={/[a-z]/.test(passwordValue) ? "text-[#0F973D]" : "text-gray-500"}>
+                <p className={/[a-z]/.test(passwordValue) ? "text-[#0F973D]" : "text-[#344054]"}>
                     • 1 lowercase character (a-z)
                 </p>
-                <p className={/[A-Z]/.test(passwordValue) ? "text-[#0F973D]" : "text-gray-500"}>
+                <p className={/[A-Z]/.test(passwordValue) ? "text-[#0F973D]" : "text-[#344054]"}>
                     • 1 uppercase character (A-Z)
                 </p>
-                <p className={/\d/.test(passwordValue) ? "text-[#0F973D]" : "text-gray-500"}>
+                <p className={/\d/.test(passwordValue) ? "text-[#0F973D]" : "text-[#344054]"}>
                     • 1 number (0-9)
                 </p>
-                <p className={/[!@#$%^&*(),.?":{}|<>]/.test(passwordValue) ? "text-green-600" : "text-gray-500"}>
+                <p className={/[!@#$%^&*(),.?":{}|<>]/.test(passwordValue) ? "text-[#0F973D]" : "text-[#344054]"}>
                     • 1 special character (e.g., ! @ # $ %)
                 </p>
             </div>
