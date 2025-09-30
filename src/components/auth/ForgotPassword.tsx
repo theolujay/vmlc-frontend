@@ -3,7 +3,7 @@ import * as Tabs from '@radix-ui/react-tabs'
 import Link from 'next/link'
 import { useState } from 'react'
 import AuthButton from '../ui/Button'
-import Input, { OTP, PasswordInput } from '../ui/Input'
+import Input, { ConfirmPasswordInput, OTP, PasswordInput } from '../ui/Input'
 import { DoneIcon, MailIcon, PasswordIcon } from '../ui/SvgAsset/GeneralAsset'
 import AuthLayout from './Layout/Layout'
 
@@ -90,7 +90,7 @@ export default function ForgotPassword() {
                                         <div className="flex flex-col gap-3 items-center mt-6">
                                             <div className='flex flex-col items-center gap-2'>
                                                 <div className="">
-                                                    <span>Didn’t receive any email? </span>
+                                                    <span>{`Didn’t`} receive any email? </span>
                                                     <Link href='/'>Click Here to Resend in 01:56s</Link>
                                                 </div>
 
@@ -116,7 +116,7 @@ export default function ForgotPassword() {
                                         </div>
 
                                         <div className="grid">
-                                            <PasswordInput name='confirmPassword' icon={<PasswordIcon />} label='CONFIRM NEW PASSWORD' placeholder='Confirm your password' className='border-[#D0D5DD]' />
+                                            <ConfirmPasswordInput name='confirmPassword' icon={<PasswordIcon />} label='CONFIRM NEW PASSWORD' placeholder='Confirm your password' className='border-[#D0D5DD]' />
                                         </div>
 
                                         <div className="grid mt-6">

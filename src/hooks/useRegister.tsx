@@ -59,7 +59,7 @@ export default function useRegister() {
             school:value.school,
             password2: value.password2
         }
-        
+        // mutate(value)
         mutate(transformedValue);
     }
 
