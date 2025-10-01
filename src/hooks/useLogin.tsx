@@ -22,7 +22,7 @@ type LoginType = z.infer<typeof loginSchema>;
 export default function useLogin() {
   const form = useForm({
     resolver: zodResolver(loginSchema),
-    defaultValues: isDev() ? { email: 'ikukoyidave@gmail.com', password: 'strongpassword123' } : defaultValues
+    defaultValues: isDev() ? { email: 'ikukoyidave@gmail.com', password: '@Afobaje22' } : defaultValues
   });
 
   const { isPending, mutate } = useMutation({

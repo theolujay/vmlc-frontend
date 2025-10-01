@@ -1,9 +1,10 @@
 import { authUrls } from "@/constants/authUrls";
-import { AuthLoginResponse, AuthRegisterResponse, LoginRequest, RegisterRequest } from "@/types/auth";
+import { ValueType } from "@/hooks/useRegister";
+import { AuthLoginResponse, AuthRegisterResponse, LoginRequest, } from "@/types/auth";
 import client from "@/utils/axios";
 
 export class AuthService {
-    static async register(user: RegisterRequest): Promise<AuthRegisterResponse> {
+    static async register(user: ValueType): Promise<AuthRegisterResponse> {
         const response = client.post(authUrls.candidate_registeration, user);
         console.log(response, 'what is here')
         return (await response).data.data;

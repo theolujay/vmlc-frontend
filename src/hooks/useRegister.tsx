@@ -7,7 +7,7 @@ import * as z from 'zod';
 
 
 const registerSchema = z.object({
-    email: z.email(),
+    email: z.email({ message: 'Must be an email' }),
     password: z.string().min(8, "Password must be at least 8 characters"),
     password2: z.string(),
     first_name: z.string(),
@@ -15,9 +15,9 @@ const registerSchema = z.object({
     last_name: z.string(),
     school: z.string()
 }).refine((data) => data.password === data.password2, {
-    path: ["password2"], // put the error on the confirm field
+    path: ["password2"],
     message: "Passwords do not match",
-  });
+});
 
 const defaultValues = {
     email: '',
@@ -27,7 +27,7 @@ const defaultValues = {
     first_name: '', last_name: '', school: ''
 }
 
-type ValueType = z.infer<typeof registerSchema>;
+export type ValueType = z.infer<typeof registerSchema>;
 
 export default function useRegister() {
     const form = useForm({
@@ -37,8 +37,8 @@ export default function useRegister() {
 
     const { isPending, mutate } = useMutation({
         mutationFn: AuthService.register,
-        onSuccess:(value)=>console.log(value,'this is success value'),
-        onError:(errorValue)=>console.log(errorValue,'what is error value')
+        onSuccess: (value) => console.log(value, 'this is success value'),
+        onError: (errorValue) => console.log(errorValue, 'what is error value')
 
     })
 
@@ -47,22 +47,22 @@ export default function useRegister() {
 
     function onSubmit(value: ValueType) {
         console.log(value)
-        const transformedValue: RegisterRequest = {
-            user: {
-                email: value.email.toLowerCase(),
-                first_name: value.first_name,
-                last_name: value.last_name,
-                phone: value.phone
+        // const transformedValue: RegisterRequest = {
+        //     user: {
+        //         email: value.email.toLowerCase(),
+        //         first_name: value.first_name,
+        //         last_name: value.last_name,
+        //         phone: value.phone
 
-            },
-            password: value.password,
-            school:value.school,
-            password2: value.password2
-        }
-        // mutate(value)
-        mutate(transformedValue);
+        //     },
+        //     password: value.password,
+        //     school: value.school,
+        //     password2: value.password2
+        // }
+        mutate(value)
+        // mutate(transformedValue);
     }
 
 
-    return { form, onSubmit ,isPending}
+    return { form, onSubmit, isPending }
 }
