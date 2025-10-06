@@ -11,8 +11,10 @@ export class AuthService {
     }
 
     static async login(payload:LoginRequest):Promise<AuthLoginResponse>{
-        const response=client.post(authUrls.login,payload);
-        console.log(response,'what is login payload')
-        return (await response).data.data;
+            
+            const response=await client.post(authUrls.login,payload);
+            console.log(response.data,'what is login payload')
+            return response.data;
+        
     }
 }

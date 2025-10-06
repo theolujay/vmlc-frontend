@@ -1,7 +1,8 @@
 "use client"
 import { AuthLoginResponse } from '@/types/auth';
 import client from '@/utils/axios';
-import React, { createContext, Dispatch, useContext, useReducer } from 'react';
+import { useRouter } from 'next/navigation';
+import React, { createContext, Dispatch, useContext, useEffect, useReducer } from 'react';
 
 type Actions =
     | {
@@ -23,8 +24,9 @@ const reducer = (state: AuthState, action: Actions) => {
             const payload = action.payload
             localStorage.setItem('session', JSON.stringify(payload));
 
-            client.defaults.headers.common["Authorization"] = `Bearer ${payload.access}`
-            
+            console.log(payload, 'what do we have')
+            // client.defaults.headers.common["Authorization"] = `Bearer ${payload.access}`
+
             const isStudent = studentRoles.includes(payload.profile.role);
             const isStaff = staffRoles.includes(payload.profile.role)
             const homePath = isStudent ? '/exam-portal' : 'admin';
@@ -32,7 +34,7 @@ const reducer = (state: AuthState, action: Actions) => {
                 token: payload.access,
                 refreshToken: payload.refresh,
                 homePath,
-                isAuthenticated:true
+                isAuthenticated: true
             }
         }
 
@@ -41,7 +43,7 @@ const reducer = (state: AuthState, action: Actions) => {
             return {
                 token: null,
                 refreshToken: null,
-                isAuthenticated:false
+                isAuthenticated: false
 
             }
         }
@@ -59,7 +61,7 @@ type AuthState = {
     token: string | null;
     homePath?: string | null;
     refreshToken: string | null;
-    isAuthenticated:boolean;
+    isAuthenticated: boolean;
 }
 
 
@@ -69,8 +71,10 @@ export default function AuthProvider({ children }: Readonly<{ children: React.Re
         homePath: '',
         token: null,
         refreshToken: null,
-        isAuthenticated:false
+        isAuthenticated: false
     });
+
+   
 
 
     return <AuthContext.Provider value={{ authState: state, dispatch }}>
