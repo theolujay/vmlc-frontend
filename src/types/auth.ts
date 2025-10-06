@@ -40,3 +40,12 @@ export type AuthLoginResponse = {
         role: string;
     }
 }
+
+
+
+
+export type AuthState = {
+    token: string | null;
+    homePath?: string | null;
+    refreshToken: string | null;
+}

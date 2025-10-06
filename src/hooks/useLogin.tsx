@@ -1,3 +1,4 @@
+import { useAuth } from "@/contexts/AuthProvider";
 import { AuthService } from "@/services/auth.service";
 import { isDev } from "@/utils/isDev";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -20,14 +21,20 @@ type LoginType = z.infer<typeof loginSchema>;
 
 
 export default function useLogin() {
+  const {dispatch}=useAuth()
   const form = useForm({
     resolver: zodResolver(loginSchema),
-    defaultValues: isDev() ? { email: 'ikukoyidave@gmail.com', password: '@Afobaje22' } : defaultValues
+    defaultValues: isDev() ? { email: 'Ikukoyidave@gmail.com', password: '@Afobaje22' } : defaultValues
   });
 
   const { isPending, mutate } = useMutation({
     mutationFn: AuthService.login,
-    onSuccess: (value) => console.log(value, 'this is login value'),
+    onSuccess: (value) => {
+      console.log(value,'what do we have here')
+      setTimeout(()=>{
+        dispatch({type:'loginSuccess',payload:value});
+      },1000)
+    },
     onError: (errorValue) => console.log(errorValue, 'encountered error')
   })
 
@@ -35,7 +42,7 @@ export default function useLogin() {
   function onSubmit(value: LoginType) {
     console.log(value)
     const payload = {
-      email: value.email.toLowerCase(),
+      email: value.email,
       password: value.password,
     }
     mutate(payload)
