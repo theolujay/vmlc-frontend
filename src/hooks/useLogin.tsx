@@ -40,7 +40,6 @@ export default function useLogin() {
 
 
   function onSubmit(value: LoginType) {
-    console.log(value)
     const payload = {
       email: value.email,
       password: value.password,

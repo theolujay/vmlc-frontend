@@ -47,20 +47,20 @@ export default function useRegister() {
 
     function onSubmit(value: ValueType) {
         console.log(value)
-        // const transformedValue: RegisterRequest = {
-        //     user: {
-        //         email: value.email.toLowerCase(),
-        //         first_name: value.first_name,
-        //         last_name: value.last_name,
-        //         phone: value.phone
+        const transformedValue:ValueType = {
+          
+                email: value.email.toLowerCase(),
+                first_name: value.first_name,
+                last_name: value.last_name,
+                phone: value.phone,
 
-        //     },
-        //     password: value.password,
-        //     school: value.school,
-        //     password2: value.password2
-        // }
-        mutate(value)
-        // mutate(transformedValue);
+            
+            password: value.password,
+            school: value.school,
+            password2: value.password2
+        }
+        // mutate(value)
+        mutate(transformedValue);
     }
 
 
