@@ -30,13 +30,13 @@ export default function RootLayout({
       <body
         className={` antialiased`}
       >
-        <AuthProvider>
           <QueryProvider>
+        <AuthProvider>
             <Suspense fallback={<div>Loading...</div>}>
               {children}
             </Suspense>
-          </QueryProvider>
         </AuthProvider>
+          </QueryProvider>
       </body>
     </html>
   );
