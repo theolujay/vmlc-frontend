@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 // import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import QueryProvider from "@/providers/QueryProviders";
+import QueryProvider from "@/contexts/QueryProviders";
 import { Suspense } from "react";
+import AuthProvider from "@/contexts/AuthProvider";
 
 // const geistSans = Geist({
 //   variable: "--font-geist-sans",
@@ -29,11 +30,13 @@ export default function RootLayout({
       <body
         className={` antialiased`}
       >
-        <QueryProvider>
-          <Suspense>
-        {children}
-          </Suspense>
-        </QueryProvider>
+        <AuthProvider>
+          <QueryProvider>
+            <Suspense fallback={<div>Loading...</div>}>
+              {children}
+            </Suspense>
+          </QueryProvider>
+        </AuthProvider>
       </body>
     </html>
   );
