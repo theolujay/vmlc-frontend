@@ -23,17 +23,33 @@ const reducer = (state: AuthState, action: Actions) => {
         case INIT_SESSION: {
             const payload = action.payload
             localStorage.setItem('session', JSON.stringify(payload));
-
+            if (!payload) {
+                return {
+        homePath: '',
+        token: null,
+        refreshToken: null,
+        isAuthenticated: false,
+        userType:null,
+        user:null
+    }
+            }
             console.log(payload, 'what do we have')
             // client.defaults.headers.common["Authorization"] = `Bearer ${payload.access}`
 
-            const isStudent = studentRoles.includes(payload.profile.role);
-            const isStaff = staffRoles.includes(payload.profile.role)
+            const isStudent = studentRoles.includes(payload?.profile?.role??'');
+            const isStaff = staffRoles.includes(payload?.profile?.role??'')
+            const user={
+                ...payload.profile.user,
+                role:payload.profile.role,
+                school:payload.profile.school
+            }
             const homePath = isStudent ? '/exam-portal' : 'admin';
             return {
                 token: payload.access,
                 refreshToken: payload.refresh,
+                userType:isStudent?'Candidate':'Staff',
                 homePath,
+                user,
                 isAuthenticated: true
             }
         }
@@ -43,7 +59,9 @@ const reducer = (state: AuthState, action: Actions) => {
             return {
                 token: null,
                 refreshToken: null,
-                isAuthenticated: false
+                isAuthenticated: false,
+                user:null,
+                userType:null
 
             }
         }
@@ -62,6 +80,8 @@ type AuthState = {
     homePath?: string | null;
     refreshToken: string | null;
     isAuthenticated: boolean;
+    user:{[x:string]:any}|null;
+    userType:string|null;
 }
 
 
@@ -71,7 +91,9 @@ export default function AuthProvider({ children }: Readonly<{ children: React.Re
         homePath: '',
         token: null,
         refreshToken: null,
-        isAuthenticated: false
+        isAuthenticated: false,
+        userType:null,
+        user:null
     });
 
    

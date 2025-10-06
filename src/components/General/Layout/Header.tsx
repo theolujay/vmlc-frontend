@@ -39,11 +39,15 @@
 
 import { NotificationIcon } from '@/components/ui/SvgAsset/GeneralAsset'
 import Logo from '@/components/ui/SvgAsset/Logo'
+import { useAuth } from '@/contexts/AuthProvider'
 import Link from 'next/link'
 import React, { useState } from 'react'
 
 export default function Header() {
-    const userName = 'Ezekiel Oluwadamilare'
+    const {authState}=useAuth()
+    console.log(authState,'WHAT IS AUTH STATE')
+    const userName=[authState?.user?.first_name,authState?.user?.last_name].join(' ')
+    // const userName = 'Ezekiel Oluwadamilare'
     //   const userInitials = userName.split(' ').map((val) => val[0]).join('')
     const userInitials = userName.split(' ').map((val) => val.charAt(0)).join('');
     const [menuOpen, setMenuOpen] = useState(false)

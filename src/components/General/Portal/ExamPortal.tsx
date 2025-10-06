@@ -1,11 +1,14 @@
+"use client"
 import React from 'react'
 import PageLayout from '../Layout/PageLayout'
 import ResponsiveContainer from '@/components/ui/ResponsiveContainer'
 import ExamBoard from './ExamBoard'
 import LeaderBoard from './LeaderBoard'
 import { InfoIcon } from '../GeneralIcon'
+import { useAuth } from '@/contexts/AuthProvider'
+import withAuthentication from '@/hocs/withAuthentication'
 
-export default function ExamPortal() {
+ function ExamPortal() {
   return (
     <PageLayout>
       <WelcomeBanner />
@@ -16,10 +19,12 @@ export default function ExamPortal() {
   )
 }
 
+export default withAuthentication(ExamPortal)
 
 function WelcomeBanner() {
+  const {authState}=useAuth()
   return <ResponsiveContainer>
-    <h2 className='text-[1.75rem]'>Welcome Ezekiel!</h2>
+    <h2 className='text-[1.75rem] '>Welcome {authState?.user?.first_name??''}!</h2>
     <p>{`You're`} now in the exam portal. Wishing you success ahead!</p>
   </ResponsiveContainer>
 }
