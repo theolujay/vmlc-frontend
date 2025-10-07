@@ -44,10 +44,10 @@ import Link from 'next/link'
 import React, { useState } from 'react'
 
 export default function Header() {
-    const {authState}=useAuth()
-    console.log(authState,'WHAT IS AUTH STATE')
-    const userName=[authState?.user?.first_name,authState?.user?.last_name].join(' ')
-    // const userName = 'Ezekiel Oluwadamilare'
+    const { authState } = useAuth()
+
+    const userName = [authState?.user?.first_name, authState?.user?.last_name].join(' ')
+
     //   const userInitials = userName.split(' ').map((val) => val[0]).join('')
     const userInitials = userName.split(' ').map((val) => val.charAt(0)).join('');
     const [menuOpen, setMenuOpen] = useState(false)

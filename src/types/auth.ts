@@ -48,4 +48,7 @@ export type AuthState = {
     token: string | null;
     homePath?: string | null;
     refreshToken: string | null;
+    isAuthenticated: boolean;
+    user: { [x: string]: any } | null;
+    userType: string | null;
 }
