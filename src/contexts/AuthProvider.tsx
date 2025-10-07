@@ -1,8 +1,7 @@
 "use client"
-import { AuthLoginResponse } from '@/types/auth';
+import { AuthLoginResponse, AuthState } from '@/types/auth';
 import client from '@/utils/axios';
-import { useRouter } from 'next/navigation';
-import React, { createContext, Dispatch, useContext, useEffect, useReducer } from 'react';
+import React, { createContext, Dispatch, useContext, useReducer } from 'react';
 
 type Actions =
     | {
@@ -25,29 +24,29 @@ const reducer = (state: AuthState, action: Actions) => {
             localStorage.setItem('session', JSON.stringify(payload));
             if (!payload) {
                 return {
-        homePath: '',
-        token: null,
-        refreshToken: null,
-        isAuthenticated: false,
-        userType:null,
-        user:null
-    }
+                    homePath: '',
+                    token: null,
+                    refreshToken: null,
+                    isAuthenticated: false,
+                    userType: null,
+                    user: null
+                }
             }
             console.log(payload, 'what do we have')
-            // client.defaults.headers.common["Authorization"] = `Bearer ${payload.access}`
+            client.defaults.headers.common["Authorization"] = `Bearer ${payload.access}`
 
-            const isStudent = studentRoles.includes(payload?.profile?.role??'');
-            const isStaff = staffRoles.includes(payload?.profile?.role??'')
-            const user={
+            const isStudent = studentRoles.includes(payload?.profile?.role ?? '');
+            const isStaff = staffRoles.includes(payload?.profile?.role ?? '')
+            const user = {
                 ...payload.profile.user,
-                role:payload.profile.role,
-                school:payload.profile.school
+                role: payload.profile.role,
+                school: payload.profile.school
             }
-            const homePath = isStudent ? '/exam-portal' : 'admin';
+            const homePath = isStudent ? '/exam-portal' : isStaff ? '/overview' : '/auth/login';
             return {
                 token: payload.access,
                 refreshToken: payload.refresh,
-                userType:isStudent?'Candidate':'Staff',
+                userType: isStudent ? 'Candidate' : 'Staff',
                 homePath,
                 user,
                 isAuthenticated: true
@@ -60,8 +59,8 @@ const reducer = (state: AuthState, action: Actions) => {
                 token: null,
                 refreshToken: null,
                 isAuthenticated: false,
-                user:null,
-                userType:null
+                user: null,
+                userType: null
 
             }
         }
@@ -75,14 +74,7 @@ const reducer = (state: AuthState, action: Actions) => {
 
 
 
-type AuthState = {
-    token: string | null;
-    homePath?: string | null;
-    refreshToken: string | null;
-    isAuthenticated: boolean;
-    user:{[x:string]:any}|null;
-    userType:string|null;
-}
+
 
 
 const AuthContext = createContext<{ authState?: AuthState, dispatch: Dispatch<Actions> }>({ authState: undefined, dispatch: () => { } })
@@ -92,11 +84,11 @@ export default function AuthProvider({ children }: Readonly<{ children: React.Re
         token: null,
         refreshToken: null,
         isAuthenticated: false,
-        userType:null,
-        user:null
+        userType: null,
+        user: null
     });
 
-   
+
 
 
     return <AuthContext.Provider value={{ authState: state, dispatch }}>
