@@ -1,7 +1,7 @@
 import { AuthService } from "@/services/auth.service";
-import { RegisterRequest } from "@/types/auth";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
+import { useRouter } from "next/navigation";
 import { useForm } from 'react-hook-form';
 import * as z from 'zod';
 
@@ -34,10 +34,14 @@ export default function useRegister() {
         resolver: zodResolver(registerSchema),
         defaultValues
     });
+    const router = useRouter()
 
     const { isPending, mutate } = useMutation({
         mutationFn: AuthService.register,
-        onSuccess: (value) => console.log(value, 'this is success value'),
+        onSuccess: (value) => {
+            console.log(value, 'this is success value')
+            router.push('/auth/verify')
+        },
         onError: (errorValue) => console.log(errorValue, 'what is error value')
 
     })
@@ -47,19 +51,19 @@ export default function useRegister() {
 
     function onSubmit(value: ValueType) {
         console.log(value)
-        const transformedValue:ValueType = {
-          
-                email: value.email.toLowerCase(),
-                first_name: value.first_name,
-                last_name: value.last_name,
-                phone: value.phone,
+        const transformedValue: ValueType = {
 
-            
+            email: value.email.toLowerCase(),
+            first_name: value.first_name,
+            last_name: value.last_name,
+            phone: value.phone,
+
+
             password: value.password,
             school: value.school,
             password2: value.password2
         }
-        // mutate(value)
+    
         mutate(transformedValue);
     }
 
