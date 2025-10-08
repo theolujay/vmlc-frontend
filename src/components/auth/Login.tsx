@@ -40,7 +40,7 @@ export default function Login() {
               </div>
 
               <div className="grid mt-6">
-                <AuthButton className={clsx(isPending ? 'bg-grey-base-400' : 'bg-[#3E4095]')} isPending={isPending}>{isPending ? <Spinner /> : 'Login'}</AuthButton>
+                <AuthButton isPending={isPending}>{isPending ? <Spinner /> : 'Login'}</AuthButton>
               </div>
               <div className="flex flex-col gap-3 items-center mt-6">
 

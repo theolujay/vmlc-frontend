@@ -4,14 +4,19 @@ import React, { useState } from 'react'
 import { ExamCardGoTo } from '../GeneralIcon'
 import clsx from 'clsx'
 import Link from 'next/link'
+import { AvailableExamType } from '@/types/Examtype'
 
-export default function ExamBoard() {
+export default function ExamBoard({ examType, examList }: { examType?: string, examList?: AvailableExamType[] }) {
     return (
         <ResponsiveContainer className='gap-2'>
-            <h2 className='font-bold text-xl'>League Exams</h2>
+            <h2 className='font-bold text-xl'>{examType} Exams</h2>
             <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
                 {
                     Array.from({ length: 2 }).map((_, index) => <ExamCard key={`exam-index-${index}`} />)
+                }
+                {
+                    Array.isArray(examList) &&
+                    examList.map((_, index) => <ExamCard key={`exam-index-${index}`} />)
                 }
 
 

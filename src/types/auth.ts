@@ -15,6 +15,12 @@ export type LoginRequest = {
     password: string
 }
 
+
+export type VerifyRequest = {
+    email: string,
+    otp: string
+}
+
 export type AuthRegisterResponse = {
 
     message: string

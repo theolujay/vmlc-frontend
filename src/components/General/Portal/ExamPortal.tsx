@@ -7,13 +7,16 @@ import LeaderBoard from './LeaderBoard'
 import { InfoIcon } from '../GeneralIcon'
 import { useAuth } from '@/contexts/AuthProvider'
 import withAuthentication from '@/hocs/withAuthentication'
+import useGetExamPortal from '@/hooks/useGetExamPortal'
 
  function ExamPortal() {
+  const {data}=useGetExamPortal()
+  console.log(data,'what is here currently')
   return (
     <PageLayout>
       <WelcomeBanner />
       <InfoBanner />
-      <ExamBoard />
+      <ExamBoard examList={data?.available_exams} examType={data?.candidate_info.role??''} />
       <LeaderBoard />
     </PageLayout>
   )
