@@ -9,18 +9,35 @@ import AuthButton from '../ui/Button'
 import { OTP } from '../ui/Input'
 import AuthLayout from './Layout/Layout'
 import Spinner from '../ui/spinner/spinner'
+import { useEffect, useState } from 'react'
+import { formatTime } from '@/utils/formatTime'
 
 
 
 export default function EmailVerification() {
 
     const currentUser = useGetCurrentUser()
+    const [timer, setTimer] = useState(120)
     console.log(currentUser, 'what is here from verify form')
-const {onSubmit,form,isPending}=useVerifyEmail()
-const otpValue = form.watch('otp');
+    const { onSubmit, form, isPending, resendOtpFunction, resendPending } = useVerifyEmail()
+    const otpValue = form.watch('otp');
 
-  const isOtpComplete = !!otpValue && otpValue.length === 6;
+    const isOtpComplete = !!otpValue && otpValue.length === 6;
     // const handleSubmit = () => setTab('reset')
+
+
+    useEffect(() => {
+        let interval: NodeJS.Timeout
+        if (timer > 0) {
+            interval = setInterval(() => setTimer((t) => t - 1), 1000)
+        }
+        return () => clearInterval(interval)
+    }, [timer])
+
+    const handleResend = async () => {
+        resendOtpFunction() // triggers mutation
+        setTimer(60) // restart timer after resend
+    }
     return (
         <AuthLayout>
             <div className="flex flex-col w-[50%] gap-3 items-center justify-center mx-auto p-4 ">
@@ -35,41 +52,61 @@ const otpValue = form.watch('otp');
                             </div>
                             <FormProvider {...form}>
 
-                            <form onSubmit={form.handleSubmit(onSubmit)} className="form-wrapper flex flex-col gap-2 w-5/6 justify-center">
+                                <form onSubmit={form.handleSubmit(onSubmit)} className="form-wrapper flex flex-col gap-2 w-5/6 justify-center">
 
 
-                                <div className="flex w-full">
-                                    <OTP label='Enter OTP' className='border-[#D0D5DD]' />
-                                </div>
-
-
-
+                                    <div className="flex w-full">
+                                        <OTP label='Enter OTP' className='border-[#D0D5DD]' />
+                                    </div>
 
 
 
-                                <div className="grid mt-6">
-                                    {/* <AuthButton isPending={!isOtpComplete||isPending}
+
+
+
+                                    <div className="grid mt-6">
+                                        {/* <AuthButton isPending={!isOtpComplete||isPending}
                                     // onClick={handleSubmit}
                                     >{isPending?<Spinner/>:'verify and continue'}</AuthButton>
                                      */}
-                                     
-                                     <AuthButton 
-  disabled={!isOtpComplete || isPending}
-  isPending={isPending}
->
-  {isPending ? <Spinner /> : 'verify and continue'}
-</AuthButton>
 
-                                </div>
-                                <div className="flex flex-col gap-3 items-center mt-6">
-                                    <div className='flex flex-col items-center gap-2'>
+                                        <AuthButton
+                                            disabled={!isOtpComplete || isPending}
+                                            isPending={isPending}
+                                        >
+                                            {isPending ? <Spinner /> : 'verify and continue'}
+                                        </AuthButton>
+
+                                    </div>
+                                    <div className="flex flex-col gap-3 items-center mt-6">
+
+
+
+                                        {timer > 0 ? (
+                                            <span>Resend OTP in <strong className='p-2 rounded-lg bg-white'>
+                                                {formatTime(timer)}
+
+                                            </strong></span>
+                                        ) : (
+                                            <button
+                                                type="button"
+                                                onClick={handleResend}
+                                                disabled={resendPending}
+                                                className="text-[#3E4095] font-semibold hover:underline disabled:text-gray-400"
+                                            >
+                                                {resendPending ? 'Sending...' : 'Resend OTP'}
+                                            </button>
+                                        )}
+
+
+                                        {/* <div className='flex flex-col items-center gap-2'>
                                         <div className="">
                                             <span>Resend OTP In </span>
                                             <Link href='/'>01:56</Link>
                                         </div>
+                                    </div> */}
                                     </div>
-                                </div>
-                            </form>
+                                </form>
                             </FormProvider>
                         </div>
 

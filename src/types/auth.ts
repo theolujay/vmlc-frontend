@@ -21,6 +21,8 @@ export type VerifyRequest = {
     otp: string
 }
 
+
+
 export type AuthRegisterResponse = {
 
     message: string
