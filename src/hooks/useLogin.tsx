@@ -24,13 +24,13 @@ export default function useLogin() {
   const { dispatch } = useAuth()
   const form = useForm({
     resolver: zodResolver(loginSchema),
-    defaultValues: isDev() ? { email: 'Ikukoyidave@gmail.com', password: '@Afobaje22' } : defaultValues
+    defaultValues: isDev() ? { email: 'ikukoyidave@gmail.com', password: '@Afobaje22' } : defaultValues
   });
 
   const { isPending, mutate } = useMutation({
     mutationFn: AuthService.login,
     onSuccess: (value) => {
-      console.log(value, 'what do we have here')
+      
       setTimeout(() => {
         dispatch({ type: 'loginSuccess', payload: value });
       }, 1000)

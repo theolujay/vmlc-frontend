@@ -11,3 +11,57 @@ export type QuestionProps = {
   totalQuestions: number;
 };
 
+
+
+type recentScoreType = {
+  exam: string,
+  score: number,
+  date: Date,
+  exam_stage: string
+}
+
+export type DashboardType = {
+  candidate_info: CandidateInfoType,
+  exam_stats: ExamStatType,
+  leaderboard_ranking: LeaderboardRankingType,
+  recent_scores: recentScoreType[],
+  available_exams: AvailableExamType[]
+}
+
+
+export type LeaderboardRankingType = {
+  position: number,
+  total_candidates: number
+}
+export type AvailableExamType = {
+  id: number,
+  title: string,
+  description: string,
+  open_duration_hours: number,
+  exam_date: Date,
+  countdown_minutes: number,
+  question_count: number,
+  stage: string
+}
+
+
+export type ExamStatType = {
+  total_exams_taken: number,
+  available_exams_count: number,
+  average_score: number,
+  highest_score: number,
+  lowest_score: number,
+  latest_score: number
+}
+
+
+export type CandidateInfoType = {
+  name: string,
+  email: string,
+  phone: string,
+  school: string,
+  role: string,
+  is_verified: boolean,
+  date_joined: Date,
+  profile_photo: string
+}

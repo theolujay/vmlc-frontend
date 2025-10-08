@@ -1,7 +1,8 @@
+import { AuthLoginResponse } from '@/types/auth';
 import { useState, useEffect } from 'react';
 
 export default function useGetCurrentUser() {
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState<AuthLoginResponse|null>(null);
 
   useEffect(() => {
     try {
@@ -14,5 +15,5 @@ export default function useGetCurrentUser() {
     }
   }, []);
 
-  return { user, setUser };
+  return user;
 }
