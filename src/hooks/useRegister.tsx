@@ -10,9 +10,9 @@ const registerSchema = z.object({
     email: z.email({ message: 'Must be an email' }),
     password: z.string().min(8, "Password must be at least 8 characters"),
     password2: z.string(),
-    first_name: z.string(),
+    first_name: z.string().min(2,'First name field cannot be empty'),
     phone: z.string(),
-    last_name: z.string(),
+    last_name: z.string().min(2,'Last name field cannot be empty'),
     school: z.string()
 }).refine((data) => data.password === data.password2, {
     path: ["password2"],
@@ -39,7 +39,7 @@ export default function useRegister() {
     const { isPending, mutate } = useMutation({
         mutationFn: AuthService.register,
         onSuccess: (value) => {
-            console.log(value, 'this is success value')
+           
             router.push('/auth/verify')
         },
         onError: (errorValue) => console.log(errorValue, 'what is error value')
@@ -57,12 +57,11 @@ export default function useRegister() {
             first_name: value.first_name,
             last_name: value.last_name,
             phone: value.phone,
-
-
             password: value.password,
             school: value.school,
             password2: value.password2
         }
+        localStorage.setItem('email',value.email.toLowerCase())
     
         mutate(transformedValue);
     }

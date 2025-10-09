@@ -17,8 +17,8 @@ export class ExamPortal {
     }
 
 
-    // static async getExamQuestions(){
-    //     const response=await client.get(examUrls.take_exam)
-    // }
+    static async getExamQuestions(){
+        // const response=await client.get(examUrls.take_exam)
+    }
 
 }

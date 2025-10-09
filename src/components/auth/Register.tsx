@@ -51,7 +51,7 @@ export default function Register() {
                 <ConfirmPasswordInput name='password2' icon={<PasswordIcon />} label='CONFIRM PASSWORD' placeholder='Confirm your password' className='border-[#D0D5DD]' />
               </div>
               <div className="grid mt-6">
-                <AuthButton className={clsx(isPending ? 'bg-grey-base-400' : 'bg-[#3E4095]')} isPending={isPending}>{isPending ? <Spinner/> : 'Register'}</AuthButton>
+                <AuthButton isPending={isPending}>{isPending ? <Spinner/> : 'Register'}</AuthButton>
               </div>
               <div className="flex flex-col gap-3 items-center mt-6">
                 <p>By registering, you agree to {`VMLC’s`} <Link href='/' className='text-[#018ABB]'>Terms & conditions</Link> and <Link href='/' className='text-[#018ABB]'>Privacy Policy</Link></p>

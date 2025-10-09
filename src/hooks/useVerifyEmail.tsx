@@ -14,7 +14,7 @@ const verifySchema = z.object({
 
 type VerifySchemaType = z.infer<typeof verifySchema>;
 export default function useVerifyEmail() {
-  const currentUser = useGetCurrentUser();
+  const currentUserEmail = localStorage.getItem('email');
   const defaultValues = {
     otp: ''
   }
@@ -38,11 +38,11 @@ export default function useVerifyEmail() {
   })
 
   function onSubmit(value: VerifySchemaType) {
-    if (!currentUser) {
-      throw new Error('No user')
+    if (!currentUserEmail) {
+      throw new Error('Kindly register to proceed')
     }
     const payload = {
-      email: currentUser.profile.user.email,
+      email: currentUserEmail,
       otp: value.otp
     }
     
@@ -50,11 +50,11 @@ export default function useVerifyEmail() {
   }
 
   function resendOtpFunction() {
-    if (!currentUser) {
-      throw new Error('No user found')
+    if (!currentUserEmail) {
+      throw new Error('Kindly register to proceed')
     }
     const payload = {
-      email: currentUser.profile.user.email
+      email: currentUserEmail
     }
     resendMutate(payload)
 

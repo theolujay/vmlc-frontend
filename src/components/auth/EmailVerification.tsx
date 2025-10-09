@@ -1,7 +1,6 @@
 
 "use client"
 import useEmailCountdown from '@/hooks/useEmailCountdown'
-import useGetCurrentUser from '@/hooks/useGetCurrentUser'
 import useVerifyEmail from '@/hooks/useVerifyEmail'
 import { formatTime } from '@/utils/formatTime'
 import { maskEmail } from '@/utils/maskEmail'
@@ -14,10 +13,10 @@ import AuthLayout from './Layout/Layout'
 
 
 export default function EmailVerification() {
-
-    const currentUser = useGetCurrentUser()
+ const currentUserEmail = localStorage.getItem('email');
+    // const currentUser = useGetCurrentUser()
     const {timer, setTimer} = useEmailCountdown()
-    console.log(currentUser, 'what is here from verify form')
+    
     const { onSubmit, form, isPending, resendOtpFunction, resendPending } = useVerifyEmail()
     const otpValue = form.watch('otp');
 
@@ -40,7 +39,7 @@ export default function EmailVerification() {
                         <div className="flex flex-col gap-3 items-center">
                             <div className="flex gap-1 items-center flex-col">
                                 <h2 className='text-[28px] font-[700]'>Email Verification</h2>
-                                <p>Please we have sent an instruction email to <strong>{maskEmail(currentUser?.profile?.user.email ?? '')}</strong>, including a one-time password (OTP). Kindly input the one-time password (OTP).</p>
+                                <p>Please we have sent an instruction email to <strong>{maskEmail(currentUserEmail?? '')}</strong>, including a one-time password (OTP). Kindly input the one-time password (OTP).</p>
                             </div>
                             <FormProvider {...form}>
 
@@ -57,10 +56,7 @@ export default function EmailVerification() {
 
 
                                     <div className="grid mt-6">
-                                        {/* <AuthButton isPending={!isOtpComplete||isPending}
-                                    // onClick={handleSubmit}
-                                    >{isPending?<Spinner/>:'verify and continue'}</AuthButton>
-                                     */}
+                                      
 
                                         <AuthButton
                                             disabled={!isOtpComplete || isPending}
@@ -91,12 +87,6 @@ export default function EmailVerification() {
                                         )}
 
 
-                                        {/* <div className='flex flex-col items-center gap-2'>
-                                        <div className="">
-                                            <span>Resend OTP In </span>
-                                            <Link href='/'>01:56</Link>
-                                        </div>
-                                    </div> */}
                                     </div>
                                 </form>
                             </FormProvider>
