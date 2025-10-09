@@ -8,12 +8,11 @@ import useGetCurrentUser from './useGetCurrentUser';
 
 
 const verifySchema = z.object({
-  // email:z.email(),
   otp: z.string().min(6, 'OTP must be 6 digits'),
 
 })
 
-type VerifySchema = z.infer<typeof verifySchema>;
+type VerifySchemaType = z.infer<typeof verifySchema>;
 export default function useVerifyEmail() {
   const currentUser = useGetCurrentUser();
   const defaultValues = {
@@ -38,7 +37,7 @@ export default function useVerifyEmail() {
     onSuccess: (value) => console.log(value)
   })
 
-  function onSubmit(value: VerifySchema) {
+  function onSubmit(value: VerifySchemaType) {
     if (!currentUser) {
       throw new Error('No user')
     }
@@ -52,7 +51,7 @@ export default function useVerifyEmail() {
 
   function resendOtpFunction() {
     if (!currentUser) {
-      throw new Error('No user')
+      throw new Error('No user found')
     }
     const payload = {
       email: currentUser.profile.user.email

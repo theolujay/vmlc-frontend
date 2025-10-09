@@ -1,6 +1,6 @@
 import { authUrls } from "@/constants/authUrls";
 import { ValueType } from "@/hooks/useRegister";
-import { AuthLoginResponse, AuthRegisterResponse, LoginRequest, VerifyRequest, } from "@/types/auth";
+import { AuthLoginResponse, AuthRegisterResponse, LoginRequest, SetNewPasswordType, VerifyRequest, } from "@/types/auth";
 import client from "@/utils/axios";
 
 export class AuthService {
@@ -9,21 +9,56 @@ export class AuthService {
         return (await response).data.data;
     }
 
-    static async login(payload:LoginRequest):Promise<AuthLoginResponse>{
-            const response=await client.post(authUrls.login,payload);
-            return response.data;
-        
+    static async login(payload: LoginRequest): Promise<AuthLoginResponse> {
+        const response = await client.post(authUrls.login, payload);
+        return response.data;
+
     }
 
-    static async verifyEmail(payload:VerifyRequest){
-        const response=await client.post(authUrls.verify,payload);
-        console.log(response,'from verify')
+    static async verifyEmail(payload: VerifyRequest) {
+        const response = await client.post(authUrls.verify, payload);
+        console.log(response, 'from verify')
         return response.data;
     }
 
-    static async resendOtp(payload:Omit<VerifyRequest,'otp'>){
-        const response=await client.post(authUrls.resendOtp,payload)
-        console.log(response,'from resend')
+    static async resendOtp(payload: Omit<VerifyRequest, 'otp'>) {
+        const response = await client.post(authUrls.resendOtp, payload)
+        console.log(response, 'from resend')
         return response.data
     }
+
+
+
+    static async sendOtpForForgotPassword(payload: VerifyRequest) {
+        const response = await client.post(authUrls.sendOtpForForgotPassword, payload);
+
+        return response.data;
+    }
+
+
+
+
+
+
+
+
+    static async passwordChange(payload: Omit<VerifyRequest, 'otp'>) {
+        const response = await client.post(authUrls.passwordChange, payload)
+
+        return response.data
+    }
+
+    static async setNewPassword(payload: SetNewPasswordType) {
+        const response = await client.post(authUrls.setNewPassword, payload)
+        return response.data
+    }
+
+
+
+     static async passwordChangeResendOtp(payload: Omit<VerifyRequest, 'otp'>) {
+        const response = await client.post(authUrls.passwordChangeResendOtp, payload)
+        console.log(response, 'from resend')
+        return response.data
+    }
+
 }
