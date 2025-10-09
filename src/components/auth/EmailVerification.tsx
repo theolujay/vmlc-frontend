@@ -9,12 +9,26 @@ import AuthButton from '../ui/Button'
 import { OTP } from '../ui/Input'
 import Spinner from '../ui/spinner/spinner'
 import AuthLayout from './Layout/Layout'
+import { useEffect, useState } from 'react'
 
 
 
 export default function EmailVerification() {
- const currentUserEmail = localStorage.getItem('email');
-    // const currentUser = useGetCurrentUser()
+
+const [currentUserEmail, setCurrentUserEmail] = useState<any>(null);
+
+  useEffect(() => {
+    const stored = localStorage.getItem('session');
+    if (stored) {
+      setCurrentUserEmail(JSON.parse(stored));
+    }
+  }, []);
+
+
+
+
+//  const currentUserEmail = localStorage.getItem('email');
+    
     const {timer, setTimer} = useEmailCountdown()
     
     const { onSubmit, form, isPending, resendOtpFunction, resendPending } = useVerifyEmail()

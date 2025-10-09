@@ -1,11 +1,16 @@
+"use client"
 import React from 'react'
 import PageLayout from '../Layout/PageLayout'
 import Hero from './Hero'
 import InfoBoard from './InfoBoard'
 import TourGuide from './TourGuide'
 import Support from './Support'
+import useGetVerificationStatus from '@/hooks/useGetVerificationStatus'
+import withAuthentication from '@/hocs/withAuthentication'
 
-export default function GettingStarted() {
+ function GettingStarted() {
+  const {data}=useGetVerificationStatus()
+  console.log(data,'what is data from here')
   return (
     <PageLayout>
       <Hero/>
@@ -19,3 +24,5 @@ export default function GettingStarted() {
     </PageLayout>
   )
 }
+
+export default withAuthentication(GettingStarted)

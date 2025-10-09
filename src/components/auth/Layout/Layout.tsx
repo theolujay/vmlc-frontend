@@ -12,6 +12,7 @@ export default function AuthLayout({ children }: Readonly<{ children: ReactNode 
   useEffect(() => {
     
     if (authState?.isAuthenticated) {
+      // router.push('/get-started')
       router.push(authState.homePath ?? '/')
     }
   }, [authState])

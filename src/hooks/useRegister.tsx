@@ -38,7 +38,7 @@ export default function useRegister() {
 
     const { isPending, mutate } = useMutation({
         mutationFn: AuthService.register,
-        onSuccess: (value) => {
+        onSuccess: () => {
            
             router.push('/auth/verify')
         },

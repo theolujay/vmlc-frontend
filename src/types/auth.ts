@@ -30,11 +30,11 @@ export type AuthRegisterResponse = {
 
 
 
-export type SetNewPasswordType={
-  email:string,
-  otp: string,
-  new_password:string,
-  confirm_password:string
+export type SetNewPasswordType = {
+    email: string,
+    otp: string,
+    new_password: string,
+    confirm_password: string
 }
 
 
@@ -42,20 +42,34 @@ export type AuthLoginResponse = {
     refresh: string;
     access: string;
     profile: {
-        user: {
-            id: string;
-            email: string;
-            first_name: string;
-            last_name: string;
-            phone: string;
-            date_joined: Date;
-        },
+        // user: {
+        //     id: string;
+        //     email: string;
+        //     first_name: string;
+        //     last_name: string;
+        //     phone: string;
+        //     date_joined: Date;
+        // },
+        user: RequestUserType,
         school: string;
         role: string;
     }
 }
 
 
+type User =RequestUserType& {
+    role: string,
+    school: string
+}
+
+type RequestUserType = {
+    id: string;
+    email: string;
+    first_name: string;
+    last_name: string;
+    phone: string;
+    date_joined: Date;
+}
 
 
 export type AuthState = {
@@ -63,6 +77,7 @@ export type AuthState = {
     homePath?: string | null;
     refreshToken: string | null;
     isAuthenticated: boolean;
-    user: { [x: string]: any } | null;
+    user: User|null;
+    // user: { [x: string]: any } | null;
     userType: string | null;
 }
