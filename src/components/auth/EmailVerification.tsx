@@ -1,23 +1,22 @@
 
 "use client"
+import useEmailCountdown from '@/hooks/useEmailCountdown'
 import useGetCurrentUser from '@/hooks/useGetCurrentUser'
 import useVerifyEmail from '@/hooks/useVerifyEmail'
+import { formatTime } from '@/utils/formatTime'
 import { maskEmail } from '@/utils/maskEmail'
-import Link from 'next/link'
 import { FormProvider } from 'react-hook-form'
 import AuthButton from '../ui/Button'
 import { OTP } from '../ui/Input'
-import AuthLayout from './Layout/Layout'
 import Spinner from '../ui/spinner/spinner'
-import { useEffect, useState } from 'react'
-import { formatTime } from '@/utils/formatTime'
+import AuthLayout from './Layout/Layout'
 
 
 
 export default function EmailVerification() {
 
     const currentUser = useGetCurrentUser()
-    const [timer, setTimer] = useState(120)
+    const {timer, setTimer} = useEmailCountdown()
     console.log(currentUser, 'what is here from verify form')
     const { onSubmit, form, isPending, resendOtpFunction, resendPending } = useVerifyEmail()
     const otpValue = form.watch('otp');
@@ -26,17 +25,10 @@ export default function EmailVerification() {
     // const handleSubmit = () => setTab('reset')
 
 
-    useEffect(() => {
-        let interval: NodeJS.Timeout
-        if (timer > 0) {
-            interval = setInterval(() => setTimer((t) => t - 1), 1000)
-        }
-        return () => clearInterval(interval)
-    }, [timer])
-
+    
     const handleResend = async () => {
         resendOtpFunction() // triggers mutation
-        setTimer(60) // restart timer after resend
+        setTimer(120) // restart timer after resend
     }
     return (
         <AuthLayout>

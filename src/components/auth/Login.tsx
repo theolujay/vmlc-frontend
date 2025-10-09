@@ -36,7 +36,7 @@ export default function Login() {
                   <input type="checkbox" name="" id="checkbox" />
                   <label htmlFor="checkbox">Remember me</label>
                 </div>
-                <Link href='/forgot-password' className='text-[#3E4095]'>Forgot Password?</Link>
+                <Link href='/auth/forgot-password' className='text-[#3E4095]'>Forgot Password?</Link>
               </div>
 
               <div className="grid mt-6">

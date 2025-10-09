@@ -24,12 +24,18 @@ export type VerifyRequest = {
 
 
 export type AuthRegisterResponse = {
-
     message: string
-
 }
 
 
+
+
+export type SetNewPasswordType={
+  email:string,
+  otp: string,
+  new_password:string,
+  confirm_password:string
+}
 
 
 export type AuthLoginResponse = {
