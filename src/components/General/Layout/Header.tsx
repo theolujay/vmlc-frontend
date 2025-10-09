@@ -40,13 +40,16 @@
 import { NotificationIcon } from '@/components/ui/SvgAsset/GeneralAsset'
 import Logo from '@/components/ui/SvgAsset/Logo'
 import { useAuth } from '@/contexts/AuthProvider'
+import useGetCurrentUser from '@/hooks/useGetCurrentUser'
 import Link from 'next/link'
 import React, { useState } from 'react'
 
 export default function Header() {
-    const { authState } = useAuth()
+    
 
-    const userName = [authState?.user?.first_name, authState?.user?.last_name].join(' ')
+    const currentUser=useGetCurrentUser()
+    
+    const userName = [currentUser?.profile.user?.first_name, currentUser?.profile?.user?.last_name].join(' ')
 
     //   const userInitials = userName.split(' ').map((val) => val[0]).join('')
     const userInitials = userName.split(' ').map((val) => val.charAt(0)).join('');

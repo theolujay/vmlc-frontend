@@ -17,10 +17,11 @@ import { useRouter } from 'next/navigation'
 
 type TabType = 'forgot' | 'reset' | 'newPassword' | 'done'
 export default function ForgotPassword() {
-    const router=useRouter()
-    const {timer,setTimer}=useEmailCountdown()
+    const router = useRouter()
+    const { timer, setTimer } = useEmailCountdown()
     const [tab, setTab] = useState<TabType>('forgot')
-    // const [email,setEmail]=useState('')
+
+
 
     const { sendEmailForm,
         isPending,
@@ -30,7 +31,7 @@ export default function ForgotPassword() {
         submitOtpForPasswordChange,
         setNewPasswordForm,
         handleNewPasswordChange,
-        setNewPasswordPending,email,setEmail,
+        setNewPasswordPending, email, setEmail,
         resendPending,
         resendOtpFunction
     } = useForgotPassword()
@@ -38,10 +39,10 @@ export default function ForgotPassword() {
 
 
     const handleResend = async () => {
-        resendOtpFunction() // triggers mutation
-        setTimer(120) // restart timer after resend
+        resendOtpFunction() 
+        setTimer(120) 
     }
-    // const handleSubmit = () => setTab('reset')
+    
     return (
         <AuthLayout>
             <div className="flex flex-col w-[50%] gap-3 items-center justify-center mx-auto p-4 ">
@@ -52,19 +53,19 @@ export default function ForgotPassword() {
                         <Tabs.Root
                             defaultValue='forgot'
                             className='flex gap-3 flex-col'
-                        value={tab} onValueChange={(value:string)=>setTab(value as TabType)}
+                            value={tab} onValueChange={(value: string) => setTab(value as TabType)}
                         >
                             <Tabs.List className='flex gap-4 justify-between'>
-                                <Tabs.Trigger value='forgot' className='h-1 w-1/4 bg-[#01ACEA]'>
+                                <Tabs.Trigger value='forgot' className='h-1 w-1/4 bg-gray-300 data-[state=active]:bg-[#01ACEA]'>
                                     {/* <div className=" h-2 w-1/4 bg-[#01ACEA]">klooppok</div> */}
                                 </Tabs.Trigger>
-                                <Tabs.Trigger value='reset' className='h-1 w-1/4 bg-[#01ACEA]'>
+                                <Tabs.Trigger value='reset' className='h-1 w-1/4 bg-gray-300 data-[state=active]:bg-[#01ACEA]'>
 
                                 </Tabs.Trigger>
-                                <Tabs.Trigger value='newPassword' className='h-1 w-1/4 bg-[#01ACEA]'>
+                                <Tabs.Trigger value='newPassword' className='h-1 w-1/4 bg-gray-300 data-[state=active]:bg-[#01ACEA]'>
 
                                 </Tabs.Trigger>
-                                <Tabs.Trigger value='done' className='h-1 w-1/4 bg-[#01ACEA]'>
+                                <Tabs.Trigger value='done' className='h-1 w-1/4 bg-gray-300 data-[state=active]:bg-[#01ACEA]'>
 
                                 </Tabs.Trigger>
                             </Tabs.List>
@@ -77,9 +78,9 @@ export default function ForgotPassword() {
                                         <p>Rest assured, we will send you a reset instruction email, including a one-time password (OTP).</p>
                                     </div>
                                     <FormProvider {...sendEmailForm}>
-                                        <form onSubmit={sendEmailForm.handleSubmit(async (data)=>{
-                                             onEmailSubmit(data)
-                                             setEmail(data.email)
+                                        <form onSubmit={sendEmailForm.handleSubmit(async (data) => {
+                                            onEmailSubmit(data)
+                                            setEmail(data.email)
                                             setTab('reset')
                                         })} className="form-wrapper flex flex-col gap-2">
 
@@ -91,9 +92,9 @@ export default function ForgotPassword() {
 
                                             <div className="grid mt-6">
                                                 <AuthButton
-                                                isPending={isPending}
+                                                    isPending={isPending}
                                                 // onClick={handleSubmit}
-                                                >{isPending?<Spinner/>: 'Reset Password'}</AuthButton>
+                                                >{isPending ? <Spinner /> : 'Reset Password'}</AuthButton>
                                             </div>
                                             <div className="flex flex-col gap-3 items-center mt-6">
                                                 <div className='flex gap-2'>
@@ -113,8 +114,8 @@ export default function ForgotPassword() {
                                     </div>
                                     <FormProvider {...otpForm}>
 
-                                        <form onSubmit={otpForm.handleSubmit(async(data)=>{
-                                            
+                                        <form onSubmit={otpForm.handleSubmit(async (data) => {
+
                                             submitOtpForPasswordChange(data)
                                             setTab('newPassword')
                                         })} className="form-wrapper flex flex-col gap-2 w-5/6 justify-center">
@@ -127,9 +128,9 @@ export default function ForgotPassword() {
 
                                             <div className="grid mt-6">
                                                 <AuthButton
-                                                isPending={otpPending}
+                                                    isPending={otpPending}
                                                 // onClick={handleSubmit}
-                                                >{otpPending?<Spinner/>:'continue'}</AuthButton>
+                                                >{otpPending ? <Spinner /> : 'continue'}</AuthButton>
                                             </div>
                                             <div className="flex flex-col gap-3 items-center mt-6">
                                                 <div className='flex flex-col items-center gap-2'>
@@ -147,21 +148,21 @@ export default function ForgotPassword() {
 
 
 
-                                                          {timer > 0 ? (
-                                                                                                    <span>Click here to resend OTP in <strong className='p-2 rounded-lg bg-white'>
-                                                                                                        {formatTime(timer)}
-                                                        
-                                                                                                    </strong></span>
-                                                                                                ) : (
-                                                                                                    <button
-                                                                                                        type="button"
-                                                                                                        onClick={handleResend}
-                                                                                                        disabled={resendPending}
-                                                                                                        className="text-[#3E4095] font-semibold hover:underline disabled:text-gray-400"
-                                                                                                    >
-                                                                                                        {resendPending ? 'Sending...' : 'Resend OTP'}
-                                                                                                    </button>
-                                                                                                )}
+                                                        {timer > 0 ? (
+                                                            <span>Click here to resend OTP in <strong className='p-2 rounded-lg bg-white'>
+                                                                {formatTime(timer)}
+
+                                                            </strong></span>
+                                                        ) : (
+                                                            <button
+                                                                type="button"
+                                                                onClick={handleResend}
+                                                                disabled={resendPending}
+                                                                className="text-[#3E4095] font-semibold hover:underline disabled:text-gray-400"
+                                                            >
+                                                                {resendPending ? 'Sending...' : 'Resend OTP'}
+                                                            </button>
+                                                        )}
 
 
 
@@ -199,7 +200,7 @@ export default function ForgotPassword() {
                                     </div>
                                     <FormProvider {...setNewPasswordForm}>
 
-                                        <form onSubmit={setNewPasswordForm.handleSubmit((data)=>{
+                                        <form onSubmit={setNewPasswordForm.handleSubmit((data) => {
                                             handleNewPasswordChange(data)
                                             setTab('done')
                                         })} className="form-wrapper flex flex-col gap-2">
@@ -215,9 +216,9 @@ export default function ForgotPassword() {
 
                                             <div className="grid mt-6">
                                                 <AuthButton
-                                                isPending={setNewPasswordPending}
+                                                    isPending={setNewPasswordPending}
                                                 // onClick={handleSubmit}
-                                                >{setNewPasswordPending?<Spinner/>:'Set New Password'}</AuthButton>
+                                                >{setNewPasswordPending ? <Spinner /> : 'Set New Password'}</AuthButton>
                                             </div>
                                             <div className="flex flex-col gap-3 items-center mt-6">
                                                 <div className='flex gap-2'>
@@ -244,9 +245,9 @@ export default function ForgotPassword() {
                                     <div className="form-wrapper flex flex-col gap-2">
                                         <div className="grid mt-6">
                                             <AuthButton
-                                            onClick={function(){
-                                                router.push('auth/login')
-                                            }}
+                                                onClick={function () {
+                                                    router.push('auth/login')
+                                                }}
                                             >Go to Login</AuthButton>
                                         </div>
                                         <div className="flex flex-col gap-3 items-center mt-6">
