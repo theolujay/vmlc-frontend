@@ -10,14 +10,14 @@ import withAuthentication from '@/hocs/withAuthentication'
 import useGetExamPortal from '@/hooks/useGetExamPortal'
 import useGetCurrentUser from '@/hooks/useGetCurrentUser'
 
- function ExamPortal() {
-  const {data}=useGetExamPortal()
-  console.log(data,'what is here currently')
+function ExamPortal() {
+  const { data } = useGetExamPortal()
+  console.log(data, 'what is here currently')
   return (
     <PageLayout>
       <WelcomeBanner />
       {/* <InfoBanner /> */}
-      <ExamBoard examList={data?.available_exams} examType={data?.candidate_info.role??''} />
+      <ExamBoard examList={data?.available_exams} examType={data?.candidate_info.role ?? ''} />
       <LeaderBoard />
     </PageLayout>
   )
@@ -27,9 +27,9 @@ export default withAuthentication(ExamPortal)
 
 function WelcomeBanner() {
   // const {authState}=useAuth()
-  const currentUser=useGetCurrentUser()
+  const currentUser = useGetCurrentUser()
   return <ResponsiveContainer>
-    <h2 className='text-[1.75rem] '>Welcome {currentUser?.profile.user?.first_name??''}!</h2>
+    <h2 className='text-[1.75rem] '>Welcome {currentUser?.profile.user?.first_name ?? ''}!</h2>
     <p>{`You're`} now in the exam portal. Wishing you success ahead!</p>
   </ResponsiveContainer>
 }
