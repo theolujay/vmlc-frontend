@@ -25,7 +25,7 @@ type setNewPasswordSchemaType = z.infer<typeof setNewPasswordSchema>
 type otpSchemaType = z.infer<typeof otpSchema>;
 type EmailSchemaType = z.infer<typeof sendEmailSchema>
 export default function useForgotPassword() {
-    const [email,setEmail]=useState('')
+    const [email, setEmail] = useState('')
     const [otpState, setOtpState] = useState('')
     const currentUser = useGetCurrentUser();
     const sendEmailForm = useForm({
@@ -55,12 +55,9 @@ export default function useForgotPassword() {
 
 
     const { mutate: resendMutate, isPending: resendPending } = useMutation({
-    mutationFn: AuthService.passwordChangeResendOtp,
-    onSuccess: (value) => console.log(value)
-  })
-
-
-
+        mutationFn: AuthService.passwordChangeResendOtp,
+        onSuccess: (value) => console.log(value)
+    })
 
     const { isPending: otpPending, mutate: otpMutate } = useMutation({
         mutationFn: AuthService.sendOtpForForgotPassword,
@@ -75,7 +72,7 @@ export default function useForgotPassword() {
 
 
     async function onEmailSubmit(value: EmailSchemaType) {
-         mutate(value)
+        mutate(value)
     }
 
 
@@ -111,14 +108,14 @@ export default function useForgotPassword() {
 
 
     function resendOtpFunction() {
-   
-    const payload = {
-        email
-    
-    }
-    resendMutate(payload)
 
-  }
+        const payload = {
+            email
+
+        }
+        resendMutate(payload)
+
+    }
 
 
     return {
@@ -131,7 +128,8 @@ export default function useForgotPassword() {
         setNewPasswordForm,
         setNewPasswordPending,
         handleNewPasswordChange,
-        email,setEmail,
+        email,
+        setEmail,
         resendPending,
         resendOtpFunction
     }

@@ -3,11 +3,12 @@ import Table from '@/components/ui/Table'
 import TabWrapper from '@/components/ui/Tabs/TabWrapper'
 import { Tab } from '@/types/TabType'
 import { ScreeningIcon } from '../GeneralIcon'
+import useGetLeaderBoard from '@/hooks/useGetLeaderboard'
 
 export default function LeaderBoard() {
   return (
     <ResponsiveContainer className='gap-3 px-0'>
-        <h2 className='font-bold p-2 border-b border-[#E4E7EC] text-xl'>Results/Leader board</h2>
+        <h2 className='font-bold p-2 border-b border-[#E4E7EC] text-xl'>Results/Leaderboard</h2>
         <Board/>
     </ResponsiveContainer>
   )
@@ -15,6 +16,8 @@ export default function LeaderBoard() {
 
 
 function Board(){
+    const {data,isPending}=useGetLeaderBoard()
+    console.log(data,'what is data')
     const tabs:Tab[]=[{
         value:'Screening',
         label:<div className='flex justify-between gap-1 pb-1 border-b-2'><span><ScreeningIcon/></span><span>Screening</span></div>,

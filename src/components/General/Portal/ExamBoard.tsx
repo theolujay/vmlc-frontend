@@ -11,12 +11,12 @@ export default function ExamBoard({ examType, examList }: { examType?: string, e
         <ResponsiveContainer className='gap-2'>
             <h2 className='font-bold text-xl'>{examType} Exams</h2>
             <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
-                {
+                {/* {
                     Array.from({ length: 2 }).map((_, index) => <ExamCard key={`exam-index-${index}`} />)
-                }
+                } */}
                 {
-                    Array.isArray(examList) &&
-                    examList.map((_, index) => <ExamCard key={`exam-index-${index}`} />)
+                    Array.isArray(examList) &&examList.length>0?
+                    examList.map((_, index) => <ExamCard key={`exam-index-${index}`} />):<div className='flex place-content-center w-full col-span-4'>There are no exams yet</div>
                 }
 
 
