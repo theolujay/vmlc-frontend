@@ -1,8 +1,23 @@
 import ResponsiveContainer from '@/components/ui/ResponsiveContainer'
-import React from 'react'
+import React, { useState } from 'react'
 import { DeleteIcon, TrustIcon, UploadDocumentIcon, UploadIcon } from '../GeneralIcon'
+import { formatStorageSize } from '@/utils/formatFileSize';
 
 export default function UploadCard() {
+    const [file, setFile] = useState<File | null>(null)
+
+    function handleDelete(){
+        setFile(null)
+    }
+    function handleFile(event: React.ChangeEvent<HTMLInputElement>) {
+        const selectedFile = event.target.files?.[0];
+        if (selectedFile) {
+            setFile(selectedFile)
+            console.log('seleceted file', selectedFile)
+            
+        }
+    }
+    
     return (
         <ResponsiveContainer className='col-span-2 gap-4 '>
             <div className="flex border-b border-[#E4E7EC]">
@@ -10,8 +25,10 @@ export default function UploadCard() {
             </div>
             <div className='flex flex-col items-center gap-2 justify-center'>
 
-                <UploadIsland />
-                <UploadZone />
+                <UploadIsland onUpload={handleFile} />
+                {file&&
+                <UploadZone onDelete={handleDelete} fileName={file.name} size={file.size} />
+                }
             </div>
             <div className="flex gap-1 flex-col">
                 <p className='font-bold'>Verification Requirement</p>
@@ -26,13 +43,19 @@ export default function UploadCard() {
 }
 
 
-function UploadIsland() {
+
+
+function UploadIsland({ onUpload }: { onUpload: (event: React.ChangeEvent<HTMLInputElement>) => void }) {
+
+
+
+
     return <div className='bg-[#F5FCFE] gap-3 w-[60%] flex-col items-center flex rounded-xl '>
         <span>
             <UploadIcon />
         </span>
         <div className="flex">
-            <input type="file" name="" id="upload" className='hidden' />
+            <input onChange={onUpload} type="file" name="" id="upload" className='hidden' />
             <label htmlFor="upload" className='text-balance'>
                 <span className='font-bold text-[#018ABB] cursor-pointer mr-3'>Click to upload</span><span>or drag and drop <br /> SVG, PNG, JPG or PDF (max. 2MB)</span>
             </label>
@@ -41,7 +64,7 @@ function UploadIsland() {
 }
 
 
-function UploadZone() {
+function UploadZone({fileName,size,onDelete}:{fileName:string,size:number,onDelete:()=>void}) {
 
     return <div className='border-[#018ABB] border gap-3 p-2 w-[60%] flex-col items-center flex rounded-xl '>
         <div className="flex justify-between w-full">
@@ -50,11 +73,11 @@ function UploadZone() {
                     <UploadDocumentIcon />
                 </span>
                 <div className="flex  flex-col">
-                    <span className=' font-normal'>NIN.pdf</span>
-                    <span className='text-sm'>200kb</span>
+                    <span className=' font-normal'>{fileName}</span>
+                    <span className='text-sm'>{formatStorageSize(size)}</span>
                 </div>
             </div>
-            <button className='cursor-pointer' onClick={()=>alert('I was clicked')}><DeleteIcon /></button>
+            <button className='cursor-pointer' onClick={onDelete}><DeleteIcon /></button>
         </div>
         <div className="progress flex w-full items-center justify-center gap-2">
             <div className='w-3/4 h-2 rounded-md bg-[#018ABB]'></div>

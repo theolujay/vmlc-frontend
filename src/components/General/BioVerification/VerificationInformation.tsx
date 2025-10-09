@@ -7,11 +7,14 @@ import PageLayout from '../Layout/PageLayout'
 import CaptureFaceCard from './CaptureFace'
 import UploadCard from './UploadCard'
 import Button from '@/components/ui/Button'
+import withAuthentication from '@/hocs/withAuthentication'
+import { useState } from 'react'
 
 
-const steps:StepType[]=[{button: <Button className='px-2 text-sm'>UPLOAD</Button>,label:'Upload Document',icon:<DocumentIcon/>,component:<UploadCard/>,activeTab:true},{button: <Button className='px-2 text-sm'>PROCEED TO CAPTURE</Button>,label:'Capture Face',icon:<CaptureIcon/>,component:<CaptureFaceCard/>,activeTab:false}]
-const currentStep = steps.find(step => step.activeTab)
-export default function VerificationInformation() {
+function VerificationInformation() {
+    const [activeTab,setActiveTab]=useState()
+     const steps:StepType[]=[{button: <Button className='px-2 text-sm'>UPLOAD</Button>,label:'Upload Document',icon:<DocumentIcon/>,component:<UploadCard/>,activeTab:false},{button: <Button className='px-2 text-sm'>PROCEED TO CAPTURE</Button>,label:'Capture Face',icon:<CaptureIcon/>,component:<CaptureFaceCard/>,activeTab:true}]
+     const currentStep = steps.find(step => step.activeTab)
     return (
         <PageLayout>
             <BreadCrumbHeader button={currentStep?.button} />
@@ -19,5 +22,7 @@ export default function VerificationInformation() {
         </PageLayout>
     )
 }
+
+export default withAuthentication(VerificationInformation)
 
 

@@ -1,5 +1,4 @@
 import { candidateUrls } from "@/constants/candidateUrls";
-import { examUrls } from "@/constants/examUrls";
 import { DashboardType } from "@/types/Examtype";
 import client from "@/utils/axios";
 

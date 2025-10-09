@@ -1,12 +1,11 @@
 "use client"
 import clsx from 'clsx'
-import 'react-phone-number-input/style.css'
-import PhoneInput from 'react-phone-number-input'
+import { E164Number } from 'libphonenumber-js/core'
 import React, { memo, useEffect, useRef, useState } from 'react'
-import { E164Number } from 'libphonenumber-js/core';
-import { EyeClosedIcon, EyeOpenIcon } from './SvgAsset/GeneralAsset'
 import { Controller, useFormContext } from 'react-hook-form'
-import { maxLength, minLength } from 'zod'
+import PhoneInput from 'react-phone-number-input'
+import 'react-phone-number-input/style.css'
+import { EyeClosedIcon, EyeOpenIcon } from './SvgAsset/GeneralAsset'
 
 // export default function Input({ icon, placeholder, className, label }: Readonly<{ icon: React.ReactNode, placeholder?: string, className?: string, label: string }>) {
 //     return (
@@ -26,7 +25,7 @@ import { maxLength, minLength } from 'zod'
 
 
 function InputBase({ name, icon, placeholder, className, label }: Readonly<{ icon: React.ReactNode, placeholder?: string, className?: string, label: string, name: string }>) {
-    const { register, formState: { errors,isDirty } } = useFormContext()
+    const { register, formState: { errors} } = useFormContext()
     return (
         <div className="flex flex-col gap-1">
             <span className='text-[14px] ml-1'>{label}</span>
@@ -51,7 +50,7 @@ export default Input;
 
 export function PhoneNumberInput({ name, placeholder, className, label }: Readonly<{ placeholder?: string, className?: string, label: string, name: string }>) {
     const [value, setValue] = useState<E164Number | undefined>(undefined)
-    const { control, register, formState: { isDirty } } = useFormContext()
+    const { control } = useFormContext()
     return (
         <div className="flex flex-col gap-1">
             <span className='text-[14px] ml-1'>{label}</span>
