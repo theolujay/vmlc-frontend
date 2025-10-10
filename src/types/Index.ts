@@ -1,6 +1,6 @@
 export type ExamContextType = {
-    showNav: boolean;
-    setShowNav: React.Dispatch<React.SetStateAction<boolean>>;
+  showNav: boolean;
+  setShowNav: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 export type User = {
@@ -10,3 +10,14 @@ export type User = {
   rank: number;
   avatar: string;
 };
+
+
+export type VerificationDocumentType = {
+  profile_photo?: File;
+  id_card?: File;
+  verification_document?: File
+}
+
+
+
+export type VerificationUploadPayloadType = FormData;

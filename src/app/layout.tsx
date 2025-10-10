@@ -1,8 +1,9 @@
-import type { Metadata } from "next";
-import "./globals.css";
-import QueryProvider from "@/contexts/QueryProviders";
-import { Suspense } from "react";
+
 import AuthProvider from "@/contexts/AuthProvider";
+import QueryProvider from "@/contexts/QueryProviders";
+import type { Metadata } from "next";
+import { Suspense } from "react";
+import "./globals.css";
 
 // const geistSans = Geist({
 //   variable: "--font-geist-sans",
@@ -24,11 +25,13 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  // const routerReady=useRouterReady()
   return (
     <html lang="en">
       <body
         className={` antialiased`}
       >
+      
         <AuthProvider>
           <QueryProvider>
             <Suspense fallback={<div>Loading...</div>}>
@@ -36,6 +39,7 @@ export default function RootLayout({
             </Suspense>
           </QueryProvider>
         </AuthProvider>
+        
       </body>
     </html>
   );

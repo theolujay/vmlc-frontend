@@ -15,7 +15,7 @@ import { useEffect, useState } from 'react'
 
 export default function EmailVerification() {
 
-const [currentUserEmail, setCurrentUserEmail] = useState<any>(null);
+const [currentUserEmail, setCurrentUserEmail] = useState<string|null>(null);
 
   useEffect(() => {
     const stored = localStorage.getItem('session');
