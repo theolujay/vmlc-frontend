@@ -3,9 +3,10 @@ import ResponsiveContainer from "@/components/ui/ResponsiveContainer";
 import { useState } from "react";
 import { CaptureZoneIcon, TrustIcon } from "../GeneralIcon";
 import CaptureDialog from "./CaptureDialog";
+import VerificationSuccessfulDialog from "../../Modals/VerificationSuccessfulDialog";
 
-export default function CaptureFaceCard() {
-    const [open,setOpen]=useState(true)
+export default function CaptureFaceCard({ onCapture, isPending, isSuccess }: { onCapture: (file: File) => void, isPending: boolean, isSuccess: boolean }) {
+    const [open, setOpen] = useState(true)
     return (
         <ResponsiveContainer className='col-span-2 gap-4 '>
             <div className="flex border-b border-[#E4E7EC]">
@@ -13,7 +14,7 @@ export default function CaptureFaceCard() {
             </div>
             <div className='flex flex-col items-center gap-2 justify-center'>
 
-                
+
                 <CaptureZone />
             </div>
             <div className="flex gap-1 flex-col">
@@ -24,7 +25,23 @@ export default function CaptureFaceCard() {
                 <span><TrustIcon /></span>
                 <p>To ensure your identity and protect your account, we require face verification. The facial image we capture is solely for the purpose of verification and profile picture.</p>
             </div>
-            <CaptureDialog close={setOpen} open={open}/>
+
+            {/* {
+                isSuccess ?
+                    <CaptureDialog
+                        isPending={isPending}
+                        onCaptureFile={onCapture}
+
+                        close={setOpen} open={open} />
+                    :
+                    <VerificationSuccessfulDialog close={setOpen} open={open} />
+            } */}
+              <CaptureDialog
+                        isPending={isPending}
+                        onCaptureFile={onCapture}
+
+                        close={setOpen} open={open} />
+                        {isSuccess&&<VerificationSuccessfulDialog close={setOpen} open={open} />}
         </ResponsiveContainer>
     )
 }
@@ -35,7 +52,7 @@ function CaptureZone() {
 
     return <div className=' gap-3 p-2 w-[60%] flex-col items-center flex rounded-xl '>
         <div>
-            <CaptureZoneIcon/>
+            <CaptureZoneIcon />
         </div>
     </div>
 }
