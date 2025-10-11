@@ -1,14 +1,12 @@
 "use client"
-import React from 'react'
-import PageLayout from '../Layout/PageLayout'
 import ResponsiveContainer from '@/components/ui/ResponsiveContainer'
+import withAuthentication from '@/hocs/withAuthentication'
+import useGetCurrentUser from '@/hooks/useGetCurrentUser'
+import useGetExamPortal from '@/hooks/useGetExamPortal'
+import { InfoIcon } from '../GeneralIcon'
+import PageLayout from '../Layout/PageLayout'
 import ExamBoard from './ExamBoard'
 import LeaderBoard from './LeaderBoard'
-import { InfoIcon } from '../GeneralIcon'
-import { useAuth } from '@/contexts/AuthProvider'
-import withAuthentication from '@/hocs/withAuthentication'
-import useGetExamPortal from '@/hooks/useGetExamPortal'
-import useGetCurrentUser from '@/hooks/useGetCurrentUser'
 
 function ExamPortal() {
   const { data } = useGetExamPortal()

@@ -1,6 +1,8 @@
 import { AuthService } from '@/services/auth.service';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation } from '@tanstack/react-query';
+import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import z from 'zod';
 
@@ -13,7 +15,17 @@ const verifySchema = z.object({
 
 type VerifySchemaType = z.infer<typeof verifySchema>;
 export default function useVerifyEmail() {
-  const currentUserEmail = localStorage.getItem('email');
+  const [currentUserEmail, setCurrentUserEmail] = useState<string | null>(null);
+
+
+  const router=useRouter()
+  // ✅ Load email from localStorage only on client side
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      setCurrentUserEmail(localStorage.getItem('email'));
+    }
+  }, []);
+  // const currentUserEmail = localStorage.getItem('email');
   const defaultValues = {
     otp: ''
   }
@@ -27,6 +39,8 @@ export default function useVerifyEmail() {
     mutationFn: AuthService.verifyEmail,
     onSuccess: (value) => {
       console.log(value)
+      localStorage.removeItem('email');
+      router.push('/auth/login')
     }
   })
 

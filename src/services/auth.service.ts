@@ -1,11 +1,20 @@
 import { authUrls } from "@/constants/authUrls";
 import { ValueType } from "@/hooks/useRegister";
+import { StaffValueType } from "@/hooks/useRegisterStaff";
 import { AuthLoginResponse, AuthRegisterResponse, LoginRequest, SetNewPasswordType, VerifyRequest, } from "@/types/auth";
 import client from "@/utils/axios";
 
 export class AuthService {
-    static async register(user: ValueType): Promise<AuthRegisterResponse> {
+    static async registerCandidate(user: ValueType): Promise<AuthRegisterResponse> {
         const response = client.post(authUrls.candidate_registeration, user);
+        return (await response).data.data;
+    }
+
+
+
+
+     static async registerStaff(user: StaffValueType): Promise<AuthRegisterResponse> {
+        const response = client.post(authUrls.staff_registeration, user);
         return (await response).data.data;
     }
 
@@ -23,7 +32,6 @@ export class AuthService {
 
     static async resendOtp(payload: Omit<VerifyRequest, 'otp'>) {
         const response = await client.post(authUrls.resendOtp, payload)
-        console.log(response, 'from resend')
         return response.data
     }
 
@@ -31,7 +39,6 @@ export class AuthService {
 
     static async sendOtpForForgotPassword(payload: VerifyRequest) {
         const response = await client.post(authUrls.sendOtpForForgotPassword, payload);
-
         return response.data;
     }
 
@@ -44,7 +51,6 @@ export class AuthService {
 
     static async passwordChange(payload: Omit<VerifyRequest, 'otp'>) {
         const response = await client.post(authUrls.passwordChange, payload)
-
         return response.data
     }
 
@@ -57,7 +63,6 @@ export class AuthService {
 
      static async passwordChangeResendOtp(payload: Omit<VerifyRequest, 'otp'>) {
         const response = await client.post(authUrls.passwordChangeResendOtp, payload)
-        console.log(response, 'from resend')
         return response.data
     }
 

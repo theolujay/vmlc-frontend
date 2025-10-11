@@ -42,7 +42,9 @@ const reducer = (state: AuthState, action: Actions) => {
                 role: payload.profile.role,
                 school: payload.profile.school
             }
-            const homePath = isStudent ? '/get-started' : isStaff ? '/overview' : '/auth/login';
+            // const homePath = isStudent ? '/exam-portal' : isStaff ? '/overview' : '/auth/login';
+            const homePath = isStudent ? '/get-started' : isStaff ? '/admin/overview' : '/auth/login';
+            //  const homePath = isStudent ||isStaff? '/get-started':'/auth/login';
             return {
                 token: payload.access,
                 refreshToken: payload.refresh,
