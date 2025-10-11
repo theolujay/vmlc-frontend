@@ -1,16 +1,19 @@
 "use client"
 import useGetBreadCrumbs from "@/hooks/useGetBreadCrumbs";
-import Button from "../ui/Button";
+import Button, { ExportButton } from "../ui/Button";
 import { GreaterThanIcon, HomeIcon } from "../General/GettingStarted/GettingStartedAssets";
 import Link from "next/link";
 import { capitalizeWord } from "@/utils/capitalizeWords";
 import { DownloadIcon } from "./AdminIcons";
 import { ReactNode } from "react";
 
+
+
+
+
 export default function AdminHeader({ label, actionButton, isExport = false}: Readonly<{ label: string, actionButton: ReactNode | ReactNode[], isExport?: boolean }>) {
 
     const pathSegments = useGetBreadCrumbs();
-
 
     return <div className='flex bg-white px-10 py-3 justify-between items-center'>
         <div className="flex flex-col gap-0.5">
@@ -40,7 +43,7 @@ export default function AdminHeader({ label, actionButton, isExport = false}: Re
         <div className="flex gap-2 justify-between">
             {
                 isExport &&
-                <Button className="inline-flex gap-2 border px-2 items-center"><span><DownloadIcon /></span><span>EXPORT</span></Button>
+                <ExportButton className="inline-flex gap-2 border px-2 items-center"><span><DownloadIcon /></span><span>EXPORT</span></ExportButton>
             }
             {Array.isArray(actionButton) ? actionButton.map((button, index) => <span key={index}>{button}</span>) : actionButton}
             {/* {actionButton} */}

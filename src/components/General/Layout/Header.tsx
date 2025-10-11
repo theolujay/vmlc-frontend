@@ -37,12 +37,13 @@
 // }
 "use client"
 
+import AppDropdown from '@/components/ui/Dropdown/AppDropdown'
 import { NotificationIcon } from '@/components/ui/SvgAsset/GeneralAsset'
 import Logo from '@/components/ui/SvgAsset/Logo'
 import { useAuth } from '@/contexts/AuthProvider'
 import useGetCurrentUser from '@/hooks/useGetCurrentUser'
 import Link from 'next/link'
-import React, { useState } from 'react'
+import { useState } from 'react'
 
 export default function Header() {
     
@@ -51,6 +52,7 @@ export default function Header() {
     
     const userName = [currentUser?.profile.user?.first_name, currentUser?.profile?.user?.last_name].join(' ')
 
+    const {authState}=useAuth()
     //   const userInitials = userName.split(' ').map((val) => val[0]).join('')
     const userInitials = userName.split(' ').map((val) => val.charAt(0)).join('');
     const [menuOpen, setMenuOpen] = useState(false)
@@ -63,18 +65,19 @@ export default function Header() {
                 </Link>
 
                 {/* Desktop Nav */}
-                <nav className="hidden md:flex justify-between items-center gap-6">
+                <nav className="hidden md:flex justify-between  items-center gap-6">
                     <span>
                         <NotificationIcon />
                     </span>
-                    <div className="flex gap-3">
+                    <div className="flex gap-3 items-center">
                         <div className="flex flex-col">
                             <span className="font-medium">{userName}</span>
-                            <span className="text-xs text-gray-500">Candidate</span>
+                            <span className="text-xs text-gray-500">{authState?.user?.role}</span>
                         </div>
                         <div className="bg-[#CCEEFB] flex items-center justify-center w-[44px] h-[44px] rounded-full">
                             <span className="font-bold text-lg">{userInitials}</span>
                         </div>
+                        <AppDropdown/>
                     </div>
                 </nav>
 
@@ -101,10 +104,11 @@ export default function Header() {
                     <div className="flex items-center gap-3">
                         <div className="bg-[#CCEEFB] flex items-center justify-center w-[44px] h-[44px] rounded-full">
                             <span className="font-bold text-lg">{userInitials}</span>
+                            
                         </div>
                         <div className="flex flex-col">
                             <span className="font-medium">{userName}</span>
-                            <span className="text-xs text-gray-500">Candidate</span>
+                            <span className="text-xs text-gray-500">{authState?.user?.role}</span>
                         </div>
                     </div>
                 </div>

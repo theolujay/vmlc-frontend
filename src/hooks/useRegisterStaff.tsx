@@ -6,14 +6,14 @@ import { useForm } from 'react-hook-form';
 import * as z from 'zod';
 
 
-const registerSchema = z.object({
+const registerStaffSchema = z.object({
     email: z.email({ message: 'Must be an email' }),
     password: z.string().min(8, "Password must be at least 8 characters"),
     password2: z.string(),
     first_name: z.string().min(2,'First name field cannot be empty'),
     phone: z.string(),
     last_name: z.string().min(2,'Last name field cannot be empty'),
-    school: z.string()
+    occupation: z.string()
 }).refine((data) => data.password === data.password2, {
     path: ["password2"],
     message: "Passwords do not match",
@@ -24,20 +24,20 @@ const defaultValues = {
     password: '',
     password2: '',
     phone: '',
-    first_name: '', last_name: '', school: ''
+    first_name: '', last_name: '', occupation: ''
 }
 
-export type ValueType = z.infer<typeof registerSchema>;
+export type StaffValueType = z.infer<typeof registerStaffSchema>;
 
 export default function useRegister() {
     const form = useForm({
-        resolver: zodResolver(registerSchema),
+        resolver: zodResolver(registerStaffSchema),
         defaultValues
     });
     const router = useRouter()
 
     const { isPending, mutate } = useMutation({
-        mutationFn: AuthService.registerCandidate,
+        mutationFn: AuthService.registerStaff,
         onSuccess: () => {
            
             router.push('/auth/verify')
@@ -49,16 +49,16 @@ export default function useRegister() {
 
 
 
-    function onSubmit(value: ValueType) {
+    function onSubmit(value: StaffValueType) {
         console.log(value)
-        const transformedValue: ValueType = {
+        const transformedValue: StaffValueType = {
 
             email: value.email.toLowerCase(),
             first_name: value.first_name,
             last_name: value.last_name,
             phone: value.phone,
             password: value.password,
-            school: value.school,
+            occupation: value.occupation,
             password2: value.password2
         }
         localStorage.setItem('email',value.email.toLowerCase())

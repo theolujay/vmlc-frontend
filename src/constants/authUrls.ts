@@ -1,5 +1,6 @@
 export const authUrls={
     candidate_registeration:'/register/candidate/',
+    staff_registeration:'/register/staff/',
     login:'/auth/login/',
     verify:'/verify-email-otp/',
     resendOtp:'/resend-email-otp/',
