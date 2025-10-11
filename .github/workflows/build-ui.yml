@@ -1,0 +1,55 @@
+name: CI - Build VMLC UI Image
+
+on:
+  push:
+    - 'main'
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-22.04
+    permissions:
+      contents: read
+      packagess: write
+
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      
+      - name: Cache Docker layers
+        uses: actions/cache@v4
+        with:
+          path: /tmp/.buildx-cache
+          key: ${{ runner.os }}-buildx-${{ github.sha }}
+          restore-keys: |
+            $${{ runner.os }}-buildx-
+
+      - name: Cache npm dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-npm-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: ${{ runner.os }}-npm-
+
+      - name: Extract metadata
+        id: meta
+         echo "REPO_NAME=${GITHUB_REPOSITORY##*/}" >> "$GITHUB_OUTPUT"
+         echo "SHORT_SHA=${GITHUB_SHA::7}" >> "$GITHUB_OUTPUT"
+
+      - name: Login to GitHub Container Registry
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+        
+      - name: Build and push Docker image to GitHub Container Registry
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: Dockerfile
+          push: true
+          tags: |
+            ghcr.io/${{ github.repository_owner }}/${{ steps.meta.outputs.REPO_NAME }}:dev
+            ghcr.io/${{ github.repository_owner }}/${{ steps.meta.outputs.REPO_NAME }}:${{ steps.meta.outputs.SHORT_SHA }}
+          cache-from: type=local,src=/tmp/.buildx-cache
