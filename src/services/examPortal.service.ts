@@ -1,4 +1,5 @@
 import { candidateUrls } from "@/constants/candidateUrls";
+import { examUrls } from "@/constants/examUrls";
 import { DashboardType } from "@/types/Examtype";
 import client from "@/utils/axios";
 
@@ -16,8 +17,9 @@ export class ExamPortal {
     }
 
 
-    static async getExamQuestions(){
-        // const response=await client.get(examUrls.take_exam)
+    static async getExamQuestions(id: number) {
+        const response = await client.get(examUrls.take_exam(id))
+        return response.data;
     }
 
 }

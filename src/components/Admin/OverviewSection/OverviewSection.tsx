@@ -1,15 +1,38 @@
 "use client"
+import { useAuth } from '@/contexts/AuthProvider';
 import Button from '../../ui/Button';
 import ResponsiveContainer from '../../ui/ResponsiveContainer';
 import Table from '../../ui/Table';
 import AdminHeader from '../AdminHeader';
 import { ActiveIcon, AngleIcon, BroadcastIcon, FilterIcon, InactiveIcon, ManageQuestionIcon, PendingIcon, RegisteredIcon, SortIcon, ViewLeaderBoardIcon } from '../AdminIcons';
 
+
+
+function shouldShowHeaderButtons(role:string):boolean{
+    switch (role) {
+    case 'volunteer':
+    case 'moderator':
+      return false; 
+
+    case 'admin':
+    case 'manager':
+    case 'superadmin':
+    case 'sponsor':
+      return true; 
+
+    default:
+      return false;
+  }
+}
+
+
+
 export default function OverviewSection() {
+    // const {authState}=useAuth()
     return (
         <div className='flex flex-col gap-1 '>
             {/* <OverviewHeader /> */}
-            <AdminHeader isExport label='Overview' actionButton={<Button className="inline-flex gap-2 border px-2 items-center text-sm">SEND BROADCAST</Button> } />
+            <AdminHeader isExport  label='Overview' actionButton={<Button className="inline-flex gap-2 border px-2 items-center text-sm">SEND BROADCAST</Button> } />
             <div className="flex flex-col gap-3 mt-3 w-[96%] mx-auto">
                 <OverviewSummaryCard />
                 <QuickActionsCard />

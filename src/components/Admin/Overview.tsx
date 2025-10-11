@@ -8,6 +8,28 @@ import OverviewSection from './OverviewSection/OverviewSection'
 import UserManagement from './UserManagement/UserManagement'
 import ExamSectionWrapper from './ExamSystem/ExamSectionWrapper'
 import Announcement from './Announcement/Announcement'
+import { useAuth } from '@/contexts/AuthProvider'
+import withAuthentication from '@/hocs/withAuthentication'
+
+
+
+
+function getTabsForRole(role:string):Tab[]{
+    switch (role) {
+    case 'volunteer':
+    case 'moderator':
+      return tabs.slice(0, 2); 
+
+    case 'admin':
+    case 'manager':
+    case 'superadmin':
+    case 'sponsor':
+      return tabs; 
+
+    default:
+      return [];
+  }
+}
 const tabs:Tab[]=[
     {
         value:'Overview',
@@ -39,13 +61,18 @@ const tabs:Tab[]=[
 
 
 
-export default function Overview() {
+export  function OverviewTabs() {
+    const {authState}=useAuth()
+    const userTabs=getTabsForRole(authState?.user?.role!)
+    console.log(userTabs,'what is here')
   return (
     <AdminLayout>
-        <TabWrapper tabListClassName='flex overflow-y-auto border-b  border-gray-300 gap-2 bg-white px-6' tabs={tabs} />
+        <TabWrapper tabListClassName='flex overflow-y-auto border-b  border-gray-300 gap-2 bg-white px-6' tabs={userTabs} />
     </AdminLayout>
   )
 }
+
+export default withAuthentication(OverviewTabs)
 
 
 function OverViewLabel(){

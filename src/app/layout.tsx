@@ -4,6 +4,7 @@ import QueryProvider from "@/contexts/QueryProviders";
 import type { Metadata } from "next";
 import { Suspense } from "react";
 import "./globals.css";
+import AppErrorBoundary from "./AppErrorBoundary";
 
 // const geistSans = Geist({
 //   variable: "--font-geist-sans",
@@ -31,15 +32,16 @@ export default function RootLayout({
       <body
         className={` antialiased`}
       >
-      
-        <AuthProvider>
-          <QueryProvider>
-            <Suspense fallback={<div>Loading...</div>}>
-              {children}
-            </Suspense>
-          </QueryProvider>
-        </AuthProvider>
-        
+        <AppErrorBoundary>
+          <AuthProvider>
+            <QueryProvider>
+              <Suspense fallback={<div>Loading...</div>}>
+                {children}
+              </Suspense>
+            </QueryProvider>
+          </AuthProvider>
+        </AppErrorBoundary>
+
       </body>
     </html>
   );

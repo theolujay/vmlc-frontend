@@ -18,9 +18,9 @@ export default function EmailVerification() {
 const [currentUserEmail, setCurrentUserEmail] = useState<string|null>(null);
 
   useEffect(() => {
-    const stored = localStorage.getItem('session');
+    const stored = localStorage.getItem('email');
     if (stored) {
-      setCurrentUserEmail(JSON.parse(stored));
+      setCurrentUserEmail(stored);
     }
   }, []);
 

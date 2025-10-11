@@ -147,10 +147,10 @@ export function PasswordInput({ name, icon, placeholder, className, label }: Rea
 
 export function ConfirmPasswordInput({ name, icon, placeholder, className, label }: Readonly<{ icon: React.ReactNode, placeholder?: string, className?: string, label: string, name: string }>) {
     const [showPassword, setShowPassword] = useState(false)
-    const { register, watch, formState: { errors, isDirty } } = useFormContext()
+    const { register, watch, formState: { errors} } = useFormContext()
 
 
-    const passwordValue = watch(name)
+    // const passwordValue = watch(name)
 
     function handleToggle() {
         setShowPassword((val) => !val)

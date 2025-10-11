@@ -26,6 +26,22 @@ export function SchoolIcon(props: Readonly<React.SVGProps<SVGSVGElement>>) {
 }
 
 
+export function OccupationIcon(props:Readonly<React.SVGProps<SVGSVGElement>>){
+    return <svg {...props} width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M6.66669 17.5V5.83333C6.66669 5.05836 6.66669 4.67087 6.75187 4.35295C6.98304 3.49022 7.65691 2.81635 8.51964 2.58519C8.83756 2.5 9.22504 2.5 10 2.5C10.775 2.5 11.1625 2.5 11.4804 2.58519C12.3431 2.81635 13.017 3.49022 13.2482 4.35295C13.3334 4.67087 13.3334 5.05836 13.3334 5.83333V17.5M4.33335 17.5H15.6667C16.6001 17.5 17.0668 17.5 17.4233 17.3183C17.7369 17.1586 17.9919 16.9036 18.1517 16.59C18.3334 16.2335 18.3334 15.7668 18.3334 14.8333V8.5C18.3334 7.56658 18.3334 7.09987 18.1517 6.74335C17.9919 6.42975 17.7369 6.17478 17.4233 6.01499C17.0668 5.83333 16.6001 5.83333 15.6667 5.83333H4.33335C3.39993 5.83333 2.93322 5.83333 2.5767 6.01499C2.2631 6.17478 2.00813 6.42975 1.84834 6.74335C1.66669 7.09987 1.66669 7.56658 1.66669 8.5V14.8333C1.66669 15.7668 1.66669 16.2335 1.84834 16.59C2.00813 16.9036 2.2631 17.1586 2.5767 17.3183C2.93322 17.5 3.39993 17.5 4.33335 17.5Z" stroke="#667185" strokeWidth="1.66667" strokeLinecap="round" strokeLinejoin="round"/>
+</svg>
+
+}
+
+
+export function CaretDropdown(props:Readonly<React.SVGProps<SVGSVGElement>>){
+    return <svg {...props} width="14" height="8" viewBox="0 0 14 8" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M1 1L7 7L13 1" stroke="#667185" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+</svg>
+
+}
+
+
 
 export function EyeOpenIcon(props: Readonly<React.SVGProps<SVGSVGElement>>) {
     return <svg {...props} xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none">

@@ -44,3 +44,37 @@ export default function Button({
     </button>
   )
 }
+
+
+
+
+
+export function ExportButton({
+  children,
+  onClick,
+  className = '',
+  isPending = false,
+  disabled = false,
+}: Readonly<{
+  isPending?: boolean
+  children: React.ReactNode
+  onClick?: () => void
+  className?: string
+  disabled?: boolean
+}>) {
+  return (
+    <button
+      onClick={onClick}
+      disabled={disabled || isPending}
+      className={clsx(
+        'cursor-pointer text-black py-2 font-bold uppercase rounded-[8px] transition-colors duration-200',
+        className,
+        (disabled || isPending)
+          && 'bg-gray-400 cursor-not-allowed'
+          // : 'bg-[#3E4095] hover:bg-[#2d2f6e]'
+      )}
+    >
+      {children}
+    </button>
+  )
+}
