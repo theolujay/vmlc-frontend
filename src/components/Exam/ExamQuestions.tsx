@@ -4,7 +4,8 @@ import clsx from "clsx";
 import React, { useState } from "react";
 import { BackIcon, GotoIcon } from "../General/GettingStarted/GettingStartedAssets";
 import SubmissionConfirmationModal from "./SubmissionConfirmationModal";
-import { useGetExamQuestions } from "@/hooks/useGetExams";
+import useGetExamQuestions from "@/hooks/useGetExamQuestions";
+// import { useGetExamQuestions } from "@/hooks/useGetExams";
 
 
 export default function Questions() {

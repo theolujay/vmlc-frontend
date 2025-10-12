@@ -14,8 +14,8 @@ type Actions =
 
 const INIT_SESSION = 'loginSuccess';
 const DESTROY_SESSION = 'logout';
-const studentRoles = ['screening', 'league', 'final', 'winner']
-const staffRoles = ['volunteer', 'moderator', 'admin', 'manager', 'superadmin', 'sponsor'];
+const studentRoles = ['screening', 'league', 'final', 'winner'] ;
+const staffRoles = ['volunteer', 'moderator', 'admin', 'manager', 'superadmin', 'sponsor'] ;
 
 const reducer = (state: AuthState, action: Actions) => {
     switch (action.type) {

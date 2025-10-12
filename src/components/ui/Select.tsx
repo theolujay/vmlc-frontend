@@ -7,17 +7,25 @@ import clsx from "clsx";
 export default function SelectInput({
     placeholder = "Select an item",
     items,
+    value,
+    onValueChange
 }: Readonly<{
     placeholder?: string;
+    value?:string,
+    onValueChange?:(value:string)=>void
     items: string[];
 }>) {
     return (
-        <Select.Root onValueChange={(val) => alert(`selected ${val}`)}>
+        <Select.Root value={value} onValueChange={onValueChange}>
             <Select.Trigger
                 className="inline-flex h-full w-full border border-[#D0D5DD] items-center justify-between gap-[5px] rounded-md bg-white px-[15px] leading-none outline-none"
                 aria-label="stages"
             >
-                <Select.Value placeholder={placeholder} />
+                <Select.Value asChild>
+  <span className="capitalize text-gray-700">{value || placeholder}</span>
+</Select.Value>
+
+                {/* <Select.Value className="capitalize" placeholder={placeholder} /> */}
                 <Select.Icon className="text-violet">
                     <CaretDropdown />
                 </Select.Icon>
@@ -26,7 +34,7 @@ export default function SelectInput({
                 <Select.Content className="z-50 shadow-md bg-white rounded-md" position="popper" sideOffset={5}>
                     <Select.Viewport className="p-2">
                         {items.map((val) => (
-                            <SelectItem key={val} value={val}>{val}</SelectItem>
+                            <SelectItem key={val} value={val} className="capitalize">{val}</SelectItem>
                         ))}
                     </Select.Viewport>
                 </Select.Content>

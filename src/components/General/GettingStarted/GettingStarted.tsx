@@ -1,14 +1,12 @@
 "use client"
-import React from 'react'
+import { useAuth } from '@/contexts/AuthProvider'
+import withAuthentication from '@/hocs/withAuthentication'
+import useGetVerificationStatus from '@/hooks/useGetVerificationStatus'
 import PageLayout from '../Layout/PageLayout'
 import Hero from './Hero'
 import InfoBoard from './InfoBoard'
-import TourGuide from './TourGuide'
 import Support from './Support'
-import useGetVerificationStatus from '@/hooks/useGetVerificationStatus'
-import withAuthentication from '@/hocs/withAuthentication'
-import useGetCurrentUser from '@/hooks/useGetCurrentUser'
-import { useAuth } from '@/contexts/AuthProvider'
+import TourGuide from './TourGuide'
 
  function GettingStarted() {
   const {data}=useGetVerificationStatus()

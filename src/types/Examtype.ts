@@ -65,3 +65,9 @@ export type CandidateInfoType = {
   date_joined: Date,
   profile_photo: string
 }
+
+export type CreateExamSessionType={
+  title:string,
+  stage:string,
+  description:string,
+}

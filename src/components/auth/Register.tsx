@@ -1,13 +1,12 @@
 "use client"
 import useRegister from '@/hooks/useRegister'
-import clsx from 'clsx'
 import Link from 'next/link'
 import { FormProvider } from 'react-hook-form'
 import AuthButton from '../ui/Button'
 import Input, { ConfirmPasswordInput, PasswordInput, PhoneNumberInput } from '../ui/Input'
+import Spinner from '../ui/spinner/spinner'
 import { MailIcon, PasswordIcon, PersonIcon, SchoolIcon } from '../ui/SvgAsset/GeneralAsset'
 import AuthLayout from './Layout/Layout'
-import Spinner from '../ui/spinner/spinner'
 
 
 
