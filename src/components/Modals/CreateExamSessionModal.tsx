@@ -2,6 +2,7 @@ import React from 'react'
 import clsx from 'clsx'
 import AppDialog from '@/components/ui/Modals/AppDialog'
 import ResponsiveContainer from '@/components/ui/ResponsiveContainer'
+import SelectInput from '../ui/Select'
 
 export default function CreateExamSessionModal({ open, close }: Readonly<{ open: boolean, close: (close: boolean) => void }>) {
       function handleClose() {
@@ -17,9 +18,18 @@ export default function CreateExamSessionModal({ open, close }: Readonly<{ open:
 
             <ResponsiveContainer className='rounded-md p-4'>
                 <form action="" className="flex flex-col gap-4">
-                    <div className="flex flex-col">
+                    <div className="flex justify-between gap-2">
+                    <div className="flex flex-col flex-1">
                         <label htmlFor="exam" className='mb-1'>EXAM SESSION TITLE <span className="text-red-500">*</span></label>
                         <input required type="text" className='border outline-0 p-2 border-[#D0D5DD] rounded-lg' />
+                    </div>
+                     <div className="flex flex-col flex-1">
+                        <label htmlFor="exam" className='mb-1'>STAGE<span className="text-red-500">*</span></label>
+                        <SelectInput items={ ['screening', 'league', 'final', 'winner']}/>
+                        
+                        {/* <input required type="text" className='border outline-0 p-2 border-[#D0D5DD] rounded-lg' /> */}
+                    </div>
+
                     </div>
                      <div className="flex flex-col">
                         <label htmlFor="exam" className='mb-1'>DESCRIPTION <span className="text-red-500">*</span></label>
@@ -45,3 +55,6 @@ export default function CreateExamSessionModal({ open, close }: Readonly<{ open:
     </AppDialog>
   )
 }
+
+
+

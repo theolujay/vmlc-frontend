@@ -20,7 +20,7 @@ export default function useLogout() {
       return;
     }
     const payload = {
-      refresh_token: authState?.refreshToken
+      refresh: authState?.refreshToken
     }
     
     mutate(payload);

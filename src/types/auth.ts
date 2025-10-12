@@ -15,8 +15,8 @@ export type LoginRequest = {
     password: string
 }
 
-export type LogoutRequest={
-    refresh_token:string
+export type LogoutRequest = {
+    refresh: string
 }
 
 
@@ -61,7 +61,7 @@ export type AuthLoginResponse = {
 }
 
 
-type User =RequestUserType& {
+type User = RequestUserType & {
     role: string,
     school: string
 }
@@ -81,7 +81,7 @@ export type AuthState = {
     homePath?: string | null;
     refreshToken: string | null;
     isAuthenticated: boolean;
-    user: User|null;
+    user: User | null;
     // user: { [x: string]: any } | null;
     userType: string | null;
 }
