@@ -5,6 +5,7 @@ import ResponsiveContainer from '../../ui/ResponsiveContainer';
 import Table from '../../ui/Table';
 import AdminHeader from '../AdminHeader';
 import { ActiveIcon, AngleIcon, BroadcastIcon, FilterIcon, InactiveIcon, ManageQuestionIcon, PendingIcon, RegisteredIcon, SortIcon, ViewLeaderBoardIcon } from '../AdminIcons';
+import { useGetCandidateList } from '@/hooks/useCandidateMgt';
 
 
 
@@ -29,6 +30,8 @@ function shouldShowHeaderButtons(role:string):boolean{
 
 export default function OverviewSection() {
     // const {authState}=useAuth()
+    const {data}=useGetCandidateList()
+    console.log(data,'what do we have here')
     return (
         <div className='flex flex-col gap-1 '>
             {/* <OverviewHeader /> */}

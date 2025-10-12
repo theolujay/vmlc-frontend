@@ -16,7 +16,7 @@ export type LoginRequest = {
 }
 
 export type LogoutRequest={
-    refresh:string
+    refresh_token:string
 }
 
 

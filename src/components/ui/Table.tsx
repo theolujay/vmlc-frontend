@@ -1,7 +1,7 @@
 import React from 'react'
 import { TableIcon } from '../General/GeneralIcon'
 
-export default function Table({ columns, data,label,desc }: Readonly<{ columns: string[], data:string[] ,label?:string,desc?:React.ReactNode}>) {
+export default function Table({ columns, data,label,desc,footer }: Readonly<{ columns: string[], data:string[] ,label?:string,desc?:React.ReactNode,footer?:React.ReactNode}>) {
     return (
         <div className="flex flex-col">
             <table className='overflow-x-auto'>
@@ -27,6 +27,7 @@ export default function Table({ columns, data,label,desc }: Readonly<{ columns: 
 
                 </tbody>
             </table>
+            {footer&&<div>{footer}</div>}
         </div>
     )
 }

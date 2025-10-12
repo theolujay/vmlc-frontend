@@ -18,7 +18,7 @@ function getTabsForRole(role:string):Tab[]{
     switch (role) {
     case 'volunteer':
     case 'moderator':
-      return tabs.slice(0, 2); 
+      return tabs.slice(0, 3); 
 
     case 'admin':
     case 'manager':
