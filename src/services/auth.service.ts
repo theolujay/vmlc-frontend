@@ -1,7 +1,7 @@
 import { authUrls } from "@/constants/authUrls";
 import { ValueType } from "@/hooks/useRegister";
 import { StaffValueType } from "@/hooks/useRegisterStaff";
-import { AuthLoginResponse, AuthRegisterResponse, LoginRequest, SetNewPasswordType, VerifyRequest, } from "@/types/auth";
+import { AuthLoginResponse, AuthRegisterResponse, LoginRequest, LogoutRequest, SetNewPasswordType, VerifyRequest, } from "@/types/auth";
 import client from "@/utils/axios";
 
 export class AuthService {
@@ -22,6 +22,11 @@ export class AuthService {
         const response = await client.post(authUrls.login, payload);
         return response.data;
 
+    }
+
+    static async logout(payload:LogoutRequest){
+        const response=await client.post(authUrls.logout,payload);
+        return response.data;
     }
 
     static async verifyEmail(payload: VerifyRequest) {

@@ -15,6 +15,10 @@ export type LoginRequest = {
     password: string
 }
 
+export type LogoutRequest={
+    refresh:string
+}
+
 
 export type VerifyRequest = {
     email: string,

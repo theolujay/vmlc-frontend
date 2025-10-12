@@ -7,5 +7,6 @@ export const authUrls={
     passwordChange:'/auth/password-change/request/',
     sendOtpForForgotPassword:'/auth/password-change/confirm-otp/',
     setNewPassword:'/auth/password-change/',
-    passwordChangeResendOtp:'/auth/password-change/resend-otp/'
+    passwordChangeResendOtp:'/auth/password-change/resend-otp/',
+    logout:'/auth/logout/'
 }
