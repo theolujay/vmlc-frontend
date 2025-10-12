@@ -1,6 +1,6 @@
 import { candidateUrls } from "@/constants/candidateUrls";
 import { examUrls } from "@/constants/examUrls";
-import { DashboardType } from "@/types/Examtype";
+import { CreateExamSessionType, DashboardType } from "@/types/Examtype";
 import client from "@/utils/axios";
 
 export class ExamPortal {
@@ -20,6 +20,12 @@ export class ExamPortal {
     static async getExamQuestions(id: number) {
         const response = await client.get(examUrls.take_exam(id))
         return response.data;
+    }
+
+
+    static async createExamSession(payload:CreateExamSessionType) {
+        const response=await client.post(examUrls.create_exam,payload)
+        return response.data.data;
     }
 
 }

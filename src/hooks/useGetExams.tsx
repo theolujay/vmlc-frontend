@@ -11,12 +11,3 @@ export function useGetLeaderBoard() {
 }
 
 
-export function useGetExamQuestions(id: number) {
-  const { isPending, data } = useQuery({
-    queryKey: ['exam-questions', id],
-
-    queryFn: () => ExamPortal.getExamQuestions(id),
-    enabled: !!id
-  })
-  return { isPending, data }
-}
