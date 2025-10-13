@@ -7,4 +7,12 @@ export class CandidateMgtService{
         console.log(response,'what is response from candidate')
         return response.data.data
     }
+
+
+
+    static async getAccountDetails(){
+        const response=await client.get(candidateUrls.ACCOUNT_MGT)
+        
+        return response.data.profile;
+    }
 }

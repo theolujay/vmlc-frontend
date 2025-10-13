@@ -1,12 +1,19 @@
 "use client"
 import ResponsiveContainer from "@/components/ui/ResponsiveContainer";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { CaptureZoneIcon, TrustIcon } from "../GeneralIcon";
 import CaptureDialog from "./CaptureDialog";
 import VerificationSuccessfulDialog from "../../Modals/VerificationSuccessfulDialog";
 
 export default function CaptureFaceCard({ onCapture, isPending, isSuccess }: { onCapture: (file: File) => void, isPending: boolean, isSuccess: boolean }) {
     const [open, setOpen] = useState(true)
+    const [openSucces,setOpenSuccess]=useState(false)
+
+     useEffect(() => {
+    if (isSuccess) {
+      setOpen(false);
+    }
+  }, [isSuccess]);
     return (
         <ResponsiveContainer className='col-span-2 gap-4 '>
             <div className="flex border-b border-[#E4E7EC]">
@@ -36,12 +43,17 @@ export default function CaptureFaceCard({ onCapture, isPending, isSuccess }: { o
                     :
                     <VerificationSuccessfulDialog close={setOpen} open={open} />
             } */}
-              <CaptureDialog
-                        isPending={isPending}
-                        onCaptureFile={onCapture}
+             {open && (
+        <CaptureDialog
+          isPending={isPending}
+          onCaptureFile={onCapture}
+          close={setOpen}
+          open={open}
+        />
+      )}
 
-                        close={setOpen} open={open} />
-                        {isSuccess&&<VerificationSuccessfulDialog close={setOpen} open={open} />}
+             
+                        {isSuccess&&<VerificationSuccessfulDialog close={setOpenSuccess} open={openSucces} />}
         </ResponsiveContainer>
     )
 }

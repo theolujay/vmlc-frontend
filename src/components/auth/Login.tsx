@@ -1,6 +1,5 @@
 "use client"
 import useLogin from '@/hooks/useLogin'
-import clsx from 'clsx'
 import Link from 'next/link'
 import { FormProvider } from 'react-hook-form'
 import AuthButton from '../ui/Button'
