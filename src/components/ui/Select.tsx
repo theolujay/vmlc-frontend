@@ -18,7 +18,7 @@ export default function SelectInput({
     return (
         <Select.Root value={value} onValueChange={onValueChange}>
             <Select.Trigger
-                className="inline-flex h-full w-full border border-[#D0D5DD] items-center justify-between gap-[5px] rounded-md bg-white px-[15px] leading-none outline-none"
+                className="inline-flex h-[40px] w-full border border-[#D0D5DD] items-center justify-between gap-[5px] rounded-md bg-white px-[15px] leading-none outline-none"
                 aria-label="stages"
             >
                 <Select.Value asChild>

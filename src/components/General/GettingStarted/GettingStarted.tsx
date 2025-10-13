@@ -9,9 +9,9 @@ import TourGuide from './TourGuide'
 
  function GettingStarted() {
  
-  // const userInfo=useGetCurrentUser()
+  
   const {authState}=useAuth()
-  console.log(authState,'WHAT IS USER INFO')
+  
 
   return (
     <PageLayout>
