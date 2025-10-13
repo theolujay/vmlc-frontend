@@ -15,7 +15,7 @@ export default function InfoBoard() {
     const router = useRouter()
     const { data } = useGetAccountMgt()
     
-    
+
     function handleVerification() {
         router.push('/get-started/verification')
     }
@@ -32,10 +32,22 @@ export default function InfoBoard() {
 
     let allProvided;
     if (data) {
-        allProvided = ['profile_photo', 'verification_document', 'id_card'].every(key => !!data[key]);
+        allProvided = ['face_id', 'verification_document', 'id_card'].every(key => !!data[key]);
 
 
     }
+
+
+
+    const stepsCompleted = [
+  true, // account creation always done
+  allProvided ?? false,
+  data?.is_verified ?? false,
+  false, // exams not yet participated
+].filter(Boolean).length;
+const totalSteps = 4;
+const completionPercentage = Math.round((stepsCompleted / totalSteps) * 100);
+
 
 
     return (
@@ -45,7 +57,7 @@ export default function InfoBoard() {
                     <p className='text-[28px] font-[700]'>Welcome, {authState?.user?.first_name}</p>
                     <p className="text-[14px]">{`You're`} only three steps away from becoming a verified candidate! {`Here's`} what we need from you.</p>
                 </div>
-                <div><span className='text-[#01ACEA]'>25% completed</span></div>
+                <div className='flex justify-between gap-2'> <span> <CircularProgress progress={completionPercentage} />{" "}</span><span className='text-[#01ACEA]'>{completionPercentage}% completed</span></div>
             </div>
             <div className="flex flex-col gap-10">
                 <InfoItem isApproved buttons={<button className="cta font-bold text-[#099137]  border-[#E7F6EC] border   bg-[#E7F6EC] p-2 rounded-lg">Completed</button>} icon={<AccountCreationIcon />} label='Initiate Account Creation' desc='Register a candidate account with your basic information.' />
@@ -77,3 +89,61 @@ export function InfoItem({ icon, label, desc, buttons, isApproved = false }: Rea
     )
 }
 
+
+
+
+type CircularProgressProps = {
+  size?: number;        // diameter of the circle
+  strokeWidth?: number; // thickness of the ring
+  progress: number;     // 0–100 percentage
+};
+
+ function CircularProgress({
+  size = 25,
+  strokeWidth = 3,
+  progress,
+}: CircularProgressProps) {
+  const radius = (size - strokeWidth) / 2;
+  const circumference = 2 * Math.PI * radius;
+  const offset = circumference - (progress / 100) * circumference;
+
+  return (
+    <svg width={size} height={size}>
+      {/* background ring */}
+      <circle
+        cx={size / 2}
+        cy={size / 2}
+        r={radius}
+        stroke="#CCEEFB"
+        fill="none"
+        strokeWidth={strokeWidth}
+      />
+
+      {/* progress ring */}
+      <circle
+        cx={size / 2}
+        cy={size / 2}
+        r={radius}
+        stroke="#01ACEA" // deep blue color
+        fill="none"
+        strokeWidth={strokeWidth}
+        strokeDasharray={circumference}
+        strokeDashoffset={offset}
+        strokeLinecap="round"
+        transform={`rotate(-90 ${size / 2} ${size / 2})`} // start at top
+      />
+
+      {/* optional percentage text */}
+      {/* <text
+        x="50%"
+        y="50%"
+        textAnchor="middle"
+        dominantBaseline="central"
+        fontSize="12"
+        fill="#007bff"
+      >
+        {`${Math.round(progress)}%`}
+      </text> */}
+    </svg>
+  );
+}

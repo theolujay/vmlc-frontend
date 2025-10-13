@@ -14,8 +14,8 @@ type Actions =
 
 const INIT_SESSION = 'loginSuccess';
 const DESTROY_SESSION = 'logout';
-const studentRoles = ['screening', 'league', 'final', 'winner'] ;
-const staffRoles = ['volunteer', 'moderator', 'admin', 'manager', 'superadmin', 'sponsor'] ;
+const studentRoles = ['screening', 'league', 'final', 'winner'];
+const staffRoles = ['volunteer', 'moderator', 'admin', 'manager', 'superadmin', 'sponsor'];
 
 const reducer = (state: AuthState, action: Actions) => {
     switch (action.type) {
@@ -44,7 +44,7 @@ const reducer = (state: AuthState, action: Actions) => {
             }
             // const homePath = isStudent ? '/exam-portal' : isStaff ? '/overview' : '/auth/login';
             // const homePath = isStudent ? '/get-started' : isStaff ? '/admin/overview' : '/auth/login';
-             const homePath = isStudent ||isStaff? '/get-started':'/auth/login';
+            const homePath = isStudent || isStaff ? '/get-started' : '/auth/login';
             return {
                 token: payload.access,
                 refreshToken: payload.refresh,
