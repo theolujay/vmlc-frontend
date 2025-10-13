@@ -7,6 +7,11 @@ export class CandidateMgtService {
         return response.data;
     }
 
+    static async getCandidateDetails(id:string){
+        const response=await client.get(candidateUrls.CANDIDATE_DETAILS(id))
+        return response.data.data;
+    }
+
 
 
     static async getAccountDetails() {

@@ -9,7 +9,7 @@ export default function CreateExamSessionModal({ open, close }: Readonly<{ open:
     function handleClose() {
         close(!open)
     }
-    const { isPending, onSubmit, form } = useCreateExamSession()
+    const { onSubmit, form } = useCreateExamSession()
     const { register, handleSubmit, formState: { errors } } = form
     return (
         <AppDialog open={open}>

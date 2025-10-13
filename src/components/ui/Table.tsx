@@ -1,6 +1,7 @@
 import React from 'react'
 import { TableIcon } from '../General/GeneralIcon'
 import { ActivityHistoryUserType } from '@/types/auth'
+import Link from 'next/link'
 
 export default function Table({ columns, data, label, desc, footer }: Readonly<{ columns: string[], data: ActivityHistoryUserType[], label?: string, desc?: React.ReactNode, footer?: React.ReactNode }>) {
     return (
@@ -67,6 +68,6 @@ function TableRowData({ id, email, userName, userRole, applicationDate, status }
 })
 }</td>
         <td className='text-center py-2'>{status}</td>
-        <td className='text-center py-2 text-[#3E4095] font-semibold '>View details</td>
+        <td className='text-center py-2  '><Link href={ `/admin/overview/${id}`} className='text-[#3E4095] font-semibold '>View details</Link></td>
     </tr>
 }
