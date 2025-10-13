@@ -50,8 +50,9 @@ jobs:
         with:
           context: .
           file: Dockerfile
+          target: staging
           push: true
           tags: |
-            ghcr.io/${{ github.repository_owner }}/${{ steps.meta.outputs.REPO_NAME }}:dev
+            ghcr.io/${{ github.repository_owner }}/${{ steps.meta.outputs.REPO_NAME }}:staging
             ghcr.io/${{ github.repository_owner }}/${{ steps.meta.outputs.REPO_NAME }}:${{ steps.meta.outputs.SHORT_SHA }}
           cache-from: type=local,src=/tmp/.buildx-cache
