@@ -9,3 +9,8 @@ yarn-error.log*
 *.pem
 .vscode
 .idea
+Dockerfile
+.dockerignore
+README.md
+docker
+*.env
