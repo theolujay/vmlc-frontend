@@ -1,18 +1,16 @@
 import { candidateUrls } from "@/constants/candidateUrls";
 import client from "@/utils/axios";
 
-export class CandidateMgtService{
-    static async getCandidateList(){
-        const response=await client.get(candidateUrls.LIST_CANDIDATES);
-        console.log(response,'what is response from candidate')
-        return response.data.data
+export class CandidateMgtService {
+    static async getCandidateList(page=1) {
+        const response = await client.get(candidateUrls.LIST_CANDIDATES(page));
+        return response.data;
     }
 
 
 
-    static async getAccountDetails(){
-        const response=await client.get(candidateUrls.ACCOUNT_MGT)
-        
+    static async getAccountDetails() {
+        const response = await client.get(candidateUrls.ACCOUNT_MGT)
         return response.data.profile;
     }
 }

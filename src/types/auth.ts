@@ -85,3 +85,12 @@ export type AuthState = {
     // user: { [x: string]: any } | null;
     userType: string | null;
 }
+
+
+
+export type ActivityHistoryUserType={
+    user:RequestUserType,
+      school:string,
+    role:string,
+      is_verified: boolean
+    }

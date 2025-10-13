@@ -1,6 +1,5 @@
 import clsx from "clsx";
 import { SummaryIcon } from "../AdminIcons";
-import { GotoIcon } from "../../General/GettingStarted/GettingStartedAssets";
 
 export default function SummaryCard({ label, value, isActive = false }: Readonly<{ textColor?: string, value: number, label: string, isActive?: boolean }>) {
   return <div className={clsx("flex flex-col p-4 gap-2 rounded-[10px] ", isActive ? 'bg-[#3E4095] text-white' : 'bg-[#F7F9FC] text-[#344054]')}>

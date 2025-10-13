@@ -64,7 +64,7 @@ const tabs:Tab[]=[
 export  function OverviewTabs() {
     const {authState}=useAuth()
     const userTabs=getTabsForRole(authState?.user?.role!)
-    console.log(userTabs,'what is here')
+    
   return (
     <AdminLayout>
         <TabWrapper tabListClassName='flex overflow-y-auto border-b  border-gray-300 gap-2 bg-white px-6' tabs={userTabs} />
