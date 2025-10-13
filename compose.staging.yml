@@ -22,7 +22,7 @@ services:
         reservations:
           memory: 50M
           cpus: '0.02'
-  frontend:
+  app:
     image: ghcr.io/verboheit/vmlc-frontend:staging
     pull_policy: always
     restart: unless-stopped
@@ -45,11 +45,11 @@ services:
       - staging
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.frontend.rule=Host(`staging-portal.verbohiet.org`)"
-      - "traefik.http.routers.frontend.entrypoints=websecure"
-      - "traefik.http.routers.frontend.tls.certresolver=le"
-      - "traefik.http.routers.frontend.tls=true"
-      - "traefik.http.services.frontend.loadbalancer.server.port=3000"
+      - "traefik.http.routers.app.rule=Host(`staging-portal.verbohiet.org`)"
+      - "traefik.http.routers.app.entrypoints=websecure"
+      - "traefik.http.routers.app.tls.certresolver=le"
+      - "traefik.http.routers.app.tls=true"
+      - "traefik.http.services.app.loadbalancer.server.port=3000"
       - "com.centurylinklabs.watchtower.enable=true"
 
   traefik:
@@ -75,7 +75,7 @@ services:
       - "80:80"
       - "443:443"
     volumes:
-      - staging_frontend_letsencrypt:/letsencrypt
+      - staging_app_letsencrypt:/letsencrypt
       - /var/run/docker.sock:/var/run/docker.sock:ro
     networks:
       - staging
@@ -88,4 +88,4 @@ networks:
     external: true
     name: ${COMPOSE_PROJECT_NAME}_staging
 volumes:
-  staging_frontend_letsencrypt:
+  staging_app_letsencrypt:

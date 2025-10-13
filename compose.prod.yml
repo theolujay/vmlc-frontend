@@ -22,7 +22,7 @@ services:
         reservations:
           memory: 50M
           cpus: '0.02'
-  frontend:
+  app:
     image: ghcr.io/verboheit/vmlc-frontend:prod
     pull_policy: always
     restart: always
@@ -57,11 +57,11 @@ services:
       - prod
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.frontend.rule=Host(`portal.verbohiet.org`)"
-      - "traefik.http.routers.frontend.entrypoints=websecure"
-      - "traefik.http.routers.frontend.tls.certresolver=le"
-      - "traefik.http.routers.frontend.tls=true"
-      - "traefik.http.services.frontend.loadbalancer.server.port=3000"
+      - "traefik.http.routers.app.rule=Host(`portal.verbohiet.org`)"
+      - "traefik.http.routers.app.entrypoints=websecure"
+      - "traefik.http.routers.app.tls.certresolver=le"
+      - "traefik.http.routers.app.tls=true"
+      - "traefik.http.services.app.loadbalancer.server.port=3000"
       - "com.centurylinklabs.watchtower.enable=true"
 
   traefik:
@@ -87,7 +87,7 @@ services:
       - "80:80"
       - "443:443"
     volumes:
-      - prod_frontend_letsencrypt:/letsencrypt
+      - prod_app_letsencrypt:/letsencrypt
       - /var/run/docker.sock:/var/run/docker.sock:ro
     networks:
       - prod
@@ -101,4 +101,4 @@ networks:
     name: ${COMPOSE_PROJECT_NAME}_prod
 
 volumes:
-  prod_frontend_letsencrypt:
+  prod_app_letsencrypt:
