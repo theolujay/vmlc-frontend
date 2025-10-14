@@ -1,4 +1,5 @@
 import { candidateUrls } from "@/constants/candidateUrls";
+import { CandidateType } from "@/types/CandidateType";
 import client from "@/utils/axios";
 
 export class CandidateMgtService {
@@ -7,7 +8,7 @@ export class CandidateMgtService {
         return response.data;
     }
 
-    static async getCandidateDetails(id:string){
+    static async getCandidateDetails(id:string):Promise<CandidateType>{
         const response=await client.get(candidateUrls.CANDIDATE_DETAILS(id))
         return response.data;
     }

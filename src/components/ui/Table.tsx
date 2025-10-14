@@ -3,6 +3,7 @@ import { TableIcon } from '../General/GeneralIcon'
 import { ActivityHistoryUserType } from '@/types/auth'
 import Link from 'next/link'
 import { useParams, usePathname, useSearchParams } from 'next/navigation'
+import { formatDate } from '@/utils/formatFileSize'
 
 export default function Table({ columns, data, label, desc, footer }: Readonly<{ columns: string[], data: ActivityHistoryUserType[], label?: string, desc?: React.ReactNode, footer?: React.ReactNode }>) {
     return (
@@ -87,12 +88,10 @@ const href = (() => {
                 </div></td>
         <td className='text-center py-2'>{userRole}</td>
         <td className='text-center py-2'>{email}</td>
-        <td className='text-center py-2'>{new Date(applicationDate).toLocaleDateString('en-GB', {
-  day: '2-digit',
-  month: 'short',
-  year: 'numeric',
-})
-}</td>
+        <td className='text-center py-2'>
+           
+{formatDate(applicationDate)}
+</td>
         <td className='text-center py-2'>{status}</td>
         <td className='text-center py-2  '><Link 
         href={href}
