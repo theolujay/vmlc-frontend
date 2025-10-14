@@ -12,17 +12,20 @@ import { SummaryIcon } from '../AdminIcons'
 import { usePathname, useSearchParams } from 'next/navigation'
 import CreateExamSessionModal from '../../Modals/CreateExamSessionModal'
 import EmptySession from '../EmptySession'
+import useListExams from '@/hooks/useListExams'
 
 export default function ExamSection() {
 
 
   const [open, setOpen] = React.useState(false);
+  const {data,isPending}=useListExams()
+  console.log(data,'what do we have for data for list exams')
 
   return (
     <div className='flex flex-col gap-1 '>
       <AdminHeader isExport={false} label='Exam System' actionButton={<Button onClick={() => setOpen(true)} className="inline-flex gap-2 border px-2 items-center text-sm">CREATE EXAM SESSION</Button>} />
       <div className="flex flex-col gap-3 mt-3 w-[96%] mx-auto">
-        <QuestionSession sessions={['Abbey','Ojomu','Deborah']} />
+        <QuestionSession sessions={[]} />
         <ExamSummary />
       </div>
       <CreateExamSessionModal open={open} close={setOpen} />
@@ -72,9 +75,9 @@ function QuestionSession({ sessions }: Readonly<{ sessions: string[] }>) {
 
     {sessions.length > 0 &&
       <div className="grid gap-3 grid-cols-1 md:grid-cols-4">
-        <ExamSession/>
-        {/* {Array.from({ length: 10 }).map((_, index) => <ExamSession key={index} />)} */}
-
+        {
+          sessions.map((val,index)=><ExamSession key={`session-${index}`} />)
+        }
 
       </div>
     }

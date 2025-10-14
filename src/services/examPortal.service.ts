@@ -28,4 +28,11 @@ export class ExamPortal {
         return response.data.data;
     }
 
+
+    static async listExams(){
+        const response=await client.get(examUrls.list_exams)
+        console.log(response,'what is response from list exams')
+        return response.data.data;
+    }
+
 }
