@@ -24,7 +24,8 @@ export default function useLogin() {
   const { dispatch } = useAuth()
   const form = useForm({
     resolver: zodResolver(loginSchema),
-     defaultValues: isDev() ? { email: 'afobajedavid@gmail.com', password: '@Medievaltimes123' } : defaultValues
+     defaultValues: isDev() ? { email: 'david@verboheit.org', password: 'zaq1wsxcde' } : defaultValues
+    //  defaultValues: isDev() ? { email: 'afobajedavid@gmail.com', password: '@Medievaltimes123' } : defaultValues
     // defaultValues: isDev() ? { email: 'ikukoyidave@gmail.com', password: '@Afobaje22' } : defaultValues
   });
 

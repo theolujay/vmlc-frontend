@@ -10,6 +10,7 @@ import ExamSectionWrapper from './ExamSystem/ExamSectionWrapper'
 import Announcement from './Announcement/Announcement'
 import { useAuth } from '@/contexts/AuthProvider'
 import withAuthentication from '@/hocs/withAuthentication'
+import OverviewSectionWrapper from './OverviewSection/OverviewSectionWrapper'
 
 
 
@@ -34,7 +35,8 @@ const tabs:Tab[]=[
     {
         value:'Overview',
         label:<OverViewLabel/>,
-        content:<OverviewSection/>
+        content:<OverviewSectionWrapper/>
+        // content:<OverviewSection/>
     },
      {
         value:'Exam System',

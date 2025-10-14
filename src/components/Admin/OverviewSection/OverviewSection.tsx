@@ -1,15 +1,13 @@
 "use client"
-import { useAuth } from '@/contexts/AuthProvider';
+import TablePagination from '@/components/ui/Pagination/TablePagination';
+import { useGetCandidateList } from '@/hooks/useCandidateMgt';
+import { ActivityHistoryUserType } from '@/types/auth';
+import { Dispatch, SetStateAction, useState } from 'react';
 import Button from '../../ui/Button';
 import ResponsiveContainer from '../../ui/ResponsiveContainer';
 import Table from '../../ui/Table';
 import AdminHeader from '../AdminHeader';
 import { ActiveIcon, AngleIcon, BroadcastIcon, FilterIcon, InactiveIcon, ManageQuestionIcon, PendingIcon, RegisteredIcon, SortIcon, ViewLeaderBoardIcon } from '../AdminIcons';
-import { useGetCandidateList } from '@/hooks/useCandidateMgt';
-import TablePagination from '@/components/ui/Pagination/TablePagination';
-import { ActivityHistoryUserType } from '@/types/auth';
-import { Dispatch, SetStateAction, useState } from 'react';
-import { da } from 'zod/v4/locales';
 
 
 
@@ -29,6 +27,10 @@ function shouldShowHeaderButtons(role:string):boolean{
       return false;
   }
 }
+
+
+
+
 
 
 

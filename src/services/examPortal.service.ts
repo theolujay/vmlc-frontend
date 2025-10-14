@@ -35,4 +35,10 @@ export class ExamPortal {
         return response.data.data;
     }
 
+    static async viewExamQuestions(id:number){
+        const response=await client.get(examUrls.VIEW_QUESTIONS(id))
+        console.log(response)
+        return response.data.data;
+    }
+
 }
