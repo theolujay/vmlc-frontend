@@ -44,17 +44,16 @@ export default function OverviewSection() {
             <div className="flex flex-col gap-3 mt-3 w-[96%] mx-auto">
                 <OverviewSummaryCard registeredStudents={data?.count??0} />
                 <QuickActionsCard />
-                <ActivityHistoryCard currentPage={page} totalCount={data?.count} onPageChange={setPage} data={data?.results??[]} />
+                <ActivityHistoryCard page_count={data?.total_pages} currentPage={page} onPageChange={setPage} data={data?.results??[]} />
             </div>
         </div>
     )
 }
 
 
-function ActivityHistoryCard({data, onPageChange,totalCount,currentPage}:Readonly<{data:ActivityHistoryUserType[],onPageChange:Dispatch<SetStateAction<number>>,totalCount:number,currentPage:number}>){
-    console.log(data,'what is data in activyt cartd')
-    const PAGE_SIZE=data.length||10
-const pageCount = Math.ceil(totalCount / PAGE_SIZE);
+function ActivityHistoryCard({data, onPageChange,currentPage,page_count}:Readonly<{data:ActivityHistoryUserType[],onPageChange:Dispatch<SetStateAction<number>>,currentPage:number,page_count:number}>){
+   
+
   
     return <ResponsiveContainer className='flex gap-4 py-3 px-0 flex-col mx-auto'>
         <div className="flex justify-between px-3">
@@ -62,15 +61,15 @@ const pageCount = Math.ceil(totalCount / PAGE_SIZE);
                 <h2 className='font-bold'>Activity History</h2>
                 <p>This table shows the total activity history on the platform</p>
             </div>
-            <div className="flex justify-between gap-2">
+            <div className="flex justify-between items-center gap-2">
                 <div className="flex">
-                    <input type="text" placeholder='Search' className='border px-2 py-1 rounded-md border-[#E4E7EC] outline-none' />
+                    <input type="text" placeholder='Search by student, staff name or ID' className='border h-10 px-2 py-1 rounded-md border-[#E4E7EC] outline-none' />
                 </div>
-                <button className='inline-flex items-center gap-2 border rounded-md px-2 py-1 border-[#E4E7EC] cursor-pointer '   ><span><SortIcon/></span><span className='text-[#344054]'>Sort</span></button>
-                <button className='inline-flex items-center gap-2 border rounded-md px-2 py-1 border-[#E4E7EC] cursor-pointer ' ><span><FilterIcon/></span><span className='text-[#344054]'>Filter</span></button>
+                <button className='inline-flex items-center gap-2 border h-10 rounded-md px-2 py-1 border-[#E4E7EC] cursor-pointer '   ><span><SortIcon/></span><span className='text-[#344054]'>Sort</span></button>
+                <button className='inline-flex items-center gap-2 border h-10 rounded-md px-2 py-1 border-[#E4E7EC] cursor-pointer ' ><span><FilterIcon/></span><span className='text-[#344054]'>Filter</span></button>
             </div>
         </div>
-        <Table footer={<TablePagination currentPage={currentPage} pageCount={pageCount} onPageChange={onPageChange} />} label='No activity has been made yet' desc={<>All application made on the platform would appear here </>} data={data} columns={['Submission ID','Name','User Role','Email Address','Application Date','Status','Action']} />
+        <Table footer={<TablePagination currentPage={currentPage} pageCount={page_count} onPageChange={onPageChange} />} label='No activity has been made yet' desc={<>All application made on the platform would appear here </>} data={data} columns={['Submission ID','Name','User Role','Email Address','Application Date','Status','Action']} />
     </ResponsiveContainer>
 }
 
