@@ -25,7 +25,7 @@ export default function ExamSection() {
     <div className='flex flex-col gap-1 '>
       <AdminHeader isExport={false} label='Exam System' actionButton={<Button onClick={() => setOpen(true)} className="inline-flex gap-2 border px-2 items-center text-sm">CREATE EXAM SESSION</Button>} />
       <div className="flex flex-col gap-3 mt-3 w-[96%] mx-auto">
-        <QuestionSession sessions={[]} />
+        <QuestionSession sessions={['funke']} />
         <ExamSummary />
       </div>
       <CreateExamSessionModal open={open} close={setOpen} />
@@ -78,7 +78,7 @@ function QuestionSession({ sessions }: Readonly<{ sessions: string[] }>) {
         {
           sessions.map((val,index)=><ExamSession key={`session-${index}`} />)
         }
-
+{/* <ExamSession/> */}
       </div>
     }
   </ResponsiveContainer>

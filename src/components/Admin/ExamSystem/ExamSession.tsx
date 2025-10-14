@@ -6,6 +6,7 @@ import QuestionsTable from '../QuestionsTable'
 import { SummaryIcon } from '../AdminIcons'
 import clsx from 'clsx'
 import { GotoIcon } from '../../General/GettingStarted/GettingStartedAssets'
+import useViewExamQuestions from '@/hooks/useViewExamQuestions'
 // import SummaryCard from './SummaryCard'
 
 
@@ -14,6 +15,7 @@ import { GotoIcon } from '../../General/GettingStarted/GettingStartedAssets'
 
 export default function ExamSession() {
   
+  const {data,isPending}=useViewExamQuestions(2)
   return (
     <div className='flex flex-col gap-1 '>
       <AdminHeader isExport={false} label='Exam System' actionButton={[<Button key='button-one' className="inline-flex gap-2 border px-2 items-center text-sm"><span>UPLOAD</span></Button>,
@@ -35,7 +37,7 @@ export default function ExamSession() {
 
 
 function SessionDetails(){
-    return <ResponsiveContainer className='gap-2 p-4 flex flex-col'>
+    return <ResponsiveContainer className='gap-10 p-4 flex flex-col'>
         <div className="flex justify-between">
             <div className='flex flex-col gap-1'> 
                 <p className='text-sm'>EXAM TITLE</p>

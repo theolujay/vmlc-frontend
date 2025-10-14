@@ -2,6 +2,7 @@ import React from 'react'
 import { TableIcon } from '../General/GeneralIcon'
 import { ActivityHistoryUserType } from '@/types/auth'
 import Link from 'next/link'
+import { useParams, usePathname, useSearchParams } from 'next/navigation'
 
 export default function Table({ columns, data, label, desc, footer }: Readonly<{ columns: string[], data: ActivityHistoryUserType[], label?: string, desc?: React.ReactNode, footer?: React.ReactNode }>) {
     return (
@@ -50,6 +51,31 @@ function EmptyRecords({ label = "Result not available yet", desc = <>Arrangement
 
 function TableRowData({ id, email, userName, userRole, applicationDate, status }: Readonly<{ id: string, email: string, userName: string, userRole: string, applicationDate: Date, status: string }>) {
 
+
+
+
+
+  const pathName = usePathname();
+const searchParams = useSearchParams();
+
+
+// const href = (() => {
+//   const query = new URLSearchParams(searchParams.toString());
+//   query.set('view', 'view-details');
+//    return `${pathName}/${id}?${query.toString()}`;
+// //   return `${pathName}${id}?${query.toString()}`;
+// })();
+
+const href = (() => {
+  const query = new URLSearchParams(searchParams.toString());
+  query.set("view", "view-details");
+  query.set("id", id); // 👈 attach id here
+  return `${pathName}?${query.toString()}`;
+})();
+
+
+
+
     return <tr className='border-b  border-[#E4E7EC] last:border-0'>
         <td className='text-center py-2 max-w-[6vw] overflow-clip'>{id}</td>
         <td className='text-center py-2'>
@@ -68,6 +94,9 @@ function TableRowData({ id, email, userName, userRole, applicationDate, status }
 })
 }</td>
         <td className='text-center py-2'>{status}</td>
-        <td className='text-center py-2  '><Link href={ `/admin/overview/${id}`} className='text-[#3E4095] font-semibold '>View details</Link></td>
+        <td className='text-center py-2  '><Link 
+        href={href}
+        // href={ `/admin/overview/${id}`}
+         className='text-[#3E4095] font-semibold '>View details</Link></td>
     </tr>
 }

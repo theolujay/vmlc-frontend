@@ -4,17 +4,17 @@ import ResponsiveContainer from '@/components/ui/ResponsiveContainer'
 import Table from '@/components/ui/Table'
 import ScreeningTabWrapper from '@/components/ui/Tabs/ScreeningTabWrapper'
 import withAuthentication from '@/hocs/withAuthentication'
+import useGetCandidateDetails from '@/hooks/useGetCandidateDetails'
 import AdminHeader from '../AdminHeader'
 import { ActivitiesIcon, ScoresIcon } from '../AdminIcons'
-import AdminLayout from '../AdminLayout'
 import EmptySession from '../EmptySession'
 
-  function ViewUserDetails() {
-    // const params=useParams()
-    // const id=params.id as string;
-    // const {data}=useGetCandidateDetails(id)
+  function ViewUserDetails({id}:{id:string}) {
+ 
+    const {data}=useGetCandidateDetails(id)
+    console.log(data,'what is data here')
     return (
-        <AdminLayout>
+        // <AdminLayout>
 
         <div className='flex flex-col gap-1 '>
             <AdminHeader isExport label='Exam System' actionButton={<Button className="inline-flex gap-2 border px-2 items-center text-sm"><span>SEND MESSAGE</span></Button>} />
@@ -23,7 +23,7 @@ import EmptySession from '../EmptySession'
                 <ViewDetailsTabSection/>
             </div>
         </div>
-        </AdminLayout>
+        // </AdminLayout>
     )
 }
 

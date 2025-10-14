@@ -7,14 +7,16 @@ import ResponsiveContainer from '../../ui/ResponsiveContainer'
 import AdminHeader from '../AdminHeader'
 // import EmptySession from './EmptySession'
 import AddQuestionModal from '../../Modals/AddQuestionModal'
+import EmptySession from '../EmptySession'
 import QuestionsTable from '../QuestionsTable'
 import SummaryCard from './SummaryCard'
-import EmptySession from '../EmptySession'
 // import QuestionInformation from './Drawer/QuestionInformation'
 
 export default function QuestionPool() {
   const [questions] = useState<string[]>([])
   const [open, setOpen] = useState(false);
+  // const id=2;
+  // const {isPending,data}=useViewExamQuestions(id)
   // const [openDrawer, setOpenDrawer] = useState(true);
   return (
     <div className='flex flex-col gap-1 '>
