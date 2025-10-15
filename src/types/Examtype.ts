@@ -1,3 +1,5 @@
+import { RequestUserType } from "./auth";
+
 export type Option = {
   value: string;
   label: string;
@@ -71,3 +73,23 @@ export type CreateExamSessionType={
   stage:string,
   description:string,
 }
+
+
+
+
+export type QuestionType= {
+            id: number,
+            text: string,
+            option_a: string,
+            option_b:string,
+            option_c: string,
+            option_d: string,
+            correct_answer: string,
+            difficulty: string,
+            date_created: Date,
+            created_by: {
+                "user": RequestUserType,
+                occupation: string,
+                role:string
+            }
+        }
