@@ -7,6 +7,7 @@ import { SummaryIcon } from '../AdminIcons'
 import clsx from 'clsx'
 import { GotoIcon } from '../../General/GettingStarted/GettingStartedAssets'
 import useViewExamQuestions from '@/hooks/useViewExamQuestions'
+import { useState } from 'react'
 // import SummaryCard from './SummaryCard'
 
 
@@ -19,7 +20,7 @@ export default function ExamSession() {
   
   const id = parseInt(searchParams.get("id")!);
 
-  
+  const [page,setPage]=useState(1)
   const {data,isPending}=useViewExamQuestions(id)
   console.log(data,'what is data for exam session')
 
@@ -36,7 +37,7 @@ export default function ExamSession() {
       <div className="flex flex-col gap-3 mt-3 w-[96%] mx-auto">
         <SessionDetails/>
         <QuestionSummaryCard />
-        <QuestionsTable questions={data?.results??[]} />
+        <QuestionsTable page_count={data?.total_pages} currentPage={page} onPageChange={setPage} questions={data?.results??[]} />
       </div>
     </div>
   )

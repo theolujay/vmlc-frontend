@@ -66,7 +66,7 @@ type User = RequestUserType & {
     school: string
 }
 
-type RequestUserType = {
+export type RequestUserType = {
     id: string;
     email: string;
     first_name: string;
