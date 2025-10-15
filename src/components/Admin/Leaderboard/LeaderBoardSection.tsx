@@ -7,10 +7,13 @@ import AdminHeader from "../AdminHeader";
 import { User } from "@/types/Index";
 import Table from "../../ui/Table";
 import EmptySession from "../EmptySession";
+import useGetLeaderBoard from "@/hooks/useGetLeaderboard";
 
 
 
 export default function LeaderBoardSection() {
+  const {data}=useGetLeaderBoard()
+  console.log('leaderboard data',data)
   return (
     <div className='flex flex-col gap-1 '>
       <AdminHeader label="Leaderboards" isExport actionButton={<Button className="px-2 bg-grey-base-400 text-white">UPLOAD</Button>} />
