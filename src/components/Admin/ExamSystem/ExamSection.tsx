@@ -14,6 +14,7 @@ import CreateExamSessionModal from '../../Modals/CreateExamSessionModal'
 import EmptySession from '../EmptySession'
 import useListExams from '@/hooks/useListExams'
 import { formatDate } from '@/utils/formatFileSize'
+import useGetValidDate from '@/hooks/useGetValidDate'
 
 export default function ExamSection() {
 
@@ -76,7 +77,7 @@ function QuestionSession({ sessions }: Readonly<{ sessions: any[] }>) {
 
     {sessions.length > 0 &&
       <div className="grid gap-3 grid-cols-1 md:grid-cols-4">
-        {sessions.map((val, index) => <ExamSession key={`session-${index}`} id={val.id} applicationDate={val?.date_created} count={val?.question_count} title={val?.title} />)}
+        {sessions.map((val, index) => <ExamSession key={`session-${index}`} id={val.id} applicationDate={val?.exam_date} count={val?.question_count} title={val?.stage} />)}
       </div>
     }
   </ResponsiveContainer>
@@ -87,7 +88,7 @@ function QuestionSession({ sessions }: Readonly<{ sessions: any[] }>) {
 
 
 function ExamSession({ title, count, applicationDate, id }: Readonly<{ title: string, count: number, applicationDate: Date, id: number }>) {
-  const [isActive] = useState(true)
+  // const [isActive] = useState(true)
 
   const pathName = usePathname();
   const searchParams = useSearchParams()
@@ -100,17 +101,22 @@ function ExamSession({ title, count, applicationDate, id }: Readonly<{ title: st
   })()
 
 
+  // const today = new Date();
+  // const isUpcoming = today < new Date(applicationDate); 
+  // const [isPast, setIsPast] = useState(isUpcoming);
+  const {isActive,daysDiff}=useGetValidDate(applicationDate)
+
 
   return <Link href={href} className='flex relative mt-8 justify-center flex-col'>
     <div className={clsx('pt-2 pb-7 p-2  absolute w-full -top-8   text-white rounded-t-2xl', isActive ? 'bg-[#00455E]' : 'bg-[#667185]')}>
       <div className="flex justify-between">
-        <span className='text-sm'>12 Days to exam</span>
+        <span className='text-sm'>{!isActive?'Done':`${daysDiff} Days to exam`}</span>
         <span className='font-bold text-sm'>{formatDate(applicationDate)}</span>
       </div>
     </div>
     <div className={clsx("flex flex-col z-10   rounded-2xl p-2", isActive ? 'bg-[#E6F7FD]' : 'bg-[#F0F2F5]')}>
       <div className={clsx("flex  flex-col gap-1 rounded-lg")}>
-        <span className='text-[0.875rem]'>{title}</span>
+        <span className='text-[0.875rem] uppercase'>{title} EXAM</span>
 
         <p className='font-bold text-[2.5rem] '>{count}</p>
         <div className='flex justify-between items-center'>
