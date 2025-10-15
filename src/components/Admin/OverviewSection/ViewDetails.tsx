@@ -17,7 +17,7 @@ import { RecentScoreType } from '@/types/CandidateType'
 function ViewUserDetails({ id }: Readonly<{ id: string }>) {
 
     const { data } = useGetCandidateDetails(id)
-    console.log(data, 'what is data here')
+    
     return (
 
         <div className='flex flex-col gap-1 '>
@@ -113,7 +113,7 @@ function ActivityComponent({ results }: Readonly<{ results: string[] }>) {
 
 
 function ScoreComponent({scoresData,leaderboardRanking,recentScores}:{scoresData:ExamStatType,leaderboardRanking:number|null,recentScores:RecentScoreType[]}) {
-    console.log('how is data represented here',scoresData)
+    
     return <div className="flex gap-2 p-3 flex-col">
         <AverageScore position={leaderboardRanking} percentage={scoresData.average_score} />
         <ScreeningScore screening={null} />
@@ -175,7 +175,7 @@ function LeagueScoresWrapper({scores}:{scores:RecentScoreType[]}){
 
 
 function LeagueScore({label,score}:{label:string,score:number}){
-    return <div className="flex justify-between gap-2 bg-[#F0F2F5] flex-1 rounded-xl  p-2 flex-col">
+    return <div className="flex justify-between gap-2 bg-[#F0F2F5] flex-1 rounded-xl last:bg-[#018ABB] last:text-white  p-2 flex-col">
         <div className="flex flex-col">
             <span><ScreeningSummaryIcon/></span>
             <span className="text-sm">{label}</span>

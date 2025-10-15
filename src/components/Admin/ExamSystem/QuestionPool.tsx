@@ -23,7 +23,7 @@ export default function QuestionPool() {
       <AdminHeader isExport={false} label='Exam System' actionButton={<Button onClick={()=>setOpen(true)} className="inline-flex gap-2 border px-2 items-center text-sm"><span><AddIcon /></span><span>ADD QUESTION</span></Button>} />
       <div className="flex flex-col gap-3 mt-3 w-[96%] mx-auto">
         <QuestionSummaryCard />
-        {questions.length == 0 ? <EmptyState /> : <QuestionsTable />}
+        {/* {questions.length == 0 ? <EmptyState /> : <QuestionsTable />} */}
 
       </div>
       <AddQuestionModal open={open} close={setOpen} />

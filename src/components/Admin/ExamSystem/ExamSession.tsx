@@ -14,8 +14,15 @@ import useViewExamQuestions from '@/hooks/useViewExamQuestions'
 
 
 export default function ExamSession() {
+
+   const searchParams = useSearchParams();
   
-  const {data,isPending}=useViewExamQuestions(2)
+  const id = parseInt(searchParams.get("id")!);
+
+  
+  const {data,isPending}=useViewExamQuestions(id)
+  console.log(data,'what is data for exam session')
+
   return (
     <div className='flex flex-col gap-1 '>
       <AdminHeader isExport={false} label='Exam System' actionButton={[<Button key='button-one' className="inline-flex gap-2 border px-2 items-center text-sm"><span>UPLOAD</span></Button>,
@@ -29,7 +36,7 @@ export default function ExamSession() {
       <div className="flex flex-col gap-3 mt-3 w-[96%] mx-auto">
         <SessionDetails/>
         <QuestionSummaryCard />
-        <QuestionsTable />
+        <QuestionsTable questions={data?.results??[]} />
       </div>
     </div>
   )
