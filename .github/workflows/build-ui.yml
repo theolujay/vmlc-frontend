@@ -3,7 +3,7 @@ name: CI - Build VMLC UI Image
 on:
   push:
     branches:
-      - 'main'
+      - 'release'
 
 jobs:
   build-and-push:
