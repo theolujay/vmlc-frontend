@@ -31,14 +31,13 @@ export class ExamPortal {
 
     static async listExams(){
         const response=await client.get(examUrls.list_exams)
-        console.log(response,'what is response from list exams')
-        return response.data.data;
+        return response.data;
     }
 
     static async viewExamQuestions(id:number){
         const response=await client.get(examUrls.VIEW_QUESTIONS(id))
-        console.log(response)
-        return response.data.data;
+        console.log(response,'what is response in view exam questions')
+        return response.data;
     }
 
 }

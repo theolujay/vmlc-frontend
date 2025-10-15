@@ -11,7 +11,7 @@ export default function ViewDetails() {
             <AdminHeader isExport={false} label='Leaderboards' actionButton={<Button className="inline-flex gap-2 border px-2 items-center text-sm"><span><CandidateIcon /></span><span>View Candidate Profile</span></Button>} />
             <div className="flex flex-col gap-3 mt-3 w-[96%] mx-auto">
                 <CandidateInfoCard />
-                <QuestionsTable/>
+                {/* <QuestionsTable/> */}
             </div>
         </div>
     )
