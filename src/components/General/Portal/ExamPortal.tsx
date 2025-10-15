@@ -15,7 +15,7 @@ function ExamPortal() {
     <PageLayout>
       <WelcomeBanner />
       <InfoBanner />
-      <ExamBoard examList={data?.available_exams} examType={data?.candidate_info.role ?? ''} />
+      <ExamBoard examList={data?.available_exams} examType={data?.candidate_info?.role ?? ''} />
       <LeaderBoard />
     </PageLayout>
   )
