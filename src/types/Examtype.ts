@@ -86,9 +86,9 @@ export type QuestionType= {
             option_d: string,
             correct_answer: string,
             difficulty: string,
-            date_created: Date,
+            created_at: Date,
             created_by: {
-                "user": RequestUserType,
+                user: RequestUserType,
                 occupation: string,
                 role:string
             }

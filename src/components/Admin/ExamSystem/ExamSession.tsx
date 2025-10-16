@@ -8,6 +8,7 @@ import clsx from 'clsx'
 import { GotoIcon } from '../../General/GettingStarted/GettingStartedAssets'
 import useViewExamQuestions from '@/hooks/useViewExamQuestions'
 import { useState } from 'react'
+import Spinner from '@/components/ui/spinner/spinner'
 // import SummaryCard from './SummaryCard'
 
 
@@ -16,52 +17,56 @@ import { useState } from 'react'
 
 export default function ExamSession() {
 
-   const searchParams = useSearchParams();
-  
+  const searchParams = useSearchParams();
+
   const id = parseInt(searchParams.get("id")!);
 
-  const [page,setPage]=useState(1)
-  const {data,isPending}=useViewExamQuestions(id)
-  console.log(data,'what is data for exam session')
+  const [page, setPage] = useState(1)
+  const { data, isPending } = useViewExamQuestions(id)
+  console.log(data, 'what is data for exam session')
 
   return (
     <div className='flex flex-col gap-1 '>
       <AdminHeader isExport={false} label='Exam System' actionButton={[<Button key='button-one' className="inline-flex gap-2 border px-2 items-center text-sm"><span>UPLOAD</span></Button>,
-      
+
       <button key='button-two' className="flex flex-col items-center justify-center w-10 h-full rounded-md border border-gray-300 hover:bg-gray-100">
-      <span className=" w-1 h-1 bg-gray-700 rounded-full"></span>
-      <span className="w-1 h-1 bg-gray-700 rounded-full my-0.5"></span>
-      <span className="w-1 h-1 bg-gray-700 rounded-full"></span>
-    </button>
+        <span className=" w-1 h-1 bg-gray-700 rounded-full"></span>
+        <span className="w-1 h-1 bg-gray-700 rounded-full my-0.5"></span>
+        <span className="w-1 h-1 bg-gray-700 rounded-full"></span>
+      </button>
       ]} />
-      <div className="flex flex-col gap-3 mt-3 w-[96%] mx-auto">
-        <SessionDetails/>
-        <QuestionSummaryCard />
-        <QuestionsTable page_count={data?.total_pages} currentPage={page} onPageChange={setPage} questions={data?.results??[]} />
-      </div>
+      {isPending ? <div className='w-full h-full grid place-content-center'>
+        <Spinner />
+      </div> :
+        <div className="flex flex-col gap-3 mt-3 w-[96%] mx-auto">
+          <SessionDetails />
+          <QuestionSummaryCard />
+          <QuestionsTable page_count={data?.total_pages} currentPage={page} onPageChange={setPage} questions={data?.results ?? []} />
+        </div>
+      }
     </div>
   )
 }
 
 
-function SessionDetails(){
-    return <ResponsiveContainer className='gap-10 p-4 flex flex-col'>
-        <div className="flex justify-between">
-            <div className='flex flex-col gap-1'> 
-                <p className='text-sm'>EXAM TITLE</p>
-                <h2 className='font-bold text-2xl'>Screening Exam</h2>
-            </div>
-            <div className="flex flex-col gap-1">
-                <span className='text-sm'>DATE CREATED</span>
-                <span>08 July, 2025</span>
-            </div>
-        </div>
-        <div className="flex flex-col">
-            <p className='text-sm'>DESCRIPTION</p>
-        <p>Preliminary exam to determine candidates qualified for the league stage.</p>
-        </div>
-        
-    </ResponsiveContainer>
+function SessionDetails() {
+  return <ResponsiveContainer className='gap-10 p-4 flex flex-col'>
+    <div className="flex justify-between">
+      <div className='flex flex-col gap-1'>
+        <p className='text-sm'>EXAM TITLE</p>
+        <h2 className='font-bold text-2xl'>Screening Exam</h2>
+      </div>
+      <div className="flex flex-col gap-1">
+        <span className='text-sm'>DATE CREATED</span>
+        <span>08 July, 2025</span>
+      </div>
+    </div>
+    <div className="flex flex-col">
+      <p className='text-sm'>DESCRIPTION</p>
+      <p>Preliminary exam to determine candidates qualified for the league stage.</p>
+    </div>
+
+  </ResponsiveContainer>
 }
 
 

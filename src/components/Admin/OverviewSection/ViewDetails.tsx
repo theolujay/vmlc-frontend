@@ -12,10 +12,11 @@ import { formatDate } from '@/utils/formatFileSize'
 import AdminHeader from '../AdminHeader'
 import { ActivitiesIcon, ScoresIcon } from '../AdminIcons'
 import EmptySession from '../EmptySession'
+import Spinner from '@/components/ui/spinner/spinner'
 
 function ViewUserDetails({ id }: Readonly<{ id: string }>) {
 
-    const { data } = useGetCandidateDetails(id)
+    const { data ,isPending} = useGetCandidateDetails(id)
     
     
     const userName=[data?.user?.first_name,data?.user?.last_name].join(' ')
@@ -23,6 +24,9 @@ function ViewUserDetails({ id }: Readonly<{ id: string }>) {
 
         <div className='flex flex-col gap-1 '>
             <AdminHeader isExport label='Exam System' actionButton={<Button className="inline-flex gap-2 border px-2 items-center text-sm"><span>SEND MESSAGE</span></Button>} />
+           {isPending?<div className='w-full h-full grid place-content-center'>
+            <Spinner/>
+           </div>:
             <div className="flex flex-col gap-3 mt-3  w-[96%] mx-auto">
                 <Details role={data?.role??''} school={data?.school??''} dateJoined={data?.user?.date_joined??new Date()} 
                 // userName={data?.candidate_info?.name??''} 
@@ -30,6 +34,7 @@ function ViewUserDetails({ id }: Readonly<{ id: string }>) {
                 email={data?.user?.email??''} />
                 <ViewDetailsTabSection detailsData={data?.records as RecordsType} />
             </div>
+           }
         </div>
         
     )
