@@ -116,7 +116,7 @@ function ExamSession({ title, count, applicationDate, id }: Readonly<{ title: st
     </div>
     <div className={clsx("flex flex-col z-10   rounded-2xl p-2", isActive ? 'bg-[#E6F7FD]' : 'bg-[#F0F2F5]')}>
       <div className={clsx("flex  flex-col gap-1 rounded-lg")}>
-        <span className='text-[0.875rem] uppercase'>{title} EXAM</span>
+        <span className='text-sm uppercase'>{title} EXAM</span>
 
         <p className='font-bold text-[2.5rem] '>{count}</p>
         <div className='flex justify-between items-center'>

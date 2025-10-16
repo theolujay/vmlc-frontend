@@ -63,7 +63,7 @@ export default function QuestionsTable({ questions, onPageChange, currentPage, p
 
             return (
               <div className="flex justify-center items-center gap-1">
-                <span>{formatDate(row.date_created)}</span>
+                <span>{formatDate(row.created_at)}</span>
               </div>
             )
           },
