@@ -9,7 +9,7 @@ import { Dispatch, SetStateAction } from "react"
 
 export default function QuestionsTable({ questions, onPageChange, currentPage, page_count }: Readonly<{ questions: QuestionType[], onPageChange: Dispatch<SetStateAction<number>>, currentPage: number, page_count: number }>) {
 
-  console.log(questions, 'these are the questions')
+  
   return <ResponsiveContainer className='flex gap-4 py-3 px-0 flex-col mx-auto'>
     <div className="flex justify-between px-3">
       <div className="flex gap-1 flex-col">
