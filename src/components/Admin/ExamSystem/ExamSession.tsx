@@ -23,7 +23,7 @@ export default function ExamSession() {
 
   const [page, setPage] = useState(1)
   const { data, isPending } = useViewExamQuestions(id)
-  console.log(data, 'what is data for exam session')
+  
 
   return (
     <div className='flex flex-col gap-1 '>

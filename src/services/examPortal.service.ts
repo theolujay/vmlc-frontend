@@ -1,6 +1,7 @@
 import { candidateUrls } from "@/constants/candidateUrls";
 import { examUrls } from "@/constants/examUrls";
 import { CreateExamSessionType, DashboardType, SessionType } from "@/types/Examtype";
+import { LeaderBoardType } from "@/types/LeaderBoardType";
 import client from "@/utils/axios";
 
 export class ExamPortal {
@@ -11,7 +12,7 @@ export class ExamPortal {
     }
 
 
-    static async getLeaderBoard(): Promise<DashboardType> {
+    static async getLeaderBoard(): Promise<LeaderBoardType> {
         const response = await client.get(candidateUrls.get_leaderboard)
         return response.data;
     }

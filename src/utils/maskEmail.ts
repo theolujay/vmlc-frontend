@@ -11,3 +11,5 @@ const maskedName=name.slice(0,3)+'...'
   // const maskedName = name.slice(0, 3) + '...' + name.slice(-2);
   return `${maskedName}@${domain}`;
 }
+
+

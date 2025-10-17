@@ -8,12 +8,16 @@ import { User } from "@/types/Index";
 import Table from "../../ui/Table";
 import EmptySession from "../EmptySession";
 import useGetLeaderBoard from "@/hooks/useGetLeaderboard";
+import { LeaderBoardType } from "@/types/LeaderBoardType";
+import CustomTable from "@/components/ui/CustomTable";
+import { getUserName } from "@/utils/generalUtils";
+import { FirstPosition, SecondPosition, ThirdPosition } from "./LeaderBoardIcon";
 
 
 
 export default function LeaderBoardSection() {
-  const {data}=useGetLeaderBoard()
-  console.log('leaderboard data',data)
+  const { data } = useGetLeaderBoard()
+  console.log('leaderboard data', data)
   return (
     <div className='flex flex-col gap-1 '>
       <AdminHeader label="Leaderboards" isExport actionButton={<Button className="px-2 bg-grey-base-400 text-white">UPLOAD</Button>} />
@@ -21,7 +25,7 @@ export default function LeaderBoardSection() {
 
         <ResponsiveContainer className="px-0">
           <ScreeningTabWrapper tabs={[
-            { label: <ScreeningLabel />, value: 'overall-leaderboard', content: <ScoreComponent results={[]} /> },
+            { label: <ScreeningLabel />, value: 'overall-leaderboard', content: <ScoreComponent results={data ?? []} /> },
           ]} />
         </ResponsiveContainer>
       </div>
@@ -34,13 +38,39 @@ function ScreeningLabel() {
   return <div className='flex gap-1 items-center'><span><ScreeningIcon /></span><span>Screening</span></div>
 }
 
-function ScoreComponent({ results }: Readonly<{ results: User[] }>) {
+function ScoreComponent({ results }: Readonly<{ results: LeaderBoardType }>) {
+  console.log(results, 'which results do we have here')
   return <div className="flex flex-col">
-    {results.length > 0 ?
+    {results.length == 0 ? <EmptySession desc="Arrangement of result based on the highest score gotten by candidates on the platform would appear here " label='Exams hasn’t happened yet' /> :
+
       <div className="flex gap-2 flex-col">
-        <Podium users={results} />
-        <Table data={[]} columns={['Position', 'Name', 'Email Address', 'Score', 'Action']} />
-      </div> : <EmptySession desc="Arrangement of result based on the highest score gotten by candidates on the platform would appear here " label='Exams hasn’t happened yet' />}
+        <Podium users={results.slice(0, 3)} />
+        {/* <Table data={[]} columns={['Position', 'Name', 'Email Address', 'Score', 'Action']} /> */}
+        <CustomTable columns={[
+          { key: 'position', header: 'Position', render: (_, row) => <div className="flex items-center gap-1">{row.rank}</div> },
+          { key: 'Name', header: 'Name', render: (_, row) => <div className="flex  items-center gap-1">{getUserName(row.candidate.user.first_name, row.candidate.user.last_name)}</div> },
+          {
+            key: 'email', header: 'Email Address', render: (_, row) => <div className="flex items-center gap-1">
+              {row.candidate.user.email}
+            </div>
+          },
+          {
+            key: 'Score', header: 'Score', render: (_, row) => <div className="flex  items-center gap-1">
+              {row.total_score}
+            </div>
+          },
+          {
+            key: 'action', header: "Action", render: () => (
+              <div className="flex justify-between items-center gap-1">
+
+                <button className="cursor-pointer font-semibold text-[#3E4095]">View Details</button>
+              </div>
+            ),
+          }
+        ]} data={results} />
+      </div>
+      // <EmptySession desc="Arrangement of result based on the highest score gotten by candidates on the platform would appear here " label='Exams hasn’t happened yet' />
+    }
   </div>
 }
 
@@ -48,68 +78,86 @@ function ScoreComponent({ results }: Readonly<{ results: User[] }>) {
 
 
 
+const shapeByRank: Record<number, React.ComponentType> = {
+  1: FirstPosition,
+  2: SecondPosition,
+  3: ThirdPosition,
+};
 
 
 
-export function Podium({ users }: Readonly<{ users: User[] }>) {
+
+
+
+export function Podium({ users }: Readonly<{ users: LeaderBoardType }>) {
   // Sort by rank so it displays in correct order (2 - 1 - 3)
-  const sorted = [...users].sort((a, b) => a.rank - b.rank);
+  // const sorted = [...users].sort((a, b) => a.rank - b.rank);
+  
 
+  const order = [2, 1, 3];
+
+const arranged = [...users].sort(
+  (a, b) => order.indexOf(a.rank) - order.indexOf(b.rank)
+);
+
+
+// const mappedOrder=arranged.map((val,i)=>)
+console.log(arranged,'is this arranged')
   return (
-    <div className="flex justify-center gap-8 mt-10">
-      {sorted.map((user) => (
-        <div
-          key={user.rank}
-          className="flex flex-col items-center relative"
-        >
-          {/* Avatar */}
-          <div className="relative w-16 h-16">
-            <Image
-              src={user.avatar}
-              alt={user.name}
-              width={64}
-              height={64}
-              className="rounded-full border-2 border-white"
-            />
-            <span
-              className={`absolute -top-2 -right-2 w-6 h-6 flex items-center justify-center text-white text-xs font-bold rounded-full ${user.rank === 1
-                  ? "bg-yellow-500"
-                  : user.rank === 2
-                    ? "bg-gray-400"
-                    : "bg-orange-500"
-                }`}
-            >
-              {user.rank}
-            </span>
+   
+    <div className="flex flex-col max-w-[96%] mx-auto my-5">
+
+      <div className="flex flex-col md:flex-row justify-between w-full gap-3">
+        
+        {
+          arranged.map((val,index)=>{
+            const Shape=shapeByRank[val.rank]
+            return  <div key={`shape-index-${index+1}`} className="flex justify-between gap-3 items-center flex-col">
+          <div className="flex  flex-col">
+            <p className="font-[400] text-2xl">{getUserName(val.candidate.user.first_name,val.candidate.user.last_name)}</p>
+            <span className="text-sm">{val.candidate.user.email}</span>
           </div>
-
-          {/* Name & Email */}
-          <h3 className="font-semibold mt-2">{user.name}</h3>
-          <p className="text-sm text-gray-500">{user.email}</p>
-
-          {/* Score */}
-          <div className="bg-indigo-500 text-white px-3 py-1 rounded-full text-sm font-bold mt-2">
-            {user.score}%
-          </div>
-
-          {/* Podium block */}
-          <div
-            className={`w-32 flex items-center justify-center mt-4 text-5xl font-bold text-purple-400 rounded-t-lg`}
-            style={{
-              height:
-                user.rank === 1
-                  ? "160px"
-                  : user.rank === 2
-                    ? "130px"
-                    : "110px",
-              background:
-                "linear-gradient(to top, rgba(156,163,175,0.2), rgba(255,255,255,0))",
-            }}
-          >
-            {user.rank}
+          <div className="relative">
+            <span className="w-15 h-6 p-2 inline-flex items-center absolute left-1/2 -top-2 bg-[#3E4095] text-white  -translate-x-1/2  whitespace-nowrap font-bold rounded-full">{val.total_score}</span>
+          {/* <SecondPosition /> */}
+          <Shape/>
           </div>
         </div>
-      ))}
+          })
+        }
+        {/* <div className="flex justify-between gap-3 items-center flex-col">
+          <div className="flex  flex-col">
+            <p className="font-[400] text-2xl">Gbenga</p>
+            <span className="text-sm">email@gmail.com</span>
+          </div>
+          <div className="relative">
+            <span className="w-15 h-6 p-2 inline-flex items-center absolute left-1/2 -top-2 bg-[#3E4095] text-white  -translate-x-1/2  whitespace-nowrap font-bold rounded-full">100%</span>
+          <SecondPosition />
+          </div>
+        </div>
+          <div className="flex  gap-3 items-center flex-col">
+          <div className="flex justify-between flex-col">
+            <p className="font-[400] text-2xl">Gbenga</p>
+            <span className="text-sm">email@gmail.com</span>
+          </div>
+          <div className="relative">
+            <span className="w-15 h-6 p-2 inline-flex items-center absolute left-1/2 -top-2 bg-[#3E4095] text-white  -translate-x-1/2  whitespace-nowrap font-bold rounded-full">100%</span>
+          <FirstPosition />
+          </div>
+        </div>
+          <div className="flex justify-between gap-3 items-center flex-col">
+          <div className="flex justify-between flex-col">
+            <p className="font-[400] text-2xl">Gbenga</p>
+            <span className="text-sm">email@gmail.com</span>
+          </div>
+          <div className="relative">
+            <span className="w-15 h-6 p-2 inline-flex items-center absolute left-1/2 -top-2 bg-[#3E4095] text-white  -translate-x-1/2  whitespace-nowrap font-bold rounded-full">100%</span>
+          <ThirdPosition />
+          </div>
+        </div> */}
+       
+        
+      </div>
     </div>
   );
 }
