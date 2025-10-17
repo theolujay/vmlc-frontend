@@ -12,17 +12,23 @@ import { SummaryIcon } from '../AdminIcons'
 import { usePathname, useSearchParams } from 'next/navigation'
 import CreateExamSessionModal from '../../Modals/CreateExamSessionModal'
 import EmptySession from '../EmptySession'
+import useListExams from '@/hooks/useListExams'
+import { formatDate } from '@/utils/formatFileSize'
+import useGetValidDate, { useSortedExams } from '@/hooks/useGetValidDate'
+import { ExamSessionType } from '@/types/Examtype'
 
 export default function ExamSection() {
 
 
   const [open, setOpen] = React.useState(false);
+  const { data, isPending } = useListExams()
+  console.log(data, 'what do we have for data for list exams')
 
   return (
     <div className='flex flex-col gap-1 '>
       <AdminHeader isExport={false} label='Exam System' actionButton={<Button onClick={() => setOpen(true)} className="inline-flex gap-2 border px-2 items-center text-sm">CREATE EXAM SESSION</Button>} />
       <div className="flex flex-col gap-3 mt-3 w-[96%] mx-auto">
-        <QuestionSession sessions={['Abbey','Ojomu','Deborah']} />
+        <QuestionSession sessions={data?.results ?? []} />
         <ExamSummary />
       </div>
       <CreateExamSessionModal open={open} close={setOpen} />
@@ -63,19 +69,17 @@ function SummaryCard({ label, className, textColor = 'text-black', value, link }
   </Link>
 }
 
-function QuestionSession({ sessions }: Readonly<{ sessions: string[] }>) {
+function QuestionSession({ sessions }: Readonly<{ sessions: ExamSessionType[] }>) {
+  const sortedSessions = useSortedExams(sessions)
   return <ResponsiveContainer className='gap-3'>
     {
-      sessions.length == 0 && <EmptySession label='No question session has been created yet' desc='Question session set on the platform would appear here ' />
+      sortedSessions.length == 0 && <EmptySession label='No question session has been created yet' desc='Question session set on the platform would appear here ' />
     }
 
 
-    {sessions.length > 0 &&
+    {sortedSessions.length > 0 &&
       <div className="grid gap-3 grid-cols-1 md:grid-cols-4">
-        <ExamSession/>
-        {/* {Array.from({ length: 10 }).map((_, index) => <ExamSession key={index} />)} */}
-
-
+        {sortedSessions.map((val, index) => <ExamSession key={`session-${index}`} id={val.id} applicationDate={val?.exam_date} count={val?.question_count} title={val?.stage} />)}
       </div>
     }
   </ResponsiveContainer>
@@ -85,32 +89,38 @@ function QuestionSession({ sessions }: Readonly<{ sessions: string[] }>) {
 
 
 
-function ExamSession() {
-  const [isActive] = useState(true)
+function ExamSession({ title, count, applicationDate, id }: Readonly<{ title: string, count: number, applicationDate: Date, id: number }>) {
+  // const [isActive] = useState(true)
 
-   const pathName = usePathname();
+  const pathName = usePathname();
   const searchParams = useSearchParams()
   const href = (() => {
     const params = new URLSearchParams(searchParams.toString())
     // params.set("view", link)
-    params.set('view','exam-session')
+    params.set('view', 'exam-session')
+    params.set("id", id.toString());
     return `${pathName}?${params.toString()}`
   })()
 
+
+  // const today = new Date();
+  // const isUpcoming = today < new Date(applicationDate); 
+  // const [isPast, setIsPast] = useState(isUpcoming);
+  const { isActive, daysDiff } = useGetValidDate(applicationDate)
 
 
   return <Link href={href} className='flex relative mt-8 justify-center flex-col'>
     <div className={clsx('pt-2 pb-7 p-2  absolute w-full -top-8   text-white rounded-t-2xl', isActive ? 'bg-[#00455E]' : 'bg-[#667185]')}>
       <div className="flex justify-between">
-        <span className='text-sm'>12 Days to exam</span>
-        <span className='font-bold text-sm'>21 - 09 - 2025</span>
+        <span className='text-sm'>{!isActive ? 'Done' : `${daysDiff} Days to exam`}</span>
+        <span className='font-bold text-sm'>{formatDate(applicationDate)}</span>
       </div>
     </div>
     <div className={clsx("flex flex-col z-10   rounded-2xl p-2", isActive ? 'bg-[#E6F7FD]' : 'bg-[#F0F2F5]')}>
       <div className={clsx("flex  flex-col gap-1 rounded-lg")}>
-        <span className='text-[0.875rem]'>SCREENING EXAM</span>
+        <span className='text-sm uppercase'>{title} EXAM</span>
 
-        <p className='font-bold text-[2.5rem] '>0</p>
+        <p className='font-bold text-[2.5rem] '>{count}</p>
         <div className='flex justify-between items-center'>
           <span className='text-sm'>questions set in this session</span>
           <span><ExamCardGoTo /></span>

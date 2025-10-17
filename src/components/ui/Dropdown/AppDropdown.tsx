@@ -1,13 +1,15 @@
 import { LogOutIcon, ProfileIcon } from "@/components/General/GettingStarted/GettingStartedAssets";
+import LogOutModal from "@/components/Modals/LogoutModal";
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
+import { useState } from "react";
 import { CaretDropdown } from "../SvgAsset/GeneralAsset";
-import useLogout from "@/hooks/useLogout";
 
 
 
 
 const AppDropdown = () => {
-	const {onLogout}=useLogout()
+const [open,setOpen]=useState(false)
+	
 
 	return (
 		<DropdownMenu.Root>
@@ -39,7 +41,9 @@ const AppDropdown = () => {
 						
 					</DropdownMenu.Item> */}
                     <DropdownMenu.Separator className="m-[5px] h-px bg-violet6" />
-					<DropdownMenu.Item onClick={onLogout} className="group cursor-pointer relative flex text-[#D42620] h-[25px]  items-center   leading-none  outline-none  ">
+					<DropdownMenu.Item onClick={()=>{
+						
+						setOpen(true)}} className="group cursor-pointer relative flex text-[#D42620] h-[25px]  items-center   leading-none  outline-none  ">
 						<div className=" pr-5  ">
 							<LogOutIcon/>
 						</div>
@@ -47,6 +51,7 @@ const AppDropdown = () => {
 					</DropdownMenu.Item>
 				</DropdownMenu.Content>
 			</DropdownMenu.Portal>
+			<LogOutModal open={open} close={setOpen} />
 		</DropdownMenu.Root>
 	);
 };

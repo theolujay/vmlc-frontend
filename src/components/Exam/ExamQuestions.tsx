@@ -1,17 +1,16 @@
 "use client";
 import { useExamContext } from "@/contexts/ExamNavigationProvider";
 import clsx from "clsx";
-import React, { useState } from "react";
+import { useState } from "react";
 import { BackIcon, GotoIcon } from "../General/GettingStarted/GettingStartedAssets";
 import SubmissionConfirmationModal from "./SubmissionConfirmationModal";
-import useGetExamQuestions from "@/hooks/useGetExamQuestions";
 // import { useGetExamQuestions } from "@/hooks/useGetExams";
 
 
 export default function Questions() {
     const { showNav } = useExamContext()
     const [open,setOpen] = useState(true)
-    const {data}=useGetExamQuestions(12);
+    // const {data}=useGetExamQuestions(12);
 
     return <div className="grid grid-cols-6 h-[70vh] ">
         <div className={clsx("flex-col flex-1 transition-all duration-500 flex ", showNav ? 'col-span-4' : 'col-span-6')}>

@@ -5,6 +5,7 @@ import type { Metadata } from "next";
 import { Suspense } from "react";
 import "./globals.css";
 import AppErrorBoundary from "./AppErrorBoundary";
+import Spinner from "@/components/ui/spinner/spinner";
 
 // const geistSans = Geist({
 //   variable: "--font-geist-sans",
@@ -30,12 +31,12 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={` antialiased`}
+        className="antialiased"
       >
         <AppErrorBoundary>
           <AuthProvider>
             <QueryProvider>
-              <Suspense fallback={<div>Loading...</div>}>
+              <Suspense fallback={<div className="grid w-full h-screen place-content-center"><Spinner/></div>}>
                 {children}
               </Suspense>
             </QueryProvider>

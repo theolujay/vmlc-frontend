@@ -1,4 +1,11 @@
-
+export function getUserInitials(userName:string){
+    if (!userName) {
+        return ''
+    }
+    //   const userInitials = userName.split(' ').map((val) => val[0]).join('')
+    const userInitials = userName.split(' ').map((val) => val.charAt(0)).join('');
+    return userInitials
+}
 
 
 
