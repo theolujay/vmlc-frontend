@@ -14,7 +14,8 @@ import CreateExamSessionModal from '../../Modals/CreateExamSessionModal'
 import EmptySession from '../EmptySession'
 import useListExams from '@/hooks/useListExams'
 import { formatDate } from '@/utils/formatFileSize'
-import useGetValidDate from '@/hooks/useGetValidDate'
+import useGetValidDate, { useSortedExams } from '@/hooks/useGetValidDate'
+import { ExamSessionType } from '@/types/Examtype'
 
 export default function ExamSection() {
 
@@ -68,16 +69,17 @@ function SummaryCard({ label, className, textColor = 'text-black', value, link }
   </Link>
 }
 
-function QuestionSession({ sessions }: Readonly<{ sessions: any[] }>) {
+function QuestionSession({ sessions }: Readonly<{ sessions: ExamSessionType[] }>) {
+  const sortedSessions = useSortedExams(sessions)
   return <ResponsiveContainer className='gap-3'>
     {
-      sessions.length == 0 && <EmptySession label='No question session has been created yet' desc='Question session set on the platform would appear here ' />
+      sortedSessions.length == 0 && <EmptySession label='No question session has been created yet' desc='Question session set on the platform would appear here ' />
     }
 
 
-    {sessions.length > 0 &&
+    {sortedSessions.length > 0 &&
       <div className="grid gap-3 grid-cols-1 md:grid-cols-4">
-        {sessions.map((val, index) => <ExamSession key={`session-${index}`} id={val.id} applicationDate={val?.exam_date} count={val?.question_count} title={val?.stage} />)}
+        {sortedSessions.map((val, index) => <ExamSession key={`session-${index}`} id={val.id} applicationDate={val?.exam_date} count={val?.question_count} title={val?.stage} />)}
       </div>
     }
   </ResponsiveContainer>
@@ -104,13 +106,13 @@ function ExamSession({ title, count, applicationDate, id }: Readonly<{ title: st
   // const today = new Date();
   // const isUpcoming = today < new Date(applicationDate); 
   // const [isPast, setIsPast] = useState(isUpcoming);
-  const {isActive,daysDiff}=useGetValidDate(applicationDate)
+  const { isActive, daysDiff } = useGetValidDate(applicationDate)
 
 
   return <Link href={href} className='flex relative mt-8 justify-center flex-col'>
     <div className={clsx('pt-2 pb-7 p-2  absolute w-full -top-8   text-white rounded-t-2xl', isActive ? 'bg-[#00455E]' : 'bg-[#667185]')}>
       <div className="flex justify-between">
-        <span className='text-sm'>{!isActive?'Done':`${daysDiff} Days to exam`}</span>
+        <span className='text-sm'>{!isActive ? 'Done' : `${daysDiff} Days to exam`}</span>
         <span className='font-bold text-sm'>{formatDate(applicationDate)}</span>
       </div>
     </div>

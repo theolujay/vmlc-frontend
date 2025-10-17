@@ -8,9 +8,7 @@ export class CandidateMgtService {
         return response.data;
     }
 
-    static async getCandidateDetails(id:string)
-    :Promise<CandidateType>
-    {
+    static async getCandidateDetails(id:string):Promise<CandidateType>{
         const response=await client.get(candidateUrls.CANDIDATE_DETAILS(id))
         return response.data;
     }

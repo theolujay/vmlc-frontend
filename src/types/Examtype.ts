@@ -47,6 +47,35 @@ export type AvailableExamType = {
 }
 
 
+
+
+
+export type SessionType = {
+  count: number,
+  total_pages: number,
+  next: string,
+  previous: string | null,
+  results: ExamSessionType[]
+}
+
+
+
+
+export type ExamSessionType = {
+  id: number,
+  title: string,
+  stage: string,
+  question_count: number,
+  exam_date: Date,
+  created_at: Date
+}
+
+
+
+
+
+
+
 export type ExamStatType = {
   total_exams_taken: number,
   available_exams_count: number,
@@ -68,28 +97,28 @@ export type CandidateInfoType = {
   profile_photo: string
 }
 
-export type CreateExamSessionType={
-  title:string,
-  stage:string,
-  description:string,
+export type CreateExamSessionType = {
+  title: string,
+  stage: string,
+  description: string,
 }
 
 
 
 
-export type QuestionType= {
-            id: number,
-            text: string,
-            option_a: string,
-            option_b:string,
-            option_c: string,
-            option_d: string,
-            correct_answer: string,
-            difficulty: string,
-            created_at: Date,
-            created_by: {
-                user: RequestUserType,
-                occupation: string,
-                role:string
-            }
-        }
+export type QuestionType = {
+  id: number,
+  text: string,
+  option_a: string,
+  option_b: string,
+  option_c: string,
+  option_d: string,
+  correct_answer: string,
+  difficulty: string,
+  created_at: Date,
+  created_by: {
+    user: RequestUserType,
+    occupation: string,
+    role: string
+  }
+}

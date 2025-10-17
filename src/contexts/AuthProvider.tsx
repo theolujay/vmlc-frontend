@@ -1,7 +1,7 @@
 "use client"
 import { AuthLoginResponse, AuthState } from '@/types/auth';
 import client from '@/utils/axios';
-import React, { createContext, Dispatch, useContext, useReducer } from 'react';
+import React, { createContext, Dispatch, useContext, useEffect, useReducer } from 'react';
 
 type Actions =
     | {
@@ -14,8 +14,8 @@ type Actions =
 
 const INIT_SESSION = 'loginSuccess';
 const DESTROY_SESSION = 'logout';
-const studentRoles = ['screening', 'league', 'final', 'winner'];
-const staffRoles = ['volunteer', 'moderator', 'admin', 'manager', 'superadmin', 'sponsor'];
+const studentRoles = new Set(['screening', 'league', 'final', 'winner']);
+const staffRoles = new Set(['volunteer', 'moderator', 'admin', 'manager', 'superadmin', 'sponsor']);
 
 const reducer = (state: AuthState, action: Actions) => {
     switch (action.type) {
@@ -32,11 +32,11 @@ const reducer = (state: AuthState, action: Actions) => {
                     user: null
                 }
             }
-            console.log(payload, 'what do we have')
-            client.defaults.headers.common["Authorization"] = `Bearer ${payload.access}`
+            
+            // client.defaults.headers.common["Authorization"] = `Bearer ${payload.access}`
 
-            const isStudent = studentRoles.includes(payload?.profile?.role ?? '');
-            const isStaff = staffRoles.includes(payload?.profile?.role ?? '')
+            const isStudent = studentRoles.has(payload?.profile?.role ?? '');
+            const isStaff = staffRoles.has(payload?.profile?.role ?? '')
             const user = {
                 ...payload.profile.user,
                 role: payload.profile.role,
@@ -89,6 +89,23 @@ export default function AuthProvider({ children }: Readonly<{ children: React.Re
         user: null
     });
 
+
+
+    useEffect(() => {
+    const storedSession = localStorage.getItem('session');
+    if (storedSession) {
+      try {
+        const parsedSession: AuthLoginResponse = JSON.parse(storedSession);
+        if (parsedSession?.access) {
+        //   client.defaults.headers.common["Authorization"] = `Bearer ${parsedSession.access}`;
+          dispatch({ type: INIT_SESSION, payload: parsedSession });
+        }
+      } catch (error) {
+        console.error("Failed to parse session:", error);
+        localStorage.removeItem('session');
+      }
+    }
+  }, []);
 
 
 

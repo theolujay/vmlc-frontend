@@ -1,6 +1,6 @@
 import { candidateUrls } from "@/constants/candidateUrls";
 import { examUrls } from "@/constants/examUrls";
-import { CreateExamSessionType, DashboardType } from "@/types/Examtype";
+import { CreateExamSessionType, DashboardType, SessionType } from "@/types/Examtype";
 import client from "@/utils/axios";
 
 export class ExamPortal {
@@ -29,7 +29,7 @@ export class ExamPortal {
     }
 
 
-    static async listExams(){
+    static async listExams():Promise<SessionType>{
         const response=await client.get(examUrls.list_exams)
         return response.data;
     }
