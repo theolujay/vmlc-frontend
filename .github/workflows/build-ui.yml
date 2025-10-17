@@ -3,7 +3,8 @@ name: CI/CD Pipeline
 on:
   push:
     branches:
-      - "release"
+      - 'release'
+
 jobs:
   merge-branch:
     runs-on: ubuntu-22.04
