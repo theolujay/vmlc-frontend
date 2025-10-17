@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
 
-export default function useGetValidDate(applicationDate:Date) {
+export default function useGetValidDate(applicationDate: Date) {
   const today = new Date();
   const examDate = new Date(applicationDate);
 
@@ -12,5 +12,15 @@ export default function useGetValidDate(applicationDate:Date) {
   const isUpcoming = daysDiff > 0;
   const [isActive] = useState(isUpcoming);
 
-  return {isActive,daysDiff}
+  return { isActive, daysDiff }
+}
+
+
+
+
+
+export function useSortedExams(exams: any[]) {
+  return useMemo(() => {
+    return [...exams].sort((a, b) => new Date(a.exam_date).getTime() - new Date(b.exam_date).getTime())
+  }, [exams])
 }

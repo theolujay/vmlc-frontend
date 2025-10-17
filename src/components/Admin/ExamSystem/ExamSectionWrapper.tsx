@@ -9,7 +9,6 @@ import ExamSection from './ExamSection';
 export default function ExamSectionWrapper() {
     const currentView = useSearchParams().get('view');
     return renderComponent(currentView);
-
 }
 
 
