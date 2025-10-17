@@ -4,7 +4,10 @@ This is the frontend for the VMLC platform, built with Next.js.
 
 ## Getting Started
 
+...
+
 ### Prerequisites
+
 
 *   [Node.js](https://nodejs.org/en/) (v20+)
 *   [NPM](https://www.npmjs.com/)

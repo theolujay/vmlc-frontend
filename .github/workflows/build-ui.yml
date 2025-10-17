@@ -1,11 +1,24 @@
-name: CI - Build VMLC UI Image
+name: CI/CD Pipeline
 
 on:
   push:
     branches:
-      - 'main'
-
+      - "release"
 jobs:
+  merge-branch:
+    runs-on: ubuntu-22.04
+    permissions:
+      contents: write
+      packages: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: everlytic/branch-merge@1.1.5
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          source_ref: 'release'
+          target_branch: 'main'
+          commit_message_template: '[Automated] Merged {source_ref} into target {target_branch}'
+
   build-and-push:
     runs-on: ubuntu-22.04
     permissions:
