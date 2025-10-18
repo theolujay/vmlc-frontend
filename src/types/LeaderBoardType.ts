@@ -11,3 +11,13 @@ export type LeaderCandidateType = {
     school: string
 }
 export type LeaderBoardType = LeaderType[]
+
+
+export type PaginatedType<T>= {
+    count: number;
+    total_pages: number,
+    next: string | null,
+    previous: string | null,
+    results: T[]
+}
+

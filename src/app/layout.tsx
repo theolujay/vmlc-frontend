@@ -1,9 +1,9 @@
-
 import AuthProvider from "@/contexts/AuthProvider";
 import QueryProvider from "@/contexts/QueryProviders";
 import type { Metadata } from "next";
 import { Suspense } from "react";
 import "./globals.css";
+import {ToastContainer} from 'react-toastify'
 import AppErrorBoundary from "./AppErrorBoundary";
 import Spinner from "@/components/ui/spinner/spinner";
 
@@ -39,6 +39,7 @@ export default function RootLayout({
               <Suspense fallback={<div className="grid w-full h-screen place-content-center"><Spinner/></div>}>
                 {children}
               </Suspense>
+              <ToastContainer/>
             </QueryProvider>
           </AuthProvider>
         </AppErrorBoundary>

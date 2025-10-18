@@ -9,10 +9,10 @@ export default function useGetValidDate(applicationDate: Date) {
     const diffTime = examDate.getTime() - today.getTime();
     return Math.ceil(diffTime / (1000 * 60 * 60 * 24)); // convert ms → days
   }, [examDate, today]);
-  const isUpcoming = daysDiff > 0;
-  const [isActive] = useState(isUpcoming);
+  const isUpcomingDateDiff = daysDiff > 0;
+  const [isUpcoming] = useState(isUpcomingDateDiff);
 
-  return { isActive, daysDiff }
+  return { isUpcoming, daysDiff }
 }
 
 

@@ -31,6 +31,7 @@ export default function ExamSection() {
         <QuestionSession sessions={data?.results ?? []} />
         <ExamSummary />
       </div>
+
       <CreateExamSessionModal open={open} close={setOpen} />
     </div>
   )
@@ -106,17 +107,24 @@ function ExamSession({ title, count, applicationDate, id }: Readonly<{ title: st
   // const today = new Date();
   // const isUpcoming = today < new Date(applicationDate); 
   // const [isPast, setIsPast] = useState(isUpcoming);
-  const { isActive, daysDiff } = useGetValidDate(applicationDate)
+  const { isUpcoming, daysDiff } = useGetValidDate(applicationDate)
 
 
   return <Link href={href} className='flex relative mt-8 justify-center flex-col'>
-    <div className={clsx('pt-2 pb-7 p-2  absolute w-full -top-8   text-white rounded-t-2xl', isActive ? 'bg-[#00455E]' : 'bg-[#667185]')}>
+    <div className={clsx('pt-2 pb-7 p-2  absolute w-full -top-8   text-white rounded-t-2xl', isUpcoming? 'bg-[#00455E]' : 'bg-[#667185]')}>
       <div className="flex justify-between">
-        <span className='text-sm'>{!isActive ? 'Done' : `${daysDiff} Days to exam`}</span>
+        <span className="text-sm">
+           {isUpcoming
+    ? `${daysDiff} Day${daysDiff === 1 ? '' : 's'} to exam`
+    : 'Done'}
+  {/* {isUpcoming ? `${daysDiff} Days to exam` : 'Done'} */}
+</span>
+
+        {/* <span className='text-sm'>{!isActive ? 'Done' : `${daysDiff} Days to exam`}</span> */}
         <span className='font-bold text-sm'>{formatDate(applicationDate)}</span>
       </div>
     </div>
-    <div className={clsx("flex flex-col z-10   rounded-2xl p-2", isActive ? 'bg-[#E6F7FD]' : 'bg-[#F0F2F5]')}>
+    <div className={clsx("flex flex-col z-10   rounded-2xl p-2", isUpcoming ? 'bg-[#E6F7FD]' : 'bg-[#F0F2F5]')}>
       <div className={clsx("flex  flex-col gap-1 rounded-lg")}>
         <span className='text-sm uppercase'>{title} EXAM</span>
 
@@ -129,3 +137,17 @@ function ExamSession({ title, count, applicationDate, id }: Readonly<{ title: st
     </div>
   </Link>
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
