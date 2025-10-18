@@ -45,7 +45,6 @@ function ScoreComponent({ results }: Readonly<{ results: LeaderBoardType }>) {
 
       <div className="flex gap-2 flex-col">
         <Podium users={results.slice(0, 3)} />
-        {/* <Table data={[]} columns={['Position', 'Name', 'Email Address', 'Score', 'Action']} /> */}
         <CustomTable columns={[
           { key: 'position', header: 'Position', render: (_, row) => <div className="flex items-center gap-1">{row.rank}</div> },
           { key: 'Name', header: 'Name', render: (_, row) => <div className="flex  items-center gap-1">{getUserName(row.candidate.user.first_name, row.candidate.user.last_name)}</div> },
@@ -90,74 +89,116 @@ const shapeByRank: Record<number, React.ComponentType> = {
 
 
 export function Podium({ users }: Readonly<{ users: LeaderBoardType }>) {
-  // Sort by rank so it displays in correct order (2 - 1 - 3)
-  // const sorted = [...users].sort((a, b) => a.rank - b.rank);
-  
-
   const order = [2, 1, 3];
+  const arranged = [...users].sort(
+    (a, b) => order.indexOf(a.rank) - order.indexOf(b.rank)
+  );
 
-const arranged = [...users].sort(
-  (a, b) => order.indexOf(a.rank) - order.indexOf(b.rank)
-);
 
 
-// const mappedOrder=arranged.map((val,i)=>)
-console.log(arranged,'is this arranged')
   return (
-   
-    <div className="flex flex-col max-w-[96%] mx-auto my-5">
 
+    <div className="flex flex-col max-w-[96%] mx-auto my-5">
       <div className="flex flex-col md:flex-row justify-between w-full gap-3">
-        
         {
-          arranged.map((val,index)=>{
-            const Shape=shapeByRank[val.rank]
-            return  <div key={`shape-index-${index+1}`} className="flex justify-between gap-3 items-center flex-col">
-          <div className="flex  flex-col">
-            <p className="font-[400] text-2xl">{getUserName(val.candidate.user.first_name,val.candidate.user.last_name)}</p>
-            <span className="text-sm">{val.candidate.user.email}</span>
-          </div>
-          <div className="relative">
-            <span className="w-15 h-6 p-2 inline-flex items-center absolute left-1/2 -top-2 bg-[#3E4095] text-white  -translate-x-1/2  whitespace-nowrap font-bold rounded-full">{val.total_score}</span>
-          {/* <SecondPosition /> */}
-          <Shape/>
-          </div>
-        </div>
+          arranged.map((val, index) => {
+            const Shape = shapeByRank[val.rank]
+            return <div key={`shape-index-${index + 1}`} className="flex justify-between gap-3 items-center flex-col">
+              <div className="flex  flex-col">
+                <p className="font-[400] text-2xl">{getUserName(val.candidate.user.first_name, val.candidate.user.last_name)}</p>
+                <span className="text-sm">{val.candidate.user.email}</span>
+              </div>
+              <div className="relative">
+                <span className="w-15 h-6 p-2 inline-flex items-center absolute left-1/2 -top-2 bg-[#3E4095] text-white  -translate-x-1/2  whitespace-nowrap font-bold rounded-full">{val.total_score}</span>
+                <Shape />
+              </div>
+            </div>
           })
         }
-        {/* <div className="flex justify-between gap-3 items-center flex-col">
-          <div className="flex  flex-col">
-            <p className="font-[400] text-2xl">Gbenga</p>
-            <span className="text-sm">email@gmail.com</span>
-          </div>
-          <div className="relative">
-            <span className="w-15 h-6 p-2 inline-flex items-center absolute left-1/2 -top-2 bg-[#3E4095] text-white  -translate-x-1/2  whitespace-nowrap font-bold rounded-full">100%</span>
-          <SecondPosition />
-          </div>
-        </div>
-          <div className="flex  gap-3 items-center flex-col">
-          <div className="flex justify-between flex-col">
-            <p className="font-[400] text-2xl">Gbenga</p>
-            <span className="text-sm">email@gmail.com</span>
-          </div>
-          <div className="relative">
-            <span className="w-15 h-6 p-2 inline-flex items-center absolute left-1/2 -top-2 bg-[#3E4095] text-white  -translate-x-1/2  whitespace-nowrap font-bold rounded-full">100%</span>
-          <FirstPosition />
-          </div>
-        </div>
-          <div className="flex justify-between gap-3 items-center flex-col">
-          <div className="flex justify-between flex-col">
-            <p className="font-[400] text-2xl">Gbenga</p>
-            <span className="text-sm">email@gmail.com</span>
-          </div>
-          <div className="relative">
-            <span className="w-15 h-6 p-2 inline-flex items-center absolute left-1/2 -top-2 bg-[#3E4095] text-white  -translate-x-1/2  whitespace-nowrap font-bold rounded-full">100%</span>
-          <ThirdPosition />
-          </div>
-        </div> */}
-       
-        
       </div>
     </div>
   );
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// type Option = {
+//   id: string;
+//   label: string;
+//   value: string;
+// };
+
+// type QuestionProps = {
+//   question: string;
+//   options: Option[];
+//   correctAnswer: string;
+// };
+
+// export function QuestionExample({
+//   question,
+//   options,
+//   correctAnswer,
+// }: Readonly<QuestionProps>) {
+//   const [selected, setSelected] = useState<string>("");
+
+//   return (
+//     <div className="max-w-xl mx-auto p-4 border-b border-gray-200">
+//       <p className="font-medium text-lg mb-3">{question}</p>
+
+//       <div className="flex flex-col gap-2">
+//         {options.map((opt) => {
+//           const isSelected = selected === opt.value;
+//           const isCorrect = selected && opt.value === correctAnswer;
+//           const isWrong = isSelected && opt.value !== correctAnswer;
+
+//           return (
+//             <label
+//               key={opt.id}
+//               className={`flex items-center gap-2 p-2 rounded-lg cursor-pointer transition
+//                 ${
+//                   isCorrect
+//                     ? "bg-green-50 border border-green-500"
+//                     : isWrong
+//                     ? "bg-red-50 border border-red-500"
+//                     : "border border-gray-300 hover:bg-gray-50"
+//                 }`}
+//             >
+//               <input
+//                 type="radio"
+//                 name="quiz"
+//                 value={opt.value}
+//                 checked={isSelected}
+//                 onChange={() => setSelected(opt.value)}
+//                 className="accent-blue-600"
+//               />
+//               <span
+//                 className={`text-sm ${
+//                   isCorrect
+//                     ? "text-green-700 font-semibold"
+//                     : isWrong
+//                     ? "text-red-700 font-semibold"
+//                     : "text-gray-800"
+//                 }`}
+//               >
+//                 {opt.label}
+//               </span>
+//             </label>
+//           );
+//         })}
+//       </div>
+//     </div>
+//   );
+// }

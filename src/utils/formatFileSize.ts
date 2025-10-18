@@ -15,7 +15,7 @@ export function formatStorageSize(bytes: number=0, decimalPlaces: number = 2): s
 
 
 
-export function formatDate(date:Date){
+export function formatDate(date:Date):string{
  return new Date(date).toLocaleDateString('en-GB', {
   day: '2-digit',
   month: 'short',
