@@ -10,10 +10,7 @@ export class AuthService {
         return (await response).data.data;
     }
 
-
-
-
-     static async registerStaff(user: StaffValueType): Promise<AuthRegisterResponse> {
+    static async registerStaff(user: StaffValueType): Promise<AuthRegisterResponse> {
         const response = client.post(authUrls.staff_registeration, user);
         return (await response).data.data;
     }
@@ -24,14 +21,13 @@ export class AuthService {
 
     }
 
-    static async logout(payload:LogoutRequest){
-        const response=await client.post(authUrls.logout,payload);
+    static async logout(payload: LogoutRequest) {
+        const response = await client.post(authUrls.logout, payload);
         return response.data;
     }
 
     static async verifyEmail(payload: VerifyRequest) {
         const response = await client.post(authUrls.verify, payload);
-        console.log(response, 'from verify')
         return response.data;
     }
 
@@ -48,12 +44,6 @@ export class AuthService {
     }
 
 
-
-
-
-
-
-
     static async passwordChange(payload: Omit<VerifyRequest, 'otp'>) {
         const response = await client.post(authUrls.passwordChange, payload)
         return response.data
@@ -64,9 +54,7 @@ export class AuthService {
         return response.data
     }
 
-
-
-     static async passwordChangeResendOtp(payload: Omit<VerifyRequest, 'otp'>) {
+    static async passwordChangeResendOtp(payload: Omit<VerifyRequest, 'otp'>) {
         const response = await client.post(authUrls.passwordChangeResendOtp, payload)
         return response.data
     }

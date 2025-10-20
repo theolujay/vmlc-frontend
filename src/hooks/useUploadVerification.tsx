@@ -17,7 +17,7 @@ export default function useUploadVerification() {
             })
             router.push('/get-started')
         }
-        // onSuccess:()=>setSuccess(true)
+
     })
 
     function onSubmit(value: VerificationDocumentType) {
