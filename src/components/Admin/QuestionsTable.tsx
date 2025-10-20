@@ -6,6 +6,7 @@ import { FilterIcon, SortIcon } from "./AdminIcons"
 import { QuestionType } from "@/types/Examtype"
 import TablePagination from "../ui/Pagination/TablePagination"
 import { Dispatch, SetStateAction } from "react"
+import { getOptionAsArray } from "@/utils/generalUtils"
 
 export default function QuestionsTable({ questions, onPageChange, currentPage, page_count }: Readonly<{ questions: QuestionType[], onPageChange: Dispatch<SetStateAction<number>>, currentPage: number, page_count: number }>) {
 
@@ -99,17 +100,3 @@ function getAppropriateColor(val: string) {
 
 
 
-function getOptionAsArray(data: QuestionType): Record<string, string>[] {
-  let optionsArray = []
-  for (const key in data) {
-    if (key.startsWith('option')) {
-      const value = (data as Record<string, any>)[key];
-      let val: Record<string, string> = {
-        option: value,
-        optionKey: key
-      };
-      optionsArray.push(val);
-    }
-  }
-  return optionsArray;
-}
