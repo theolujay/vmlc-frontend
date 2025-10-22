@@ -30,9 +30,9 @@ export class ExamPortal {
     }
 
 
-    static async listExams(): Promise<SessionType> {
+    static async listExams(id:number): Promise<SessionType> {
         try {
-            const response = await client.get(examUrls.list_exams)
+            const response = await client.get(examUrls.list_exams(id))
             return response.data;
         } catch (error) {
             console.error('Error fetching exam list:', error);

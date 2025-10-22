@@ -1,7 +1,7 @@
 "use client"
 import clsx from 'clsx'
 import Link from 'next/link'
-import React, { useState } from 'react'
+import React, { Dispatch, SetStateAction, useState } from 'react'
 import { ExamCardGoTo } from '../../General/GeneralIcon'
 import { GotoIcon } from '../../General/GettingStarted/GettingStartedAssets'
 import Button from '../../ui/Button'
@@ -17,12 +17,13 @@ import { formatDate } from '@/utils/formatFileSize'
 import useGetValidDate, { useSortedExams } from '@/hooks/useGetValidDate'
 import { ExamSessionType } from '@/types/Examtype'
 import Spinner from '@/components/ui/spinner/spinner'
+import PagePagination from '@/components/ui/Pagination/PagePagination'
 
 export default function ExamSection() {
-
+  const [currentPage, setCurrentPage] = useState(1);
 
   const [open, setOpen] = React.useState(false);
-  const { data, isPending } = useListExams()
+  const { data, isPending } = useListExams(currentPage)
   console.log(data, 'what do we have for data for list exams')
 
   return (
@@ -31,7 +32,7 @@ export default function ExamSection() {
       <div className="flex flex-col gap-3 mt-3 w-[96%] mx-auto">
         {
           isPending ? <div className="grid w-full h-screen place-content-center"><Spinner /></div> :
-            <QuestionSession sessions={data?.results ?? []} />
+            <QuestionSession currentPage={currentPage} onPageChange={setCurrentPage} total_pages={data?.total_pages!} sessions={data?.results ?? []} />
         }
         <ExamSummary />
       </div>
@@ -74,7 +75,7 @@ function SummaryCard({ label, className, textColor = 'text-black', value, link }
   </Link>
 }
 
-function QuestionSession({ sessions }: Readonly<{ sessions: ExamSessionType[] }>) {
+function QuestionSession({ sessions, total_pages, onPageChange, currentPage }: Readonly<{ sessions: ExamSessionType[], total_pages: number, currentPage: number, onPageChange: Dispatch<SetStateAction<number>> }>) {
   const sortedSessions = useSortedExams(sessions)
   console.log(sortedSessions, 'sorted sessions here  ')
   return <ResponsiveContainer className='gap-3'>
@@ -84,11 +85,15 @@ function QuestionSession({ sessions }: Readonly<{ sessions: ExamSessionType[] }>
 
 
     {sortedSessions.length > 0 &&
-      <div className="grid gap-3 grid-cols-1 md:grid-cols-4">
-        {sortedSessions.map((val, index) => <ExamSession key={`session-${index}`} id={val.id}
-          // applicationDate={val?.exam_date}
-          applicationDate={val?.created_at}
-          count={val?.question_count} title={val?.stage} />)}
+      <div className="flex flex-col gap-3">
+
+        <div className="grid gap-3 grid-cols-1 md:grid-cols-4">
+          {sortedSessions.map((val, index) => <ExamSession key={`session-${index + 1}`} id={val.id}
+            // applicationDate={val?.exam_date}
+            applicationDate={val?.created_at}
+            count={val?.question_count} title={val?.stage} />)}
+        </div>
+        {total_pages > 1 && <PagePagination currentPage={currentPage} onPageChange={onPageChange} pageCount={total_pages} />}
       </div>
     }
   </ResponsiveContainer>
@@ -99,13 +104,12 @@ function QuestionSession({ sessions }: Readonly<{ sessions: ExamSessionType[] }>
 
 
 function ExamSession({ title, count, applicationDate, id }: Readonly<{ title: string, count: number, applicationDate: Date, id: number }>) {
-  // const [isActive] = useState(true)
+  
 
   const pathName = usePathname();
   const searchParams = useSearchParams()
   const href = (() => {
     const params = new URLSearchParams(searchParams.toString())
-    // params.set("view", link)
     params.set('view', 'exam-session')
     params.set("id", id.toString());
     return `${pathName}?${params.toString()}`
