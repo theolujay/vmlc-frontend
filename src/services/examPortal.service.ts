@@ -24,20 +24,24 @@ export class ExamPortal {
     }
 
 
-    static async createExamSession(payload:CreateExamSessionType) {
-        const response=await client.post(examUrls.create_exam,payload)
+    static async createExamSession(payload: CreateExamSessionType) {
+        const response = await client.post(examUrls.create_exam, payload)
         return response.data.data;
     }
 
 
-    static async listExams():Promise<SessionType>{
-        const response=await client.get(examUrls.list_exams)
-        return response.data;
+    static async listExams(): Promise<SessionType> {
+        try {
+            const response = await client.get(examUrls.list_exams)
+            return response.data;
+        } catch (error) {
+            console.error('Error fetching exam list:', error);
+            throw error;
+        }
     }
 
-    static async viewExamQuestions(id:number){
-        const response=await client.get(examUrls.VIEW_QUESTIONS(id))
-        console.log(response,'what is response in view exam questions')
+    static async viewExamQuestions(id: number) {
+        const response = await client.get(examUrls.VIEW_QUESTIONS(id))
         return response.data;
     }
 

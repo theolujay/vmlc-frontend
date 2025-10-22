@@ -16,6 +16,7 @@ import useListExams from '@/hooks/useListExams'
 import { formatDate } from '@/utils/formatFileSize'
 import useGetValidDate, { useSortedExams } from '@/hooks/useGetValidDate'
 import { ExamSessionType } from '@/types/Examtype'
+import Spinner from '@/components/ui/spinner/spinner'
 
 export default function ExamSection() {
 
@@ -28,7 +29,10 @@ export default function ExamSection() {
     <div className='flex flex-col gap-1 '>
       <AdminHeader isExport={false} label='Exam System' actionButton={<Button onClick={() => setOpen(true)} className="inline-flex gap-2 border px-2 items-center text-sm">CREATE EXAM SESSION</Button>} />
       <div className="flex flex-col gap-3 mt-3 w-[96%] mx-auto">
-        <QuestionSession sessions={data?.results ?? []} />
+        {
+          isPending ? <div className="grid w-full h-screen place-content-center"><Spinner /></div> :
+            <QuestionSession sessions={data?.results ?? []} />
+        }
         <ExamSummary />
       </div>
 
@@ -72,6 +76,7 @@ function SummaryCard({ label, className, textColor = 'text-black', value, link }
 
 function QuestionSession({ sessions }: Readonly<{ sessions: ExamSessionType[] }>) {
   const sortedSessions = useSortedExams(sessions)
+  console.log(sortedSessions, 'sorted sessions here  ')
   return <ResponsiveContainer className='gap-3'>
     {
       sortedSessions.length == 0 && <EmptySession label='No question session has been created yet' desc='Question session set on the platform would appear here ' />
@@ -80,7 +85,10 @@ function QuestionSession({ sessions }: Readonly<{ sessions: ExamSessionType[] }>
 
     {sortedSessions.length > 0 &&
       <div className="grid gap-3 grid-cols-1 md:grid-cols-4">
-        {sortedSessions.map((val, index) => <ExamSession key={`session-${index}`} id={val.id} applicationDate={val?.exam_date} count={val?.question_count} title={val?.stage} />)}
+        {sortedSessions.map((val, index) => <ExamSession key={`session-${index}`} id={val.id}
+          // applicationDate={val?.exam_date}
+          applicationDate={val?.created_at}
+          count={val?.question_count} title={val?.stage} />)}
       </div>
     }
   </ResponsiveContainer>
@@ -104,21 +112,19 @@ function ExamSession({ title, count, applicationDate, id }: Readonly<{ title: st
   })()
 
 
-  // const today = new Date();
-  // const isUpcoming = today < new Date(applicationDate); 
-  // const [isPast, setIsPast] = useState(isUpcoming);
+
   const { isUpcoming, daysDiff } = useGetValidDate(applicationDate)
 
 
   return <Link href={href} className='flex relative mt-8 justify-center flex-col'>
-    <div className={clsx('pt-2 pb-7 p-2  absolute w-full -top-8   text-white rounded-t-2xl', isUpcoming? 'bg-[#00455E]' : 'bg-[#667185]')}>
+    <div className={clsx('pt-2 pb-7 p-2  absolute w-full -top-8   text-white rounded-t-2xl', isUpcoming ? 'bg-[#00455E]' : 'bg-[#667185]')}>
       <div className="flex justify-between">
         <span className="text-sm">
-           {isUpcoming
-    ? `${daysDiff} Day${daysDiff === 1 ? '' : 's'} to exam`
-    : 'Done'}
-  {/* {isUpcoming ? `${daysDiff} Days to exam` : 'Done'} */}
-</span>
+          {isUpcoming
+            ? `${daysDiff} Day${daysDiff === 1 ? '' : 's'} to exam`
+            : 'Done'}
+          {/* {isUpcoming ? `${daysDiff} Days to exam` : 'Done'} */}
+        </span>
 
         {/* <span className='text-sm'>{!isActive ? 'Done' : `${daysDiff} Days to exam`}</span> */}
         <span className='font-bold text-sm'>{formatDate(applicationDate)}</span>

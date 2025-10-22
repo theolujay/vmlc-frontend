@@ -5,13 +5,25 @@ import clsx from 'clsx'
 import { Controller, FormProvider } from 'react-hook-form'
 import SelectInput from '../ui/Select'
 import Spinner from '../ui/spinner/spinner'
+import { useEffect } from 'react'
 
 export default function CreateExamSessionModal({ open, close }: Readonly<{ open: boolean, close: (close: boolean) => void }>) {
     function handleClose() {
         close(!open)
     }
-    const { onSubmit, form, isPending } = useCreateExamSession()
+    const { onSubmit, form, isPending, isSuccess } = useCreateExamSession()
     const { register, handleSubmit, formState: { errors } } = form
+
+
+    useEffect(() => {
+        let timeoutId: NodeJS.Timeout
+        if (isSuccess) {
+            timeoutId = setTimeout(() => {
+                handleClose()
+            }, 500)
+        }
+        return () => clearTimeout(timeoutId)
+    }, [isSuccess])
     return (
         <AppDialog open={open}>
             <div className="flex bg-[#f0f2f5] rounded-md z-50 flex-col  gap-2 ">
@@ -50,7 +62,7 @@ export default function CreateExamSessionModal({ open, close }: Readonly<{ open:
                                 </div>
                                 <div className="flex flex-col">
                                     <label htmlFor="exam" className='mb-1'>DESCRIPTION <span className="text-red-500">*</span></label>
-                                    <textarea placeholder='Enter a description...' {...register('description')}   className='border outline-0 p-2 resize-none border-[#D0D5DD] rounded-lg'  id="exam" />
+                                    <textarea placeholder='Enter a description...' {...register('description')} className='border outline-0 p-2 resize-none border-[#D0D5DD] rounded-lg' id="exam" />
                                     {errors.description && <p className="text-red-500 text-sm">{errors.description.message}</p>}
                                 </div>
                                 <div className="flex gap-2 mt-4 w-full">
@@ -61,11 +73,10 @@ export default function CreateExamSessionModal({ open, close }: Readonly<{ open:
                                         CANCEL
                                     </button>
                                     <button
-                                    type='submit'
+                                        type='submit'
                                         className={clsx("px-4 py-2 rounded-lg cursor-pointer flex-1 text-white bg-[#3E4095]")}>
                                         {isPending ? <Spinner /> :
-
-                                        'CREATE EXAM SESSION'
+                                            'CREATE EXAM SESSION'
                                         }
                                     </button>
                                 </div>

@@ -17,10 +17,19 @@ export default function useGetValidDate(applicationDate: Date) {
 
 
 
-
-
 export function useSortedExams(exams: any[]) {
   return useMemo(() => {
-    return [...exams].sort((a, b) => new Date(a.exam_date).getTime() - new Date(b.exam_date).getTime())
+     return [...exams].sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
+    
   }, [exams])
 }
+
+
+
+
+// export function useSortedExams(exams: any[]) {
+//   return useMemo(() => {
+//     //  return [...exams].sort((a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime())
+//     return [...exams].sort((a, b) => new Date(a.exam_date).getTime() - new Date(b.exam_date).getTime())
+//   }, [exams])
+// }
