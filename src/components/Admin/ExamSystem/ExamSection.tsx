@@ -1,7 +1,7 @@
 "use client"
 import clsx from 'clsx'
 import Link from 'next/link'
-import React, { Dispatch, SetStateAction, useState } from 'react'
+import React, { Dispatch, SetStateAction, useEffect, useState } from 'react'
 import { ExamCardGoTo } from '../../General/GeneralIcon'
 import { GotoIcon } from '../../General/GettingStarted/GettingStartedAssets'
 import Button from '../../ui/Button'
@@ -9,7 +9,7 @@ import ResponsiveContainer from '../../ui/ResponsiveContainer'
 import AdminHeader from '../AdminHeader'
 import { SummaryIcon } from '../AdminIcons'
 // import EmptySession from '../EmptySession'
-import { usePathname, useSearchParams } from 'next/navigation'
+import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import CreateExamSessionModal from '../../Modals/CreateExamSessionModal'
 import EmptySession from '../EmptySession'
 import useListExams from '@/hooks/useListExams'
@@ -20,11 +20,24 @@ import Spinner from '@/components/ui/spinner/spinner'
 import PagePagination from '@/components/ui/Pagination/PagePagination'
 
 export default function ExamSection() {
-  const [currentPage, setCurrentPage] = useState(1);
-
-  const [open, setOpen] = React.useState(false);
+  const router = useRouter();
+  const pathname = usePathname();
+  const searchParams = useSearchParams()
+  const initialPage = Number(searchParams.get("page") || 1)
+  const [currentPage, setCurrentPage] = useState(initialPage);
+  const [open, setOpen] = useState(false);
   const { data, isPending } = useListExams(currentPage)
-  console.log(data, 'what do we have for data for list exams')
+
+
+
+  useEffect(() => {
+    const params = new URLSearchParams(searchParams.toString());
+    params.set("page", currentPage.toString());
+    router.replace(`${pathname}?${params.toString()}`, { scroll: false })
+  }, [currentPage, pathname, router])
+
+
+
 
   return (
     <div className='flex flex-col gap-1 '>
@@ -104,7 +117,7 @@ function QuestionSession({ sessions, total_pages, onPageChange, currentPage }: R
 
 
 function ExamSession({ title, count, applicationDate, id }: Readonly<{ title: string, count: number, applicationDate: Date, id: number }>) {
-  
+
 
   const pathName = usePathname();
   const searchParams = useSearchParams()

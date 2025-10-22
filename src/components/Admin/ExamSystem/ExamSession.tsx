@@ -19,7 +19,7 @@ export default function ExamSession() {
 
   const searchParams = useSearchParams();
 
-  const id = parseInt(searchParams.get("id")!);
+  const id = Number(searchParams.get("id")!);
 
   const [page, setPage] = useState(1)
   const { data, isPending } = useViewExamQuestions(id)
