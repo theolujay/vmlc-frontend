@@ -13,7 +13,7 @@ export type User = {
 
 
 export type VerificationDocumentType = {
-  profile_photo?: File;
+  face_id?: File;
   id_card?: File;
   verification_document?: File
 }

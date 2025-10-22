@@ -22,12 +22,10 @@ export default function useUploadVerification() {
 
     function onSubmit(value: VerificationDocumentType) {
         const formData = new FormData();
-        if (value.profile_photo) formData.append('profile_photo', value.profile_photo);
+        if (value.face_id) formData.append('face_id', value.face_id);
         if (value.id_card) formData.append('id_card', value.id_card);
         if (value.verification_document) formData.append('verification_document', value.verification_document)
         mutate(formData)
-
-        console.log('we got this as form data',value)
     }
 
 

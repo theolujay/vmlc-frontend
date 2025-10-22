@@ -70,8 +70,8 @@ function VerificationInformation() {
       label: 'Capture Face',
       icon: <CaptureIcon />,
       component: <CaptureFaceCard isSuccess={isSuccess} isPending={isPending} onCapture={(file) => {
-        handleFileChange('profile_photo', file)
-        onSubmit({...files,profile_photo:file})
+        handleFileChange('face_id', file)
+        onSubmit({...files,face_id:file})
       }
       } />,
       activeTab: currentStepIndex === 2,
