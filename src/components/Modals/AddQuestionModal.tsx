@@ -125,6 +125,7 @@ export default function AddQuestionModal({
                                 </label>
                                 <select
                                 id="select-form"
+                                defaultValue="incorrect"
                                   value={opt.type}
                                   onChange={(e) =>
                                     handleChange(opt.id, "type", e.target.value)

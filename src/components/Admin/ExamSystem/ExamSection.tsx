@@ -22,7 +22,7 @@ import PagePagination from '@/components/ui/Pagination/PagePagination'
 export default function ExamSection() {
   const router = useRouter();
   const pathname = usePathname();
-  const searchParams = useSearchParams()
+  const searchParams = useSearchParams();
   const initialPage = Number(searchParams.get("page") || 1)
   const [currentPage, setCurrentPage] = useState(initialPage);
   const [open, setOpen] = useState(false);
@@ -90,7 +90,7 @@ function SummaryCard({ label, className, textColor = 'text-black', value, link }
 
 function QuestionSession({ sessions, total_pages, onPageChange, currentPage }: Readonly<{ sessions: ExamSessionType[], total_pages: number, currentPage: number, onPageChange: Dispatch<SetStateAction<number>> }>) {
   const sortedSessions = useSortedExams(sessions)
-  console.log(sortedSessions, 'sorted sessions here  ')
+  
   return <ResponsiveContainer className='gap-3'>
     {
       sortedSessions.length == 0 && <EmptySession label='No question session has been created yet' desc='Question session set on the platform would appear here ' />

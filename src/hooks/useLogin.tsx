@@ -37,7 +37,7 @@ export default function useLogin() {
         dispatch({ type: 'loginSuccess', payload: value });
       }, 1000)
     },
-    onError: (errorValue) => console.log(errorValue, 'encountered error')
+    
   })
 
 

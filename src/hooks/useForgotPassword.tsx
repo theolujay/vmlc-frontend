@@ -48,7 +48,7 @@ export default function useForgotPassword() {
 
     const { isPending, mutate } = useMutation({
         mutationFn: AuthService.passwordChange,
-        onSuccess: (value) => console.log(value, 'what is value')
+    
     })
 
 
@@ -56,18 +56,18 @@ export default function useForgotPassword() {
 
     const { mutate: resendMutate, isPending: resendPending } = useMutation({
         mutationFn: AuthService.passwordChangeResendOtp,
-        onSuccess: (value) => console.log(value)
+        
     })
 
     const { isPending: otpPending, mutate: otpMutate } = useMutation({
         mutationFn: AuthService.sendOtpForForgotPassword,
-        onSuccess: (value) => console.log(value, 'what is value')
+    
     })
 
 
     const { isPending: setNewPasswordPending, mutate: setNewPasswordMutate } = useMutation({
         mutationFn: AuthService.setNewPassword,
-        onSuccess: (value) => console.log(value, 'what is value')
+        
     })
 
 

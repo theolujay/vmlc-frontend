@@ -3,7 +3,7 @@ import useLogin from '@/hooks/useLogin'
 import Link from 'next/link'
 import { FormProvider } from 'react-hook-form'
 import AuthButton from '../ui/Button'
-import Input, { PasswordInput } from '../ui/Input'
+import { PasswordInput,NeutralInput } from '../ui/Input'
 import Spinner from '../ui/spinner/spinner'
 import { MailIcon, PasswordIcon } from '../ui/SvgAsset/GeneralAsset'
 import AuthLayout from './Layout/Layout'
@@ -24,7 +24,7 @@ export default function Login() {
             <form onSubmit={form.handleSubmit(onSubmit)} className="form-wrapper flex flex-col gap-2">
 
               <div className="grid">
-                <Input name='email' icon={<MailIcon />} label='EMAIL' placeholder='Input your mail (e.g johndoe@gmail.com)' className='border-[#D0D5DD]' />
+                <NeutralInput name='email' icon={<MailIcon />} label='EMAIL' placeholder='Input your mail (e.g johndoe@gmail.com)' className='border-[#D0D5DD]' />
               </div>
 
               <div className="grid">

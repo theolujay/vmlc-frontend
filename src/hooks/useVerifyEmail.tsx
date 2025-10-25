@@ -38,7 +38,7 @@ export default function useVerifyEmail() {
   const { isPending, mutate } = useMutation({
     mutationFn: AuthService.verifyEmail,
     onSuccess: (value) => {
-      console.log(value)
+    
       localStorage.removeItem('email');
       router.push('/auth/login')
     }
@@ -47,7 +47,7 @@ export default function useVerifyEmail() {
 
   const { mutate: resendMutate, isPending: resendPending } = useMutation({
     mutationFn: AuthService.resendOtp,
-    onSuccess: (value) => console.log(value)
+    
   })
 
   function onSubmit(value: VerifySchemaType) {

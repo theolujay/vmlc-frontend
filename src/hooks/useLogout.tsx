@@ -7,7 +7,7 @@ export default function useLogout() {
   const { mutate } = useMutation({
     mutationFn: AuthService.logout,
     onSuccess: (value) => {
-      console.log(value,'this is value')
+      
       dispatch({ type: 'logout' })
     }
   })

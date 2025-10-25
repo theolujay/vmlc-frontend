@@ -17,7 +17,7 @@ export default function LeaderBoard() {
 
 function Board(){
     const {data}=useGetLeaderBoard()
-    console.log(data,'what is data')
+
     const tabs:Tab[]=[{
         value:'Screening',
         label:<div className='flex justify-between gap-1 pb-1 border-b-2'><span><ScreeningIcon/></span><span>Screening</span></div>,

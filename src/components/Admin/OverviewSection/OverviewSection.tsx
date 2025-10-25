@@ -38,7 +38,7 @@ export default function OverviewSection() {
     // const {authState}=useAuth()
     const [page,setPage]=useState(1)
     const {data}=useGetCandidateList(page)
-    console.log(data,'what do we have here for overview section')
+    
     return (
         <div className='flex flex-col gap-1 '>
             {/* <OverviewHeader /> */}

@@ -11,6 +11,7 @@ import Announcement from './Announcement/Announcement'
 import { useAuth } from '@/contexts/AuthProvider'
 import withAuthentication from '@/hocs/withAuthentication'
 import OverviewSectionWrapper from './OverviewSection/OverviewSectionWrapper'
+import StaffMgtWrapper from './UserManagement/StaffMgtWrapper'
 
 
 
@@ -52,7 +53,8 @@ const tabs:Tab[]=[
      {
         value:'User Management',
         label:<UserManagementLabel/>,
-        content:<UserManagement/>
+        content:<StaffMgtWrapper/>
+        // content:<UserManagement/>
     },
      {
         value:'Announcement',

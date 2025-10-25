@@ -35,6 +35,7 @@ export type LeaderboardRankingType = {
   position: number,
   total_candidates: number
 }
+
 export type AvailableExamType = {
   id: number,
   title: string,

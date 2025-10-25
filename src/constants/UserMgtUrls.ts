@@ -1,3 +1,4 @@
 export const UserMgtUrls={
-    getUserList:`/staff/`
+    getUserList:`/staff/`,
+    inviteStaffMember:`/staff/invite/`,
 }

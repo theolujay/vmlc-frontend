@@ -18,7 +18,7 @@ import Spinner from "@/components/ui/spinner/spinner";
 // });
 
 export const metadata: Metadata = {
-  title: "Verboheit Learning Management System",
+  title: "Verboheit Mathematics League Competiton",
   description: "Welcome to verboheit learning management system",
 };
 

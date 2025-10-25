@@ -17,7 +17,7 @@ import { FirstPosition, SecondPosition, ThirdPosition } from "./LeaderBoardIcon"
 
 export default function LeaderBoardSection() {
   const { data } = useGetLeaderBoard()
-  console.log('leaderboard data', data)
+  
   return (
     <div className='flex flex-col gap-1 '>
       <AdminHeader label="Leaderboards" isExport actionButton={<Button className="px-2 bg-grey-base-400 text-white">UPLOAD</Button>} />
@@ -39,7 +39,7 @@ function ScreeningLabel() {
 }
 
 function ScoreComponent({ results }: Readonly<{ results: LeaderBoardType }>) {
-  console.log(results, 'which results do we have here')
+  
   return <div className="flex flex-col">
     {results.length == 0 ? <EmptySession desc="Arrangement of result based on the highest score gotten by candidates on the platform would appear here " label='Exams hasn’t happened yet' /> :
 

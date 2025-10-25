@@ -110,3 +110,19 @@ export function LockedIcon(props:Readonly<React.SVGProps<SVGSVGElement>>){
 </svg>
 
 }
+
+
+export function ChevronUpIcon(props:Readonly<React.SVGProps<SVGSVGElement>>){
+    return <svg {...props} width="12" height="7" viewBox="0 0 12 7" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M11 6L6 1L1 6" stroke="#3E4095" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+</svg>
+
+}
+
+
+export function ChevronDownIcon(props:Readonly<React.SVGProps<SVGSVGElement>>){
+    return <svg {...props} width="12" height="7" viewBox="0 0 12 7" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M1 1L6 6L11 1" stroke="#3E4095" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+</svg>
+
+}
