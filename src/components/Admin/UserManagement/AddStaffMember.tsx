@@ -83,17 +83,17 @@ type Role = {
 };
 
 const roles: Role[] = [
-    {
-        name: "superAdmin",
-        label: "Super Administrator",
-        permissions: [
-            { name: "overview", label: "Overview" },
-            { name: "examSystem", label: "Exam System" },
-            { name: "leaderboards", label: "Leaderboards" },
-            { name: "userManagement", label: "User Management" },
-            { name: "announcement", label: "Announcement" },
-        ],
-    },
+    // {
+    //     name: "superAdmin",
+    //     label: "Super Administrator",
+    //     permissions: [
+    //         { name: "overview", label: "Overview" },
+    //         { name: "examSystem", label: "Exam System" },
+    //         { name: "leaderboards", label: "Leaderboards" },
+    //         { name: "userManagement", label: "User Management" },
+    //         { name: "announcement", label: "Announcement" },
+    //     ],
+    // },
     {
         name: "assistantAdmin",
         label: "Administrator",
