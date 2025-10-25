@@ -11,13 +11,27 @@ import CustomTable from '@/components/ui/CustomTable'
 import useListUserMgt from '@/hooks/useListUserMgt'
 import { MgtTypeItem } from '@/types/UserMgtType'
 import { formatDate } from '@/utils/formatFileSize'
+import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 
 export default function UserManagement() {
     const { data } = useListUserMgt()
-    console.log(data, 'from user list mgt')
+    const pathName = usePathname();
+    const searchParams = useSearchParams()
+    const router = useRouter()
+
+
+    function addStaffMember() {
+        const params = new URLSearchParams(searchParams.toString())
+        params.set('view', 'add-staff')
+        const route = `${pathName}?${params.toString()}`
+        router.push(route)
+    }
+
+
+
     return (
         <div className='flex flex-col gap-1 '>
-            <AdminHeader isExport label='Exam System' actionButton={<Button className="inline-flex gap-2 border px-2 items-center text-sm"><span><AddIcon /></span><span>ADD STAFF</span></Button>} />
+            <AdminHeader isExport label='Exam System' actionButton={<Button onClick={addStaffMember} className="inline-flex gap-2 border px-2 items-center text-sm"><span><AddIcon /></span><span>ADD STAFF</span></Button>} />
             <div className="flex flex-col gap-3 mt-3 w-[96%] mx-auto">
 
                 <UserSummaryCard />
@@ -128,28 +142,28 @@ function ActivityHistoryTable({ candidates }: { candidates: MgtTypeItem[] }) {
                     render: (_, __, index) => <div className="flex  items-center gap-1">{index + 1}</div>
                 },
                 {
-                    key:'role',
-                    header:'Role',
-                    render:(_,row)=> <div className="flex  items-center gap-1">{row.role}</div>
+                    key: 'role',
+                    header: 'Role',
+                    render: (_, row) => <div className="flex  items-center gap-1">{row.role}</div>
                 },
-                 {
-                    key:'email',
-                    header:'Email Address',
-                    render:(_,row)=> <div className="flex  items-center gap-1">{row.user.email}</div>
+                {
+                    key: 'email',
+                    header: 'Email Address',
+                    render: (_, row) => <div className="flex  items-center gap-1">{row.user.email}</div>
                 },
-                 {
-                    key:'application',
-                    header:'Application Date',
-                    render:(_,row)=> <div className="flex  items-center gap-1">{formatDate(row.user.date_joined)}</div>
+                {
+                    key: 'application',
+                    header: 'Application Date',
+                    render: (_, row) => <div className="flex  items-center gap-1">{formatDate(row.user.date_joined)}</div>
                 },
-                 {
-                    key:'status',
-                    header:'Status',
-                    render:(_,row)=> <div className="flex  items-center gap-1">{row.role}</div>
+                {
+                    key: 'status',
+                    header: 'Status',
+                    render: (_, row) => <div className="flex  items-center gap-1">{row.role}</div>
                 },
-                 {
-                    key:'action',
-                    header:'Action',
+                {
+                    key: 'action',
+                    header: 'Action',
                     // render:(_,row)=> <div className="flex  items-center gap-1">{row.role}</div>
                 },
             ]}

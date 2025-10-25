@@ -8,7 +8,7 @@ import TablePagination from "../ui/Pagination/TablePagination"
 import { Dispatch, SetStateAction } from "react"
 import { getOptionAsArray } from "@/utils/generalUtils"
 
-export default function QuestionsTable({ questions, onPageChange, currentPage, page_count }: Readonly<{ questions: QuestionType[], onPageChange: Dispatch<SetStateAction<number>>, currentPage: number, page_count: number }>) {
+export default function  QuestionsTable({ questions, onPageChange, currentPage, page_count }: Readonly<{ questions: QuestionType[], onPageChange: Dispatch<SetStateAction<number>>, currentPage: number, page_count: number }>) {
 
   
   return <ResponsiveContainer className='flex gap-4 py-3 px-0 flex-col mx-auto'>
@@ -70,9 +70,11 @@ export default function QuestionsTable({ questions, onPageChange, currentPage, p
           },
         },
         {
-          key: 'action', header: "Action", render: () => (
+          key: 'action', header: "Action", render: (_,row) => (
             <div className="flex justify-between items-center gap-1">
-              <button className="cursor-pointer font-semibold text-[#475467]">Remove</button>
+              <button onClick={()=>{
+                console.log('remove',row.id)
+              }} className="cursor-pointer font-semibold text-[#475467]">Remove</button>
               <button className="cursor-pointer font-semibold text-[#6941C6]">View</button>
             </div>
           ),

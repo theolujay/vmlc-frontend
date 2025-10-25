@@ -40,11 +40,41 @@ function InputBase({ name, icon, placeholder, className, label }: Readonly<{ ico
     )
 }
 
-const Input = memo(InputBase, (prev, next) => prev.name === next.name);
+const RegisterInput = memo(InputBase, (prev, next) => prev.name === next.name);
 
 
 
-export default Input;
+export default RegisterInput;
+
+
+
+
+
+
+
+
+
+
+
+function NeutralInputBase({ name, icon, placeholder, className, label }: Readonly<{ icon: React.ReactNode, placeholder?: string, className?: string, label: string, name: string }>) {
+    const { register } = useFormContext()
+    return (
+        <div className="flex flex-col gap-1">
+            <span className='text-[14px] ml-1'>{label}</span>
+            <div className={clsx('flex border-2 bg-white focus:outline-1 outline-amber-300 gap-1 items-center px-2 rounded-[8px]', className)}>
+                <span>{icon}</span>
+                <input type="text" {...register(name)} placeholder={placeholder} className={clsx('border-0 flex-1 accent-amber-400 p-2 bg-white outline-0')} />
+            </div>
+             
+        </div>
+    )
+}
+
+export const NeutralInput = memo(NeutralInputBase, (prev, next) => prev.name === next.name);
+
+
+
+
 
 
 

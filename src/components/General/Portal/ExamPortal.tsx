@@ -10,7 +10,7 @@ import LeaderBoard from './LeaderBoard'
 
 function ExamPortal() {
   const { data } = useGetExamPortal()
-  console.log(data, 'what is here currently')
+  
   return (
     <PageLayout>
       <WelcomeBanner />

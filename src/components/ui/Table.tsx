@@ -8,7 +8,9 @@ import { formatDate } from '@/utils/formatFileSize'
 export default function Table({ columns, data, label, desc, footer }: Readonly<{ columns: string[], data: ActivityHistoryUserType[], label?: string, desc?: React.ReactNode, footer?: React.ReactNode }>) {
     return (
         <div className="flex flex-col">
-            <table className='overflow-x-auto'>
+            <div className="w-full overflow-x-auto">
+
+            <table className='w-full overflow-x-auto'>
                 <thead>
                     <tr className='border-b border-[#E4E7EC]'>
                         {
@@ -33,6 +35,7 @@ export default function Table({ columns, data, label, desc, footer }: Readonly<{
 
                 </tbody>
             </table>
+            </div>
             {footer && <div className='py-3'>{footer}</div>}
         </div>
     )

@@ -31,21 +31,19 @@ type ValueType = z.infer<typeof createExamSchema>;
 
 
 export default function useCreateExamSession() {
-const queryClient=useQueryClient()
+  const queryClient = useQueryClient()
   const form = useForm<ValueType>({
     resolver: zodResolver(createExamSchema),
     defaultValues
   })
-  const { isPending, mutate,isSuccess } = useMutation({
+  const { isPending, mutate, isSuccess } = useMutation({
     mutationFn: ExamPortal.createExamSession,
     onSuccess: () => {
       toast.success('Exam session created successfully')
-      
-
-       queryClient.invalidateQueries({ queryKey: ['list-exams'] })
-       form.reset()
+      queryClient.invalidateQueries({ queryKey: ['list-exams'] })
+      form.reset()
     },
-    onError:()=>{
+    onError: () => {
       toast.error('Failed to create exam session. Please try again.')
     }
   })
@@ -57,5 +55,5 @@ const queryClient=useQueryClient()
 
 
 
-  return { isPending, onSubmit, form,isSuccess }
+  return { isPending, onSubmit, form, isSuccess }
 }

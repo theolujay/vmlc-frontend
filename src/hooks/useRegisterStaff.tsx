@@ -41,8 +41,7 @@ export default function useRegister() {
         onSuccess: () => {
            
             router.push('/auth/verify')
-        },
-        onError: (errorValue) => console.log(errorValue, 'what is error value')
+        }
 
     })
 
@@ -50,7 +49,7 @@ export default function useRegister() {
 
 
     function onSubmit(value: StaffValueType) {
-        console.log(value)
+        
         const transformedValue: StaffValueType = {
 
             email: value.email.toLowerCase(),

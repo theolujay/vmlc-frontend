@@ -90,7 +90,7 @@ function Details({ userName, email, dateJoined, school, role }: { userName: stri
 
 
 function ViewDetailsTabSection({detailsData}:{detailsData:RecordsType}) {
-    console.log(detailsData,'what is the details')
+    
     return (
         <ResponsiveContainer className="px-0">
             <ScreeningTabWrapper tabs={[
@@ -124,7 +124,6 @@ function ActivityComponent({ results }: Readonly<{ results: string[] }>) {
 
 function ScoreComponent({scoresData}:{scoresData:RecordsType}) {
 
-    console.log('what is scoresData in score component',scoresData)
     return <div className="flex gap-2 p-3 flex-col">
         <AverageScore position={scoresData.performance.stats.leaderboard_ranking} percentage={scoresData.performance.stats.average_score} />
         <ScreeningScore screening={null} />

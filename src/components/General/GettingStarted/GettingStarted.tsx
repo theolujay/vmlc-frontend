@@ -11,6 +11,7 @@ import TourGuide from './TourGuide'
  
   
   const {authState}=useAuth()
+  console.log(authState,'auth state in getting started')
   
 
   return (
