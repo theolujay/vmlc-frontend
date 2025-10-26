@@ -1,3 +1,4 @@
+import { FieldValues, UseFormReturn } from "react-hook-form";
 import { RequestUserType } from "./auth";
 import { PaginatedType } from "./LeaderBoardType";
 
@@ -23,3 +24,10 @@ export type InviteStaffMemberPayloadType={
   role: string,
   occupation: string
 }
+
+
+
+export type AddStaffMemberFormProps<T extends FieldValues> = {
+  form: UseFormReturn<T>;
+  onSubmit: (data: T) => void;
+};
