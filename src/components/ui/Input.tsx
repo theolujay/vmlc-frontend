@@ -7,17 +7,7 @@ import PhoneInput from 'react-phone-number-input'
 import 'react-phone-number-input/style.css'
 import { EyeClosedIcon, EyeOpenIcon } from './SvgAsset/GeneralAsset'
 
-// export default function Input({ icon, placeholder, className, label }: Readonly<{ icon: React.ReactNode, placeholder?: string, className?: string, label: string }>) {
-//     return (
-//         <div className="flex flex-col gap-1">
-//             <span className='text-[14px] ml-1'>{label}</span>
-//             <div className={clsx('flex border-2 bg-white focus:outline-1 outline-amber-300 gap-1 items-center px-2 rounded-[8px]', className)}>
-//                 <span>{icon}</span>
-//                 <input type="text" placeholder={placeholder} className={clsx('border-0 flex-1 accent-amber-400 p-2 bg-white outline-0')} />
-//             </div>
-//         </div>
-//     )
-// }
+
 
 
 
@@ -29,9 +19,9 @@ function InputBase({ name, icon, placeholder, className, label }: Readonly<{ ico
     return (
         <div className="flex flex-col gap-1">
             <span className='text-[14px] ml-1'>{label}</span>
-            <div className={clsx('flex border-2 bg-white focus:outline-1 outline-amber-300 gap-1 items-center px-2 rounded-[8px]', className)}>
+            <div className={clsx('flex border border-[#d0d5dd]  bg-white focus:outline-1 outline-amber-300 gap-1 items-center px-2 rounded-[8px]', className)}>
                 <span>{icon}</span>
-                <input type="text" {...register(name)} placeholder={placeholder} className={clsx('border-0 flex-1 accent-amber-400 p-2 bg-white outline-0')} />
+                <input type="text" {...register(name)} placeholder={placeholder} className={clsx('border-0  flex-1 accent-amber-400 p-2 bg-white outline-0')} />
             </div>
              {errors[name] && (
                 <span className="text-red-500 text-xs">{errors[name].message as string}</span>
@@ -61,7 +51,7 @@ function NeutralInputBase({ name, icon, placeholder, className, label }: Readonl
     return (
         <div className="flex flex-col gap-1">
             <span className='text-[14px] ml-1'>{label}</span>
-            <div className={clsx('flex border-2 bg-white focus:outline-1 outline-amber-300 gap-1 items-center px-2 rounded-[8px]', className)}>
+            <div className={clsx('flex border border-[#d0d5dd] bg-white focus:outline-1 outline-amber-300 gap-1 items-center px-2 rounded-[8px]', className)}>
                 <span>{icon}</span>
                 <input type="text" {...register(name)} placeholder={placeholder} className={clsx('border-0 flex-1 accent-amber-400 p-2 bg-white outline-0')} />
             </div>
@@ -84,7 +74,7 @@ export function PhoneNumberInput({ name, placeholder, className, label }: Readon
     return (
         <div className="flex flex-col gap-1">
             <span className='text-[14px] ml-1'>{label}</span>
-            <div className={clsx('flex border-2 bg-white focus:outline-1 outline-amber-300 gap-1 items-center px-2 rounded-[8px]', className)}>
+            <div className={clsx('flex border border-[#d0d5dd] bg-white focus:outline-1 outline-amber-300 gap-1 items-center px-2 rounded-[8px]', className)}>
                 {/* <span>{icon}</span> */}
                 <Controller
                     name={name}
@@ -122,7 +112,7 @@ export function PasswordInput({ name, icon, placeholder, className, label }: Rea
     return (
         <div className="flex flex-col gap-1">
             <span className='text-[14px] ml-1'>{label}</span>
-            <div className={clsx('flex border-2 bg-white focus:outline-1 outline-amber-300 gap-1 items-center px-2 rounded-[8px]', className)}>
+            <div className={clsx('flex border border-[#d0d5dd] bg-white focus:outline-1 outline-amber-300 gap-1 items-center px-2 rounded-[8px]', className)}>
                 <span>{icon}</span>
                 <input {...register(name, {
                     required: "Password is required",
@@ -188,7 +178,7 @@ export function ConfirmPasswordInput({ name, icon, placeholder, className, label
     return (
         <div className="flex flex-col gap-1">
             <span className='text-[14px] ml-1'>{label}</span>
-            <div className={clsx('flex border-2 bg-white focus:outline-1 outline-amber-300 gap-1 items-center px-2 rounded-[8px]', className)}>
+            <div className={clsx('flex border border-[#d0d5dd] bg-white focus:outline-1 outline-amber-300 gap-1 items-center px-2 rounded-[8px]', className)}>
                 <span>{icon}</span>
                 <input {...register(name,  {
   required: "Confirm password is required",
