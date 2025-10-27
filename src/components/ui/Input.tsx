@@ -96,6 +96,38 @@ export function PhoneNumberInput({ name, placeholder, className, label }: Readon
 
 
 
+export function OrdinaryPasswordInput({ name, icon, placeholder, className, label }: Readonly<{ icon: React.ReactNode, placeholder?: string, className?: string, label: string, name: string }>) {
+    const [showPassword, setShowPassword] = useState(false)
+    const { register} = useFormContext()
+
+
+    
+
+    function handleToggle() {
+        setShowPassword((val) => !val)
+    }
+    return (
+        <div className="flex flex-col gap-1">
+            <span className='text-[14px] ml-1'>{label}</span>
+            <div className={clsx('flex border border-[#d0d5dd] bg-white focus:outline-1 outline-amber-300 gap-1 items-center px-2 rounded-[8px]', className)}>
+                <span>{icon}</span>
+                <input {...register(name, {
+                    required: "Password is required",
+                    
+                })} type={showPassword ? 'text' : 'password'} placeholder={placeholder} className={clsx('border-0 flex-1 accent-amber-400 p-2 bg-white outline-0')} />
+                <button type='button' className='cursor-pointer outline-0' onClick={handleToggle}>{showPassword ? <EyeOpenIcon /> : <EyeClosedIcon />}</button>
+            </div>
+
+
+            {/* Checklist feedback */}
+           
+
+           
+        </div>
+    )
+}
+
+
 
 
 
