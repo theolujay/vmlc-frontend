@@ -56,6 +56,7 @@ const reducer = (state: AuthState, action: Actions) => {
 
         case DESTROY_SESSION: {
             localStorage.removeItem('session')
+            sessionStorage.removeItem('returnURL');
             return {
                 token: null,
                 refreshToken: null,

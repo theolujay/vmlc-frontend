@@ -106,6 +106,16 @@ export type CreateExamSessionType = {
 
 
 
+export type CreateQuestionType={
+   text: string,
+  option_a: string,
+  option_b: string,
+  option_c: string,
+  option_d: string,
+  correct_answer: string,
+  difficulty: string
+}
+
 
 export type QuestionType = {
   id: number,
