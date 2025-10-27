@@ -1,9 +1,8 @@
 "use client"
-import AddStaffConfirmationModal from '@/components/Modals/AddStaffConfirmationModal'
+import InviteActionConfirmationModal from '@/components/Modals/InviteActionConfirmationModal'
 import Button from '@/components/ui/Button'
 import Input, { ConfirmPasswordInput, PasswordInput, PhoneNumberInput } from '@/components/ui/Input'
 import ResponsiveContainer from '@/components/ui/ResponsiveContainer'
-import Spinner from '@/components/ui/spinner/spinner'
 import { ChevronDownIcon, ChevronUpIcon, MailIcon, OccupationIcon, PasswordIcon, PersonIcon } from '@/components/ui/SvgAsset/GeneralAsset'
 import useInviteStaffMember, { InviteStaffValueType } from '@/hooks/useInviteStaffMember'
 import { AddStaffMemberFormProps } from '@/types/UserMgtType'
@@ -16,15 +15,34 @@ import { SendIcon } from '../AdminIcons'
 export default function AddStaffMember() {
   const [open, setOpen] = useState(false)
 
-  const { form, onSubmit, isPending } = useInviteStaffMember()
+  const { form, onSubmit, isPending } = useInviteStaffMember(handleCloseModal)
+  console.log('form watch', form.watch())
+
+  const userMail = form.watch('email') || '';
+  const role = form.watch('role') || '';
+
+  function handleCloseModal() {
+    setOpen(false)
+  }
+
+  function handleOpenModal() {
+    setOpen(true)
+  }
+
   return (
     <div className='flex flex-col gap-1 '>
-      <AdminHeader isExport={false} label='Add staff' actionButton={<Button disabled={isPending} invite="invite-staff-form" className={clsx("inline-flex gap-2 border min-w-10 px-2 items-center text-sm")}>{isPending ? <Spinner /> : <><span><SendIcon /></span><span>SEND INVITE</span></>}</Button>} />
+      <AdminHeader isExport={false} label='Add staff' actionButton={<Button onClick={handleOpenModal} disabled={isPending} className={clsx("inline-flex gap-2 border min-w-10 px-2 items-center text-sm")}><span><SendIcon /></span><span>SEND INVITE</span></Button>} />
       <div className="flex flex-col gap-3 mt-3 w-[96%] mx-auto">
         <AddStaffMemberForm form={form} onSubmit={onSubmit} />
       </div>
-
-      <AddStaffConfirmationModal open={open} close={setOpen} />
+      <InviteActionConfirmationModal
+        isPending={isPending}
+        role={role}
+        userMail={userMail}
+        open={open}
+        close={setOpen}
+        form='invite-staff-form'
+      />
     </div>
   )
 }
@@ -93,7 +111,7 @@ const roles: Role[] = [
   //     ],
   // },
   {
-    name: "assistantAdmin",
+    name: "admin",
     label: "Administrator",
     permissions: [
       { name: "overview", label: "Overview" },
@@ -114,7 +132,7 @@ const roles: Role[] = [
     ],
   },
   {
-    name: "Volunteer",
+    name: "volunteer",
     label: "Volunteer",
     permissions: [
       { name: "overview", label: "Overview" },

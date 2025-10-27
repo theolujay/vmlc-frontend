@@ -212,3 +212,12 @@ export function AngleIcon(props: Readonly<React.SVGProps<SVGSVGElement>>) {
     </svg>
 
 }
+
+export function ModalConfirmationIcon(props: Readonly<React.SVGProps<SVGSVGElement>>) {
+    return <svg {...props} width="76" height="76" viewBox="0 0 76 76" fill="none" xmlns="http://www.w3.org/2000/svg">
+<rect x="6" y="6" width="64" height="64" rx="32" fill="#F0F2F5"/>
+<rect x="6" y="6" width="64" height="64" rx="32" stroke="#F9FAFB" stroke-width="12"/>
+<path d="M38.0013 43.3327V37.9993M38.0013 32.666H38.0146M51.3346 37.9993C51.3346 45.3631 45.3651 51.3327 38.0013 51.3327C30.6375 51.3327 24.668 45.3631 24.668 37.9993C24.668 30.6356 30.6375 24.666 38.0013 24.666C45.3651 24.666 51.3346 30.6356 51.3346 37.9993Z" stroke="#475467" stroke-width="2.28571" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
+
+}

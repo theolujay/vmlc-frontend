@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useState } from "react"
 import clsx from "clsx"
 import AppDialog from "@/components/ui/Modals/AppDialog"
 import ResponsiveContainer from "@/components/ui/ResponsiveContainer"
@@ -18,7 +18,7 @@ export default function AddQuestionModal({
   }
 
   // options state
-  const [options, setOptions] = React.useState([
+  const [options, setOptions] = useState([
     { id: "1", label: "Option A", answer: "", type: "" },
     { id: "2", label: "Option B", answer: "", type: "" },
     { id: "3", label: "Option C", answer: "", type: "" },

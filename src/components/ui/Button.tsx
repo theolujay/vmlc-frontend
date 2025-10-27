@@ -17,13 +17,13 @@ import React from 'react'
 
 export default function Button({
   children,
-  invite,
+  // invite,
   onClick,
   className = '',
   isPending = false,
   disabled = false,
 }: Readonly<{
-  invite?:string
+  // invite?:string
   isPending?: boolean
   children: React.ReactNode
   onClick?: () => void
@@ -32,7 +32,7 @@ export default function Button({
 }>) {
   return (
     <button
-    form={invite}
+    // form={invite}
       onClick={onClick}
       disabled={disabled || isPending}
       className={clsx(
