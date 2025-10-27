@@ -3,7 +3,7 @@ import useLogin from '@/hooks/useLogin'
 import Link from 'next/link'
 import { FormProvider } from 'react-hook-form'
 import AuthButton from '../ui/Button'
-import { PasswordInput,NeutralInput } from '../ui/Input'
+import { NeutralInput, OrdinaryPasswordInput } from '../ui/Input'
 import Spinner from '../ui/spinner/spinner'
 import { MailIcon, PasswordIcon } from '../ui/SvgAsset/GeneralAsset'
 import AuthLayout from './Layout/Layout'
@@ -28,7 +28,7 @@ export default function Login() {
               </div>
 
               <div className="grid">
-                <PasswordInput name='password' icon={<PasswordIcon />} label='PASSWORD' placeholder='Input your password' className='border-[#D0D5DD]' />
+                <OrdinaryPasswordInput name='password' icon={<PasswordIcon />} label='PASSWORD' placeholder='Input your password' className='border-[#D0D5DD]' />
               </div>
               <div className="flex justify-between">
                 <div className="checkbox flex gap-1 items-center">
