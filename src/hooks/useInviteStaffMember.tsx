@@ -34,7 +34,7 @@ const defaultValues: InviteStaffMemberPayloadType = {
 }
 
 export type InviteStaffValueType = z.infer<typeof inviteStaffMemberSchema>;
-export default function useInviteStaffMember() {
+export default function useInviteStaffMember(onSuccessCallback: () => void) {
   const form = useForm<InviteStaffValueType>({
     resolver: zodResolver(inviteStaffMemberSchema),
     defaultValues
@@ -43,17 +43,16 @@ export default function useInviteStaffMember() {
   const { isPending, mutate } = useMutation({
     mutationFn: UserMgtService.inviteStaffMember,
     onSuccess: (value) => {
-      console.log(value);
       toast.success(value.message || 'Staff member invited successfully')
       form.reset()
+      onSuccessCallback();
     },
     onError: () => {
-      toast.error('Failed to create exam session. Please try again.')
+      toast.error('Failed to send invite')
     }
   })
 
   function onSubmit(data: InviteStaffValueType) {
-    console.log(`submitted data:`, data);
     mutate(data)
   }
 
@@ -61,3 +60,4 @@ export default function useInviteStaffMember() {
 
   return { form, onSubmit, isPending }
 }
+
