@@ -3,5 +3,6 @@ export const examUrls={
     create_exam:'/exams/',
     CREATE_QUESTION:'/questions/',
     list_exams:(id:number=1)=>`/exams/?page=${id}`,
-    VIEW_QUESTIONS:(exam_id:number)=>`/exams/${exam_id}/questions/`
+    VIEW_QUESTIONS:(exam_id:number)=>`/exams/${exam_id}/questions/`,
+    LIST_QUESTIONS:(page:number)=>`/questions/?page=${page}`,
 }

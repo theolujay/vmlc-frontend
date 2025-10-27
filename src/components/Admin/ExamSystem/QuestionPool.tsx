@@ -8,22 +8,29 @@ import AdminHeader from '../AdminHeader'
 // import EmptySession from './EmptySession'
 import AddQuestionModal from '../../Modals/AddQuestionModal'
 import EmptySession from '../EmptySession'
-import QuestionsTable from '../QuestionsTable'
+// import QuestionsTable from '../QuestionsTable'
 import SummaryCard from './SummaryCard'
+import useListQuestions from '@/hooks/useListQuestions'
+import QuestionsTable from '../QuestionsTable'
+import usePagination from '@/hooks/usePagination'
 // import QuestionInformation from './Drawer/QuestionInformation'
 
 export default function QuestionPool() {
-  const [questions] = useState<string[]>([])
+  
+  const {page, setPage}=usePagination()
   const [open, setOpen] = useState(false);
-  // const id=2;
-  // const {isPending,data}=useViewExamQuestions(id)
-  // const [openDrawer, setOpenDrawer] = useState(true);
+  const {data}=useListQuestions(page)
+  console.log(data,'what is data for list questions')
+  
   return (
     <div className='flex flex-col gap-1 '>
       <AdminHeader isExport={false} label='Exam System' actionButton={<Button onClick={()=>setOpen(true)} className="inline-flex gap-2 border px-2 items-center text-sm"><span><AddIcon /></span><span>ADD QUESTION</span></Button>} />
       <div className="flex flex-col gap-3 mt-3 w-[96%] mx-auto">
-        <QuestionSummaryCard />
-        {/* {questions.length == 0 ? <EmptyState /> : <QuestionsTable />} */}
+        <QuestionSummaryCard easy_questions={data?.meta.easy_questions_count} total_questions={data?.meta.total_questions} moderate_questions={data?.meta.medium_questions_count} hard_questions={data?.meta.hard_questions_count} />
+        
+<QuestionsTable page_count={data?.total_pages} currentPage={page} onPageChange={setPage} questions={data?.list ?? []} />  
+
+        
 
       </div>
       <AddQuestionModal open={open} close={setOpen} />
@@ -34,13 +41,13 @@ export default function QuestionPool() {
 }
 
 
-function QuestionSummaryCard() {
+function QuestionSummaryCard({total_questions=0,easy_questions=0,moderate_questions=0,hard_questions=0}:Readonly<{total_questions:number,easy_questions:number,moderate_questions:number,hard_questions:number}>  ) {
   const currentView = useSearchParams().get('view');
   return <ResponsiveContainer className='grid gap-3 grid-cols-1 md:grid-cols-4 p-4'>
-    <SummaryCard isActive={currentView == 'total-question'} label='TOTAL QUESTION POOL' value={0} textColor='text-[#018ABB]' />
-    <SummaryCard isActive={currentView == 'easy-question'} label='EASY QUESTION LEVEL' value={0} textColor='text-[#099137]' />
-    <SummaryCard isActive={currentView == 'moderate-question'} label='MODERATE QUESTION LEVEL' value={0} textColor='text-[#AD6F07]' />
-    <SummaryCard isActive={currentView == 'hard-question'} label='HARD QUESTION LEVEL' value={0} textColor='text-[#CB1A14]' />
+    <SummaryCard isActive={currentView == 'total-question'} label='TOTAL QUESTION POOL' value={total_questions} textColor='text-[#018ABB]' />
+    <SummaryCard isActive={currentView == 'easy-question'} label='EASY QUESTION LEVEL' value={easy_questions} textColor='text-[#099137]' />
+    <SummaryCard isActive={currentView == 'moderate-question'} label='MODERATE QUESTION LEVEL' value={moderate_questions} textColor='text-[#AD6F07]' />
+    <SummaryCard isActive={currentView == 'hard-question'} label='HARD QUESTION LEVEL' value={hard_questions} textColor='text-[#CB1A14]' />
   </ResponsiveContainer>
 }
 
