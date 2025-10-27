@@ -54,4 +54,15 @@ export class ExamPortal {
         }
     }
 
+
+    static async listQuestions(page:number){
+        try {
+           const response=await client.get(examUrls.LIST_QUESTIONS(page))
+           console.log(response,'what is response') 
+              return response.data; 
+        } catch (error) {
+            console.error(error)
+        }
+    }
+
 }

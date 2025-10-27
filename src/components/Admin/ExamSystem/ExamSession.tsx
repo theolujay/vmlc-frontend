@@ -1,29 +1,26 @@
+import Spinner from '@/components/ui/spinner/spinner'
+import usePagination from '@/hooks/usePagination'
+import useViewExamQuestions from '@/hooks/useViewExamQuestions'
+import clsx from 'clsx'
 import { useSearchParams } from 'next/navigation'
+import { GotoIcon } from '../../General/GettingStarted/GettingStartedAssets'
 import Button from '../../ui/Button'
 import ResponsiveContainer from '../../ui/ResponsiveContainer'
 import AdminHeader from '../AdminHeader'
-import QuestionsTable from '../QuestionsTable'
 import { SummaryIcon } from '../AdminIcons'
-import clsx from 'clsx'
-import { GotoIcon } from '../../General/GettingStarted/GettingStartedAssets'
-import useViewExamQuestions from '@/hooks/useViewExamQuestions'
-import { useState } from 'react'
-import Spinner from '@/components/ui/spinner/spinner'
-// import SummaryCard from './SummaryCard'
+import QuestionsTable from '../QuestionsTable'
+
 
 
 
 
 
 export default function ExamSession() {
-
   const searchParams = useSearchParams();
-
   const id = Number(searchParams.get("id")!);
-
-  const [page, setPage] = useState(1)
+  const { page, setPage } = usePagination()
   const { data, isPending } = useViewExamQuestions(id)
-  
+
 
   return (
     <div className='flex flex-col gap-1 '>
