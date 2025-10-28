@@ -6,13 +6,14 @@ import Table from '@/components/ui/Table'
 import ScreeningTabWrapper from '@/components/ui/Tabs/ScreeningTabWrapper'
 import withAuthentication from '@/hocs/withAuthentication'
 import useGetCandidateDetails from '@/hooks/useGetCandidateDetails'
-import { ExamTakenType, RecordsType } from '@/types/CandidateType'
+import { ExamTakenType, RecordsType, submissionItemType } from '@/types/CandidateType'
 import { getUserInitials } from '@/utils/capitalizeWords'
 import { formatDate } from '@/utils/formatFileSize'
 import AdminHeader from '../AdminHeader'
 import { ActivitiesIcon, ScoresIcon } from '../AdminIcons'
 import EmptySession from '../EmptySession'
 import Spinner from '@/components/ui/spinner/spinner'
+import CustomTable from '@/components/ui/CustomTable'
 
 function ViewUserDetails({ id }: Readonly<{ id: string }>) {
 
@@ -90,11 +91,13 @@ function Details({ userName, email, dateJoined, school, role }: { userName: stri
 
 
 function ViewDetailsTabSection({detailsData}:{detailsData:RecordsType}) {
+    console.log(detailsData,'details data in view details tab section');
     
     return (
         <ResponsiveContainer className="px-0">
             <ScreeningTabWrapper tabs={[
-                { label: <ActivitiesLabel />, value: 'Activities', content: <ActivityComponent results={[]} /> },
+                 { label: <ActivitiesLabel  />, value: 'Activities', content: <ActivityComponent results={detailsData.performance.exams_taken??[]} /> },
+                // { label: <ActivitiesLabel  />, value: 'Activities', content: <ActivityComponent results={detailsData.performance.exams_taken} /> },
                 { label: <ScoresLabel />, value: 'Scores', content: <ScoreComponent  scoresData={detailsData} /> },
             ]} />
         </ResponsiveContainer>
@@ -112,11 +115,26 @@ function ScoresLabel() {
     return <div className='flex gap-1 items-center'><span><ScoresIcon /></span><span>Scores</span></div>
 }
 
-function ActivityComponent({ results }: Readonly<{ results: string[] }>) {
+function ActivityComponent({ results }: Readonly<{ results: ExamTakenType[] }>) {
+    console.log('results in activity component:',results);
     return <div className="flex flex-col">
         {results.length > 0 ?
             <div className="flex gap-2 flex-col">
-                <Table data={[]} columns={['Activity', 'Date', 'Time']} />
+                <CustomTable columns={[
+                    {key:'Exams Taken',header:'Exams Taken',render:(_,row)=><div className="flex  items-center gap-1">
+              {row.exam_title}
+            </div>},
+            {key:'Stage',header:'Stage',render:(_,row)=><div className="flex  items-center gap-1">
+              {row.exam_stage}
+            </div>},
+              {key:'Score',header:'Score',render:(_,row)=><div className="flex  items-center gap-1">
+              {row.score}
+            </div>},
+            {key:'Date Taken',header:'Date Taken',render:(_,row)=><div className="flex  items-center gap-1">
+              {formatDate(row.recorded_at)}
+            </div>},
+                ]} data={results} />
+                {/* <Table data={[]} columns={['Activity', 'Date', 'Time']} /> */}
             </div> : <EmptySession desc="Arrangement of result based on the highest score gotten by candidates on the platform would appear here " label='Exams hasn’t happened yet' />}
     </div>
 }
@@ -127,7 +145,7 @@ console.log('scores data:',scoresData);
     return <div className="flex gap-2 p-3 flex-col">
         <AverageScore position={scoresData.performance.stats.leaderboard_ranking} percentage={scoresData.performance.stats.average_score} />
         <ScreeningScore screening={null} />
-        <LeagueScoresWrapper scores={scoresData.performance.exams}/>
+        {/* <LeagueScoresWrapper scores={scoresData.performance.exams}/> */}
     </div>
 }
 

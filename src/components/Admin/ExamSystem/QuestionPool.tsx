@@ -18,7 +18,7 @@ export default function QuestionPool() {
   const { page, setPage } = usePagination()
   const [open, setOpen] = useState(false);
   const [filters, setFilters] = useState({
-    difficulty: 'easy',
+    difficulty: 'total',
     search: ''
   })
 
@@ -33,12 +33,12 @@ export default function QuestionPool() {
 
   const memoizedFilters = useMemo(() => {
     if (filters.difficulty == 'total') {
-      return {}
+      return {};
     }
     return filters;
   }, [filters])
-  const { data } = useListQuestions(page, memoizedFilters)
-  console.log(data, 'what is data for list questions')
+  const { data ,isPending} = useListQuestions(page, memoizedFilters)
+  
 
   return (
     <div className='flex flex-col gap-1 '>

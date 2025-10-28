@@ -30,7 +30,7 @@ export class ExamPortal {
     }
 
 
-    static async listExams(id:number): Promise<SessionType> {
+    static async listExams(id: number): Promise<SessionType> {
         try {
             const response = await client.get(examUrls.list_exams(id))
             return response.data;
@@ -45,9 +45,9 @@ export class ExamPortal {
         return response.data;
     }
 
-    static async createQuestion(payload:CreateQuestionType){
+    static async createQuestion(payload: CreateQuestionType) {
         try {
-            const response=await client.post(examUrls.CREATE_QUESTION,payload)
+            const response = await client.post(examUrls.CREATE_QUESTION, payload)
             return response.data;
         } catch (error) {
             console.error(error)
@@ -55,15 +55,14 @@ export class ExamPortal {
     }
 
 
-    static async listQuestions(page:number=1,filters:Record<string,string>={}){
+    static async listQuestions(page: number = 1, filters: Record<string, string> = {}) {
         try {
-            const queryParams=new URLSearchParams({
-                page:page.toString(),
-                ...Object.fromEntries(Object.entries(filters).filter(([_,value])=>value!==undefined&&value!==''))
-            })
-           const response=await client.get(examUrls.LIST_QUESTIONS(queryParams.toString()))
-           console.log(response,'what is response') 
-              return response.data; 
+            const queryParams = new URLSearchParams({
+                page: page.toString(),
+                ...Object.fromEntries(Object.entries(filters).filter(([_, value]) => value !== undefined && value !== ''))
+            });            
+            const response = await client.get(examUrls.LIST_QUESTIONS(queryParams.toString()))
+            return response.data;
         } catch (error) {
             console.error(error)
         }
