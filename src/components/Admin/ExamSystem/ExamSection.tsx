@@ -38,6 +38,9 @@ export default function ExamSection() {
 
 
 
+  console.log(data, 'exam session data')
+
+
 
   return (
     <div className='flex flex-col gap-1 '>
@@ -45,9 +48,9 @@ export default function ExamSection() {
       <div className="flex flex-col gap-3 mt-3 w-[96%] mx-auto">
         {
           isPending ? <div className="grid w-full h-screen place-content-center"><Spinner /></div> :
-            <QuestionSession currentPage={currentPage} onPageChange={setCurrentPage} total_pages={data?.total_pages!} sessions={data?.results ?? []} />
+            <QuestionSession currentPage={currentPage} onPageChange={setCurrentPage} total_pages={data?.total_pages!} sessions={data?.list ?? []} />
         }
-        <ExamSummary />
+        <ExamSummary total_question={data?.meta.total_questions} moderate_question={data?.meta.medium_questions_count} hard_question={data?.meta.hard_questions_count} easy_question={data?.meta?.easy_questions_count} />
       </div>
 
       <CreateExamSessionModal open={open} close={setOpen} />
@@ -56,12 +59,12 @@ export default function ExamSection() {
 }
 
 
-function ExamSummary() {
+function ExamSummary({total_question=0,easy_question=0,moderate_question=0,hard_question=0}:Readonly<{total_question?:number,easy_question?:number,moderate_question?:number,hard_question?:number}>) {
   return <ResponsiveContainer className='grid grid-cols-1 md:grid-cols-4 gap-3'>
-    <SummaryCard link='total-question' label='TOTAL QUESTION POOL' value={0} className='bg-[#E6F7FD] p-3' textColor='text-[#018ABB]' />
-    <SummaryCard link='easy-question' label='EASY QUESTION LEVEL' value={0} className='bg-[#E7F6EC] p-3' textColor='text-[#099137]' />
-    <SummaryCard link='moderate-question' label='MODERATE QUESTION LEVEL' value={0} className='bg-[#FEF6E7] p-3' textColor='text-[#AD6F07]' />
-    <SummaryCard link='hard-question' label='HARD QUESTION LEVEL' value={0} className='bg-[#FBEAE9] p-3' textColor='text-[#CB1A14]' />
+    <SummaryCard link='total-question' label='TOTAL QUESTION POOL' value={total_question} className='bg-[#E6F7FD] p-3' textColor='text-[#018ABB]' />
+    <SummaryCard link='easy-question' label='EASY QUESTION LEVEL' value={easy_question} className='bg-[#E7F6EC] p-3' textColor='text-[#099137]' />
+    <SummaryCard link='moderate-question' label='MODERATE QUESTION LEVEL' value={moderate_question} className='bg-[#FEF6E7] p-3' textColor='text-[#AD6F07]' />
+    <SummaryCard link='hard-question' label='HARD QUESTION LEVEL' value={hard_question} className='bg-[#FBEAE9] p-3' textColor='text-[#CB1A14]' />
 
   </ResponsiveContainer>
 }

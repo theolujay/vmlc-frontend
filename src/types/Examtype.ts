@@ -56,7 +56,15 @@ export type SessionType = {
   total_pages: number,
   next: string,
   previous: string | null,
-  results: ExamSessionType[]
+  list: ExamSessionType[],
+
+  meta: {
+        total_questions: number,
+        hard_questions_count: number,
+        medium_questions_count: number,
+        easy_questions_count: number
+    },
+
 }
 
 
