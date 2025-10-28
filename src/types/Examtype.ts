@@ -59,11 +59,11 @@ export type SessionType = {
   list: ExamSessionType[],
 
   question_pool_data: {
-        total_questions: number,
-        hard_questions_count: number,
-        moderate_questions_count: number,
-        easy_questions_count: number
-    },
+    total_questions: number,
+    hard_questions_count: number,
+    moderate_questions_count: number,
+    easy_questions_count: number
+  },
 
 }
 
@@ -114,8 +114,8 @@ export type CreateExamSessionType = {
 
 
 
-export type CreateQuestionType={
-   text: string,
+export type CreateQuestionType = {
+  text: string,
   option_a: string,
   option_b: string,
   option_c: string,
@@ -125,7 +125,39 @@ export type CreateQuestionType={
 }
 
 
-export type QuestionType = {
+// export type QuestionType = {
+//   id: number,
+//   text: string,
+//   option_a: string,
+//   option_b: string,
+//   option_c: string,
+//   option_d: string,
+//   correct_answer: string,
+//   difficulty: string,
+//   created_at: Date,
+//   created_by: {
+//     user: RequestUserType,
+//     occupation: string,
+//     role: string
+//   }
+// }
+
+
+
+
+
+export type SessionQuestionType = {
+  count: number,
+  total_pages: number,
+  next: string | null,
+  previous: string | null,
+  results: SessionQuestionItemType[]
+
+
+}
+
+
+export type SessionQuestionItemType = {
   id: number,
   text: string,
   option_a: string,
@@ -134,10 +166,6 @@ export type QuestionType = {
   option_d: string,
   correct_answer: string,
   difficulty: string,
-  created_at: Date,
-  created_by: {
-    user: RequestUserType,
-    occupation: string,
-    role: string
-  }
+  related_exams_count: number,
+  created_at: Date
 }

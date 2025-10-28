@@ -1,4 +1,4 @@
-import { QuestionType } from "@/types/Examtype";
+import { SessionQuestionItemType } from "@/types/Examtype";
 
 export function getUserName(firstName: string, lastName: string): string {
     return [firstName, lastName].join(' ')
@@ -7,7 +7,9 @@ export function getUserName(firstName: string, lastName: string): string {
 
 
 
-export function getOptionAsArray(data: QuestionType): Record<string, string>[] {
+export function getOptionAsArray(data:SessionQuestionItemType
+  // : QuestionType
+): Record<string, string>[] {
   let optionsArray = []
   for (const key in data) {
     if (key.startsWith('option')) {

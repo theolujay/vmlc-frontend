@@ -3,12 +3,15 @@ import clsx from "clsx"
 import CustomTable from "../ui/CustomTable"
 import ResponsiveContainer from "../ui/ResponsiveContainer"
 import { FilterIcon, SortIcon } from "./AdminIcons"
-import { QuestionType } from "@/types/Examtype"
+import {  SessionQuestionItemType } from "@/types/Examtype"
 import TablePagination from "../ui/Pagination/TablePagination"
 import { Dispatch, SetStateAction } from "react"
 import { getOptionAsArray } from "@/utils/generalUtils"
 
-export default function  QuestionsTable({ questions, onPageChange, currentPage, page_count }: Readonly<{ questions: QuestionType[], onPageChange: Dispatch<SetStateAction<number>>, currentPage: number, page_count: number }>) {
+export default function  QuestionsTable({ questions, onPageChange, currentPage, page_count }: Readonly<{ 
+  // questions: QuestionType[], 
+  questions:SessionQuestionItemType[]
+  onPageChange: Dispatch<SetStateAction<number>>, currentPage: number, page_count: number }>) {
 
   
   return <ResponsiveContainer className='flex gap-4 py-3 px-0 flex-col mx-auto'>

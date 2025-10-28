@@ -1,6 +1,6 @@
 import { candidateUrls } from "@/constants/candidateUrls";
 import { examUrls } from "@/constants/examUrls";
-import { CreateExamSessionType, CreateQuestionType, DashboardType, SessionType } from "@/types/Examtype";
+import { CreateExamSessionType, CreateQuestionType, DashboardType, SessionQuestionType, SessionType } from "@/types/Examtype";
 import { LeaderBoardType } from "@/types/LeaderBoardType";
 import client from "@/utils/axios";
 
@@ -40,7 +40,7 @@ export class ExamPortal {
         }
     }
 
-    static async viewExamQuestions(id: number) {
+    static async viewExamQuestions(id: number):Promise<SessionQuestionType> {
         const response = await client.get(examUrls.VIEW_QUESTIONS(id))
         return response.data;
     }

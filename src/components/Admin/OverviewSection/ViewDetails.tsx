@@ -116,7 +116,7 @@ function ScoresLabel() {
 }
 
 function ActivityComponent({ results }: Readonly<{ results: ExamTakenType[] }>) {
-    console.log('results in activity component:',results);
+    
     return <div className="flex flex-col">
         {results.length > 0 ?
             <div className="flex gap-2 flex-col">
