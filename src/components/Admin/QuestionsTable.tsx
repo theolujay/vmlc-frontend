@@ -89,7 +89,7 @@ export default function  QuestionsTable({ questions, onPageChange, currentPage, 
 
 function getAppropriateColor(val: string) {
   switch (val) {
-    case 'medium':
+    case 'moderate':
       return 'bg-[#FEF6E7] text-[#865503]';
     case 'easy':
       return 'bg-[#E7F6EC] text-[#099137]';

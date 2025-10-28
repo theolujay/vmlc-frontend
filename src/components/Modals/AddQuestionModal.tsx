@@ -205,7 +205,7 @@ export default function AddQuestionModal({
                   >
                     <option value="">Select question difficulty</option>
                     <option value="easy">Easy</option>
-                    <option value="medium">Medium</option>
+                    <option value="moderate">Moderate</option>
                     <option value="hard">Hard</option>
                   </select>
                 </div>
