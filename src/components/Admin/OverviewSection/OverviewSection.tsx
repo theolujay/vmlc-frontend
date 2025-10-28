@@ -1,8 +1,9 @@
 "use client"
 import TablePagination from '@/components/ui/Pagination/TablePagination';
 import { useGetCandidateList } from '@/hooks/useCandidateMgt';
+import usePagination from '@/hooks/usePagination';
 import { ActivityHistoryUserType } from '@/types/auth';
-import { Dispatch, SetStateAction, useState } from 'react';
+import { Dispatch, SetStateAction } from 'react';
 import Button from '../../ui/Button';
 import ResponsiveContainer from '../../ui/ResponsiveContainer';
 import Table from '../../ui/Table';
@@ -35,8 +36,7 @@ function shouldShowHeaderButtons(role:string):boolean{
 
 
 export default function OverviewSection() {
-    // const {authState}=useAuth()
-    const [page,setPage]=useState(1)
+    const {page,setPage}=usePagination()
     const {data}=useGetCandidateList(page)
     
     return (
@@ -54,9 +54,6 @@ export default function OverviewSection() {
 
 
 function ActivityHistoryCard({data, onPageChange,currentPage,page_count}:Readonly<{data:ActivityHistoryUserType[],onPageChange:Dispatch<SetStateAction<number>>,currentPage:number,page_count:number}>){
-   
-
-  
     return <ResponsiveContainer className='flex gap-4 py-3 px-0 flex-col mx-auto'>
         <div className="flex justify-between px-3">
             <div className="flex gap-1 flex-col">
@@ -114,7 +111,7 @@ function OverviewSummaryCard({registeredStudents}:{registeredStudents:number}) {
             <div className="flex gap-4 flex-col">
                 <div className="flex gap-2">
                     <span><RegisteredIcon /></span>
-                    <p>REGISTERED STUDENTS</p>
+                    <p>REGISTERED CANDIDATES</p>
                 </div>
                 <div className='flex gap-3 items-center'><span className='font-bold text-2xl'>{registeredStudents}</span>
                     <div className="flex"><span className='text-xs text-[#0F973D]'>0%</span></div>
@@ -125,7 +122,7 @@ function OverviewSummaryCard({registeredStudents}:{registeredStudents:number}) {
             <div className="flex gap-4 flex-col">
                 <div className="flex gap-2">
                     <span><PendingIcon /></span>
-                    <p>PENDING STUDENTS</p>
+                    <p>PENDING CANDIDATES</p>
                 </div>
                 <div className='flex gap-3 items-center'><span className='font-bold text-2xl'>0</span>
                     <div className="flex"><span className='text-xs text-[#0F973D]'>0%</span></div>
@@ -137,7 +134,7 @@ function OverviewSummaryCard({registeredStudents}:{registeredStudents:number}) {
             <div className="flex gap-4 flex-col">
                 <div className="flex gap-2">
                     <span><ActiveIcon /></span>
-                    <p>ACTIVE STUDENTS</p>
+                    <p>ACTIVE CANDIDATES</p>
                 </div>
                 <div className='flex gap-3 items-center'><span className='font-bold text-2xl'>0</span>
                     <div className="flex"><span className='text-xs text-[#0F973D]'>0%</span></div>
@@ -149,7 +146,7 @@ function OverviewSummaryCard({registeredStudents}:{registeredStudents:number}) {
             <div className="flex gap-4 flex-col">
                 <div className="flex gap-2">
                     <span><InactiveIcon /></span>
-                    <p>INACTIVE STUDENTS</p>
+                    <p>INACTIVE CANDIDATES</p>
                 </div>
                 <div className='flex gap-3 items-center'><span className='font-bold text-2xl'>0</span>
                     <div className="flex"><span className='text-xs text-[#0F973D]'>0%</span></div>

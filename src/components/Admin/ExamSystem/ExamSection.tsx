@@ -50,7 +50,7 @@ export default function ExamSection() {
           isPending ? <div className="grid w-full h-screen place-content-center"><Spinner /></div> :
             <QuestionSession currentPage={currentPage} onPageChange={setCurrentPage} total_pages={data?.total_pages!} sessions={data?.list ?? []} />
         }
-        <ExamSummary total_question={data?.meta.total_questions} moderate_question={data?.meta.medium_questions_count} hard_question={data?.meta.hard_questions_count} easy_question={data?.meta?.easy_questions_count} />
+        <ExamSummary total_question={data?.question_pool_data?.total_questions} moderate_question={data?.question_pool_data?.moderate_questions_count} hard_question={data?.question_pool_data?.hard_questions_count} easy_question={data?.question_pool_data?.easy_questions_count} />
       </div>
 
       <CreateExamSessionModal open={open} close={setOpen} />

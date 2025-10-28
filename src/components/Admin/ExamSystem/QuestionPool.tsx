@@ -26,7 +26,7 @@ export default function QuestionPool() {
     <div className='flex flex-col gap-1 '>
       <AdminHeader isExport={false} label='Exam System' actionButton={<Button onClick={()=>setOpen(true)} className="inline-flex gap-2 border px-2 items-center text-sm"><span><AddIcon /></span><span>ADD QUESTION</span></Button>} />
       <div className="flex flex-col gap-3 mt-3 w-[96%] mx-auto">
-        <QuestionSummaryCard easy_questions={data?.meta.easy_questions_count} total_questions={data?.meta.total_questions} moderate_questions={data?.meta.medium_questions_count} hard_questions={data?.meta.hard_questions_count} />
+        <QuestionSummaryCard easy_questions={data?.meta.easy_questions_count} total_questions={data?.meta.total_questions} moderate_questions={data?.meta.moderate_questions_count} hard_questions={data?.meta.hard_questions_count} />
         
 <QuestionsTable page_count={data?.total_pages} currentPage={page} onPageChange={setPage} questions={data?.list ?? []} />  
 
