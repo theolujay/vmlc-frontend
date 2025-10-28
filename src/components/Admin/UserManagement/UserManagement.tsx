@@ -159,13 +159,21 @@ function ActivityHistoryTable({ candidates }: { candidates: MgtTypeItem[] }) {
                 {
                     key: 'status',
                     header: 'Status',
-                    render: (_, row) => <div className="flex  items-center gap-1">{row.role}</div>
+                    render: (_, row) => <div className="flex capitalize items-center gap-1">{row.role}</div>
                 },
+                // {
+                //     key: 'action',
+                //     header: 'Action',
+                //     render:(_,row)=> <div className="flex  items-center gap-1">{ro.role}</div>
+                // },
                 {
-                    key: 'action',
-                    header: 'Action',
-                    // render:(_,row)=> <div className="flex  items-center gap-1">{row.role}</div>
-                },
+            key: 'action', header: "Action", render: () => (
+              <div className="flex justify-between items-center gap-1">
+
+                <button className="cursor-pointer font-semibold text-[#3E4095]">View Details</button>
+              </div>
+            ),
+          }
             ]}
             data={candidates}
         />

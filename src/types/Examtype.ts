@@ -58,10 +58,10 @@ export type SessionType = {
   previous: string | null,
   list: ExamSessionType[],
 
-  meta: {
+  question_pool_data: {
         total_questions: number,
         hard_questions_count: number,
-        medium_questions_count: number,
+        moderate_questions_count: number,
         easy_questions_count: number
     },
 

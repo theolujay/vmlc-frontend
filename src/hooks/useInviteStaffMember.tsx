@@ -37,7 +37,9 @@ export type InviteStaffValueType = z.infer<typeof inviteStaffMemberSchema>;
 export default function useInviteStaffMember(onSuccessCallback: () => void) {
   const form = useForm<InviteStaffValueType>({
     resolver: zodResolver(inviteStaffMemberSchema),
-    defaultValues
+    defaultValues,
+    mode:'onChange',
+    reValidateMode:'onChange'
   })
 
   const { isPending, mutate } = useMutation({
