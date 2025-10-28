@@ -4,5 +4,6 @@ export const examUrls={
     CREATE_QUESTION:'/questions/',
     list_exams:(id:number=1)=>`/exams/?page=${id}`,
     VIEW_QUESTIONS:(exam_id:number)=>`/exams/${exam_id}/questions/`,
-    LIST_QUESTIONS:(page:number)=>`/questions/?page=${page}`,
+    // LIST_QUESTIONS:(page:number)=>`/questions/?page=${page}`,
+    LIST_QUESTIONS:(query:string)=>`/questions/?${query}`,
 }

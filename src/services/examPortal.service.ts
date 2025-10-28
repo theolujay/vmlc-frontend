@@ -55,9 +55,13 @@ export class ExamPortal {
     }
 
 
-    static async listQuestions(page:number){
+    static async listQuestions(page:number=1,filters:Record<string,string>={}){
         try {
-           const response=await client.get(examUrls.LIST_QUESTIONS(page))
+            const queryParams=new URLSearchParams({
+                page:page.toString(),
+                ...Object.fromEntries(Object.entries(filters).filter(([_,value])=>value!==undefined&&value!==''))
+            })
+           const response=await client.get(examUrls.LIST_QUESTIONS(queryParams.toString()))
            console.log(response,'what is response') 
               return response.data; 
         } catch (error) {
