@@ -20,7 +20,10 @@ export default function ExamSession() {
   const id = Number(searchParams.get("id")!);
   const { page, setPage } = usePagination()
   const { data, isPending } = useViewExamQuestions(id)
-
+  
+const easyCount = data?.results.filter((item) => item.difficulty === 'easy').length || 0;
+const moderateCount = data?.results.filter((item) => item.difficulty === 'moderate').length || 0;
+const hardCount = data?.results.filter((item) => item.difficulty === 'hard').length || 0;
 
   return (
     <div className='flex flex-col gap-1 '>
@@ -37,8 +40,8 @@ export default function ExamSession() {
       </div> :
         <div className="flex flex-col gap-3 mt-3 w-[96%] mx-auto">
           <SessionDetails />
-          <QuestionSummaryCard />
-          <QuestionsTable page_count={data?.total_pages} currentPage={page} onPageChange={setPage} questions={data?.results ?? []} />
+          <QuestionSummaryCard moderate_question={moderateCount} hard_question={hardCount} easy_question={easyCount} total={data?.count??0} />
+          <QuestionsTable page_count={data?.total_pages??0} currentPage={page} onPageChange={setPage} questions={data?.results ?? []} />
         </div>
       }
     </div>
@@ -67,13 +70,13 @@ function SessionDetails() {
 }
 
 
-function QuestionSummaryCard() {
+function QuestionSummaryCard({ total = 0, easy_question = 0, moderate_question = 0, hard_question = 0 }: Readonly<{ total: number, easy_question: number, moderate_question: number, hard_question: number }>) {
   const currentView = useSearchParams().get('view');
   return <ResponsiveContainer className='grid gap-3 grid-cols-1 md:grid-cols-4 p-4'>
-    <SummaryCard isActive={currentView == 'total-question'} label='TOTAL QUESTION POOL' value={0} textColor='text-[#018ABB]' />
-    <SummaryCard isActive={currentView == 'easy-question'} label='EASY QUESTION LEVEL' value={0} textColor='text-[#099137]' />
-    <SummaryCard isActive={currentView == 'moderate-question'} label='MODERATE QUESTION LEVEL' value={0} textColor='text-[#AD6F07]' />
-    <SummaryCard isActive={currentView == 'hard-question'} label='HARD QUESTION LEVEL' value={0} textColor='text-[#CB1A14]' />
+    <SummaryCard isActive={currentView == 'total-question'} label='TOTAL QUESTION POOL' value={total} textColor='text-[#018ABB]' />
+    <SummaryCard isActive={currentView == 'easy-question'} label='EASY QUESTION LEVEL' value={easy_question} textColor='text-[#099137]' />
+    <SummaryCard isActive={currentView == 'moderate-question'} label='MODERATE QUESTION LEVEL' value={moderate_question} textColor='text-[#AD6F07]' />
+    <SummaryCard isActive={currentView == 'hard-question'} label='HARD QUESTION LEVEL' value={hard_question} textColor='text-[#CB1A14]' />
   </ResponsiveContainer>
 }
 
