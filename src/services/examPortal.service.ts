@@ -1,6 +1,6 @@
 import { candidateUrls } from "@/constants/candidateUrls";
 import { examUrls } from "@/constants/examUrls";
-import { CreateExamSessionType, CreateQuestionType, DashboardType, EditExamSession, SessionQuestionType, SessionType } from "@/types/Examtype";
+import { CreateExamSessionType, CreateQuestionType, DashboardType, EditExamSession, SessionQuestionType, SessionType, UpdatedSessionQuestionType } from "@/types/Examtype";
 import { LeaderBoardType } from "@/types/LeaderBoardType";
 import client from "@/utils/axios";
 
@@ -40,7 +40,7 @@ export class ExamPortal {
         }
     }
 
-    static async viewExamQuestions(id: number): Promise<SessionQuestionType> {
+    static async viewExamQuestions(id: number): Promise<UpdatedSessionQuestionType> {
         const response = await client.get(examUrls.VIEW_QUESTIONS(id))
         return response.data;
     }
@@ -60,6 +60,18 @@ export class ExamPortal {
         try {
             
             const response = await client.delete(examUrls.DELETE_EXAM_SESSION(id))
+            return response.data;
+        } catch (error) {
+            console.error(error)
+        }
+    }
+
+
+
+    static async deleteQuestion(id:number) {
+        try {
+            
+            const response = await client.delete(examUrls.DELETE_QUESTION(id))
             return response.data;
         } catch (error) {
             console.error(error)

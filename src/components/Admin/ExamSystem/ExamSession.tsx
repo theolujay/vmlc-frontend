@@ -1,8 +1,11 @@
+import UploadExamSessionModal from '@/components/Modals/UploadExamSessionModal'
 import Spinner from '@/components/ui/spinner/spinner'
 import usePagination from '@/hooks/usePagination'
 import useViewExamQuestions from '@/hooks/useViewExamQuestions'
+import { formatDate } from '@/utils/formatFileSize'
 import clsx from 'clsx'
 import { useSearchParams } from 'next/navigation'
+import { useState } from 'react'
 import { GotoIcon } from '../../General/GettingStarted/GettingStartedAssets'
 import Button from '../../ui/Button'
 import ResponsiveContainer from '../../ui/ResponsiveContainer'
@@ -10,6 +13,7 @@ import AdminHeader from '../AdminHeader'
 import { SummaryIcon } from '../AdminIcons'
 import QuestionsTable from '../QuestionsTable'
 import ExamSessionDropdownDialog from './ExamSessionDropdownDialog'
+import RemoveQuestionModal from '@/components/Modals/RemoveQuestionModal'
 
 
 
@@ -21,14 +25,20 @@ export default function ExamSession() {
   const id = Number(searchParams.get("id")!);
   const { page, setPage } = usePagination()
   const { data, isPending } = useViewExamQuestions(id)
+  const [openUpload, setOpenUpload] = useState(false);
 
-  const easyCount = data?.results.filter((item) => item.difficulty === 'easy').length || 0;
-  const moderateCount = data?.results.filter((item) => item.difficulty === 'moderate').length || 0;
-  const hardCount = data?.results.filter((item) => item.difficulty === 'hard').length || 0;
+  // const easyCount = data?.results.filter((item) => item.difficulty === 'easy').length || 0;
+  // const moderateCount = data?.results.filter((item) => item.difficulty === 'moderate').length || 0;
+  // const hardCount = data?.results.filter((item) => item.difficulty === 'hard').length || 0;
+
+
+  function handleOpenUpload(){
+    setOpenUpload(true);
+  }
 
   return (
     <div className='flex flex-col gap-1 '>
-      <AdminHeader isExport={false} label='Exam System' actionButton={[<Button key='button-one' className="inline-flex gap-2 border px-2 items-center text-sm"><span>UPLOAD</span></Button>,
+      <AdminHeader isExport={false} label='Exam System' actionButton={[<Button key='button-one' onClick={handleOpenUpload} className="inline-flex gap-2 border px-2 items-center text-sm"><span>UPLOAD</span></Button>,
 
       // <button key='button-two' className="flex flex-col items-center justify-center w-10 h-full rounded-md border border-gray-300 hover:bg-gray-100">
       //   <span className=" w-1 h-1 bg-gray-700 rounded-full"></span>
@@ -41,31 +51,34 @@ export default function ExamSession() {
         <Spinner />
       </div> :
         <div className="flex flex-col gap-3 mt-3 w-[96%] mx-auto">
-          <SessionDetails />
-          <QuestionSummaryCard moderate_question={moderateCount} hard_question={hardCount} easy_question={easyCount} total={data?.count ?? 0} />
-          <QuestionsTable page_count={data?.total_pages ?? 0} currentPage={page} onPageChange={setPage} questions={data?.results ?? []} />
+          <SessionDetails dateCreated={data?.created_at??new Date()} title={data?.title} description={data?.description} />
+          <QuestionSummaryCard moderate_question={data?.questions.question_pool_data.moderate_questions_count??0} hard_question={data?.questions.question_pool_data.hard_questions_count??0} easy_question={data?.questions.question_pool_data.easy_questions_count??0} total={data?.questions.count ?? 0} />
+          <QuestionsTable page_count={data?.questions.total_pages ?? 0} currentPage={page} onPageChange={setPage} questions={data?.questions.results ?? []} />
         </div>
       }
+      <UploadExamSessionModal open={openUpload} close={setOpenUpload} />
+      {/* <RemoveQuestionModal open={false} close={() => { }} session_id={id} /> */}
     </div>
   )
 }
 
 
-function SessionDetails() {
+function SessionDetails({title,description,dateCreated}:Readonly<{title?:string,description?:string,dateCreated:Date}>) {
   return <ResponsiveContainer className='gap-10 p-4 flex flex-col'>
     <div className="flex justify-between">
       <div className='flex flex-col gap-1'>
         <p className='text-sm'>EXAM TITLE</p>
-        <h2 className='font-bold text-2xl'>Screening Exam</h2>
+        <h2 className='font-bold text-2xl'>{title}</h2>
       </div>
       <div className="flex flex-col gap-1">
         <span className='text-sm'>DATE CREATED</span>
-        <span>08 July, 2025</span>
+        {/* <span>08 July, 2025</span> */}
+        <span>{formatDate(dateCreated)}</span>
       </div>
     </div>
     <div className="flex flex-col">
       <p className='text-sm'>DESCRIPTION</p>
-      <p>Preliminary exam to determine candidates qualified for the league stage.</p>
+      <p>{description}</p>
     </div>
 
   </ResponsiveContainer>

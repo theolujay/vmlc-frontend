@@ -10,10 +10,19 @@ export type LeaderCandidateType = {
     user: RequestUserType
     school: string
 }
-export type LeaderBoardType = LeaderType[]
+export type LeaderBoardType = {
+    total_pages: number,
+    next: string | null,
+    previous: string | null,
+    exam_details: {
+        total_exams: number,
+        screening_exams: number,
+        league_exams: number
+    },
+    list: LeaderType[]
+}
 
-
-export type PaginatedType<T>= {
+export type PaginatedType<T> = {
     count: number;
     total_pages: number,
     next: string | null,
