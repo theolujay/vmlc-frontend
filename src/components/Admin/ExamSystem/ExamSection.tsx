@@ -107,7 +107,7 @@ function QuestionSession({ sessions, total_pages, onPageChange, currentPage }: R
           {sortedSessions.map((val, index) => <ExamSession key={`session-${index + 1}`} id={val.id}
             // applicationDate={val?.exam_date}
             applicationDate={val?.created_at}
-            count={val?.question_count} title={val?.stage} />)}
+            count={val?.question_count} title={val?.title} />)}
         </div>
         {total_pages > 1 && <PagePagination currentPage={currentPage} onPageChange={onPageChange} pageCount={total_pages} />}
       </div>
@@ -152,7 +152,7 @@ function ExamSession({ title, count, applicationDate, id }: Readonly<{ title: st
     </div>
     <div className={clsx("flex flex-col z-10   rounded-2xl p-2", isUpcoming ? 'bg-[#E6F7FD]' : 'bg-[#F0F2F5]')}>
       <div className={clsx("flex  flex-col gap-1 rounded-lg")}>
-        <span className='text-sm uppercase'>{title} EXAM</span>
+        <span className='text-sm uppercase'>{title}</span>
 
         <p className='font-bold text-[2.5rem] '>{count}</p>
         <div className='flex justify-between items-center'>
