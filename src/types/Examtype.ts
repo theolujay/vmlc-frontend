@@ -124,6 +124,11 @@ export type CreateQuestionType = {
   difficulty: string
 }
 
+export type EditExamSession={
+  title:string,
+  description:string
+}
+
 
 // export type QuestionType = {
 //   id: number,

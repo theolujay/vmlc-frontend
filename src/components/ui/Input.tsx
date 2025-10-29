@@ -46,7 +46,7 @@ export default RegisterInput;
 
 
 
-function NeutralInputBase({ name, icon, placeholder, className, label }: Readonly<{ icon: React.ReactNode, placeholder?: string, className?: string, label: string, name: string }>) {
+function NeutralInputBase({ name, icon, placeholder, className, label }: Readonly<{ icon?: React.ReactNode, placeholder?: string, className?: string, label: string, name: string }>) {
     const { register } = useFormContext()
     return (
         <div className="flex flex-col gap-1">
