@@ -124,9 +124,9 @@ export type CreateQuestionType = {
   difficulty: string
 }
 
-export type EditExamSession={
-  title:string,
-  description:string
+export type EditExamSession = {
+  title: string,
+  description: string
 }
 
 
@@ -174,3 +174,86 @@ export type SessionQuestionItemType = {
   related_exams_count: number,
   created_at: Date
 }
+
+
+
+
+export type UpdatedSessionQuestionType = {
+  id: number,
+  title: string,
+  stage: string,
+  description: string,
+  exam_date: Date,
+  countdown_minutes: number,
+  open_duration_hours: number,
+  is_active: boolean,
+  questions: QuestionType,
+  created_at: Date
+  created_by: {
+    user: RequestUserType,
+    occupation: string,
+    role: string
+  },
+  updated_by: string | null,
+
+  scheduled_date: Date,
+
+  status: string,
+  concluded_at: Date | null,
+
+
+}
+
+
+type QuestionType = {
+  count: number,
+  total_pages: number,
+  next: string | null,
+  previous: string | null,
+  // meta: MetaType,
+  results: QuestionItemType[],
+  question_pool_data: QuestionPoolDataType
+}
+type QuestionPoolDataType = {
+  total_questions: number,
+  hard_questions_count: number,
+  moderate_questions_count: number,
+  easy_questions_count: number
+}
+// type MetaType = {
+//   total_count: number,
+//   hard_questions_count: number,
+//   medium_questions_count: number,
+//   easy_questions_count: number
+// }
+
+type QuestionItemType = {
+  id: number,
+  text: string,
+  option_a: string,
+  option_b: string,
+  option_c: string,
+  option_d: string,
+  correct_answer: string,
+  difficulty: string,
+  related_exams_count: number,
+  // related_exams: RelatedExamType,
+  created_at: Date,
+
+
+}
+
+
+
+// type RelatedExamType = {
+//   count: number,
+//   list: RelatedExamItemType[]
+// }
+
+// type RelatedExamItemType = {
+//   id: number,
+//   title: string,
+//   description: string,
+//   stage: string,
+//   exam_date: Date
+// }

@@ -3,17 +3,27 @@ import clsx from "clsx"
 import CustomTable from "../ui/CustomTable"
 import ResponsiveContainer from "../ui/ResponsiveContainer"
 import { FilterIcon, SortIcon } from "./AdminIcons"
-import {  SessionQuestionItemType } from "@/types/Examtype"
+import { SessionQuestionItemType } from "@/types/Examtype"
 import TablePagination from "../ui/Pagination/TablePagination"
-import { Dispatch, SetStateAction } from "react"
+import { Dispatch, SetStateAction, useState } from "react"
 import { getOptionAsArray } from "@/utils/generalUtils"
+import RemoveQuestionModal from "../Modals/RemoveQuestionModal"
+import { set } from "zod"
 
-export default function  QuestionsTable({ questions, onPageChange, currentPage, page_count }: Readonly<{ 
+export default function QuestionsTable({ questions, onPageChange, currentPage, page_count }: Readonly<{
   // questions: QuestionType[], 
-  questions:SessionQuestionItemType[]
-  onPageChange: Dispatch<SetStateAction<number>>, currentPage: number, page_count: number }>) {
+  questions: SessionQuestionItemType[]
+  onPageChange: Dispatch<SetStateAction<number>>, currentPage: number, page_count: number
+}>) {
+  const [openRemoveQuestion, setOpenRemoveQuestion] = useState(false);
+  const [selectedQuestionId, setSelectedQuestionId] = useState<number>(0);
 
-  
+
+  function handleOpenModal() {
+    setOpenRemoveQuestion(true);
+  }
+
+
   return <ResponsiveContainer className='flex gap-4 py-3 px-0 flex-col mx-auto'>
     <div className="flex justify-between px-3">
       <div className="flex gap-1 flex-col">
@@ -43,7 +53,7 @@ export default function  QuestionsTable({ questions, onPageChange, currentPage, 
         {
           key: 'data.text', header: 'Question', render: (_, row) => {
             const options = getOptionAsArray(row)
-            return <div className="flex flex-col justify-start items-start gap-1">
+            return <div className="flex text-start flex-col justify-start items-start gap-1">
               <span>{row.text}</span>
               <div className="flex gap-3 w-full"  >
                 {
@@ -73,10 +83,12 @@ export default function  QuestionsTable({ questions, onPageChange, currentPage, 
           },
         },
         {
-          key: 'action', header: "Action", render: (_,row) => (
+          key: 'action', header: "Action", render: (_, row) => (
             <div className="flex justify-between items-center gap-1">
-              <button onClick={()=>{
-                console.log('remove',row.id)
+              <button onClick={() => {
+
+                setSelectedQuestionId(row.id);
+                handleOpenModal()
               }} className="cursor-pointer font-semibold text-[#475467]">Remove</button>
               <button className="cursor-pointer font-semibold text-[#6941C6]">View</button>
             </div>
@@ -85,7 +97,7 @@ export default function  QuestionsTable({ questions, onPageChange, currentPage, 
       ]}
       footer={<TablePagination currentPage={currentPage} pageCount={page_count} onPageChange={onPageChange} />}
     />
-
+    <RemoveQuestionModal question_id={selectedQuestionId} close={setOpenRemoveQuestion} open={openRemoveQuestion} />
   </ResponsiveContainer>
 }
 

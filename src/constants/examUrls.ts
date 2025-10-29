@@ -4,7 +4,9 @@ export const examUrls = {
     EDIT_SESSION: (exam_id: number) => `/exams/${exam_id}/`,
     CREATE_QUESTION: '/questions/',
     list_exams: (id: number = 1) => `/exams/?page=${id}`,
-    VIEW_QUESTIONS: (exam_id: number) => `/exams/${exam_id}/questions/`,
+    VIEW_QUESTIONS: (exam_id: number) => `/exams/${exam_id}`,
+    // VIEW_QUESTIONS: (exam_id: number) => `/exams/${exam_id}/questions/`,
     LIST_QUESTIONS: (query: string) => `/questions/?${query}`,
     DELETE_EXAM_SESSION: (exam_id: number) => `/exams/${exam_id}/`,
+    DELETE_QUESTION: (question_id: number) => `/questions/${question_id}/`,
 }

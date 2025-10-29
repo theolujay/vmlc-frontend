@@ -1,23 +1,20 @@
-import Image from "next/image";
+import CustomTable from "@/components/ui/CustomTable";
+import useGetLeaderBoard from "@/hooks/useGetLeaderboard";
+import { LeaderBoardType, LeaderType } from "@/types/LeaderBoardType";
+import { getUserName } from "@/utils/generalUtils";
 import { ScreeningIcon } from "../../General/GeneralIcon";
 import Button from "../../ui/Button";
 import ResponsiveContainer from "../../ui/ResponsiveContainer";
 import ScreeningTabWrapper from "../../ui/Tabs/ScreeningTabWrapper";
 import AdminHeader from "../AdminHeader";
-import { User } from "@/types/Index";
-import Table from "../../ui/Table";
 import EmptySession from "../EmptySession";
-import useGetLeaderBoard from "@/hooks/useGetLeaderboard";
-import { LeaderBoardType } from "@/types/LeaderBoardType";
-import CustomTable from "@/components/ui/CustomTable";
-import { getUserName } from "@/utils/generalUtils";
 import { FirstPosition, SecondPosition, ThirdPosition } from "./LeaderBoardIcon";
 
 
 
 export default function LeaderBoardSection() {
   const { data } = useGetLeaderBoard()
-  
+
   return (
     <div className='flex flex-col gap-1 '>
       <AdminHeader label="Leaderboards" isExport actionButton={<Button className="px-2 bg-grey-base-400 text-white">UPLOAD</Button>} />
@@ -25,7 +22,7 @@ export default function LeaderBoardSection() {
 
         <ResponsiveContainer className="px-0">
           <ScreeningTabWrapper tabs={[
-            { label: <ScreeningLabel />, value: 'overall-leaderboard', content: <ScoreComponent results={data ?? []} /> },
+            { label: <ScreeningLabel />, value: 'overall-leaderboard', content: <ScoreComponent results={data?.list ?? []} /> },
           ]} />
         </ResponsiveContainer>
       </div>
@@ -38,8 +35,8 @@ function ScreeningLabel() {
   return <div className='flex gap-1 items-center'><span><ScreeningIcon /></span><span>Screening</span></div>
 }
 
-function ScoreComponent({ results }: Readonly<{ results: LeaderBoardType }>) {
-  
+function ScoreComponent({ results }: Readonly<{ results: LeaderType[] }>) {
+
   return <div className="flex flex-col">
     {results.length == 0 ? <EmptySession desc="Arrangement of result based on the highest score gotten by candidates on the platform would appear here " label='Exams hasn’t happened yet' /> :
 
@@ -88,7 +85,7 @@ const shapeByRank: Record<number, React.ComponentType> = {
 
 
 
-export function Podium({ users }: Readonly<{ users: LeaderBoardType }>) {
+export function Podium({ users }: Readonly<{ users: LeaderType[] }>) {
   const order = [2, 1, 3];
   const arranged = [...users].sort(
     (a, b) => order.indexOf(a.rank) - order.indexOf(b.rank)
