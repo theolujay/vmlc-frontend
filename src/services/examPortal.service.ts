@@ -1,6 +1,6 @@
 import { candidateUrls } from "@/constants/candidateUrls";
 import { examUrls } from "@/constants/examUrls";
-import { CreateExamSessionType, CreateQuestionType, DashboardType, SessionQuestionType, SessionType } from "@/types/Examtype";
+import { CreateExamSessionType, CreateQuestionType, DashboardType, EditExamSession, SessionQuestionType, SessionType } from "@/types/Examtype";
 import { LeaderBoardType } from "@/types/LeaderBoardType";
 import client from "@/utils/axios";
 
@@ -40,7 +40,7 @@ export class ExamPortal {
         }
     }
 
-    static async viewExamQuestions(id: number):Promise<SessionQuestionType> {
+    static async viewExamQuestions(id: number): Promise<SessionQuestionType> {
         const response = await client.get(examUrls.VIEW_QUESTIONS(id))
         return response.data;
     }
@@ -55,12 +55,34 @@ export class ExamPortal {
     }
 
 
+
+     static async deleteExamSession(id:number) {
+        try {
+            
+            const response = await client.delete(examUrls.DELETE_EXAM_SESSION(id))
+            return response.data;
+        } catch (error) {
+            console.error(error)
+        }
+    }
+
+
+    static async editExamSession(examId: number, payload:EditExamSession) {
+        try {
+            const response = await client.put(examUrls.EDIT_SESSION(examId), payload);
+            return response.data;
+        } catch (error) {
+            console.error(error)
+        }
+    }
+
+
     static async listQuestions(page: number = 1, filters: Record<string, string> = {}) {
         try {
             const queryParams = new URLSearchParams({
                 page: page.toString(),
                 ...Object.fromEntries(Object.entries(filters).filter(([_, value]) => value !== undefined && value !== ''))
-            });            
+            });
             const response = await client.get(examUrls.LIST_QUESTIONS(queryParams.toString()))
             return response.data;
         } catch (error) {
