@@ -76,6 +76,13 @@ export type RequestUserType = {
 }
 
 
+
+export type CreatedByType = {
+    user: RequestUserType,
+    occupation: string,
+    role: string
+}
+
 export type AuthState = {
     token: string | null;
     homePath?: string | null;
@@ -88,9 +95,9 @@ export type AuthState = {
 
 
 
-export type ActivityHistoryUserType={
-    user:RequestUserType,
-      school:string,
-    role:string,
-      is_verified: boolean
-    }
+export type ActivityHistoryUserType = {
+    user: RequestUserType,
+    school: string,
+    role: string,
+    is_verified: boolean
+}

@@ -6,7 +6,7 @@ import { toast } from 'react-toastify'
 
 export default function useDeleteQuestion(onSuccessCallback: () => void) {
     const queryClient = useQueryClient()
-    
+
     const { isPending, mutate } = useMutation({
         mutationFn: ExamPortal.deleteQuestion,
         onSuccess: (_, question_id) => {

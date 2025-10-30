@@ -1,14 +1,14 @@
-import { formatDate } from "@/utils/formatFileSize"
+import { SessionQuestionItemType } from "@/types/Examtype"
+import { formatDate, getAppropriateColor } from "@/utils/formatFileSize"
+import { getOptionAsArray } from "@/utils/generalUtils"
 import clsx from "clsx"
+import { Dispatch, SetStateAction, useState } from "react"
+import RemoveQuestionModal from "../Modals/RemoveQuestionModal"
 import CustomTable from "../ui/CustomTable"
+import TablePagination from "../ui/Pagination/TablePagination"
 import ResponsiveContainer from "../ui/ResponsiveContainer"
 import { FilterIcon, SortIcon } from "./AdminIcons"
-import { SessionQuestionItemType } from "@/types/Examtype"
-import TablePagination from "../ui/Pagination/TablePagination"
-import { Dispatch, SetStateAction, useState } from "react"
-import { getOptionAsArray } from "@/utils/generalUtils"
-import RemoveQuestionModal from "../Modals/RemoveQuestionModal"
-import { set } from "zod"
+import QuestionInformation from "../Drawer/QuestionInformation"
 
 export default function QuestionsTable({ questions, onPageChange, currentPage, page_count }: Readonly<{
   // questions: QuestionType[], 
@@ -16,8 +16,11 @@ export default function QuestionsTable({ questions, onPageChange, currentPage, p
   onPageChange: Dispatch<SetStateAction<number>>, currentPage: number, page_count: number
 }>) {
   const [openRemoveQuestion, setOpenRemoveQuestion] = useState(false);
+  const [openDrawer, setOpenDrawer] = useState(false)
   const [selectedQuestionId, setSelectedQuestionId] = useState<number>(0);
+  const [currentQuestion, setCurrentQuestion] = useState<SessionQuestionItemType | null>(null)
 
+  console.log(questions, 'what is contained in questions')
 
   function handleOpenModal() {
     setOpenRemoveQuestion(true);
@@ -86,34 +89,27 @@ export default function QuestionsTable({ questions, onPageChange, currentPage, p
           key: 'action', header: "Action", render: (_, row) => (
             <div className="flex justify-between items-center gap-1">
               <button onClick={() => {
-
                 setSelectedQuestionId(row.id);
                 handleOpenModal()
               }} className="cursor-pointer font-semibold text-[#475467]">Remove</button>
-              <button className="cursor-pointer font-semibold text-[#6941C6]">View</button>
+              <button onClick={() => {
+                setOpenDrawer(true)
+                setCurrentQuestion(row)
+              }} className="cursor-pointer font-semibold text-[#6941C6]">View</button>
             </div>
           ),
         }
       ]}
       footer={<TablePagination currentPage={currentPage} pageCount={page_count} onPageChange={onPageChange} />}
     />
+    {currentQuestion &&
+      <QuestionInformation information={currentQuestion} open={openDrawer} setOpen={setOpenDrawer} />
+    }
     <RemoveQuestionModal question_id={selectedQuestionId} close={setOpenRemoveQuestion} open={openRemoveQuestion} />
   </ResponsiveContainer>
 }
 
 
-function getAppropriateColor(val: string) {
-  switch (val) {
-    case 'moderate':
-      return 'bg-[#FEF6E7] text-[#865503]';
-    case 'easy':
-      return 'bg-[#E7F6EC] text-[#099137]';
-    case 'hard':
-      return 'bg-[#FBEAE9] text-[#9E0A05]';
-    default:
-      return 'bg-grey text-black'
-  }
-}
 
 
 
