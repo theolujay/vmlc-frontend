@@ -2,7 +2,8 @@ import Drawer from '@/components/ui/Drawer/Drawer'
 import { CloseIcon } from '../Admin/AdminIcons'
 import { SessionQuestionItemType } from '@/types/Examtype'
 import { getOptionAsArray, getUserName } from '@/utils/generalUtils'
-import { formatDate, formatTimeToString } from '@/utils/formatFileSize'
+import { formatDate, formatTimeToString, getAppropriateColor } from '@/utils/formatFileSize'
+import clsx from 'clsx'
 
 
 export default function QuestionInformation({ open, setOpen, information }: Readonly<{ open: boolean, setOpen: (open: boolean) => void, information: SessionQuestionItemType }>) {
@@ -26,7 +27,7 @@ export default function QuestionInformation({ open, setOpen, information }: Read
                 <div className="body  flex flex-col gap-3 mt-3 border-[#D0D5DD] border-b">
                     <div className=" flex flex-col gap-0.5 mt-3">
                         <span className='text-sm text-[#344054]'>QUESTION DIFFICULTY</span>
-                        <span className='capitalize'>{information.difficulty}</span>
+                        <span className={clsx('capitalize w-fit rounded-full px-2 py-1 font-semibold',getAppropriateColor(information.difficulty))}>{information.difficulty}</span>
                     </div>
                     <div className=" flex flex-col gap-0.5 mt-3">
                         <span className='text-sm text-[#344054]'>QUESTION</span>
