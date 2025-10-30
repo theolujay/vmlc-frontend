@@ -4,11 +4,14 @@ import { SessionQuestionItemType } from '@/types/Examtype'
 import { getOptionAsArray, getUserName } from '@/utils/generalUtils'
 import { formatDate, formatTimeToString, getAppropriateColor } from '@/utils/formatFileSize'
 import clsx from 'clsx'
+import { useMemo } from 'react'
 
 
 export default function QuestionInformation({ open, setOpen, information }: Readonly<{ open: boolean, setOpen: (open: boolean) => void, information: SessionQuestionItemType }>) {
 
-    const options = getOptionAsArray(information)
+    // const options = getOptionAsArray(information)
+    const options = useMemo(() => getOptionAsArray(information) || [], [information])
+    console.log(options, 'what is options')
     const formattedDate = formatDate(information.created_at);
     const formattedTime = formatTimeToString(information.created_at)
     const correct = options.find((val) => val.optionKey.endsWith(information.correct_answer.toLowerCase()));
@@ -27,7 +30,7 @@ export default function QuestionInformation({ open, setOpen, information }: Read
                 <div className="body  flex flex-col gap-3 mt-3 border-[#D0D5DD] border-b">
                     <div className=" flex flex-col gap-0.5 mt-3">
                         <span className='text-sm text-[#344054]'>QUESTION DIFFICULTY</span>
-                        <span className={clsx('capitalize w-fit rounded-full px-2 py-1 font-semibold',getAppropriateColor(information.difficulty))}>{information.difficulty}</span>
+                        <span className={clsx('capitalize w-fit rounded-full px-2 py-1 font-semibold', getAppropriateColor(information.difficulty))}>{information.difficulty}</span>
                     </div>
                     <div className=" flex flex-col gap-0.5 mt-3">
                         <span className='text-sm text-[#344054]'>QUESTION</span>
@@ -37,10 +40,14 @@ export default function QuestionInformation({ open, setOpen, information }: Read
                         <span className='text-sm text-[#344054]'>OPTIONS</span>
                         <div className="flex gap-3 flex-col w-full"  >
                             {
-                                options.map((val, index) => <div key={`option-${index + 1}`} className="option flex gap-1">
-                                    <input id={val.optionKey} type="radio" readOnly />
-                                    <label htmlFor={val.optionKey}>{val.option}</label>
-                                </div>
+                                options.map((val, index) => {
+                                    const [, key] = val.optionKey.split('_');
+                                    
+                                    return <div key={`option-${index + 1}`} className="option flex gap-1">
+                                        <input id={val.optionKey} type="radio" readOnly />
+                                        <label htmlFor={val.optionKey}>({key}) {val.option}</label>
+                                    </div>
+                                }
                                 )
                             }
                         </div>
@@ -49,7 +56,7 @@ export default function QuestionInformation({ open, setOpen, information }: Read
                     <div className=" flex flex-col gap-0.5 mt-3 mb-3">
                         <span className='text-sm text-[#344054]'>ANSWER</span>
                         <div className="flex text-[#3E4095]">
-                            <span className=''>({information.correct_answer})</span><span className='ml-2'>{correct?.option}</span>
+                            <span className=''>({information.correct_answer.toLowerCase()})</span><span className='ml-2'>{correct?.option}</span>
 
                         </div>
                     </div>
