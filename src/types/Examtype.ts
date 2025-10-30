@@ -1,4 +1,4 @@
-import { RequestUserType } from "./auth";
+import { CreatedByType, RequestUserType } from "./auth";
 
 export type Option = {
   value: string;
@@ -162,6 +162,10 @@ export type SessionQuestionType = {
 }
 
 
+
+
+
+
 export type SessionQuestionItemType = {
   id: number,
   text: string,
@@ -171,9 +175,14 @@ export type SessionQuestionItemType = {
   option_d: string,
   correct_answer: string,
   difficulty: string,
-  related_exams_count: number,
-  created_at: Date
+  // related_exams_count: number,
+  created_at: Date,
+  created_by:CreatedByType,
+  updated_at:Date,
+  updated_by:string|null,
 }
+
+
 
 
 
@@ -211,7 +220,8 @@ type QuestionType = {
   next: string | null,
   previous: string | null,
   // meta: MetaType,
-  results: QuestionItemType[],
+  // results: QuestionItemType[],
+  results:SessionQuestionItemType
   question_pool_data: QuestionPoolDataType
 }
 type QuestionPoolDataType = {
@@ -227,21 +237,21 @@ type QuestionPoolDataType = {
 //   easy_questions_count: number
 // }
 
-type QuestionItemType = {
-  id: number,
-  text: string,
-  option_a: string,
-  option_b: string,
-  option_c: string,
-  option_d: string,
-  correct_answer: string,
-  difficulty: string,
-  related_exams_count: number,
-  // related_exams: RelatedExamType,
-  created_at: Date,
+// type QuestionItemType = {
+//   id: number,
+//   text: string,
+//   option_a: string,
+//   option_b: string,
+//   option_c: string,
+//   option_d: string,
+//   correct_answer: string,
+//   difficulty: string,
+//   related_exams_count: number,
+//   // related_exams: RelatedExamType,
+//   created_at: Date,
 
 
-}
+// }
 
 
 

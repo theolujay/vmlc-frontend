@@ -1,6 +1,6 @@
 import CustomTable from "@/components/ui/CustomTable";
 import useGetLeaderBoard from "@/hooks/useGetLeaderboard";
-import { LeaderBoardType, LeaderType } from "@/types/LeaderBoardType";
+import { LeaderBoardType, LeaderItemType, LeaderType } from "@/types/LeaderBoardType";
 import { getUserName } from "@/utils/generalUtils";
 import { ScreeningIcon } from "../../General/GeneralIcon";
 import Button from "../../ui/Button";
@@ -35,14 +35,14 @@ function ScreeningLabel() {
   return <div className='flex gap-1 items-center'><span><ScreeningIcon /></span><span>Screening</span></div>
 }
 
-function ScoreComponent({ results }: Readonly<{ results: LeaderType[] }>) {
+function ScoreComponent({ results }: Readonly<{ results: LeaderItemType[] }>) {
 
   return <div className="flex flex-col">
     {results.length == 0 ? <EmptySession desc="Arrangement of result based on the highest score gotten by candidates on the platform would appear here " label='Exams hasn’t happened yet' /> :
 
       <div className="flex gap-2 flex-col">
         <Podium users={results.slice(0, 3)} />
-        <CustomTable columns={[
+        {/* <CustomTable columns={[
           { key: 'position', header: 'Position', render: (_, row) => <div className="flex items-center gap-1">{row.rank}</div> },
           { key: 'Name', header: 'Name', render: (_, row) => <div className="flex  items-center gap-1">{getUserName(row.candidate.user.first_name, row.candidate.user.last_name)}</div> },
           {
@@ -63,7 +63,7 @@ function ScoreComponent({ results }: Readonly<{ results: LeaderType[] }>) {
               </div>
             ),
           }
-        ]} data={results} />
+        ]} data={results} /> */}
       </div>
       // <EmptySession desc="Arrangement of result based on the highest score gotten by candidates on the platform would appear here " label='Exams hasn’t happened yet' />
     }
@@ -85,11 +85,11 @@ const shapeByRank: Record<number, React.ComponentType> = {
 
 
 
-export function Podium({ users }: Readonly<{ users: LeaderType[] }>) {
+export function Podium({ users }: Readonly<{ users: LeaderItemType[] }>) {
   const order = [2, 1, 3];
-  const arranged = [...users].sort(
-    (a, b) => order.indexOf(a.rank) - order.indexOf(b.rank)
-  );
+  // const arranged = [...users].sort(
+  //   (a, b) => order.indexOf(a.rank) - order.indexOf(b.rank)
+  // );
 
 
 
@@ -97,7 +97,7 @@ export function Podium({ users }: Readonly<{ users: LeaderType[] }>) {
 
     <div className="flex flex-col max-w-[96%] mx-auto my-5">
       <div className="flex flex-col md:flex-row justify-between w-full gap-3">
-        {
+        {/* {
           arranged.map((val, index) => {
             const Shape = shapeByRank[val.rank]
             return <div key={`shape-index-${index + 1}`} className="flex justify-between gap-3 items-center flex-col">
@@ -111,7 +111,7 @@ export function Podium({ users }: Readonly<{ users: LeaderType[] }>) {
               </div>
             </div>
           })
-        }
+        } */}
       </div>
     </div>
   );

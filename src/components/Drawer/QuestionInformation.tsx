@@ -1,40 +1,85 @@
 import Drawer from '@/components/ui/Drawer/Drawer'
 import { CloseIcon } from '../Admin/AdminIcons'
+import { SessionQuestionItemType } from '@/types/Examtype'
+import { getOptionAsArray, getUserName } from '@/utils/generalUtils'
+import { formatDate, formatTimeToString } from '@/utils/formatFileSize'
 
-export default function QuestionInformation({difficulty,question,open,setOpen}:{difficulty:string,question:string,open:boolean,setOpen?:(open:boolean)=>void}) {
-    
-  return (
-    <Drawer open={open} onClose={setOpen!}>
-        <div className="flex flex-col">
-            <div className="header border-b py-1 justify-between border-[#E4E7EC] flex ">
-                <div className="flex flex-col gap-0.5">
-                <h2 className="font-bold text-lg">Question Information</h2>
-                <p className="text-sm text-gray-500">This contains the clicked question information</p>
+
+export default function QuestionInformation({ open, setOpen, information }: Readonly<{ open: boolean, setOpen: (open: boolean) => void, information: SessionQuestionItemType }>) {
+
+    const options = getOptionAsArray(information)
+    const formattedDate = formatDate(information.created_at);
+    const formattedTime = formatTimeToString(information.created_at)
+    const correct = options.find((val) => val.optionKey.endsWith(information.correct_answer.toLowerCase()));
+    const getName = getUserName(information.created_by?.user?.first_name, information.created_by?.user?.last_name)
+    return (
+        <Drawer open={open} onClose={setOpen}>
+            <div className="flex flex-col">
+                <div className="header border-b py-1 justify-between border-[#E4E7EC] flex ">
+                    <div className="flex flex-col gap-0.5">
+                        <h2 className="font-bold text-lg">Question Information</h2>
+                        <p className="text-sm text-gray-500">This contains the clicked question information</p>
+                    </div>
+                    <button className='inline-flex gap-2 border h-10 rounded-md border-[#D0D5DD] items-center px-2  cursor-pointer'><span><CloseIcon /></span><span>Close</span></button>
                 </div>
-                <button className='inline-flex gap-2 border rounded-md border-[#D0D5DD] items-center p-2  cursor-pointer'><span><CloseIcon/></span><span>Close</span></button>
-            </div>
 
-            <div className="body flex flex-col gap-3 mt-3 border-[#D0D5DD] border-b">
-            <div className=" flex flex-col gap-0.5 mt-3">
-                <span className='text-sm text-[#344054]'>QUESTION DIFFICULTY</span>
-                <span>{difficulty}</span>
-            </div>
-             <div className=" flex flex-col gap-0.5 mt-3">
-                <span className='text-sm text-[#344054]'>QUESTION</span>
-                <span>{question}</span>
-            </div>
-            <div className=" flex flex-col gap-0.5 mt-3">
-                <span className='text-sm text-[#344054]'>OPTIONS</span>
-                <span>{question}</span>
-            </div>
+                <div className="body  flex flex-col gap-3 mt-3 border-[#D0D5DD] border-b">
+                    <div className=" flex flex-col gap-0.5 mt-3">
+                        <span className='text-sm text-[#344054]'>QUESTION DIFFICULTY</span>
+                        <span className='capitalize'>{information.difficulty}</span>
+                    </div>
+                    <div className=" flex flex-col gap-0.5 mt-3">
+                        <span className='text-sm text-[#344054]'>QUESTION</span>
+                        <span>{information.text}</span>
+                    </div>
+                    <div className=" flex flex-col gap-0.5 mt-3">
+                        <span className='text-sm text-[#344054]'>OPTIONS</span>
+                        <div className="flex gap-3 flex-col w-full"  >
+                            {
+                                options.map((val, index) => <div key={`option-${index + 1}`} className="option flex gap-1">
+                                    <input id={val.optionKey} type="radio" readOnly />
+                                    <label htmlFor={val.optionKey}>{val.option}</label>
+                                </div>
+                                )
+                            }
+                        </div>
+                    </div>
 
-            <div className=" flex flex-col gap-0.5 mt-3">
-                <span className='text-sm text-[#344054]'>ANSWER</span>
-                <span>{question}</span>
-            </div>
-            </div>
+                    <div className=" flex flex-col gap-0.5 mt-3 mb-3">
+                        <span className='text-sm text-[#344054]'>ANSWER</span>
+                        <div className="flex text-[#3E4095]">
+                            <span className=''>({information.correct_answer})</span><span className='ml-2'>{correct?.option}</span>
 
-        </div>
-    </Drawer>
-  )
+                        </div>
+                    </div>
+                </div>
+
+                <div className="flex flex-col gap-3 user-details">
+                    <div className=" flex flex-col gap-0.5 mt-3">
+                        <span className='text-sm text-[#344054]'>SUBMITTED BY</span>
+                        <span>{getName}</span>
+                    </div>
+                    <div className="flex justify-between">
+                        <div className=" flex flex-col gap-0.5 mt-3">
+                            <span className='text-sm text-[#344054]'>SUBMITTED DATE</span>
+                            <span>{formattedDate}</span>
+                        </div>
+                        <div className=" flex flex-col gap-0.5 mt-3">
+                            <span className='text-sm text-[#344054]'>SUBMITTED TIME</span>
+                            <span>{formattedTime}</span>
+                        </div>
+                    </div>
+                    <div className=" flex flex-col gap-0.5 mt-3">
+                        <span className='text-sm text-[#344054]'>STAFF'S PHONE NUMBER</span>
+                        <span>{information.created_by?.user?.phone}</span>
+                    </div>
+                    <div className=" flex flex-col gap-0.5 mt-3">
+                        <span className='text-sm text-[#344054]'>STAFF'S EMAIL</span>
+                        <span>{information.created_by?.user?.email}</span>
+                    </div>
+                </div>
+
+            </div>
+        </Drawer>
+    )
 }

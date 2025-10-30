@@ -11,7 +11,7 @@ export type LeaderCandidateType = {
     school: string
 }
 export type LeaderBoardType = {
-    total_pages: number,
+    // total_pages: number,
     next: string | null,
     previous: string | null,
     exam_details: {
@@ -19,7 +19,14 @@ export type LeaderBoardType = {
         screening_exams: number,
         league_exams: number
     },
-    list: LeaderType[]
+    list: LeaderItemType[]
+}
+
+export type LeaderItemType={
+    exam_id:number,
+    exam_title:string,
+    exam_stage:string,
+    created_at:string,
 }
 
 export type PaginatedType<T> = {
