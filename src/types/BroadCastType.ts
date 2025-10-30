@@ -23,4 +23,10 @@ type BroadcastItemType = {
 
 
 
+export type CreateBroadCastType={
+    subject: string,
+  message: string,
+  mediums:string[],
+  target_roles:string[]
+}
 
