@@ -20,7 +20,7 @@ export default function QuestionsTable({ questions, onPageChange, currentPage, p
   const [selectedQuestionId, setSelectedQuestionId] = useState<number>(0);
   const [currentQuestion, setCurrentQuestion] = useState<SessionQuestionItemType | null>(null)
 
-  console.log(questions, 'what is contained in questions')
+  
 
   function handleOpenModal() {
     setOpenRemoveQuestion(true);

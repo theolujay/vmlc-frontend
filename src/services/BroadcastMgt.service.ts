@@ -1,5 +1,5 @@
 import { BroadcastUrls } from "@/constants/broadCastUrls";
-import { BroadcastType } from "@/types/BroadCastType";
+import { BroadcastType, CreateBroadCastType } from "@/types/BroadCastType";
 import client from "@/utils/axios";
 
 export class BroadcastMgtService {
@@ -10,6 +10,17 @@ export class BroadcastMgtService {
         } catch (error) {
             console.error(error)
             return undefined
+        }
+    }
+
+
+    static async createBroadcastMessage(payload:CreateBroadCastType){
+        try { 
+            const response=await client.post(BroadcastUrls.create_broadcast,payload);
+            console.log(response,'what is in broadcast')
+            return response.data;
+        } catch (error) {
+            console.error(error)
         }
     }
 }
