@@ -4,8 +4,6 @@ services:
       context: .
       target: development
     image: vmlc-frontend:dev
-    # image: ghcr.io/verboheit/vmlc-frontend:dev
-    # pull_policy: always
     restart: unless-stopped
     volumes:
       - .:/app
@@ -51,6 +49,7 @@ services:
     restart: unless-stopped
     security_opt:
       - no-new-privileges:true
+      
 networks:
   dev:
     external: true
