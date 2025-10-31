@@ -49,6 +49,7 @@ services:
     restart: unless-stopped
     security_opt:
       - no-new-privileges:true
+      
 networks:
   dev:
     external: true
