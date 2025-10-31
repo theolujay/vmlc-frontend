@@ -1,9 +1,9 @@
 import { candidateUrls } from "@/constants/candidateUrls";
-import { CandidateType } from "@/types/CandidateType";
+import { CandidateListType, CandidateType } from "@/types/CandidateType";
 import client from "@/utils/axios";
 
 export class CandidateMgtService {
-    static async getCandidateList(page=1) {
+    static async getCandidateList(page=1):Promise<CandidateListType> {
         const response = await client.get(candidateUrls.LIST_CANDIDATES(page));
         return response.data;
     }

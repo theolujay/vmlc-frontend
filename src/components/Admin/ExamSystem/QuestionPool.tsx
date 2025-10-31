@@ -11,6 +11,7 @@ import AdminHeader from '../AdminHeader'
 import EmptySession from '../EmptySession'
 import QuestionsTable from '../QuestionsTable'
 import SummaryCard from './SummaryCard'
+import QuestionPoolTable from './QuestionPoolTable'
 
 
 export default function QuestionPool() {
@@ -38,15 +39,15 @@ export default function QuestionPool() {
     return filters;
   }, [filters])
   const { data ,isPending} = useListQuestions(page, memoizedFilters)
-  
+  console.log(data,'data from question pool')
 
   return (
     <div className='flex flex-col gap-1 '>
       <AdminHeader isExport={false} label='Exam System' actionButton={<Button onClick={() => setOpen(true)} className="inline-flex gap-2 border px-2 items-center text-sm"><span><AddIcon /></span><span>ADD QUESTION</span></Button>} />
       <div className="flex flex-col gap-3 mt-3 w-[96%] mx-auto">
-        <QuestionSummaryCard easy_questions={data?.question_pool_data.easy_questions_count} total_questions={data?.question_pool_data.total_questions} moderate_questions={data?.question_pool_data.moderate_questions_count} hard_questions={data?.question_pool_data.hard_questions_count} />
+        <QuestionSummaryCard easy_questions={data?.question_pool_data.easy_questions_count??0} total_questions={data?.question_pool_data.total_questions??0} moderate_questions={data?.question_pool_data.moderate_questions_count??0} hard_questions={data?.question_pool_data.hard_questions_count??0} />
 
-        <QuestionsTable page_count={data?.total_pages} currentPage={page} onPageChange={setPage} questions={data?.list ?? []} />
+        <QuestionPoolTable page_count={data?.pagination.total_pages??0} currentPage={page} onPageChange={setPage} questions={data?.results ?? []} />
 
 
 
