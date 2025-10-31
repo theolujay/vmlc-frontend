@@ -48,7 +48,7 @@ export default function ExamSection() {
       <div className="flex flex-col gap-3 mt-3 w-[96%] mx-auto">
         {
           isPending ? <div className="grid w-full h-screen place-content-center"><Spinner /></div> :
-            <QuestionSession currentPage={currentPage} onPageChange={setCurrentPage} total_pages={data?.total_pages!} sessions={data?.list ?? []} />
+            <QuestionSession currentPage={currentPage} onPageChange={setCurrentPage} total_pages={data?.pagination.total_pages??0} sessions={data?.results ?? []} />
         }
         <ExamSummary total_question={data?.question_pool_data?.total_questions} moderate_question={data?.question_pool_data?.moderate_questions_count} hard_question={data?.question_pool_data?.hard_questions_count} easy_question={data?.question_pool_data?.easy_questions_count} />
       </div>

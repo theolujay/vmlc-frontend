@@ -38,15 +38,16 @@ function shouldShowHeaderButtons(role:string):boolean{
 export default function OverviewSection() {
     const {page,setPage}=usePagination()
     const {data}=useGetCandidateList(page)
+    console.log(data,'what is data in overview')
     
     return (
         <div className='flex flex-col gap-1 '>
             {/* <OverviewHeader /> */}
             <AdminHeader isExport  label='Overview' actionButton={<Button className="inline-flex gap-2 border px-2 items-center text-sm">SEND BROADCAST</Button> } />
             <div className="flex flex-col gap-3 mt-3 w-[96%] mx-auto">
-                <OverviewSummaryCard registeredStudents={data?.count??0} />
+                <OverviewSummaryCard registeredStudents={data?.pagination.count??0} />
                 <QuickActionsCard />
-                <ActivityHistoryCard page_count={data?.total_pages} currentPage={page} onPageChange={setPage} data={data?.results??[]} />
+                <ActivityHistoryCard page_count={data?.pagination.total_pages??0} currentPage={page} onPageChange={setPage} data={data?.results??[]} />
             </div>
         </div>
     )

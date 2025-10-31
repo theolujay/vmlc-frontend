@@ -1,5 +1,19 @@
-import { RequestUserType } from "./auth"
+import { ActivityHistoryUserType, RequestUserType } from "./auth"
+import { PaginationType } from "./Examtype"
 
+
+export type CandidateListType = {
+    results: ActivityHistoryUserType[],
+    pagination: PaginationType
+}
+
+
+// export type CandidateItemType = {
+//     user: RequestUserType,
+//     school: string,
+//     role: string,
+//     is_user_verified: boolean
+// }
 
 
 export type CandidateType = {

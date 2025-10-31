@@ -50,14 +50,43 @@ export type AvailableExamType = {
 
 
 
+export type PaginationType= {
+        count: number,
+        page: number,
+        page_size: number,
+        total_pages: number,
+        has_next: boolean,
+        has_previous: boolean,
+        next: string,
+        previous: string|null
+    }
 
 export type SessionType = {
-  count: number,
-  total_pages: number,
-  next: string,
-  previous: string | null,
-  list: ExamSessionType[],
+  // count: number,
+  // total_pages: number,
+  // next: string,
+  // previous: string | null,
+  results: ExamSessionType[],
+  // results:SessionQuestionItemType,
+  pagination:PaginationType,
+  question_pool_data: {
+    total_questions: number,
+    hard_questions_count: number,
+    moderate_questions_count: number,
+    easy_questions_count: number
+  },
 
+}
+
+
+export type QuestionPoolType= {
+  // count: number,
+  // total_pages: number,
+  // next: string,
+  // previous: string | null,
+  // results: ExamSessionType[],
+  results:SessionQuestionItemType[],
+  pagination:PaginationType,
   question_pool_data: {
     total_questions: number,
     hard_questions_count: number,
@@ -78,6 +107,9 @@ export type ExamSessionType = {
   exam_date: Date,
   created_at: Date
 }
+
+
+
 
 
 
