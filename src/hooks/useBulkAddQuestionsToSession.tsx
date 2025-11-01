@@ -7,10 +7,13 @@ export default function useBulkAddQuestionsToSession(onSuccessCallback: () => vo
     const { isPending, mutate } = useMutation({
         mutationFn: ExamPortal.bulkAddQuestionToSession,
         onSuccess: () => {
+           
             toast.success('Session added successfully')
             onSuccessCallback()
         },
-        onError:()=>toast.error('Error uploading question to sessions')
+        onError:(error)=>{
+            console.error(error,'error from bulk add')
+            toast.error('Error uploading question to sessions')}
     })
 
 

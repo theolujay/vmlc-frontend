@@ -8,14 +8,25 @@ import client from "@/utils/axios";
 export class ExamPortal {
 
     static async examInfo(): Promise<DashboardType> {
-        const response = await client.get(candidateUrls.candidate_exams_dashboard)
-        return response.data;
+        try {
+            const response = await client.get(candidateUrls.candidate_exams_dashboard)
+            return response.data;
+            
+        } catch (error) {
+            throw error;
+        }
     }
 
 
     static async getLeaderBoard(): Promise<LeaderBoardType> {
-        const response = await client.get(candidateUrls.get_leaderboard)
-        return response.data;
+        try {
+            
+            const response = await client.get(candidateUrls.get_leaderboard)
+            return response.data;
+        } catch (error) {
+            console.error(error)
+            throw error
+        }
     }
 
 
@@ -26,8 +37,14 @@ export class ExamPortal {
 
 
     static async createExamSession(payload: CreateExamSessionType) {
-        const response = await client.post(examUrls.create_exam, payload)
-        return response.data.data;
+        try {
+            
+            const response = await client.post(examUrls.create_exam, payload)
+            return response.data.data;
+        } catch (error) {
+            console.error(error)
+            throw error;
+        }
     }
 
 
@@ -42,8 +59,14 @@ export class ExamPortal {
     }
 
     static async viewExamQuestions(id: number): Promise<UpdatedSessionQuestionType> {
-        const response = await client.get(examUrls.VIEW_QUESTIONS(id))
-        return response.data;
+        try {
+            
+            const response = await client.get(examUrls.VIEW_QUESTIONS(id))
+            return response.data;
+        } catch (error) {
+            console.error(error)
+            throw error
+        }
     }
 
     static async createQuestion(payload: CreateQuestionType) {
@@ -52,6 +75,7 @@ export class ExamPortal {
             return response.data;
         } catch (error) {
             console.error(error)
+            throw error;
         }
     }
 
@@ -64,6 +88,7 @@ export class ExamPortal {
             return response.data;
         } catch (error) {
             console.error(error)
+            throw error;
         }
     }
 
@@ -76,6 +101,7 @@ export class ExamPortal {
             return response.data;
         } catch (error) {
             console.error(error)
+            throw error;
         }
     }
 
@@ -86,6 +112,7 @@ export class ExamPortal {
             return response.data;
         } catch (error) {
             console.error(error)
+            throw error;
         }
     }
 
@@ -100,7 +127,7 @@ export class ExamPortal {
             return response.data;
         } catch (error) {
             console.error(error)
-            return undefined
+            throw error;
         }
     }
 
@@ -112,6 +139,7 @@ export class ExamPortal {
             return response.data;
         } catch (error) {
             console.error(error);
+            throw error;
         }
     }
 

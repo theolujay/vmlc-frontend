@@ -192,6 +192,8 @@ export default function QuestionPoolTable({
           </button>
         </div>
       </div>
+      {
+        selectedQuestions.length>0&&
       <div className="flex px-3 bg-[#F7F9FC] items-center py-2 -mb-3 justify-between">
         <span className="text-lg font-bold">{selectedQuestions.length} Questions selected</span>
         <div className="flex gap-2">
@@ -199,6 +201,7 @@ export default function QuestionPoolTable({
             <button onClick={handleOpenExamSessionModal} className="rounded-xl py-2 font-semibold bg-[#3E4095] cursor-pointer text-white px-3">Add to exam session</button>
         </div>
       </div>
+      }
 
       <CustomTable
         data={questions}

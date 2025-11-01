@@ -20,23 +20,14 @@ export default function AddToExamSessionModal({
     function handleClose() {
         close(false)
     }
-
-
     const searchParams = useSearchParams()
     const initialPage = Number(searchParams.get('page') || 1)
     const [currentPage] = useState(initialPage)
     const [selected, setSelected] = useState<SelectItem[]>([])
     const { data } = useListExams(currentPage)
-
-
-
     const { onSubmit, isPending } = useBulkAddQuestionsToSession(handleClose)
-
-
     const selectedSessionIds = selected.map((val) => val.id)
     const payload = { question_ids: selectedQuestionIds, exam_ids: selectedSessionIds };
-
-
     const sessionItems: SelectItem[] = data?.results.map((val) => ({ id: val.id, label: val.title })) as SelectItem[];
 
     return (
