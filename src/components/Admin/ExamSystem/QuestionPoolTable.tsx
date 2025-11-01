@@ -160,6 +160,7 @@ export default function QuestionPoolTable({
   }
 
 
+  console.log(selectedQuestions,'what do we have here')
  
 
   function handleOpenExamSessionModal() {
@@ -282,7 +283,7 @@ export default function QuestionPoolTable({
           setOpen={setOpenDrawer}
         />
       )}
-      <AddToExamSessionModal open={openExamSession} close={setOpenExamSession} />
+      <AddToExamSessionModal selectedQuestionIds={selectedQuestions} open={openExamSession} close={setOpenExamSession} />
       <RemoveQuestionModal
         question_id={selectedQuestionId}
         close={setOpenRemoveQuestion}
