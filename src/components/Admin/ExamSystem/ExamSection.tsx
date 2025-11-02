@@ -48,7 +48,7 @@ export default function ExamSection() {
       <div className="flex flex-col gap-3 mt-3 w-[96%] mx-auto">
         {
           isPending ? <div className="grid w-full h-screen place-content-center"><Spinner /></div> :
-            <QuestionSession currentPage={currentPage} onPageChange={setCurrentPage} total_pages={data?.total_pages!} sessions={data?.list ?? []} />
+            <QuestionSession currentPage={currentPage} onPageChange={setCurrentPage} total_pages={data?.pagination.total_pages ?? 0} sessions={data?.results ?? []} />
         }
         <ExamSummary total_question={data?.question_pool_data?.total_questions} moderate_question={data?.question_pool_data?.moderate_questions_count} hard_question={data?.question_pool_data?.hard_questions_count} easy_question={data?.question_pool_data?.easy_questions_count} />
       </div>
@@ -59,7 +59,7 @@ export default function ExamSection() {
 }
 
 
-function ExamSummary({total_question=0,easy_question=0,moderate_question=0,hard_question=0}:Readonly<{total_question?:number,easy_question?:number,moderate_question?:number,hard_question?:number}>) {
+function ExamSummary({ total_question = 0, easy_question = 0, moderate_question = 0, hard_question = 0 }: Readonly<{ total_question?: number, easy_question?: number, moderate_question?: number, hard_question?: number }>) {
   return <ResponsiveContainer className='grid grid-cols-1 md:grid-cols-4 gap-3'>
     <SummaryCard link='total-question' label='TOTAL QUESTION POOL' value={total_question} className='bg-[#E6F7FD] p-3' textColor='text-[#018ABB]' />
     <SummaryCard link='easy-question' label='EASY QUESTION LEVEL' value={easy_question} className='bg-[#E7F6EC] p-3' textColor='text-[#099137]' />
@@ -93,7 +93,7 @@ function SummaryCard({ label, className, textColor = 'text-black', value, link }
 
 function QuestionSession({ sessions, total_pages, onPageChange, currentPage }: Readonly<{ sessions: ExamSessionType[], total_pages: number, currentPage: number, onPageChange: Dispatch<SetStateAction<number>> }>) {
   const sortedSessions = useSortedExams(sessions)
-  
+
   return <ResponsiveContainer className='gap-3'>
     {
       sortedSessions.length == 0 && <EmptySession label='No question session has been created yet' desc='Question session set on the platform would appear here ' />
@@ -104,10 +104,17 @@ function QuestionSession({ sessions, total_pages, onPageChange, currentPage }: R
       <div className="flex flex-col gap-3">
 
         <div className="grid gap-3 grid-cols-1 md:grid-cols-4">
-          {sortedSessions.map((val, index) => <ExamSession key={`session-${index + 1}`} id={val.id}
-            // applicationDate={val?.exam_date}
-            applicationDate={val?.created_at}
-            count={val?.question_count} title={val?.title} />)}
+          {
+            sortedSessions
+              // sessions
+              .map((val, index) => <ExamSession key={`session-${index + 1}`} id={val.id}
+                // applicationDate={val?.exam_date}
+                data={val}
+              // status={val?.status}
+              // applicationDate={val?.created_at}
+              // count={val?.question_count} 
+              // title={val?.title}
+              />)}
         </div>
         {total_pages > 1 && <PagePagination currentPage={currentPage} onPageChange={onPageChange} pageCount={total_pages} />}
       </div>
@@ -119,7 +126,7 @@ function QuestionSession({ sessions, total_pages, onPageChange, currentPage }: R
 
 
 
-function ExamSession({ title, count, applicationDate, id }: Readonly<{ title: string, count: number, applicationDate: Date, id: number }>) {
+function ExamSession({ data, id }: Readonly<{ id: number, data: any }>) {
 
 
   const pathName = usePathname();
@@ -133,28 +140,30 @@ function ExamSession({ title, count, applicationDate, id }: Readonly<{ title: st
 
 
 
-  const { isUpcoming, daysDiff } = useGetValidDate(applicationDate)
+  const { isUpcoming, daysDiff } = useGetValidDate(data.created_at)
 
 
   return <Link href={href} className='flex relative mt-8 justify-center flex-col'>
-    <div className={clsx('pt-2 pb-7 p-2  absolute w-full -top-8   text-white rounded-t-2xl', isUpcoming ? 'bg-[#00455E]' : 'bg-[#667185]')}>
+    <div className={clsx('pt-2 pb-7 p-2  absolute w-full -top-8   text-white rounded-t-2xl', isUpcomingExam(data.status) ? 'bg-[#00455E]' : 'bg-[#667185]')}>
       <div className="flex justify-between">
-        <span className="text-sm">
-          {isUpcoming
+        <span className="text-sm capitalize">
+          {/* {isUpcoming
             ? `${daysDiff} Day${daysDiff === 1 ? '' : 's'} to exam`
-            : 'Done'}
-          {/* {isUpcoming ? `${daysDiff} Days to exam` : 'Done'} */}
+            : 'Done'} */}
+
+
+          {data.status}
         </span>
 
         {/* <span className='text-sm'>{!isActive ? 'Done' : `${daysDiff} Days to exam`}</span> */}
-        <span className='font-bold text-sm'>{formatDate(applicationDate)}</span>
+        <span className='font-bold text-sm'>{data.scheduled_date ? formatDate(data.scheduled_date) : 'DD:MM:YYY'}</span>
       </div>
     </div>
-    <div className={clsx("flex flex-col z-10   rounded-2xl p-2", isUpcoming ? 'bg-[#E6F7FD]' : 'bg-[#F0F2F5]')}>
+    <div className={clsx("flex flex-col z-10   rounded-2xl p-2", isUpcomingExam(data.status) ? 'bg-[#E6F7FD]' : 'bg-[#F0F2F5]')}>
       <div className={clsx("flex  flex-col gap-1 rounded-lg")}>
-        <span className='text-sm uppercase'>{title}</span>
+        <span className='text-sm uppercase'>{data.title}</span>
 
-        <p className='font-bold text-[2.5rem] '>{count}</p>
+        <p className='font-bold text-[2.5rem] '>{data.question_count}</p>
         <div className='flex justify-between items-center'>
           <span className='text-sm'>questions set in this session</span>
           <span><ExamCardGoTo /></span>
@@ -168,7 +177,20 @@ function ExamSession({ title, count, applicationDate, id }: Readonly<{ title: st
 
 
 
+function isUpcomingExam(status: string) {
+  switch (status) {
+    case 'concluded':
+    case 'cancelled':
+      return false;
+    case 'draft':
+    case 'scheduled':
+    case 'ongoing':
+      return true;
 
+    default:
+      break;
+  }
+}
 
 
 

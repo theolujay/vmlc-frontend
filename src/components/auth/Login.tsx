@@ -16,7 +16,7 @@ export default function Login() {
         <div className="flex flex-col p-5 rounded-[12px] bg-[#FFFFFF99]">
 
           <div className="flex gap-1 items-center flex-col">
-            <h2 className='text-[28px] font-700]'>Candidate portal login</h2>
+            <h2 className='text-[28px] font-700]'>Portal login</h2>
             <p>Enter your credentials to access your account</p>
           </div>
           <FormProvider {...form}>
@@ -45,7 +45,7 @@ export default function Login() {
 
                 <div className='flex gap-2'>
                   <span>{`Don't`} have an account?</span>
-                  <Link href='/auth/register' className=' text-[#3E4095] font-[700]'>REGISTER</Link>
+                  <Link href='/register' className=' text-[#3E4095] font-[700]'>REGISTER</Link>
                 </div>
               </div>
             </form>

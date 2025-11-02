@@ -102,6 +102,15 @@ export function AccountCreationIcon(props: Readonly<React.SVGProps<SVGSVGElement
 }
 
 
+export function EmailVerificationIcon(props:Readonly<React.SVGProps<SVGSVGElement>>){
+    return <svg {...props} width="44" height="44" viewBox="0 0 44 44" fill="none" xmlns="http://www.w3.org/2000/svg">
+<rect width="44" height="44" rx="22" fill="#E6F7FD"/>
+<path d="M12 17L20.1649 22.7154C20.8261 23.1783 21.1567 23.4097 21.5163 23.4993C21.8339 23.5785 22.1661 23.5785 22.4837 23.4993C22.8433 23.4097 23.1739 23.1783 23.8351 22.7154L32 17M16.8 30H27.2C28.8802 30 29.7202 30 30.362 29.673C30.9265 29.3854 31.3854 28.9265 31.673 28.362C32 27.7202 32 26.8802 32 25.2V18.8C32 17.1198 32 16.2798 31.673 15.638C31.3854 15.0735 30.9265 14.6146 30.362 14.327C29.7202 14 28.8802 14 27.2 14H16.8C15.1198 14 14.2798 14 13.638 14.327C13.0735 14.6146 12.6146 15.0735 12.327 15.638C12 16.2798 12 17.1198 12 18.8V25.2C12 26.8802 12 27.7202 12.327 28.362C12.6146 28.9265 13.0735 29.3854 13.638 29.673C14.2798 30 15.1198 30 16.8 30Z" stroke="#018ABB" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+</svg>
+
+}
+
+
 export function LockedIcon(props:Readonly<React.SVGProps<SVGSVGElement>>){
     return <svg {...props} width="16" height="17" viewBox="0 0 16 17" fill="none" xmlns="http://www.w3.org/2000/svg">
 <path d="M4 7.16536V5.83203C4 3.62536 4.66667 1.83203 8 1.83203C11.3333 1.83203 12 3.62536 12 5.83203V7.16536" stroke="#475367" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
@@ -123,6 +132,23 @@ export function ChevronUpIcon(props:Readonly<React.SVGProps<SVGSVGElement>>){
 export function ChevronDownIcon(props:Readonly<React.SVGProps<SVGSVGElement>>){
     return <svg {...props} width="12" height="7" viewBox="0 0 12 7" fill="none" xmlns="http://www.w3.org/2000/svg">
 <path d="M1 1L6 6L11 1" stroke="#3E4095" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+</svg>
+
+}
+
+
+export function CheckedIcon(props:Readonly<React.SVGProps<SVGSVGElement>>){
+    return <svg {...props} width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+<rect x="0.5" y="0.5" width="19" height="19" rx="5.5" fill="#F7F7FB"/>
+<rect x="0.5" y="0.5" width="19" height="19" rx="5.5" stroke="#3E4095"/>
+<path d="M14.6663 6.5L8.24967 12.9167L5.33301 10" stroke="#3E4095" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+</svg>
+
+}
+export function UncheckedIcon(props:Readonly<React.SVGProps<SVGSVGElement>>){
+    return <svg {...props} width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+<rect x="0.5" y="0.5" width="19" height="19" rx="5.5" fill="white"/>
+<rect x="0.5" y="0.5" width="19" height="19" rx="5.5" stroke="#D0D5DD"/>
 </svg>
 
 }

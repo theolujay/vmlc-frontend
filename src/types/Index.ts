@@ -19,5 +19,14 @@ export type VerificationDocumentType = {
 }
 
 
+export type SelectItem={
+    id:number,
+    label:string
+}
 
+
+export type BulkPayloadType= {
+    question_ids: number[],
+    exam_ids: number[]
+}
 export type VerificationUploadPayloadType = FormData;

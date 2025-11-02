@@ -28,9 +28,7 @@ export default function ExamSession() {
   const { data, isPending } = useViewExamQuestions(id)
   const [openUpload, setOpenUpload] = useState(false);
 
-  // const easyCount = data?.results.filter((item) => item.difficulty === 'easy').length || 0;
-  // const moderateCount = data?.results.filter((item) => item.difficulty === 'moderate').length || 0;
-  // const hardCount = data?.results.filter((item) => item.difficulty === 'hard').length || 0;
+  console.log(data,'give us our daily data')
 
 
   function handleOpenUpload(){
@@ -40,12 +38,6 @@ export default function ExamSession() {
   return (
     <div className='flex flex-col gap-1 '>
       <AdminHeader isExport={false} label='Exam System' actionButton={[<Button key='button-one' onClick={handleOpenUpload} className="inline-flex gap-2 border px-2 items-center text-sm"><span>UPLOAD</span></Button>,
-
-      // <button key='button-two' className="flex flex-col items-center justify-center w-10 h-full rounded-md border border-gray-300 hover:bg-gray-100">
-      //   <span className=" w-1 h-1 bg-gray-700 rounded-full"></span>
-      //   <span className="w-1 h-1 bg-gray-700 rounded-full my-0.5"></span>
-      //   <span className="w-1 h-1 bg-gray-700 rounded-full"></span>
-      // </button>
       <ExamSessionDropdownDialog exam_id={id} key='button-two' />
       ]} />
       {isPending ? <div className='w-full h-full grid place-content-center'>
@@ -53,7 +45,7 @@ export default function ExamSession() {
       </div> :
         <div className="flex flex-col gap-3 mt-3 w-[96%] mx-auto">
           <SessionDetails dateCreated={data?.created_at??new Date()} title={data?.title} description={data?.description} />
-          <QuestionSummaryCard moderate_question={data?.questions.question_pool_data.moderate_questions_count??0} hard_question={data?.questions.question_pool_data.hard_questions_count??0} easy_question={data?.questions.question_pool_data.easy_questions_count??0} total={data?.questions.count ?? 0} />
+          <QuestionSummaryCard moderate_question={data?.questions.question_pool_data.moderate_questions_count??0} hard_question={data?.questions.question_pool_data.hard_questions_count??0} easy_question={data?.questions.question_pool_data.easy_questions_count??0} total={data?.questions.question_pool_data.total_questions ?? 0} />
           <QuestionsTable page_count={data?.questions.total_pages ?? 0} currentPage={page} onPageChange={setPage} questions={(data?.questions?.results ?? []) as SessionQuestionItemType[]} />
         </div>
       }

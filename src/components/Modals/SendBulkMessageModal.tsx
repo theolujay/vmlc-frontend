@@ -3,6 +3,7 @@ import ResponsiveContainer from '@/components/ui/ResponsiveContainer'
 import useCreateBroadcastMessage from '@/hooks/useCreateBroadcastMessage'
 import clsx from 'clsx'
 import { FormProvider } from 'react-hook-form'
+import { Checkbox } from '../ui/Checkbox'
 
 const channel = ['Platform', 'Email', 'SMS']
 export default function SendBulkMessageModal({ open, close }: Readonly<{ open: boolean, close: (close: boolean) => void }>) {
@@ -33,10 +34,11 @@ export default function SendBulkMessageModal({ open, close }: Readonly<{ open: b
                                 <div className="flex flex-col gap-2">
                                     <span className='mb-1'>Select message medium <span className="text-red-500">*</span></span>
                                     <div className="flex gap-3">
-                                        {channel.map((val, index) => <div key={`option-${index + 1}`} className="option border border-[#D0D5DD] rounded-lg py-2 px-3 has-checked:bg-[#F7F7FB] has-checked:border-[#3E4095] flex gap-1 ">
+                                        {channel.map((val, index) => <div key={`option-${index + 1}`} className="option border border-[#D0D5DD] rounded-lg py-2 px-3 items-center has-checked:bg-[#F7F7FB] has-checked:border-[#3E4095] flex gap-1 ">
                                             <label htmlFor={val}>{val}</label>
-                                            <input value={val.toLowerCase()}
-                                                {...register('mediums')} className='checked:accent-[#3E4095] rounded-full w-4  checked:border-[#3E4095]' id={val} type="checkbox" />
+                                            <Checkbox/>
+                                            {/* <input value={val.toLowerCase()}
+                                                {...register('mediums')} className='checked:accent-[#3E4095] rounded-full w-4  checked:border-[#3E4095]' id={val} type="checkbox" /> */}
                                         </div>)}
                                     </div>
                                 </div>
