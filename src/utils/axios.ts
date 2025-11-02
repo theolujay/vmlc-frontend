@@ -39,7 +39,7 @@ client.interceptors.response.use(
             // Optionally, you can clear storage or redirect to login
             console.warn("Unauthorized - logging out");
             localStorage.removeItem("session");
-            window.location.href = "/auth/login";
+            window.location.href = "/login";
         }
         return Promise.reject(error);
     }
