@@ -99,7 +99,7 @@ export default function ForgotPassword() {
                                             <div className="flex flex-col gap-3 items-center mt-6">
                                                 <div className='flex gap-2'>
 
-                                                    <Link href='/auth/login' className=' text-[#3E4095] font-[700]'>GO BACK TO LOGIN</Link>
+                                                    <Link href='/login' className=' text-[#3E4095] font-[700]'>GO BACK TO LOGIN</Link>
                                                 </div>
                                             </div>
                                         </form>
@@ -183,7 +183,7 @@ export default function ForgotPassword() {
 
                                                     </div>
 
-                                                    <Link href='/auth/login' className=' text-[#3E4095] font-[700]'>GO BACK TO LOGIN</Link>
+                                                    <Link href='/login' className=' text-[#3E4095] font-[700]'>GO BACK TO LOGIN</Link>
                                                 </div>
                                             </div>
                                         </form>
@@ -223,7 +223,7 @@ export default function ForgotPassword() {
                                             <div className="flex flex-col gap-3 items-center mt-6">
                                                 <div className='flex gap-2'>
 
-                                                    <Link href='/auth/login' className=' text-[#3E4095] font-[700]'>GO BACK TO LOGIN</Link>
+                                                    <Link href='/login' className=' text-[#3E4095] font-[700]'>GO BACK TO LOGIN</Link>
                                                 </div>
                                             </div>
                                         </form>
@@ -246,14 +246,14 @@ export default function ForgotPassword() {
                                         <div className="grid mt-6">
                                             <AuthButton
                                                 onClick={function () {
-                                                    router.push('auth/login')
+                                                    router.push('/login')
                                                 }}
                                             >Go to Login</AuthButton>
                                         </div>
                                         <div className="flex flex-col gap-3 items-center mt-6">
                                             <div className='flex gap-2'>
 
-                                                <Link href='/auth/login' className=' text-[#3E4095] font-[700]'>GO TO HOME</Link>
+                                                <Link href='/login' className=' text-[#3E4095] font-[700]'>GO TO HOME</Link>
                                             </div>
                                         </div>
                                     </div>

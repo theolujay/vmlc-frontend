@@ -43,7 +43,7 @@ const reducer = (state: AuthState, action: Actions) => {
                 school: payload.profile.school
             }
             const returnUrl = sessionStorage.getItem("returnURL");
-            const homePath = isStudent || isStaff ? returnUrl || '/get-started' : '/auth/login';
+            const homePath = isStudent || isStaff ? returnUrl || '/get-started' : '/login';
             return {
                 token: payload.access,
                 refreshToken: payload.refresh,

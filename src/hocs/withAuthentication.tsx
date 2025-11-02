@@ -64,7 +64,7 @@ export default function withAuthentication<P extends object>(
         // Combine pathname + search params
         const fullURL = `${pathname}?${searchParams.toString()}`;
         sessionStorage.setItem("returnURL", fullURL);
-        router.push('/auth/login');
+        router.push('/login');
       }
     }, [authState, router, pathname, searchParams]);
 
