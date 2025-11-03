@@ -156,7 +156,7 @@ function ExamSession({ data, id }: Readonly<{ id: number, data: any }>) {
         </span>
 
         {/* <span className='text-sm'>{!isActive ? 'Done' : `${daysDiff} Days to exam`}</span> */}
-        <span className='font-bold text-sm'>{data.scheduled_date ? formatDate(data.scheduled_date) : 'DD:MM:YYY'}</span>
+        <span className='font-bold text-sm'>{data.scheduled_date ? formatDate(data.scheduled_date) : 'DD:MM:YYYY'}</span>
       </div>
     </div>
     <div className={clsx("flex flex-col z-10   rounded-2xl p-2", isUpcomingExam(data.status) ? 'bg-[#E6F7FD]' : 'bg-[#F0F2F5]')}>
