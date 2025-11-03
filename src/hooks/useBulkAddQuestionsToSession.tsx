@@ -19,7 +19,7 @@ export default function useBulkAddQuestionsToSession(onSuccessCallback: () => vo
 
     function onSubmit(payload: BulkPayloadType) {
         mutate(payload)
-        // console.log(payload,'gtest payload for now')
+        
     }
     return { onSubmit, isPending }
 }
