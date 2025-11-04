@@ -63,8 +63,15 @@ export class AuthService {
     }
 
     static async resendOtp(payload: Omit<VerifyRequest, 'otp'>) {
-        const response = await client.post(authUrls.resendOtp, payload)
+        const response = await client.post(authUrls.sendOtp, payload)
         return response.data
+    }
+
+
+
+    static async sendOtp(payload:{email:string}){
+        const response=await client.post(authUrls.sendOtp,payload);
+        return response.data;
     }
 
 
