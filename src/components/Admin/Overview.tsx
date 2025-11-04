@@ -1,7 +1,7 @@
 "use client"
 import { useAuth } from '@/contexts/AuthProvider'
 import withAuthentication from '@/hocs/withAuthentication'
-import { Tab } from '@/types/TabType'
+import {  TabType } from '@/types/TabType'
 import TabWrapper from '../ui/Tabs/TabWrapper'
 import { AnnouncementIcon, ExamSystemIcon, LeaderboardIcon, OverviewIcon, UserManagementIcon } from './AdminIcons'
 import AdminLayout from './AdminLayout'
@@ -14,7 +14,7 @@ import StaffMgtWrapper from './UserManagement/StaffMgtWrapper'
 
 
 
-function getTabsForRole(role: string): Tab[] {
+function getTabsForRole(role: string): TabType[] {
     switch (role) {
         case 'volunteer':
         case 'moderator':
@@ -29,7 +29,7 @@ function getTabsForRole(role: string): Tab[] {
             return [];
     }
 }
-const tabs: Tab[] = [
+const tabs: TabType[] = [
     {
         value: 'Overview',
         label: <OverViewLabel />,
