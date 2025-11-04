@@ -41,7 +41,6 @@ export default function useRegister() {
         mutationFn: AuthService.registerCandidate,
         onSuccess: () => {
             toast.success("Registration successful")
-           
             router.push('/login')
         },
         

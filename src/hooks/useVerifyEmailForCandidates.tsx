@@ -14,17 +14,17 @@ const verifySchema = z.object({
 })
 
 type VerifySchemaType = z.infer<typeof verifySchema>;
-export default function useVerifyEmailForCandidates(onSuccessCallback: () => void) {
-  const [currentUserEmail, setCurrentUserEmail] = useState<string | null>(null);
+export default function useVerifyEmailForCandidates(onSuccessCallback: () => void, userEmail?: string) {
+  // const [currentUserEmail, setCurrentUserEmail] = useState<string | null>(null);
 
 
   const router = useRouter()
   // ✅ Load email from localStorage only on client side
-  useEffect(() => {
-    if (typeof window !== 'undefined') {
-      setCurrentUserEmail(localStorage.getItem('email'));
-    }
-  }, []);
+  // useEffect(() => {
+  //   if (typeof window !== 'undefined') {
+  //     setCurrentUserEmail(localStorage.getItem('email'));
+  //   }
+  // }, []);
   // const currentUserEmail = localStorage.getItem('email');
   const defaultValues = {
     otp: ''
@@ -39,7 +39,7 @@ export default function useVerifyEmailForCandidates(onSuccessCallback: () => voi
     mutationFn: AuthService.verifyEmail,
     onSuccess: (value) => {
 
-      localStorage.removeItem('email');
+      // localStorage.removeItem('email');
       onSuccessCallback()
 
     }
@@ -52,23 +52,23 @@ export default function useVerifyEmailForCandidates(onSuccessCallback: () => voi
   })
 
   function onSubmit(value: VerifySchemaType) {
-    if (!currentUserEmail) {
+    if (!userEmail) {
       throw new Error('Kindly register to proceed')
     }
     const payload = {
-      email: currentUserEmail,
+      email: userEmail,
       otp: value.otp
     }
-
+    console.log(payload, 'what did i get')
     mutate(payload)
   }
 
   function resendOtpFunction() {
-    if (!currentUserEmail) {
+    if (!userEmail) {
       throw new Error('Kindly register to proceed')
     }
     const payload = {
-      email: currentUserEmail,
+      email: userEmail,
       resend: true
     }
     resendMutate(payload)
