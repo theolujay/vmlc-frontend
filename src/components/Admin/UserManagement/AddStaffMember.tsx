@@ -73,17 +73,17 @@ function AddStaffMemberForm({ form, onSubmit }: Readonly<AddStaffMemberFormProps
           <div className="grid">
             <PhoneNumberInput name='phone' placeholder='+234 810 000 0000' className='border-[#D0D5DD]' label='STAFF PHONE NUMBER' />
           </div>
-          {/* <div className="grid">
+          <div className="grid">
             <Input name='occupation' icon={<OccupationIcon />} label='OCCUPATION' placeholder="Input your occupation (e.g Teacher)" className='border-[#D0D5DD]' />
           </div>
-          <div className="grid">
+          {/* <div className="grid">
             <PasswordInput name='password' icon={<PasswordIcon />} label='PASSWORD' placeholder='Input your password' className='border-[#D0D5DD]' />
           </div>
           <div className="grid">
             <ConfirmPasswordInput name='password2' icon={<PasswordIcon />} label='CONFIRM PASSWORD' placeholder='Input your password' className='border-[#D0D5DD]' />
           </div> */}
         </div>
-        {/* <RolePermissionForm /> */}
+        <RolePermissionForm />
       </form>
     </FormProvider>
   </ResponsiveContainer>
@@ -168,9 +168,9 @@ function RolePermissionForm() {
 
   return (
     <div className="flex flex-col">
-      <p className="text-sm text-gray-500 mb-3 font-medium">
+      {/* <p className="text-sm text-gray-500 mb-3 font-medium">
         Required <span className="text-red-500">*</span>
-      </p>
+      </p> */}
 
       {roles.map((role) => {
         const isSelected = selectedRole === role.name;

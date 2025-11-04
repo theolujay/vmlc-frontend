@@ -19,10 +19,10 @@ export type InviteStaffMemberPayloadType={
   first_name: string,
   last_name: string,
   phone: string,
-  password: string,
-  password2:string,
-  role: string,
-  occupation: string
+  // password: string,
+  // password2:string,
+  role?: string,
+  occupation?: string
 }
 
 

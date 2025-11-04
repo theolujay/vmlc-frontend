@@ -13,22 +13,23 @@ const inviteStaffMemberSchema = z.object({
   first_name: z.string().min(2, { message: 'First name must be at least 2 characters' }),
   last_name: z.string().min(2, { message: 'Last name must be at least 2 characters' }),
   phone: z.string().min(10, { message: 'Phone number must be at least 10 characters' }),
-  password: z.string().min(6, { message: 'Password must be at least 6 characters' }),
-  password2: z.string().min(6, { message: 'Confirm Password must be at least 6 characters' }),
-  role: z.string().min(2, { message: 'Role must be at least 2 characters' }),
-  occupation: z.string().min(2, { message: 'Occupation must be at least 2 characters' }),
-}).refine((data) => data.password === data.password2, {
-  message: "Passwords don't match",
-  path: ['password2'],
+  // password: z.string().min(6, { message: 'Password must be at least 6 characters' }),
+  // password2: z.string().min(6, { message: 'Confirm Password must be at least 6 characters' }),
+  role: z.string().min(2, { message: 'Role must be at least 2 characters' }).optional(),
+  occupation: z.string().min(2, { message: 'Occupation must be at least 2 characters' }).optional(),
 })
+// .refine((data) => data.password === data.password2, {
+//   message: "Passwords don't match",
+//   path: ['password2'],
+// })
 
 const defaultValues: InviteStaffMemberPayloadType = {
   email: '',
   first_name: '',
   last_name: '',
   phone: '',
-  password: '',
-  password2: '',
+  // password: '',
+  // password2: '',
   role: '',
   occupation: ''
 }
