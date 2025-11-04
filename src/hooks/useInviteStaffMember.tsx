@@ -16,7 +16,7 @@ const inviteStaffMemberSchema = z.object({
   // password: z.string().min(6, { message: 'Password must be at least 6 characters' }),
   // password2: z.string().min(6, { message: 'Confirm Password must be at least 6 characters' }),
   role: z.string().min(2, { message: 'Role must be at least 2 characters' }).optional(),
-  occupation: z.string().min(2, { message: 'Occupation must be at least 2 characters' }).optional(),
+  occupation: z.string().optional(),
 })
 // .refine((data) => data.password === data.password2, {
 //   message: "Passwords don't match",

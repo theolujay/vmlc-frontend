@@ -64,14 +64,14 @@ function AddStaffMemberForm({ form, onSubmit }: Readonly<AddStaffMemberFormProps
       <form id="invite-staff-form" onSubmit={form.handleSubmit(onSubmit)} className='grid p-4 gap-5 grid-cols-1 md:grid-cols-2' action="">
         <div className="col-span-1 gap-2 flex flex-col">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-            <Input name="first_name" label='STAFF FIRST NAME' placeholder='Input first name (e.g John)' className='border-[#D0D5DD]' icon={<PersonIcon />} />
-            <Input name='last_name' label='STAFF LAST NAME' placeholder='Input last name (e.g Doe)' className='border-[#D0D5DD]' icon={<PersonIcon />} />
+            <Input required name="first_name" label='STAFF FIRST NAME' placeholder='Input first name (e.g John)' className='border-[#D0D5DD]' icon={<PersonIcon />} />
+            <Input required name='last_name' label='STAFF LAST NAME' placeholder='Input last name (e.g Doe)' className='border-[#D0D5DD]' icon={<PersonIcon />} />
           </div>
           <div className="grid">
-            <Input name='email' icon={<MailIcon />} label='STAFF EMAIL' placeholder='Input your mail (e.g johndoe@gmail.com)' className='border-[#D0D5DD]' />
+            <Input required name='email' icon={<MailIcon />} label='STAFF EMAIL' placeholder='Input your mail (e.g johndoe@gmail.com)' className='border-[#D0D5DD]' />
           </div>
           <div className="grid">
-            <PhoneNumberInput name='phone' placeholder='+234 810 000 0000' className='border-[#D0D5DD]' label='STAFF PHONE NUMBER' />
+            <PhoneNumberInput required name='phone' placeholder='+234 810 000 0000' className='border-[#D0D5DD]' label='STAFF PHONE NUMBER' />
           </div>
           <div className="grid">
             <Input name='occupation' icon={<OccupationIcon />} label='OCCUPATION' placeholder="Input your occupation (e.g Teacher)" className='border-[#D0D5DD]' />
