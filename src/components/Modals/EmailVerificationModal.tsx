@@ -17,7 +17,7 @@ export default function EmailVerificationModal({ open, close, currentUserEmail}:
     function handleClose() {
         close(!open)
     }
-    const { onSubmit, form, isPending, resendOtpFunction, resendPending } = useVerifyEmailForCandidates(handleClose)
+    const { onSubmit, form, isPending, resendOtpFunction, resendPending } = useVerifyEmailForCandidates(handleClose,currentUserEmail)
     const otpValue = form.watch('otp');
 
     const isOtpComplete = !!otpValue && otpValue.length === 6;
@@ -46,11 +46,6 @@ export default function EmailVerificationModal({ open, close, currentUserEmail}:
                             <div className="flex w-full">
                                 <OTP label='Enter OTP' className='border-[#D0D5DD]' />
                             </div>
-
-
-
-
-
 
                             <div className="grid mt-6">
 
