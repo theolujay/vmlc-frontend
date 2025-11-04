@@ -14,11 +14,11 @@ const verifySchema = z.object({
 })
 
 type VerifySchemaType = z.infer<typeof verifySchema>;
-export default function useVerifyEmailForCandidates() {
+export default function useVerifyEmailForCandidates(onSuccessCallback: () => void) {
   const [currentUserEmail, setCurrentUserEmail] = useState<string | null>(null);
 
 
-  const router=useRouter()
+  const router = useRouter()
   // ✅ Load email from localStorage only on client side
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -38,16 +38,17 @@ export default function useVerifyEmailForCandidates() {
   const { isPending, mutate } = useMutation({
     mutationFn: AuthService.verifyEmail,
     onSuccess: (value) => {
-    
+
       localStorage.removeItem('email');
-      router.push('/login')
+      onSuccessCallback()
+
     }
   })
 
 
   const { mutate: resendMutate, isPending: resendPending } = useMutation({
     mutationFn: AuthService.resendOtp,
-    
+
   })
 
   function onSubmit(value: VerifySchemaType) {
@@ -58,7 +59,7 @@ export default function useVerifyEmailForCandidates() {
       email: currentUserEmail,
       otp: value.otp
     }
-    
+
     mutate(payload)
   }
 
@@ -67,7 +68,8 @@ export default function useVerifyEmailForCandidates() {
       throw new Error('Kindly register to proceed')
     }
     const payload = {
-      email: currentUserEmail
+      email: currentUserEmail,
+      resend: true
     }
     resendMutate(payload)
 
