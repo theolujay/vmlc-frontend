@@ -3,6 +3,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
 import { useRouter } from "next/navigation";
 import { useForm } from 'react-hook-form';
+import { toast } from "react-toastify";
 import * as z from 'zod';
 
 
@@ -39,8 +40,8 @@ export default function useRegister() {
     const { isPending, mutate } = useMutation({
         mutationFn: AuthService.registerCandidate,
         onSuccess: () => {
-           
-            router.push('/auth/verify')
+            toast.success("Registration successful")
+            router.push('/login')
         },
         
 
