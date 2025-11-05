@@ -1,7 +1,7 @@
 import { candidateUrls } from "@/constants/candidateUrls";
 import { examUrls } from "@/constants/examUrls";
 import { CreateExamSessionType, CreateQuestionType, DashboardType, EditExamSession, QuestionPoolType, SessionQuestionType, SessionType, UpdatedSessionQuestionType } from "@/types/Examtype";
-import { BulkPayloadType } from "@/types/Index";
+import { BulkArchiveType, BulkPayloadType } from "@/types/Index";
 import { LeaderBoardType } from "@/types/LeaderBoardType";
 import client from "@/utils/axios";
 
@@ -136,6 +136,16 @@ export class ExamPortal {
     static async bulkAddQuestionToSession(payload:BulkPayloadType){
         try {
             const response=await client.post(examUrls.BULK_ADD_QUESTION_TO_SESSION,payload);
+            return response.data;
+        } catch (error) {
+            console.error(error);
+            throw error;
+        }
+    }
+
+    static async bulkArchiveQuestions(payload:BulkArchiveType){
+        try {
+            const response=await client.post(examUrls.BULK_ARCHIVE_QUESTIONS,payload);
             return response.data;
         } catch (error) {
             console.error(error);
