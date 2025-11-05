@@ -1,24 +1,27 @@
+import QuestionInformation from '@/components/Drawer/QuestionInformation';
 import { DeleteIcon } from '@/components/General/GeneralIcon';
 import { AddIcon, EditIcon, EyeIcon } from '@/components/General/GettingStarted/GettingStartedAssets';
 import DeleteExamSessionModal from '@/components/Modals/DeleteExamSessionModal';
 import EditSessionModal from '@/components/Modals/EditSession';
 import AppDropdownDialog from '@/components/ui/Dropdown/AppDropdownDialog';
+import { SessionQuestionItemType } from '@/types/Examtype';
 import { useState } from 'react';
+// import ViewDetails from '../OverviewSection/ViewDetails';
 
 
 
-type Props = Readonly<{ exam_id: number }>
+type Props = Readonly<{ exam_id: number,information:SessionQuestionItemType }>
 
-export default function QuestionPoolDropdown({ exam_id }: Props) {
-    const [openEditModal, setOpenEditModal] = useState(false)
+export default function QuestionPoolDropdown({ exam_id ,information}: Props) {
+    const [openViewModal, setOpenViewModal] = useState(false)
     const [openDeleteModal, setOpenDeleteModal] = useState(false)
 
     function deleteExamSessionModal() {
         setOpenDeleteModal(true)
     }
 
-    function handleOpenEditModal() {
-        setOpenEditModal(true)
+    function handleOpenViewModal() {
+        setOpenViewModal(true)
     }
     return (
         <AppDropdownDialog actionItems={[
@@ -41,7 +44,7 @@ export default function QuestionPoolDropdown({ exam_id }: Props) {
                         View Details
                     </span>
                 </div>,
-                onClick: handleOpenEditModal
+                onClick: handleOpenViewModal
             },
             {
                 label: <div className='flex justify-between'>
@@ -61,7 +64,9 @@ export default function QuestionPoolDropdown({ exam_id }: Props) {
             <span className="w-1 h-1 bg-gray-700 rounded-full my-0.5"></span>
             <span className="w-1 h-1 bg-gray-700 rounded-full"></span>
         </button>} >
-            <EditSessionModal exam_id={exam_id} open={openEditModal} close={setOpenEditModal} />
+        {/* <ViewDetails */}
+        <QuestionInformation information={information} open={openViewModal} setOpen={setOpenViewModal} />
+            {/* <EditSesionModal exam_id={exam_id} open={openEditModal} close={setOpenEditModal} /> */}
             <DeleteExamSessionModal session_id={exam_id} open={openDeleteModal} close={setOpenDeleteModal} />
         </AppDropdownDialog>
     )

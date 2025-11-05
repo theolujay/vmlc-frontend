@@ -9,9 +9,8 @@ import Button from '../../ui/Button'
 import ResponsiveContainer from '../../ui/ResponsiveContainer'
 import AdminHeader from '../AdminHeader'
 import EmptySession from '../EmptySession'
-import QuestionsTable from '../QuestionsTable'
-import SummaryCard from './SummaryCard'
 import QuestionPoolTable from './QuestionPoolTable'
+import SummaryCard from './SummaryCard'
 
 
 export default function QuestionPool() {
