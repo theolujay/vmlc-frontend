@@ -78,11 +78,13 @@ export default function useForgotPassword() {
 
 
     function submitOtpForPasswordChange(value: otpSchemaType) {
-        if (!currentUser) {
-            throw new Error('No user')
-        }
+        // console.log(email,'dow we have email')
+        // if (!currentUser) {
+        //     throw new Error('No user')
+        // }
         const payload = {
-            email: currentUser.profile.user.email,
+            email,
+            // email: currentUser.profile.user.email,
             otp: value.otp
         }
         setOtpState(value.otp);
