@@ -1,20 +1,27 @@
 "use client"
 import useRegister from '@/hooks/useRegister'
 import Link from 'next/link'
-import { FormProvider } from 'react-hook-form'
+import { Controller, FormProvider } from 'react-hook-form'
 import AuthButton from '../ui/Button'
 import Input, { ConfirmPasswordInput, PasswordInput, PhoneNumberInput } from '../ui/Input'
 import Spinner from '../ui/spinner/spinner'
 import { MailIcon, PasswordIcon, PersonIcon, SchoolIcon } from '../ui/SvgAsset/GeneralAsset'
 import AuthLayout from './Layout/Layout'
+import { useState } from 'react'
+import { Checkbox } from '../ui/Checkbox'
 
 
 
 
 
 export default function Register() {
+  // const [autoGenerate, setAutoGenerate] = useState(false)
   
+  // function handleCheckbox(e:boolean){
+  //   setAutoGenerate(e)
+  // }
   const { form, onSubmit, isPending } = useRegister()
+  const autoGenerate=form.watch('generate_password')
   return (
     <AuthLayout>
 
@@ -43,11 +50,28 @@ export default function Register() {
               <div className="grid">
                 <Input name='school' icon={<SchoolIcon />} label='SCHOOL' placeholder="Input your school (e.g King's college, Yaba, Lagos)" className='border-[#D0D5DD]' />
               </div>
+              {
+                !autoGenerate&&<>
+                
+                
               <div className="grid">
                 <PasswordInput name='password' icon={<PasswordIcon />} label='PASSWORD' placeholder='Input your password' className='border-[#D0D5DD]' />
               </div>
               <div className="grid">
                 <ConfirmPasswordInput name='password2' icon={<PasswordIcon />} label='CONFIRM PASSWORD' placeholder='Confirm your password' className='border-[#D0D5DD]' />
+              </div>
+                </>
+              }
+              <div className="grid">
+                <div className="flex  gap-1">
+                  <Controller name='generate_password' control={form.control} render={({field})=><Checkbox checked={field.value} id='generate' onChange={(e)=>{
+                    field.onChange(e)
+                    // handleCheckbox(e)
+                    }}/>} />
+               
+                
+                 <label  className='font-semibold text-[#01ACEA]' htmlFor="generate">Auto Generate Password</label>
+             </div>
               </div>
               <div className="grid mt-6">
                 <AuthButton isPending={isPending}>{isPending ? <Spinner/> : 'Register'}</AuthButton>

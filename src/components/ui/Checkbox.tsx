@@ -5,8 +5,10 @@ import { CheckedIcon, UncheckedIcon } from "./SvgAsset/GeneralAsset";
 export const Checkbox = ({
   checked,
   onChange,
+  id,
   disabled = false,
 }: {
+  id?:string
   checked?: boolean;
   onChange?: (checked: boolean, event?: ChangeEvent<HTMLInputElement>) => void;
   disabled?: boolean;
@@ -14,6 +16,7 @@ export const Checkbox = ({
   return (
     <label className="inline-block cursor-pointer">
       <input
+      id={id}
         type="checkbox"
         checked={checked}
         disabled={disabled}

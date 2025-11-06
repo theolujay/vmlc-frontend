@@ -7,25 +7,68 @@ import { toast } from "react-toastify";
 import * as z from 'zod';
 
 
-const registerSchema = z.object({
-    email: z.email({ message: 'Must be an email' }),
-    password: z.string().min(8, "Password must be at least 8 characters"),
-    password2: z.string(),
-    first_name: z.string().min(2,'First name field cannot be empty'),
+// const registerSchema = z.object({
+//     email: z.email({ message: 'Must be an email' }),
+//     password: z.string().min(8, "Password must be at least 8 characters").optional(),
+//     password2: z.string().optional(),
+//     first_name: z.string().min(2,'First name field cannot be empty'),
+//     phone: z.string(),
+//     last_name: z.string().min(2,'Last name field cannot be empty'),
+//     school: z.string(),
+//     generate_password:z.boolean()
+// }).refine((data) => data.password === data.password2, {
+//     path: ["password2"],
+//     message: "Passwords do not match",
+// });
+
+const registerSchema = z
+  .object({
+    email: z.string().email({ message: 'Must be a valid email' }),
+    password: z.string().min(8, "Password must be at least 8 characters").optional(),
+    password2: z.string().optional(),
+    first_name: z.string().min(2, 'First name field cannot be empty'),
     phone: z.string(),
-    last_name: z.string().min(2,'Last name field cannot be empty'),
-    school: z.string()
-}).refine((data) => data.password === data.password2, {
-    path: ["password2"],
-    message: "Passwords do not match",
-});
+    last_name: z.string().min(2, 'Last name field cannot be empty'),
+    school: z.string(),
+    generate_password: z.boolean()
+  })
+  .superRefine((data, ctx) => {
+    if (!data.generate_password) {
+      // If auto-generate is FALSE, both passwords are required
+      if (!data.password) {
+        ctx.addIssue({
+          path: ['password'],
+          message: 'Password is required when auto-generate is off',
+          code: z.ZodIssueCode.custom,
+        });
+      }
+
+      if (!data.password2) {
+        ctx.addIssue({
+          path: ['password2'],
+          message: 'Confirm password is required when auto-generate is off',
+          code: z.ZodIssueCode.custom,
+        });
+      }
+
+      if (data.password && data.password2 && data.password !== data.password2) {
+        ctx.addIssue({
+          path: ['password2'],
+          message: 'Passwords do not match',
+          code: z.ZodIssueCode.custom,
+        });
+      }
+    }
+  });
+
 
 const defaultValues = {
     email: '',
     password: '',
     password2: '',
     phone: '',
-    first_name: '', last_name: '', school: ''
+    first_name: '', last_name: '', school: '',
+    generate_password:false
 }
 
 export type ValueType = z.infer<typeof registerSchema>;
@@ -33,7 +76,9 @@ export type ValueType = z.infer<typeof registerSchema>;
 export default function useRegister() {
     const form = useForm({
         resolver: zodResolver(registerSchema),
-        defaultValues
+        defaultValues,
+        mode: 'onSubmit',
+  shouldUnregister: true, 
     });
     const router = useRouter()
 
@@ -51,7 +96,7 @@ export default function useRegister() {
 
 
     function onSubmit(value: ValueType) {
-    
+    // console.log(value,'what is in value')
         const transformedValue: ValueType = {
 
             email: value.email.toLowerCase(),
@@ -60,10 +105,11 @@ export default function useRegister() {
             phone: value.phone,
             password: value.password,
             school: value.school,
-            password2: value.password2
+            password2: value.password2,
+            generate_password:value.generate_password
         }
         localStorage.setItem('email',value.email.toLowerCase())
-    
+  //  alert( JSON.stringify(transformedValue))
         mutate(transformedValue);
     }
 
