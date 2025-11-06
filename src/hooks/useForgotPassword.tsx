@@ -94,11 +94,12 @@ export default function useForgotPassword() {
 
 
     function handleNewPasswordChange(value: setNewPasswordSchemaType) {
-        if (!currentUser) {
-            throw new Error('No user')
-        }
+        // if (!currentUser) {
+        //     throw new Error('No user')
+        // }
         const payload = {
-            email: currentUser.profile.user.email,
+            email,
+            // email: currentUser.profile.user.email,
             otp: otpState,
             ...value
         }
