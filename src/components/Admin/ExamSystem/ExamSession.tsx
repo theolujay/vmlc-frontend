@@ -28,7 +28,7 @@ export default function ExamSession() {
   const { data, isPending } = useViewExamQuestions(id)
   const [openUpload, setOpenUpload] = useState(false);
 
-  console.log(data,'give us our daily data')
+  
 
 
   function handleOpenUpload(){

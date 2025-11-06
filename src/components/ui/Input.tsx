@@ -14,11 +14,14 @@ import { EyeClosedIcon, EyeOpenIcon } from './SvgAsset/GeneralAsset'
 
 
 
-function InputBase({ name, icon, placeholder, className, label }: Readonly<{ icon: React.ReactNode, placeholder?: string, className?: string, label: string, name: string }>) {
+function InputBase({ name, icon, placeholder, className, label,required }: Readonly<{ icon: React.ReactNode, placeholder?: string, className?: string, label: string, name: string ,required?:boolean}>) {
     const { register, formState: { errors} } = useFormContext()
     return (
         <div className="flex flex-col gap-1">
-            <span className='text-[14px] ml-1'>{label}</span>
+            <div className="flex gap-1">
+
+            <span className='text-[14px] ml-1'>{label}</span> {required&&<span className="text-red-500">*</span>}
+            </div>
             <div className={clsx('flex border border-[#d0d5dd]  bg-white focus:outline-1 outline-amber-300 gap-1 items-center px-2 rounded-[8px]', className)}>
                 <span>{icon}</span>
                 <input type="text" {...register(name)} placeholder={placeholder} className={clsx('border-0  flex-1 accent-amber-400 p-2 bg-white outline-0')} />
@@ -68,12 +71,14 @@ export const NeutralInput = memo(NeutralInputBase, (prev, next) => prev.name ===
 
 
 
-export function PhoneNumberInput({ name, placeholder, className, label }: Readonly<{ placeholder?: string, className?: string, label: string, name: string }>) {
+export function PhoneNumberInput({ name, placeholder, className, label ,required}: Readonly<{ placeholder?: string,required?:boolean, className?: string, label: string, name: string }>) {
     const [value, setValue] = useState<E164Number | undefined>(undefined)
     const { control } = useFormContext()
     return (
         <div className="flex flex-col gap-1">
-            <span className='text-[14px] ml-1'>{label}</span>
+            <div className="flex gap-1">
+            <span className='text-[14px] ml-1'>{label}</span> {required&&<span className="text-red-500">*</span>}
+            </div>
             <div className={clsx('flex border border-[#d0d5dd] bg-white focus:outline-1 outline-amber-300 gap-1 items-center px-2 rounded-[8px]', className)}>
                 {/* <span>{icon}</span> */}
                 <Controller

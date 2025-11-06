@@ -16,7 +16,7 @@ export default function AddStaffMember() {
   const [open, setOpen] = useState(false)
 
   const { form, onSubmit, isPending } = useInviteStaffMember(handleCloseModal)
-  console.log('form watch', form.watch())
+  
 
   const userMail = form.watch('email') || '';
   const role = form.watch('role') || '';
@@ -36,7 +36,7 @@ export default function AddStaffMember() {
   return (
     <div className='flex flex-col gap-1 '>
       <AdminHeader isExport={false} label='Add staff' actionButton={<Button onClick={handleOpenModal}  className={clsx("inline-flex gap-2 border min-w-10 px-2 items-center text-sm")}><span><SendIcon /></span><span>SEND INVITE</span></Button>} />
-      <div className="flex flex-col gap-3 mt-3 w-[96%] mx-auto">
+      <div className="flex flex-col gap-3 mt-3  w-[96%] mx-auto">
         <AddStaffMemberForm form={form} onSubmit={onSubmit} />
       </div>
       <InviteActionConfirmationModal
@@ -58,30 +58,30 @@ export default function AddStaffMember() {
 
 function AddStaffMemberForm({ form, onSubmit }: Readonly<AddStaffMemberFormProps<InviteStaffValueType>>) {
 
-  return <ResponsiveContainer className="flex w-full">
+  return <ResponsiveContainer className="flex min-h-[60vh] w-full">
     <FormProvider {...form}>
 
       <form id="invite-staff-form" onSubmit={form.handleSubmit(onSubmit)} className='grid p-4 gap-5 grid-cols-1 md:grid-cols-2' action="">
         <div className="col-span-1 gap-2 flex flex-col">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-            <Input name="first_name" label='STAFF FIRST NAME' placeholder='Input first name (e.g John)' className='border-[#D0D5DD]' icon={<PersonIcon />} />
-            <Input name='last_name' label='STAFF LAST NAME' placeholder='Input last name (e.g Doe)' className='border-[#D0D5DD]' icon={<PersonIcon />} />
+            <Input required name="first_name" label='STAFF FIRST NAME' placeholder='Input first name (e.g John)' className='border-[#D0D5DD]' icon={<PersonIcon />} />
+            <Input required name='last_name' label='STAFF LAST NAME' placeholder='Input last name (e.g Doe)' className='border-[#D0D5DD]' icon={<PersonIcon />} />
           </div>
           <div className="grid">
-            <Input name='email' icon={<MailIcon />} label='STAFF EMAIL' placeholder='Input your mail (e.g johndoe@gmail.com)' className='border-[#D0D5DD]' />
+            <Input required name='email' icon={<MailIcon />} label='STAFF EMAIL' placeholder='Input your mail (e.g johndoe@gmail.com)' className='border-[#D0D5DD]' />
           </div>
           <div className="grid">
-            <PhoneNumberInput name='phone' placeholder='+234 810 000 0000' className='border-[#D0D5DD]' label='STAFF PHONE NUMBER' />
+            <PhoneNumberInput required name='phone' placeholder='+234 810 000 0000' className='border-[#D0D5DD]' label='STAFF PHONE NUMBER' />
           </div>
           <div className="grid">
             <Input name='occupation' icon={<OccupationIcon />} label='OCCUPATION' placeholder="Input your occupation (e.g Teacher)" className='border-[#D0D5DD]' />
           </div>
-          <div className="grid">
+          {/* <div className="grid">
             <PasswordInput name='password' icon={<PasswordIcon />} label='PASSWORD' placeholder='Input your password' className='border-[#D0D5DD]' />
           </div>
           <div className="grid">
             <ConfirmPasswordInput name='password2' icon={<PasswordIcon />} label='CONFIRM PASSWORD' placeholder='Input your password' className='border-[#D0D5DD]' />
-          </div>
+          </div> */}
         </div>
         <RolePermissionForm />
       </form>
@@ -168,9 +168,9 @@ function RolePermissionForm() {
 
   return (
     <div className="flex flex-col">
-      <p className="text-sm text-gray-500 mb-3 font-medium">
+      {/* <p className="text-sm text-gray-500 mb-3 font-medium">
         Required <span className="text-red-500">*</span>
-      </p>
+      </p> */}
 
       {roles.map((role) => {
         const isSelected = selectedRole === role.name;

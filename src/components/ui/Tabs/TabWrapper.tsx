@@ -14,18 +14,18 @@ export default function TabWrapper({
 }: Readonly<TabWrapperProps>) {
 
 
-  const router=useRouter()
-  const searchParams=useSearchParams()
+  const router = useRouter()
+  const searchParams = useSearchParams()
 
-  const activeTab=searchParams.get('tab')||tabs[0]?.value;
-  const handleTabChange=useCallback((value:string)=>{
-    router.push(`?tab=${value}`,{scroll:false});
+  const activeTab = searchParams.get('tab') || tabs[0]?.value;
+  const handleTabChange = useCallback((value: string) => {
+    router.push(`?tab=${value}`, { scroll: false });
 
-  },[router])
+  }, [router])
   return (
     <Tabs.Root
-    onValueChange={handleTabChange}
-    value={activeTab}
+      onValueChange={handleTabChange}
+      value={activeTab}
       defaultValue={defaultValue ?? tabs[0]?.value}
       className="flex flex-col"
     >

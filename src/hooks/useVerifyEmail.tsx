@@ -40,7 +40,7 @@ export default function useVerifyEmail() {
     onSuccess: (value) => {
     
       localStorage.removeItem('email');
-      router.push('/auth/login')
+      router.push('/login')
     }
   })
 

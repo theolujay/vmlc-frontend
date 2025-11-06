@@ -56,7 +56,7 @@ export default function RegisterStaff() {
                 <p>By registering, you agree to {`VMLC’s`} <Link href='/' className='text-[#018ABB]'>Terms & conditions</Link> and <Link href='/' className='text-[#018ABB]'>Privacy Policy</Link></p>
                 <div className='flex gap-2'>
                   <span>Have an account?</span>
-                  <Link href='/auth/login' className=' text-[#3E4095] font-[700]'>LOGIN</Link>
+                  <Link href='/login' className=' text-[#3E4095] font-[700]'>LOGIN</Link>
                 </div>
               </div>
             </form>

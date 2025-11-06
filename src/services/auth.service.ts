@@ -6,34 +6,72 @@ import client from "@/utils/axios";
 
 export class AuthService {
     static async registerCandidate(user: ValueType): Promise<AuthRegisterResponse> {
-        const response = client.post(authUrls.candidate_registeration, user);
-        return (await response).data.data;
+        try {
+            const response = await client.post(authUrls.candidate_registeration, user);
+            return response.data.data;
+
+        } catch (error) {
+            console.error(error)
+            throw error;
+
+        }
     }
 
     static async registerStaff(user: StaffValueType): Promise<AuthRegisterResponse> {
-        const response = client.post(authUrls.staff_registeration, user);
-        return (await response).data.data;
+        try {
+
+            const response = await client.post(authUrls.staff_registeration, user);
+            return response.data.data;
+        } catch (error) {
+            console.error(error)
+            throw error;
+        }
     }
 
     static async login(payload: LoginRequest): Promise<AuthLoginResponse> {
-        const response = await client.post(authUrls.login, payload);
-        return response.data;
+        try {
+
+            const response = await client.post(authUrls.login, payload);
+            return response.data;
+        } catch (error) {
+            console.error(error)
+            throw error;
+        }
 
     }
 
     static async logout(payload: LogoutRequest) {
-        const response = await client.post(authUrls.logout, payload);
-        return response.data;
+        try {
+
+            const response = await client.post(authUrls.logout, payload);
+            return response.data;
+        } catch (error) {
+            console.error(error)
+            throw error
+        }
     }
 
     static async verifyEmail(payload: VerifyRequest) {
-        const response = await client.post(authUrls.verify, payload);
-        return response.data;
+        try {
+
+            const response = await client.post(authUrls.verify, payload);
+            return response.data;
+        } catch (error) {
+            console.error(error)
+            throw error;
+        }
     }
 
     static async resendOtp(payload: Omit<VerifyRequest, 'otp'>) {
-        const response = await client.post(authUrls.resendOtp, payload)
+        const response = await client.post(authUrls.sendOtp, payload)
         return response.data
+    }
+
+
+
+    static async sendOtp(payload:{email:string}){
+        const response=await client.post(authUrls.sendOtp,payload);
+        return response.data;
     }
 
 

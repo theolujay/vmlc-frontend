@@ -45,7 +45,7 @@ export default function Login() {
 
                 <div className='flex gap-2'>
                   <span>{`Don't`} have an account?</span>
-                  <Link href='/auth/register' className=' text-[#3E4095] font-[700]'>REGISTER</Link>
+                  <Link href='/register' className=' text-[#3E4095] font-[700]'>REGISTER</Link>
                 </div>
               </div>
             </form>

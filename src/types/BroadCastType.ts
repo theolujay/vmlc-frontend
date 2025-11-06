@@ -10,7 +10,7 @@ export type BroadcastType = {
 
 
 
-type BroadcastItemType = {
+export type BroadcastItemType = {
     id: number,
     subject: string,
     message: string,

@@ -20,7 +20,7 @@ export default function QuestionInformation({ open, setOpen, information }: Read
         <Drawer open={open} onClose={setOpen}>
             <div className="flex flex-col">
                 <div className="header border-b py-1 justify-between border-[#E4E7EC] flex ">
-                    <div className="flex flex-col gap-0.5">
+                    <div className="flex flex-col justify-start items-start gap-0.5">
                         <h2 className="font-bold text-lg">Question Information</h2>
                         <p className="text-sm text-gray-500">This contains the clicked question information</p>
                     </div>
@@ -28,15 +28,15 @@ export default function QuestionInformation({ open, setOpen, information }: Read
                 </div>
 
                 <div className="body  flex flex-col gap-3 mt-3 border-[#D0D5DD] border-b">
-                    <div className=" flex flex-col gap-0.5 mt-3">
+                    <div className="justify-start items-start flex flex-col gap-0.5 mt-3">
                         <span className='text-sm text-[#344054]'>QUESTION DIFFICULTY</span>
                         <span className={clsx('capitalize w-fit rounded-full px-2 py-1 font-semibold', getAppropriateColor(information.difficulty))}>{information.difficulty}</span>
                     </div>
-                    <div className=" flex flex-col gap-0.5 mt-3">
+                    <div className="justify-start items-start flex flex-col gap-0.5 mt-3">
                         <span className='text-sm text-[#344054]'>QUESTION</span>
                         <span>{information.text}</span>
                     </div>
-                    <div className=" flex flex-col gap-0.5 mt-3">
+                    <div className="justify-start items-start flex flex-col gap-0.5 mt-3">
                         <span className='text-sm text-[#344054]'>OPTIONS</span>
                         <div className="flex gap-3 flex-col w-full"  >
                             {
@@ -53,7 +53,7 @@ export default function QuestionInformation({ open, setOpen, information }: Read
                         </div>
                     </div>
 
-                    <div className=" flex flex-col gap-0.5 mt-3 mb-3">
+                    <div className="justify-start items-start flex flex-col gap-0.5 mt-3 mb-3">
                         <span className='text-sm text-[#344054]'>ANSWER</span>
                         <div className="flex text-[#3E4095]">
                             <span className=''>({information.correct_answer.toLowerCase()})</span><span className='ml-2'>{correct?.option}</span>
@@ -62,8 +62,8 @@ export default function QuestionInformation({ open, setOpen, information }: Read
                     </div>
                 </div>
 
-                <div className="flex flex-col gap-3 user-details">
-                    <div className=" flex flex-col gap-0.5 mt-3">
+                <div className="flex  flex-col gap-3 user-details">
+                    <div className="justify-start items-start flex flex-col gap-0.5 mt-3">
                         <span className='text-sm text-[#344054]'>SUBMITTED BY</span>
                         <span>{getName}</span>
                     </div>
@@ -77,11 +77,11 @@ export default function QuestionInformation({ open, setOpen, information }: Read
                             <span>{formattedTime}</span>
                         </div>
                     </div>
-                    <div className=" flex flex-col gap-0.5 mt-3">
+                    <div className="justify-start items-start flex flex-col gap-0.5 mt-3">
                         <span className='text-sm text-[#344054]'>STAFF'S PHONE NUMBER</span>
                         <span>{information.created_by?.user?.phone}</span>
                     </div>
-                    <div className=" flex flex-col gap-0.5 mt-3">
+                    <div className="justify-start items-start flex flex-col gap-0.5 mt-3">
                         <span className='text-sm text-[#344054]'>STAFF'S EMAIL</span>
                         <span>{information.created_by?.user?.email}</span>
                     </div>
