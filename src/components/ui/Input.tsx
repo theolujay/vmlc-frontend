@@ -6,6 +6,7 @@ import { Controller, useFormContext } from 'react-hook-form'
 import PhoneInput from 'react-phone-number-input'
 import 'react-phone-number-input/style.css'
 import { EyeClosedIcon, EyeOpenIcon } from './SvgAsset/GeneralAsset'
+import { Checkbox } from './Checkbox'
 
 
 
@@ -135,7 +136,6 @@ export function OrdinaryPasswordInput({ name, icon, placeholder, className, labe
 
 
 
-
 export function PasswordInput({ name, icon, placeholder, className, label }: Readonly<{ icon: React.ReactNode, placeholder?: string, className?: string, label: string, name: string }>) {
     const [showPassword, setShowPassword] = useState(false)
     const { register, watch, formState: { errors, isDirty } } = useFormContext()
@@ -199,6 +199,94 @@ export function PasswordInput({ name, icon, placeholder, className, label }: Rea
         </div>
     )
 }
+
+
+
+
+// export function PasswordInput({ name, icon, placeholder, className, label }: Readonly<{ icon: React.ReactNode, placeholder?: string, className?: string, label: string, name: string }>) {
+//     const [showPassword, setShowPassword] = useState(false)
+//     const { register, watch, formState: { errors, isDirty } } = useFormContext()
+//     const [generatePassword,setGeneratePassword]=useState(false)
+
+//     const passwordValue = watch(name)
+
+//     function handleToggle() {
+//         setShowPassword((val) => !val)
+//     }
+
+
+//     function handleCheckbox(e:boolean){
+//         setGeneratePassword(e)
+//         // alert(e)
+//     console.log(e,'what is e')
+//     }
+//     return (
+//         <div className="flex flex-col gap-1">
+//             <div className="flex justify-between">
+//             <span className='text-[14px]  ml-1'>{label}</span>
+//             <div className="flex justify-between gap-1">
+//                 <Checkbox onChange={handleCheckbox}/>
+                
+//                 <label className='font-semibold text-[#01ACEA]' htmlFor="generate">Auto Generate Password</label>
+//             </div>
+//             </div>
+
+//             {
+//                 !generatePassword&&
+//             <React.Fragment>
+
+//             <div className={clsx('flex border border-[#d0d5dd] bg-white focus:outline-1 outline-amber-300 gap-1 items-center px-2 rounded-[8px]', className)}>
+//                 <span>{icon}</span>
+//                 <input {...register(name, {
+//                     required: "Password is required",
+//                     validate: {
+//                         minLength: (v) => v.length >= 8 || "Must be at least 8 characters long",
+//                         maxLength: (v) => v.length <= 32 || "Must be at most 32 characters long",
+//                         hasLower: (v) => /[a-z]/.test(v) || "Must contain at least 1 lowercase letter",
+//                         hasUpper: (v) => /[A-Z]/.test(v) || "Must contain at least 1 uppercase letter",
+//                         hasNumber: (v) =>
+//                             /\d/.test(v) || "Must contain at least 1 number",
+//                         hasSpecial: (v) =>
+//                             /[!@#$%^&*(),.?":{}|<>]/.test(v) ||
+//                             "Must contain at least 1 special character",
+
+//                     }
+//                 })} type={showPassword ? 'text' : 'password'} placeholder={placeholder} className={clsx('border-0 flex-1 accent-amber-400 p-2 bg-white outline-0')} />
+//                 <button type='button' className='cursor-pointer outline-0' onClick={handleToggle}>{showPassword ? <EyeOpenIcon /> : <EyeClosedIcon />}</button>
+//             </div>
+
+
+//             {/* Checklist feedback */}
+//             {
+//                 isDirty&&
+//             <div className="text-sm mt-2">
+//                 <p className={passwordValue?.length >= 8 ? "text-[#0F973D]" : "text-[#344054]"}>
+//                     • 8 - 32 characters long
+//                 </p>
+//                 <p className={/[a-z]/.test(passwordValue) ? "text-[#0F973D]" : "text-[#344054]"}>
+//                     • 1 lowercase character (a-z)
+//                 </p>
+//                 <p className={/[A-Z]/.test(passwordValue) ? "text-[#0F973D]" : "text-[#344054]"}>
+//                     • 1 uppercase character (A-Z)
+//                 </p>
+//                 <p className={/\d/.test(passwordValue) ? "text-[#0F973D]" : "text-[#344054]"}>
+//                     • 1 number (0-9)
+//                 </p>
+//                 <p className={/[!@#$%^&*(),.?":{}|<>]/.test(passwordValue) ? "text-[#0F973D]" : "text-[#344054]"}>
+//                     • 1 special character (e.g., ! @ # $ %)
+//                 </p>
+//             </div>
+                
+//             }
+
+//             {errors[name] && (
+//                 <span className="text-red-500 text-xs">{errors[name].message as string}</span>
+//             )}
+//             </React.Fragment>
+//             }
+//         </div>
+//     )
+// }
 
 
 

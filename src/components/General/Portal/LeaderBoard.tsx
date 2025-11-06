@@ -3,6 +3,7 @@ import Table from '@/components/ui/Table'
 import TabWrapper from '@/components/ui/Tabs/TabWrapper'
 import { TabType } from '@/types/TabType'
 import { ScreeningIcon } from '../GeneralIcon'
+import useGetLeaderBoard from '@/hooks/useGetLeaderboard'
 
 export default function LeaderBoard() {
   return (
@@ -15,8 +16,8 @@ export default function LeaderBoard() {
 
 
 function Board(){
-    // const {data}=useGetLeaderBoard()
-    // console.log(data,'what is the data here')
+    const {data}=useGetLeaderBoard()
+    console.log(data,'what is the data here')
 
     const tabs:TabType[]=[{
         value:'Screening',
