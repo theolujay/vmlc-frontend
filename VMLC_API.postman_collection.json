@@ -73,7 +73,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"email\": \"candidate@example.com\",\n    \"first_name\": \"John\",\n    \"last_name\": \"Doe\",\n    \"phone\": \"08012345678\",\n    \"password\": \"strongpassword123\",\n    \"password2\": \"strongpassword123\",\n    \"school\": \"Example High School\"\n}",
+							"raw": "{\n    \"email\": \"candidate@example.com\",\n    \"first_name\": \"John\",\n    \"last_name\": \"Doe\",\n    \"phone\": \"08012345678\",\n    \"password\": \"strongpassword123\",\n    \"password2\": \"strongpassword123\",\n    \"school\": \"Example High School\",\n    \"generate_password\": false\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -108,7 +108,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"email\": \"staff@example.com\",\n    \"first_name\": \"Jane\",\n    \"last_name\": \"Smith\",\n    \"phone\": \"08087654321\",\n    \"password\": \"strongpassword123\",\n    \"password2\": \"strongpassword123\",\n    \"occupation\": \"Teacher\"\n}",
+							"raw": "{\n    \"email\": \"staff@example.com\",\n    \"first_name\": \"Jane\",\n    \"last_name\": \"Smith\",\n    \"phone\": \"08087654321\",\n    \"password\": \"strongpassword123\",\n    \"password2\": \"strongpassword123\",\n    \"occupation\": \"Teacher\",\n    \"generate_password\": false\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -354,7 +354,7 @@
 					"response": []
 				},
 				{
-					"name": "Resend Email OTP",
+					"name": "Send/Resend Email OTP",
 					"request": {
 						"method": "POST",
 						"header": [
@@ -366,7 +366,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"email\": \"candidate@example.com\"\n}",
+							"raw": "{\n    \"email\": \"candidate@example.com\",\n    \"resend\": false\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -374,13 +374,13 @@
 							}
 						},
 						"url": {
-							"raw": "{{baseUrl}}/v1/resend-email-otp/",
+							"raw": "{{baseUrl}}/v1/send-email-otp/",
 							"host": [
 								"{{baseUrl}}"
 							],
 							"path": [
 								"v1",
-								"resend-email-otp",
+								"send-email-otp",
 								""
 							]
 						}
@@ -543,12 +543,12 @@
 							"request": {
 								"method": "GET",
 								"header": [
-							{
-								"key": "X-Api-Key",
-								"value": "{{apiKey}}",
-								"type": "text"
-							}
-						],
+									{
+										"key": "X-Api-Key",
+										"value": "{{apiKey}}",
+										"type": "text"
+									}
+								],
 								"url": {
 									"raw": "{{baseUrl}}/v1/candidates/me/",
 									"host": [
@@ -584,12 +584,12 @@
 							"request": {
 								"method": "GET",
 								"header": [
-							{
-								"key": "X-Api-Key",
-								"value": "{{apiKey}}",
-								"type": "text"
-							}
-						],
+									{
+										"key": "X-Api-Key",
+										"value": "{{apiKey}}",
+										"type": "text"
+									}
+								],
 								"url": {
 									"raw": "{{baseUrl}}/v1/exams/{{exam_id}}/take-exam/",
 									"host": [
@@ -611,12 +611,12 @@
 							"request": {
 								"method": "POST",
 								"header": [
-							{
-								"key": "X-Api-Key",
-								"value": "{{apiKey}}",
-								"type": "text"
-							}
-						],
+									{
+										"key": "X-Api-Key",
+										"value": "{{apiKey}}",
+										"type": "text"
+									}
+								],
 								"body": {
 									"mode": "raw",
 									"raw": "{\n    \"answers\": [\n        {\n            \"question\": {{question_id_1}},\n            \"selected_option\": \"A\"\n        },\n        {\n            \"question\": {{question_id_2}},\n            \"selected_option\": \"C\"\n        }\n    ]\n}",
@@ -638,10 +638,10 @@
 										"submit-exam-answers",
 										""
 									]
-								},
-								"description": "Submits answers for an exam."
+								}
 							},
-							"response": []
+							"response": [],
+							"description": "Submits answers for an exam."
 						}
 					],
 					"auth": {
@@ -663,12 +663,12 @@
 							"request": {
 								"method": "GET",
 								"header": [
-							{
-								"key": "X-Api-Key",
-								"value": "{{apiKey}}",
-								"type": "text"
-							}
-						],
+									{
+										"key": "X-Api-Key",
+										"value": "{{apiKey}}",
+										"type": "text"
+									}
+								],
 								"url": {
 									"raw": "{{baseUrl}}/v1/dashboard/candidate/",
 									"host": [
@@ -704,12 +704,12 @@
 							"request": {
 								"method": "GET",
 								"header": [
-							{
-								"key": "X-Api-Key",
-								"value": "{{apiKey}}",
-								"type": "text"
-							}
-						],
+									{
+										"key": "X-Api-Key",
+										"value": "{{apiKey}}",
+										"type": "text"
+									}
+								],
 								"url": {
 									"raw": "{{baseUrl}}/v1/account-management/",
 									"host": [
@@ -729,12 +729,12 @@
 							"request": {
 								"method": "PATCH",
 								"header": [
-							{
-								"key": "X-Api-Key",
-								"value": "{{apiKey}}",
-								"type": "text"
-							}
-						],
+									{
+										"key": "X-Api-Key",
+										"value": "{{apiKey}}",
+										"type": "text"
+									}
+								],
 								"body": {
 									"mode": "raw",
 									"raw": "{\n    \"profile\": {\n        \"school\": \"Updated School Name\"\n    },\n    \"user\": {\n        \"first_name\": \"Johnny\"\n    }\n}",
@@ -778,12 +778,12 @@
 							"request": {
 								"method": "GET",
 								"header": [
-							{
-								"key": "X-Api-Key",
-								"value": "{{apiKey}}",
-								"type": "text"
-							}
-						],
+									{
+										"key": "X-Api-Key",
+										"value": "{{apiKey}}",
+										"type": "text"
+									}
+								],
 								"url": {
 									"raw": "{{baseUrl}}/v1/user/verification/status/",
 									"host": [
@@ -805,17 +805,17 @@
 							"request": {
 								"method": "POST",
 								"header": [
-							{
-								"key": "X-Api-Key",
-								"value": "{{apiKey}}",
-								"type": "text"
-							}
-						],
+									{
+										"key": "X-Api-Key",
+										"value": "{{apiKey}}",
+										"type": "text"
+									}
+								],
 								"body": {
 									"mode": "formdata",
 									"formdata": [
 										{
-											"key": "profile_photo",
+											"key": "face_id",
 											"type": "file",
 											"src": []
 										},
@@ -852,17 +852,17 @@
 							"request": {
 								"method": "PATCH",
 								"header": [
-							{
-								"key": "X-Api-Key",
-								"value": "{{apiKey}}",
-								"type": "text"
-							}
-						],
+									{
+										"key": "X-Api-Key",
+										"value": "{{apiKey}}",
+										"type": "text"
+									}
+								],
 								"body": {
 									"mode": "formdata",
 									"formdata": [
 										{
-											"key": "profile_photo",
+											"key": "face_id",
 											"type": "file",
 											"src": []
 										}
@@ -889,12 +889,12 @@
 							"request": {
 								"method": "GET",
 								"header": [
-							{
-								"key": "X-Api-Key",
-								"value": "{{apiKey}}",
-								"type": "text"
-							}
-						],
+									{
+										"key": "X-Api-Key",
+										"value": "{{apiKey}}",
+										"type": "text"
+									}
+								],
 								"url": {
 									"raw": "{{baseUrl}}/v1/user/verification/documents/{{file_type}}/",
 									"host": [
@@ -937,12 +937,12 @@
 							"request": {
 								"method": "GET",
 								"header": [
-							{
-								"key": "X-Api-Key",
-								"value": "{{apiKey}}",
-								"type": "text"
-							}
-						],
+									{
+										"key": "X-Api-Key",
+										"value": "{{apiKey}}",
+										"type": "text"
+									}
+								],
 								"url": {
 									"raw": "{{baseUrl}}/v1/staff/me/",
 									"host": [
@@ -978,12 +978,12 @@
 							"request": {
 								"method": "GET",
 								"header": [
-							{
-								"key": "X-Api-Key",
-								"value": "{{apiKey}}",
-								"type": "text"
-							}
-						],
+									{
+										"key": "X-Api-Key",
+										"value": "{{apiKey}}",
+										"type": "text"
+									}
+								],
 								"url": {
 									"raw": "{{baseUrl}}/v1/candidates/",
 									"host": [
@@ -1003,12 +1003,12 @@
 							"request": {
 								"method": "GET",
 								"header": [
-							{
-								"key": "X-Api-Key",
-								"value": "{{apiKey}}",
-								"type": "text"
-							}
-						],
+									{
+										"key": "X-Api-Key",
+										"value": "{{apiKey}}",
+										"type": "text"
+									}
+								],
 								"url": {
 									"raw": "{{baseUrl}}/v1/candidates/{{candidate_id}}/",
 									"host": [
@@ -1029,12 +1029,12 @@
 							"request": {
 								"method": "PUT",
 								"header": [
-							{
-								"key": "X-Api-Key",
-								"value": "{{apiKey}}",
-								"type": "text"
-							}
-						],
+									{
+										"key": "X-Api-Key",
+										"value": "{{apiKey}}",
+										"type": "text"
+									}
+								],
 								"body": {
 									"mode": "raw",
 									"raw": "{\n    \"role\": \"league\"\n}",
@@ -1066,12 +1066,12 @@
 							"request": {
 								"method": "GET",
 								"header": [
-							{
-								"key": "X-Api-Key",
-								"value": "{{apiKey}}",
-								"type": "text"
-							}
-						],
+									{
+										"key": "X-Api-Key",
+										"value": "{{apiKey}}",
+										"type": "text"
+									}
+								],
 								"url": {
 									"raw": "{{baseUrl}}/v1/candidates/{{candidate_id}}/scores/",
 									"host": [
@@ -1093,12 +1093,484 @@
 							"request": {
 								"method": "GET",
 								"header": [
+									{
+										"key": "X-Api-Key",
+										"value": "{{apiKey}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/v1/candidates/{{candidate_id}}/exam-history/",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"v1",
+										"candidates",
+										"{{candidate_id}}",
+										"exam-history",
+										""
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"auth": {
+						"type": "bearer",
+						"bearer": [
 							{
-								"key": "X-Api-Key",
-								"value": "{{apiKey}}",
-								"type": "text"
+								"key": "token",
+								"value": "{{candidateAccessToken}}",
+								"type": "string"
 							}
-						],
+						]
+					}
+				},
+				{
+					"name": "Dashboard",
+					"item": [
+						{
+							"name": "Get Dashboard",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "X-Api-Key",
+										"value": "{{apiKey}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/v1/dashboard/candidate/",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"v1",
+										"dashboard",
+										"candidate",
+										""
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"auth": {
+						"type": "bearer",
+						"bearer": [
+							{
+								"key": "token",
+								"value": "{{candidateAccessToken}}",
+								"type": "string"
+							}
+						]
+					}
+				},
+				{
+					"name": "Account Management",
+					"item": [
+						{
+							"name": "Get Own Account Info",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "X-Api-Key",
+										"value": "{{apiKey}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/v1/account-management/",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"v1",
+										"account-management",
+										""
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Update Own Account Info",
+							"request": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "X-Api-Key",
+										"value": "{{apiKey}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"profile\": {\n        \"school\": \"Updated School Name\"\n    },\n    \"user\": {\n        \"first_name\": \"Johnny\"\n    }\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/v1/account-management/",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"v1",
+										"account-management",
+										""
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"auth": {
+						"type": "bearer",
+						"bearer": [
+							{
+								"key": "token",
+								"value": "{{candidateAccessToken}}",
+								"type": "string"
+							}
+						]
+					}
+				},
+				{
+					"name": "User Verification",
+					"item": [
+						{
+							"name": "Get Verification Status",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "X-Api-Key",
+										"value": "{{apiKey}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/v1/user/verification/status/",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"v1",
+										"user",
+										"verification",
+										"status",
+										""
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Upload Verification Documents",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "X-Api-Key",
+										"value": "{{apiKey}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "face_id",
+											"type": "file",
+											"src": []
+										},
+										{
+											"key": "id_card",
+											"type": "file",
+											"src": []
+										},
+										{
+											"key": "verification_document",
+											"type": "file",
+											"src": []
+										}
+									]
+								},
+								"url": {
+									"raw": "{{baseUrl}}/v1/user/verification/upload/",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"v1",
+										"user",
+										"verification",
+										"upload",
+										""
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Update Verification Documents",
+							"request": {
+								"method": "PATCH",
+								"header": [
+									{
+										"key": "X-Api-Key",
+										"value": "{{apiKey}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "face_id",
+											"type": "file",
+											"src": []
+										}
+									]
+								},
+								"url": {
+									"raw": "{{baseUrl}}/v1/user/verification/upload/",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"v1",
+										"user",
+										"verification",
+										"upload",
+										""
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get Own Verification Document",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "X-Api-Key",
+										"value": "{{apiKey}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/v1/user/verification/documents/{{file_type}}/",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"v1",
+										"user",
+										"verification",
+										"documents",
+										"{{file_type}}",
+										""
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"auth": {
+						"type": "bearer",
+						"bearer": [
+							{
+								"key": "token",
+								"value": "{{candidateAccessToken}}",
+								"type": "string"
+							}
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "Staff",
+			"item": [
+				{
+					"name": "Profile",
+					"item": [
+						{
+							"name": "Get My Profile",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "X-Api-Key",
+										"value": "{{apiKey}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/v1/staff/me/",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"v1",
+										"staff",
+										"me",
+										""
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"auth": {
+						"type": "bearer",
+						"bearer": [
+							{
+								"key": "token",
+								"value": "{{staffAccessToken}}",
+								"type": "string"
+							}
+						]
+					}
+				},
+				{
+					"name": "Candidate Management",
+					"item": [
+						{
+							"name": "List Candidates",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "X-Api-Key",
+										"value": "{{apiKey}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/v1/candidates/",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"v1",
+										"candidates",
+										""
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get Candidate Detail",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "X-Api-Key",
+										"value": "{{apiKey}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/v1/candidates/{{candidate_id}}/",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"v1",
+										"candidates",
+										"{{candidate_id}}",
+										""
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Assign Candidate Role",
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "X-Api-Key",
+										"value": "{{apiKey}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"role\": \"league\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/v1/candidates/{{candidate_id}}/roles/assign/",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"v1",
+										"candidates",
+										"{{candidate_id}}",
+										"roles",
+										"assign",
+										""
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get Candidate Scores",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "X-Api-Key",
+										"value": "{{apiKey}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/v1/candidates/{{candidate_id}}/scores/",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"v1",
+										"candidates",
+										"{{candidate_id}}",
+										"scores",
+										""
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Get Candidate Exam History",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "X-Api-Key",
+										"value": "{{apiKey}}",
+										"type": "text"
+									}
+								],
 								"url": {
 									"raw": "{{baseUrl}}/v1/candidates/{{candidate_id}}/exam-history/",
 									"host": [
@@ -1135,12 +1607,12 @@
 							"request": {
 								"method": "GET",
 								"header": [
-							{
-								"key": "X-Api-Key",
-								"value": "{{apiKey}}",
-								"type": "text"
-							}
-						],
+									{
+										"key": "X-Api-Key",
+										"value": "{{apiKey}}",
+										"type": "text"
+									}
+								],
 								"url": {
 									"raw": "{{baseUrl}}/v1/staff/",
 									"host": [
@@ -1156,16 +1628,51 @@
 							"response": []
 						},
 						{
+							"name": "Invite Staff Member",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "X-Api-Key",
+										"value": "{{apiKey}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"email\": \"new.staff@example.com\",\n    \"first_name\": \"New\",\n    \"last_name\": \"Staff\",\n    \"phone\": \"+2349012345678\",\n    \"password\": \"a_strong_temporary_password\",\n    \"password2\": \"a_strong_temporary_password\",\n    \"role\": \"moderator\",\n    \"occupation\": \"Content Reviewer\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/v1/staff/invite/",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"v1",
+										"staff",
+										"invite",
+										""
+									]
+								}
+							},
+							"response": []
+						},
+						{
 							"name": "Get Staff Detail",
 							"request": {
 								"method": "GET",
 								"header": [
-							{
-								"key": "X-Api-Key",
-								"value": "{{apiKey}}",
-								"type": "text"
-							}
-						],
+									{
+										"key": "X-Api-Key",
+										"value": "{{apiKey}}",
+										"type": "text"
+									}
+								],
 								"url": {
 									"raw": "{{baseUrl}}/v1/staff/{{staff_id}}/",
 									"host": [
@@ -1186,12 +1693,12 @@
 							"request": {
 								"method": "PUT",
 								"header": [
-							{
-								"key": "X-Api-Key",
-								"value": "{{apiKey}}",
-								"type": "text"
-							}
-						],
+									{
+										"key": "X-Api-Key",
+										"value": "{{apiKey}}",
+										"type": "text"
+									}
+								],
 								"body": {
 									"mode": "raw",
 									"raw": "{\n    \"role\": \"admin\"\n}",
@@ -1238,12 +1745,12 @@
 							"request": {
 								"method": "GET",
 								"header": [
-							{
-								"key": "X-Api-Key",
-								"value": "{{apiKey}}",
-								"type": "text"
-							}
-						],
+									{
+										"key": "X-Api-Key",
+										"value": "{{apiKey}}",
+										"type": "text"
+									}
+								],
 								"url": {
 									"raw": "{{baseUrl}}/v1/exams/",
 									"host": [
@@ -1263,15 +1770,15 @@
 							"request": {
 								"method": "POST",
 								"header": [
-							{
-								"key": "X-Api-Key",
-								"value": "{{apiKey}}",
-								"type": "text"
-							}
-						],
+									{
+										"key": "X-Api-Key",
+										"value": "{{apiKey}}",
+										"type": "text"
+									}
+								],
 								"body": {
 									"mode": "raw",
-									"raw": "{\n    \"title\": \"Mid-term League Exam\",\n    \"stage\": \"league\",\n    \"description\": \"A challenging exam for league participants.\",\n    \"exam_date\": \"2024-09-15T10:00:00Z\",\n    \"countdown_minutes\": 60,\n    \"open_duration_hours\": 12,\n    \"is_active\": true,\n    \"questions\": [\n        {{question_id_1}},\n        {{question_id_2}}\n    ]\n}",
+									"raw": "{\n    \"title\": \"Mid-term League Exam\",\n    \"stage\": \"league\",\n    \"description\": \"A challenging exam for league participants.\",\n    \"scheduled_date\": \"2024-09-15T10:00:00Z\",\n    \"countdown_minutes\": 60,\n    \"open_duration_hours\": 12,\n    \"is_active\": true,\n    \"questions\": [\n        {{question_id_1}},\n        {{question_id_2}}\n    ]\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -1297,12 +1804,12 @@
 							"request": {
 								"method": "GET",
 								"header": [
-							{
-								"key": "X-Api-Key",
-								"value": "{{apiKey}}",
-								"type": "text"
-							}
-						],
+									{
+										"key": "X-Api-Key",
+										"value": "{{apiKey}}",
+										"type": "text"
+									}
+								],
 								"url": {
 									"raw": "{{baseUrl}}/v1/exams/{{exam_id}}/",
 									"host": [
@@ -1319,16 +1826,51 @@
 							"response": []
 						},
 						{
-							"name": "Update Exam",
+							"name": "Update Exam (PUT)",
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "X-Api-Key",
+										"value": "{{apiKey}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"title\": \"Updated Mid-term League Exam\",\n    \"stage\": \"league\",\n    \"description\": \"An updated challenging exam for league participants.\",\n    \"scheduled_date\": \"2024-09-15T10:00:00Z\",\n    \"countdown_minutes\": 60,\n    \"open_duration_hours\": 12,\n    \"is_active\": true,\n    \"questions\": [\n        {{question_id_1}},\n        {{question_id_2}}\n    ]\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/v1/exams/{{exam_id}}/",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"v1",
+										"exams",
+										"{{exam_id}}",
+										""
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Update Exam (PATCH)",
 							"request": {
 								"method": "PATCH",
 								"header": [
-							{
-								"key": "X-Api-Key",
-								"value": "{{apiKey}}",
-								"type": "text"
-							}
-						],
+									{
+										"key": "X-Api-Key",
+										"value": "{{apiKey}}",
+										"type": "text"
+									}
+								],
 								"body": {
 									"mode": "raw",
 									"raw": "{\n    \"title\": \"Updated Mid-term League Exam\",\n    \"is_active\": false\n}",
@@ -1358,12 +1900,12 @@
 							"request": {
 								"method": "DELETE",
 								"header": [
-							{
-								"key": "X-Api-Key",
-								"value": "{{apiKey}}",
-								"type": "text"
-							}
-						],
+									{
+										"key": "X-Api-Key",
+										"value": "{{apiKey}}",
+										"type": "text"
+									}
+								],
 								"url": {
 									"raw": "{{baseUrl}}/v1/exams/{{exam_id}}/",
 									"host": [
@@ -1384,12 +1926,12 @@
 							"request": {
 								"method": "GET",
 								"header": [
-							{
-								"key": "X-Api-Key",
-								"value": "{{apiKey}}",
-								"type": "text"
-							}
-						],
+									{
+										"key": "X-Api-Key",
+										"value": "{{apiKey}}",
+										"type": "text"
+									}
+								],
 								"url": {
 									"raw": "{{baseUrl}}/v1/exams/{{exam_id}}/questions/",
 									"host": [
@@ -1411,12 +1953,12 @@
 							"request": {
 								"method": "GET",
 								"header": [
-							{
-								"key": "X-Api-Key",
-								"value": "{{apiKey}}",
-								"type": "text"
-							}
-						],
+									{
+										"key": "X-Api-Key",
+										"value": "{{apiKey}}",
+										"type": "text"
+									}
+								],
 								"url": {
 									"raw": "{{baseUrl}}/v1/exams/{{exam_id}}/results/",
 									"host": [
@@ -1438,12 +1980,12 @@
 							"request": {
 								"method": "PUT",
 								"header": [
-							{
-								"key": "X-Api-Key",
-								"value": "{{apiKey}}",
-								"type": "text"
-							}
-						],
+									{
+										"key": "X-Api-Key",
+										"value": "{{apiKey}}",
+										"type": "text"
+									}
+								],
 								"body": {
 									"mode": "raw",
 									"raw": "{\n    \"candidate_id\": \"{{candidate_id}}\",\n    \"score\": \"85.50\"\n}",
@@ -1489,12 +2031,12 @@
 							"request": {
 								"method": "GET",
 								"header": [
-							{
-								"key": "X-Api-Key",
-								"value": "{{apiKey}}",
-								"type": "text"
-							}
-						],
+									{
+										"key": "X-Api-Key",
+										"value": "{{apiKey}}",
+										"type": "text"
+									}
+								],
 								"url": {
 									"raw": "{{baseUrl}}/v1/questions/",
 									"host": [
@@ -1514,12 +2056,12 @@
 							"request": {
 								"method": "POST",
 								"header": [
-							{
-								"key": "X-Api-Key",
-								"value": "{{apiKey}}",
-								"type": "text"
-							}
-						],
+									{
+										"key": "X-Api-Key",
+										"value": "{{apiKey}}",
+										"type": "text"
+									}
+								],
 								"body": {
 									"mode": "raw",
 									"raw": "{\n    \"text\": \"What is 2 + 2?\",\n    \"option_a\": \"3\",\n    \"option_b\": \"4\",\n    \"option_c\": \"5\",\n    \"option_d\": \"6\",\n    \"correct_answer\": \"B\",\n    \"difficulty\": \"easy\"\n}",
@@ -1548,12 +2090,12 @@
 							"request": {
 								"method": "GET",
 								"header": [
-							{
-								"key": "X-Api-Key",
-								"value": "{{apiKey}}",
-								"type": "text"
-							}
-						],
+									{
+										"key": "X-Api-Key",
+										"value": "{{apiKey}}",
+										"type": "text"
+									}
+								],
 								"url": {
 									"raw": "{{baseUrl}}/v1/questions/{{question_id}}/",
 									"host": [
@@ -1570,19 +2112,54 @@
 							"response": []
 						},
 						{
-							"name": "Update Question",
+							"name": "Update Question (PUT)",
+							"request": {
+								"method": "PUT",
+								"header": [
+									{
+										"key": "X-Api-Key",
+										"value": "{{apiKey}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"text\": \"What is 2 + 2?\",\n    \"option_a\": \"3\",\n    \"option_b\": \"4\",\n    \"option_c\": \"5\",\n    \"option_d\": \"6\",\n    \"correct_answer\": \"B\",\n    \"difficulty\": \"easy\"\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/v1/questions/{{question_id}}/",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"v1",
+										"questions",
+										"{{question_id}}",
+										""
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Update Question (PATCH)",
 							"request": {
 								"method": "PATCH",
 								"header": [
-							{
-								"key": "X-Api-Key",
-								"value": "{{apiKey}}",
-								"type": "text"
-							}
-						],
+									{
+										"key": "X-Api-Key",
+										"value": "{{apiKey}}",
+										"type": "text"
+									}
+								],
 								"body": {
 									"mode": "raw",
-									"raw": "{\n    \"difficulty\": \"medium\"\n}",
+									"raw": "{\n    \"difficulty\": \"moderate\"\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -1609,12 +2186,12 @@
 							"request": {
 								"method": "DELETE",
 								"header": [
-							{
-								"key": "X-Api-Key",
-								"value": "{{apiKey}}",
-								"type": "text"
-							}
-						],
+									{
+										"key": "X-Api-Key",
+										"value": "{{apiKey}}",
+										"type": "text"
+									}
+								],
 								"url": {
 									"raw": "{{baseUrl}}/v1/questions/{{question_id}}/",
 									"host": [
@@ -1624,6 +2201,112 @@
 										"v1",
 										"questions",
 										"{{question_id}}",
+										""
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Add/Remove Question from Exams",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "X-Api-Key",
+										"value": "{{apiKey}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"add_to_exams\": [1, 3, 5],\n    \"remove_from_exams\": [2, 4]\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/v1/questions/{{question_id}}/exams/",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"v1",
+										"questions",
+										"{{question_id}}",
+										"exams",
+										""
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Bulk Add Questions to Exams",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "X-Api-Key",
+										"value": "{{apiKey}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"question_ids\": [1, 2, 3, 4, 5],\n    \"exam_ids\": [10, 11]\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/v1/questions/bulk-add-to-exams/",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"v1",
+										"questions",
+										"bulk-add-to-exams",
+										""
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Bulk Archive Questions",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "X-Api-Key",
+										"value": "{{apiKey}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"question_ids\": [1, 2, 3]\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/v1/questions/bulk-archive/",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"v1",
+										"questions",
+										"bulk-archive",
 										""
 									]
 								}
@@ -1646,58 +2329,25 @@
 					"name": "Leaderboard",
 					"item": [
 						{
-							"name": "Toggle Leaderboard Visibility",
-							"request": {
-								"method": "POST",
-								"header": [
-							{
-								"key": "X-Api-Key",
-								"value": "{{apiKey}}",
-								"type": "text"
-							}
-						],
-								"body": {
-									"mode": "raw",
-									"raw": "{\n    \"open\": true\n}",
-									"options": {
-										"raw": {
-											"language": "json"
-										}
-									}
-								},
-								"url": {
-									"raw": "{{baseUrl}}/v1/toggle-leaderboard/",
-									"host": [
-										"{{baseUrl}}"
-									],
-									"path": [
-										"v1",
-										"toggle-leaderboard",
-										""
-									]
-								}
-							},
-							"response": []
-						},
-						{
 							"name": "Publish Leaderboard",
 							"request": {
 								"method": "POST",
 								"header": [
-							{
-								"key": "X-Api-Key",
-								"value": "{{apiKey}}",
-								"type": "text"
-							}
-						],
+									{
+										"key": "X-Api-Key",
+										"value": "{{apiKey}}",
+										"type": "text"
+									}
+								],
 								"url": {
-									"raw": "{{baseUrl}}/v1/publish-leaderboard/",
+									"raw": "{{baseUrl}}/v1/leaderboard/publish/",
 									"host": [
 										"{{baseUrl}}"
 									],
 									"path": [
 										"v1",
-										"publish-leaderboard",
+										"leaderboard",
+										"publish",
 										""
 									]
 								}
@@ -1709,20 +2359,20 @@
 							"request": {
 								"method": "GET",
 								"header": [
-							{
-								"key": "X-Api-Key",
-								"value": "{{apiKey}}",
-								"type": "text"
-							}
-						],
+									{
+										"key": "X-Api-Key",
+										"value": "{{apiKey}}",
+										"type": "text"
+									}
+								],
 								"url": {
-									"raw": "{{baseUrl}}/v1/load-leaderboard/",
+									"raw": "{{baseUrl}}/v1/leaderboard/",
 									"host": [
 										"{{baseUrl}}"
 									],
 									"path": [
 										"v1",
-										"load-leaderboard",
+										"leaderboard",
 										""
 									]
 								}
@@ -1749,12 +2399,12 @@
 							"request": {
 								"method": "GET",
 								"header": [
-							{
-								"key": "X-Api-Key",
-								"value": "{{apiKey}}",
-								"type": "text"
-							}
-						],
+									{
+										"key": "X-Api-Key",
+										"value": "{{apiKey}}",
+										"type": "text"
+									}
+								],
 								"url": {
 									"raw": "{{baseUrl}}/v1/dashboard/staff/",
 									"host": [
@@ -1790,12 +2440,12 @@
 							"request": {
 								"method": "GET",
 								"header": [
-							{
-								"key": "X-Api-Key",
-								"value": "{{apiKey}}",
-								"type": "text"
-							}
-						],
+									{
+										"key": "X-Api-Key",
+										"value": "{{apiKey}}",
+										"type": "text"
+									}
+								],
 								"url": {
 									"raw": "{{baseUrl}}/v1/account-management/",
 									"host": [
@@ -1815,12 +2465,12 @@
 							"request": {
 								"method": "PATCH",
 								"header": [
-							{
-								"key": "X-Api-Key",
-								"value": "{{apiKey}}",
-								"type": "text"
-							}
-						],
+									{
+										"key": "X-Api-Key",
+										"value": "{{apiKey}}",
+										"type": "text"
+									}
+								],
 								"body": {
 									"mode": "raw",
 									"raw": "{\n    \"profile\": {\n        \"occupation\": \"Senior Teacher\"\n    },\n    \"user\": {\n        \"first_name\": \"Janet\"\n    }\n}",
@@ -1849,12 +2499,12 @@
 							"request": {
 								"method": "GET",
 								"header": [
-							{
-								"key": "X-Api-Key",
-								"value": "{{apiKey}}",
-								"type": "text"
-							}
-						],
+									{
+										"key": "X-Api-Key",
+										"value": "{{apiKey}}",
+										"type": "text"
+									}
+								],
 								"url": {
 									"raw": "{{baseUrl}}/v1/account-management/{{user_id}}/",
 									"host": [
@@ -1875,12 +2525,12 @@
 							"request": {
 								"method": "PATCH",
 								"header": [
-							{
-								"key": "X-Api-Key",
-								"value": "{{apiKey}}",
-								"type": "text"
-							}
-						],
+									{
+										"key": "X-Api-Key",
+										"value": "{{apiKey}}",
+										"type": "text"
+									}
+								],
 								"body": {
 									"mode": "raw",
 									"raw": "{\n    \"profile\": {\n        \"school\": \"Admin Updated School Name\"\n    }\n}",
@@ -1925,12 +2575,12 @@
 							"request": {
 								"method": "GET",
 								"header": [
-							{
-								"key": "X-Api-Key",
-								"value": "{{apiKey}}",
-								"type": "text"
-							}
-						],
+									{
+										"key": "X-Api-Key",
+										"value": "{{apiKey}}",
+										"type": "text"
+									}
+								],
 								"url": {
 									"raw": "{{baseUrl}}/v1/user/verification/status/{{user_id}}/",
 									"host": [
@@ -1953,12 +2603,12 @@
 							"request": {
 								"method": "GET",
 								"header": [
-							{
-								"key": "X-Api-Key",
-								"value": "{{apiKey}}",
-								"type": "text"
-							}
-						],
+									{
+										"key": "X-Api-Key",
+										"value": "{{apiKey}}",
+										"type": "text"
+									}
+								],
 								"url": {
 									"raw": "{{baseUrl}}/v1/user/verification/documents/{{file_type}}/{{user_id}}/",
 									"host": [
@@ -1982,12 +2632,12 @@
 							"request": {
 								"method": "GET",
 								"header": [
-							{
-								"key": "X-Api-Key",
-								"value": "{{apiKey}}",
-								"type": "text"
-							}
-						],
+									{
+										"key": "X-Api-Key",
+										"value": "{{apiKey}}",
+										"type": "text"
+									}
+								],
 								"url": {
 									"raw": "{{baseUrl}}/v1/user/verification/list/",
 									"host": [
@@ -2009,15 +2659,15 @@
 							"request": {
 								"method": "POST",
 								"header": [
-							{
-								"key": "X-Api-Key",
-								"value": "{{apiKey}}",
-								"type": "text"
-							}
-						],
+									{
+										"key": "X-Api-Key",
+										"value": "{{apiKey}}",
+										"type": "text"
+									}
+								],
 								"body": {
 									"mode": "raw",
-									"raw": "{\n    \"is_verified\": true\n}",
+									"raw": "{\n    \"is_approved\": true\n}",
 									"options": {
 										"raw": {
 											"language": "json"
@@ -2052,186 +2702,172 @@
 							}
 						]
 					}
+				},
+				{
+					"name": "Broadcast Management",
+					"item": [
+						{
+							"name": "List Broadcasts",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "X-Api-Key",
+										"value": "{{apiKey}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/v1/broadcasts/",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"v1",
+										"broadcasts",
+										""
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Create Broadcast",
+							"request": {
+								"method": "POST",
+								"header": [
+									{
+										"key": "X-Api-Key",
+										"value": "{{apiKey}}",
+										"type": "text"
+									}
+								],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"subject\": \"Important Update for League Candidates\",\n    \"message\": \"Please check the portal for a new practice exam.\",\n    \"mediums\": [\"email\", \"platform\"],\n    \"target_roles\": [\"league\"]\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{baseUrl}}/v1/broadcasts/",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"v1",
+										"broadcasts",
+										""
+									]
+								},
+								"description": "Requires `manager` or higher role. Creates a new broadcast and queues it for sending. This will trigger a real-time notification for connected clients."
+						},
+							"response": []
+						},
+						{
+							"name": "Get Broadcast Details",
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "X-Api-Key",
+										"value": "{{apiKey}}",
+										"type": "text"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/v1/broadcasts/{{broadcast_id}}/",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"v1",
+										"broadcasts",
+										"{{broadcast_id}}",
+										""
+									]
+								}
+							},
+							"response": []
+						}
+					],
+					"auth": {
+						"type": "bearer",
+						"bearer": [
+							{
+								"key": "token",
+								"value": "{{staffAccessToken}}",
+								"type": "string"
+							}
+						]
+					},
+					"description": "Endpoints for creating and managing broadcasts to users."
 				}
 			]
-		},
-		{
-			"name": "Broadcast Management",
-			"item": [
-				{
-					"name": "List Broadcasts",
-					"request": {
-						"method": "GET",
-						"header": [
-							{
-								"key": "X-Api-Key",
-								"value": "{{apiKey}}",
-								"type": "text"
-							}
-						],
-						"url": {
-							"raw": "{{baseUrl}}/v1/broadcasts/",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"v1",
-								"broadcasts",
-								""
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Create Broadcast",
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "X-Api-Key",
-								"value": "{{apiKey}}",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n    \"subject\": \"Important Update for League Candidates\",\n    \"message\": \"Please check the portal for a new practice exam.\",\n    \"mediums\": [\"email\", \"platform\"],\n    \"target_roles\": [\"league\"]\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "{{baseUrl}}/v1/broadcasts/",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"v1",
-								"broadcasts",
-								""
-							]
-						},
-						"description": "Requires `manager` or higher role. Creates a new broadcast and queues it for sending. This will trigger a real-time notification for connected clients."
-					},
-					"response": []
-				},
-				{
-					"name": "Get Broadcast Details",
-					"request": {
-						"method": "GET",
-						"header": [
-							{
-								"key": "X-Api-Key",
-								"value": "{{apiKey}}",
-								"type": "text"
-							}
-						],
-						"url": {
-							"raw": "{{baseUrl}}/v1/broadcasts/{{broadcast_id}}/",
-							"host": [
-								"{{baseUrl}}"
-							],
-							"path": [
-								"v1",
-								"broadcasts",
-								"{{broadcast_id}}",
-								""
-							]
-						}
-					},
-					"response": []
-				}
-			],
-			"auth": {
-				"type": "bearer",
-				"bearer": [
-					{
-						"key": "token",
-						"value": "{{staffAccessToken}}",
-						"type": "string"
-					}
-				]
-			},
-			"description": "Endpoints for creating and managing broadcasts to users."
 		}
 	],
 	"variable": [
 		{
 			"key": "baseUrl",
-			"value": "http://127.0.0.1:8000",
-			"type": "string"
+			"value": "http://dev-api.localhost"
 		},
 		{
 			"key": "apiKey",
-			"value": "",
-			"type": "string"
+			"value": ""
 		},
 		{
 			"key": "candidateAccessToken",
-			"value": "",
-			"type": "string",
-			"description": "Automatically set after successful candidate login."
+			"value": ""
 		},
 		{
 			"key": "candidateRefreshToken",
-			"value": "",
-			"type": "string",
-			"description": "Automatically set after successful candidate login."
+			"value": ""
 		},
 		{
 			"key": "staffAccessToken",
-			"value": "",
-			"type": "string",
-			"description": "Automatically set after successful staff login."
+			"value": ""
 		},
 		{
 			"key": "staffRefreshToken",
-			"value": "",
-			"type": "string",
-			"description": "Automatically set after successful staff login."
+			"value": ""
 		},
 		{
 			"key": "exam_id",
-			"value": "",
-			"type": "string"
+			"value": "1"
+		},
+		{
+			"key": "question_id",
+			"value": "1"
 		},
 		{
 			"key": "question_id_1",
-			"value": "",
-			"type": "string"
+			"value": "1"
 		},
 		{
 			"key": "question_id_2",
-			"value": "",
-			"type": "string"
+			"value": "2"
 		},
 		{
 			"key": "candidate_id",
-			"value": "",
-			"type": "string"
+			"value": ""
 		},
 		{
 			"key": "staff_id",
-			"value": "",
-			"type": "string"
+			"value": ""
 		},
 		{
 			"key": "user_id",
-			"value": "",
-			"type": "string"
+			"value": ""
 		},
 		{
 			"key": "file_type",
-			"value": "profile_photo",
-			"type": "string"
+			"value": "id_card"
 		},
 		{
 			"key": "broadcast_id",
-			"value": "",
-			"type": "string"
+			"value": "1"
 		}
 	]
 }
