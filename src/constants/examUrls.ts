@@ -11,4 +11,5 @@ export const examUrls = {
     DELETE_QUESTION: (question_id: number) => `/questions/${question_id}/`,
     BULK_ADD_QUESTION_TO_SESSION: `/questions/bulk-add-to-exams/`,
     BULK_ARCHIVE_QUESTIONS: `/questions/bulk-archive/`,
+    UPDATE_EXAM: (exam_id: number) => `/exams/${exam_id}/`
 }
