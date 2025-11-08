@@ -153,4 +153,15 @@ export class ExamPortal {
         }
     }
 
+
+    static async updateExamSession(exam_id:number,payload:any){
+        try {
+            const response=await client.put(examUrls.UPDATE_EXAM(exam_id),payload);
+            return response.data;
+        } catch (error) {
+            console.error(error);
+            throw error;
+        }
+    }
+
 }

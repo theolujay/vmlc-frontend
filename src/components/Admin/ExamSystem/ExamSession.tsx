@@ -49,7 +49,7 @@ export default function ExamSession() {
           <QuestionsTable page_count={data?.questions.total_pages ?? 0} currentPage={page} onPageChange={setPage} questions={(data?.questions?.results ?? []) as SessionQuestionItemType[]} />
         </div>
       }
-      <UploadExamSessionModal open={openUpload} close={setOpenUpload} />
+      <UploadExamSessionModal exam_id={id} open={openUpload} close={setOpenUpload} />
       {/* <RemoveQuestionModal open={false} close={() => { }} session_id={id} /> */}
     </div>
   )
