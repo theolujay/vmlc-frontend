@@ -30,32 +30,32 @@ export default function Register() {
         <div className="flex flex-col p-5 rounded-[12px] bg-[#FFFFFF99]">
 
           <div className="flex gap-1 items-center flex-col">
-            <h2 className='text-[18px] md:text-[28px] font-bold'>Welcome to the candidate portal!</h2>
-            <p>Enter your credentials to register as a candidate</p>
+            <h2 className='text-[18px] md:text-[28px] font-bold'>Candidate Registration</h2>
+            <p>Enter your details to get started</p>
           
           </div>
           <FormProvider {...form}>
 
             <form onSubmit={form.handleSubmit(onSubmit)} className="form-wrapper flex flex-col gap-2">
               <div className="grid lg:grid-cols-2 gap-2">
-                <Input name='first_name' label='FIRST NAME' placeholder='Input first name (e.g John)' className='border-[#D0D5DD]' icon={<PersonIcon />} />
-                <Input name='last_name' label='LAST NAME' placeholder='Input last name (e.g Doe)' className='border-[#D0D5DD]' icon={<PersonIcon />} />
+                <Input name='first_name' label='FIRST NAME' placeholder='John' className='border-[#D0D5DD]' icon={<PersonIcon />} />
+                <Input name='last_name' label='LAST NAME' placeholder='Doe' className='border-[#D0D5DD]' icon={<PersonIcon />} />
               </div>
               <div className="grid">
                 <PhoneNumberInput name='phone' placeholder='+234 810 000 0000' className='border-[#D0D5DD]' label='PHONE NUMBER' />
               </div>
               <div className="grid">
-                <Input name='email' icon={<MailIcon />} label='EMAIL' placeholder='Input your mail (e.g johndoe@gmail.com)' className='border-[#D0D5DD]' />
+                <Input name='email' icon={<MailIcon />} label='EMAIL' placeholder='johndoe@gmail.com' className='border-[#D0D5DD]' />
               </div>
               <div className="grid">
-                <Input name='school' icon={<SchoolIcon />} label='SCHOOL' placeholder="Input your school (e.g King's college, Yaba, Lagos)" className='border-[#D0D5DD]' />
+                <Input name='school' icon={<SchoolIcon />} label='SCHOOL' placeholder="King's college, Yaba, Lagos" className='border-[#D0D5DD]' />
               </div>
               {
                 !autoGenerate&&<>
                 
                 
               <div className="grid">
-                <PasswordInput name='password' icon={<PasswordIcon />} label='PASSWORD' placeholder='Input your password' className='border-[#D0D5DD]' />
+                <PasswordInput name='password' icon={<PasswordIcon />} label='PASSWORD' placeholder='Create a password' className='border-[#D0D5DD]' />
               </div>
               <div className="grid">
                 <ConfirmPasswordInput name='password2' icon={<PasswordIcon />} label='CONFIRM PASSWORD' placeholder='Confirm your password' className='border-[#D0D5DD]' />
@@ -70,7 +70,7 @@ export default function Register() {
                     }}/>} />
                
                 
-                 <label  className='font-semibold text-[#01ACEA]' htmlFor="generate">Auto Generate Password</label>
+                 <label  className='font-semibold text-[#01ACEA]' htmlFor="generate">Generate Password for me</label>
              </div>
               </div>
               <div className="grid mt-6">
