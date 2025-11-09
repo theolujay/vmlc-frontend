@@ -11,6 +11,7 @@ import { FilterIcon, SortIcon } from "../AdminIcons";
 import { Checkbox } from "@/components/ui/Checkbox";
 import QuestionPoolDropdown from "./QuestionPoolDropdown";
 import AddToExamSessionModal from "@/components/Modals/AddToExamSessionModal";
+import BulkRemoveQuestionsModal from "@/components/Modals/BulkRemoveQuestionsModal";
 
 type ColumnType<T> = {
   key: keyof T | string;
@@ -138,6 +139,7 @@ export default function QuestionPoolTable({
   const [selectedQuestions, setSelectedQuestions] = useState<number[]>([]);
   const [openRemoveQuestion, setOpenRemoveQuestion] = useState(false);
   const [openExamSession,setOpenExamSession]=useState(false)
+  const [openBulkDelete,setOpenBulkDelete]=useState(false)
   const [openDrawer, setOpenDrawer] = useState(false);
   const [selectedQuestionId, setSelectedQuestionId] = useState<number>(0);
   const [currentQuestion, setCurrentQuestion] = useState<SessionQuestionItemType | null>(null);
@@ -165,6 +167,9 @@ export default function QuestionPoolTable({
 
   function handleOpenExamSessionModal() {
     setOpenExamSession(true);
+  }
+   function handleOpenDeleteModal() {
+    setOpenBulkDelete(true);
   }
 
   return (
@@ -195,9 +200,9 @@ export default function QuestionPoolTable({
       {
         selectedQuestions.length>0&&
       <div className="flex px-3 bg-[#F7F9FC] items-center py-2 -mb-3 justify-between">
-        <span className="text-lg font-bold">{selectedQuestions.length} Questions selected</span>
+        <span className="text-lg font-bold">{selectedQuestions.length} Question{selectedQuestions.length>1&&'s'} selected</span>
         <div className="flex gap-2">
-             <button className="rounded-xl py-2 font-semibold bg-[#FBEAE9] cursor-pointer text-[#CB1A14] px-3">Delete Question</button>
+             <button onClick={handleOpenDeleteModal} className="rounded-xl py-2 font-semibold bg-[#FBEAE9] cursor-pointer text-[#CB1A14] px-3">Delete Question</button>
             <button onClick={handleOpenExamSessionModal} className="rounded-xl py-2 font-semibold bg-[#3E4095] cursor-pointer text-white px-3">Add to exam session</button>
         </div>
       </div>
@@ -261,7 +266,7 @@ export default function QuestionPoolTable({
             render: (_, row) => (
               <div className="flex justify-between items-center gap-1">
              
-                <QuestionPoolDropdown exam_id={row.id} />
+                <QuestionPoolDropdown information={row} exam_id={row.id} />
                
               </div>
             ),
@@ -286,6 +291,7 @@ export default function QuestionPoolTable({
           setOpen={setOpenDrawer}
         />
       )}
+      <BulkRemoveQuestionsModal questions={selectedQuestions} open={openBulkDelete} close={setOpenBulkDelete} />
       <AddToExamSessionModal selectedQuestionIds={selectedQuestions} open={openExamSession} close={setOpenExamSession} />
       <RemoveQuestionModal
         question_id={selectedQuestionId}

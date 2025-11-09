@@ -12,6 +12,7 @@ import useListUserMgt from '@/hooks/useListUserMgt'
 import { MgtTypeItem } from '@/types/UserMgtType'
 import { formatDate } from '@/utils/formatFileSize'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
+import TablePagination from '@/components/ui/Pagination/TablePagination'
 
 export default function UserManagement() {
     const { data } = useListUserMgt()
@@ -35,7 +36,7 @@ export default function UserManagement() {
             <div className="flex flex-col gap-3 mt-3 w-[96%] mx-auto">
 
                 <UserSummaryCard />
-                <ActivityHistoryTable candidates={data?.results ?? []} />
+                <UserHistoryTable candidates={data?.results ?? []} />
             </div>
 
         </div>
@@ -94,7 +95,7 @@ function UserCard({ header }: Readonly<{ header: ReactNode }>) {
                 <div className="flex justify-between">
                     <div className="flex items-center gap-1">
                         <span className="w-3 rounded-full bg-[#F3A218] h-3"></span>
-                        <span>Not Assigned</span>
+                        <span>Pending</span>
 
                     </div>
                     <span>0</span>
@@ -117,13 +118,13 @@ function UserCard({ header }: Readonly<{ header: ReactNode }>) {
 
 
 
-function ActivityHistoryTable({ candidates }: { candidates: MgtTypeItem[] }) {
-    const columns = ['S/N', 'Question', 'Difficulty', 'Date Added', 'Action']
+function UserHistoryTable({ candidates }: { candidates: MgtTypeItem[] }) {
+
     return <ResponsiveContainer className='flex gap-4 py-3 px-0 flex-col mx-auto'>
         <div className="flex justify-between px-3">
             <div className="flex gap-1 flex-col">
-                <h2 className='font-bold'>Activity History</h2>
-                <p>This table shows the total activity history on the platform</p>
+                <h2 className='font-bold'>Users History</h2>
+                <p>This table shows the users history on the platform.</p>
             </div>
             <div className="flex justify-between items-center gap-2">
                 <div className="flex ">
@@ -133,7 +134,7 @@ function ActivityHistoryTable({ candidates }: { candidates: MgtTypeItem[] }) {
                 <button className='inline-flex items-center gap-2 border rounded-md h-10 px-2 py-1 border-[#E4E7EC] cursor-pointer ' ><span><FilterIcon /></span><span className='text-[#344054]'>Filter</span></button>
             </div>
         </div>
-        {/* <Table label='No activity has been made yet' desc={<>All application made on the platform would appear here </>} data={[]} columns={columns} /> */}
+
         <CustomTable
             columns={[
                 {
@@ -161,21 +162,18 @@ function ActivityHistoryTable({ candidates }: { candidates: MgtTypeItem[] }) {
                     header: 'Status',
                     render: (_, row) => <div className="flex capitalize items-center gap-1">{row.role}</div>
                 },
-                // {
-                //     key: 'action',
-                //     header: 'Action',
-                //     render:(_,row)=> <div className="flex  items-center gap-1">{ro.role}</div>
-                // },
                 {
-            key: 'action', header: "Action", render: () => (
-              <div className="flex justify-between items-center gap-1">
-
-                <button className="cursor-pointer font-semibold text-[#3E4095]">View Details</button>
-              </div>
-            ),
-          }
+                    key: 'action',
+                    header: "Action",
+                    render: () => (
+                        <div className="flex justify-between items-center gap-1">
+                            <button className="cursor-pointer font-semibold text-[#3E4095]">View Details</button>
+                        </div>
+                    ),
+                }
             ]}
             data={candidates}
+            // footer={<TablePagination />}
         />
     </ResponsiveContainer>
 }

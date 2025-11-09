@@ -29,4 +29,9 @@ export type BulkPayloadType= {
     question_ids: number[],
     exam_ids: number[]
 }
+
+
+export type BulkArchiveType={
+  question_ids:number[]
+}
 export type VerificationUploadPayloadType = FormData;

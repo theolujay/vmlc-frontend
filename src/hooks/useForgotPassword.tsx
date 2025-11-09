@@ -1,10 +1,10 @@
 import { AuthService } from '@/services/auth.service'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation } from '@tanstack/react-query'
+import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import z from 'zod'
-import useGetCurrentUser from './useGetCurrentUser'
-import { useState } from 'react'
+
 
 
 const sendEmailSchema = z.object({
@@ -27,7 +27,6 @@ type EmailSchemaType = z.infer<typeof sendEmailSchema>
 export default function useForgotPassword() {
     const [email, setEmail] = useState('')
     const [otpState, setOtpState] = useState('')
-    const currentUser = useGetCurrentUser();
     const sendEmailForm = useForm({
         resolver: zodResolver(sendEmailSchema),
         defaultValues: { email: '' }
@@ -78,11 +77,8 @@ export default function useForgotPassword() {
 
 
     function submitOtpForPasswordChange(value: otpSchemaType) {
-        if (!currentUser) {
-            throw new Error('No user')
-        }
         const payload = {
-            email: currentUser.profile.user.email,
+            email,
             otp: value.otp
         }
         setOtpState(value.otp);
@@ -92,11 +88,9 @@ export default function useForgotPassword() {
 
 
     function handleNewPasswordChange(value: setNewPasswordSchemaType) {
-        if (!currentUser) {
-            throw new Error('No user')
-        }
+     
         const payload = {
-            email: currentUser.profile.user.email,
+            email,
             otp: otpState,
             ...value
         }

@@ -21,7 +21,6 @@ export default function InfoBoard() {
 
 
   function handleOpenEmailVerification() {
-    // alert('oich')
     onSubmit({ email: authState?.user?.email! })
     setOpenEmail(true)
   }

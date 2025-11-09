@@ -39,13 +39,13 @@ export default function ForgotPassword() {
 
 
     const handleResend = async () => {
-        resendOtpFunction() 
-        setTimer(120) 
+        resendOtpFunction()
+        setTimer(120)
     }
-    
+
     return (
         <AuthLayout>
-            <div className="flex flex-col w-[50%] gap-3 items-center justify-center mx-auto p-4 ">
+            <div className="flex flex-col md:w-[50%] gap-3 items-center justify-center mx-auto p-4 ">
                 <div className="flex flex-col p-5 rounded-[12px] w-full bg-[#FFFFFF99]">
 
 

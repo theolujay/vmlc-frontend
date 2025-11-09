@@ -26,18 +26,18 @@ export default function useLogin() {
     resolver: zodResolver(loginSchema),
      defaultValues: isDev() ? { email: 'david@verboheit.org', password: 'zaq1wsxcde' } : defaultValues
     //  defaultValues: isDev() ? { email: 'afobajedavid@gmail.com', password: '@Medievaltimes123' } : defaultValues
-    // defaultValues: isDev() ? { email: 'ikukoyidave@gmail.com', password: '@Afobaje22' } : defaultValues
+    // defaultValues: isDev() ? { email: 'ikukoyidave@gmail.com', password: 'IloveRice12@' } : defaultValues
   });
 
   const { isPending, mutate } = useMutation({
     mutationFn: AuthService.login,
     onSuccess: (value) => {
-      
+
       setTimeout(() => {
         dispatch({ type: 'loginSuccess', payload: value });
       }, 1000)
     },
-    
+
   })
 
 
