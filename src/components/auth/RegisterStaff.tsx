@@ -31,20 +31,20 @@ export default function RegisterStaff() {
 
             <form onSubmit={form.handleSubmit(onSubmit)} className="form-wrapper flex flex-col gap-2">
               <div className="grid lg:grid-cols-2 gap-2">
-                <Input name='first_name' label='FIRST NAME' placeholder='Input first name (e.g John)' className='border-[#D0D5DD]' icon={<PersonIcon />} />
-                <Input name='last_name' label='LAST NAME' placeholder='Input last name (e.g Doe)' className='border-[#D0D5DD]' icon={<PersonIcon />} />
+                <Input name='first_name' label='FIRST NAME' placeholder='John' className='border-[#D0D5DD]' icon={<PersonIcon />} />
+                <Input name='last_name' label='LAST NAME' placeholder='Doe' className='border-[#D0D5DD]' icon={<PersonIcon />} />
               </div>
               <div className="grid">
                 <PhoneNumberInput name='phone' placeholder='+234 810 000 0000' className='border-[#D0D5DD]' label='PHONE NUMBER' />
               </div>
               <div className="grid">
-                <Input name='email' icon={<MailIcon />} label='EMAIL' placeholder='Input your mail (e.g johndoe@gmail.com)' className='border-[#D0D5DD]' />
+                <Input name='email' icon={<MailIcon />} label='EMAIL' placeholder='johndoe@gmail.com' className='border-[#D0D5DD]' />
               </div>
               <div className="grid">
-                <Input name='occupation' icon={<OccupationIcon />} label='OCCUPATION' placeholder="Input your occupation (e.g Teacher)" className='border-[#D0D5DD]' />
+                <Input name='occupation' icon={<OccupationIcon />} label='OCCUPATION' placeholder="Teacher" className='border-[#D0D5DD]' />
               </div>
               <div className="grid">
-                <PasswordInput name='password' icon={<PasswordIcon />} label='PASSWORD' placeholder='Input your password' className='border-[#D0D5DD]' />
+                <PasswordInput name='password' icon={<PasswordIcon />} label='PASSWORD' placeholder='Create a password' className='border-[#D0D5DD]' />
               </div>
               <div className="grid">
                 <ConfirmPasswordInput name='password2' icon={<PasswordIcon />} label='CONFIRM PASSWORD' placeholder='Confirm your password' className='border-[#D0D5DD]' />

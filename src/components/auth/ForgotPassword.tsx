@@ -47,8 +47,6 @@ export default function ForgotPassword() {
         <AuthLayout>
             <div className="flex flex-col md:w-[50%] gap-3 items-center justify-center mx-auto p-4 ">
                 <div className="flex flex-col p-5 rounded-[12px] w-full bg-[#FFFFFF99]">
-
-
                     <div className="flex flex-col w-full ">
                         <Tabs.Root
                             defaultValue='forgot'
