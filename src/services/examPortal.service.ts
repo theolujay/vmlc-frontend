@@ -1,7 +1,7 @@
 import { candidateUrls } from "@/constants/candidateUrls";
 import { examUrls } from "@/constants/examUrls";
 import { CreateExamSessionType, CreateQuestionType, DashboardType, EditExamSession, QuestionPoolType, SessionQuestionType, SessionType, UpdatedSessionQuestionType } from "@/types/Examtype";
-import { BulkArchiveType, BulkPayloadType } from "@/types/Index";
+import { BulkArchiveType, BulkPayloadType, CandidateSubmitAnswerType } from "@/types/Index";
 import { LeaderBoardType } from "@/types/LeaderBoardType";
 import client from "@/utils/axios";
 
@@ -11,7 +11,7 @@ export class ExamPortal {
         try {
             const response = await client.get(candidateUrls.candidate_exams_dashboard)
             return response.data;
-            
+
         } catch (error) {
             throw error;
         }
@@ -20,7 +20,7 @@ export class ExamPortal {
 
     static async getLeaderBoard(): Promise<LeaderBoardType> {
         try {
-            
+
             const response = await client.get(candidateUrls.get_leaderboard)
             return response.data;
         } catch (error) {
@@ -30,15 +30,12 @@ export class ExamPortal {
     }
 
 
-    static async getExamQuestions(id: number) {
-        const response = await client.get(examUrls.take_exam(id))
-        return response.data;
-    }
+
 
 
     static async createExamSession(payload: CreateExamSessionType) {
         try {
-            
+
             const response = await client.post(examUrls.create_exam, payload)
             return response.data.data;
         } catch (error) {
@@ -60,7 +57,7 @@ export class ExamPortal {
 
     static async viewExamQuestions(id: number): Promise<UpdatedSessionQuestionType> {
         try {
-            
+
             const response = await client.get(examUrls.VIEW_QUESTIONS(id))
             return response.data;
         } catch (error) {
@@ -133,9 +130,9 @@ export class ExamPortal {
 
 
 
-    static async bulkAddQuestionToSession(payload:BulkPayloadType){
+    static async bulkAddQuestionToSession(payload: BulkPayloadType) {
         try {
-            const response=await client.post(examUrls.BULK_ADD_QUESTION_TO_SESSION,payload);
+            const response = await client.post(examUrls.BULK_ADD_QUESTION_TO_SESSION, payload);
             return response.data;
         } catch (error) {
             console.error(error);
@@ -143,9 +140,9 @@ export class ExamPortal {
         }
     }
 
-    static async bulkArchiveQuestions(payload:BulkArchiveType){
+    static async bulkArchiveQuestions(payload: BulkArchiveType) {
         try {
-            const response=await client.post(examUrls.BULK_ARCHIVE_QUESTIONS,payload);
+            const response = await client.post(examUrls.BULK_ARCHIVE_QUESTIONS, payload);
             return response.data;
         } catch (error) {
             console.error(error);
@@ -154,12 +151,34 @@ export class ExamPortal {
     }
 
 
-    static async updateExamSession(exam_id:number,payload:any){
+    static async updateExamSession(exam_id: number, payload: any) {
         try {
-            const response=await client.put(examUrls.UPDATE_EXAM(exam_id),payload);
+            const response = await client.put(examUrls.UPDATE_EXAM(exam_id), payload);
             return response.data;
         } catch (error) {
             console.error(error);
+            throw error;
+        }
+    }
+
+
+    static async candidateTakeExam(exam_id: string) {
+        try {
+            const response = await client.get(examUrls.TAKE_EXAM(exam_id));
+            return response.data;
+        } catch (error) {
+            console.error(error)
+            throw error;
+        }
+
+    }
+
+    static async candidateSubmitAnswers(exam_id: string, payload: CandidateSubmitAnswerType) {
+        try {
+            const response = await client.post(examUrls.CANDIDATE_SUBMIT_ANSWERS(exam_id), payload);
+            return response.data;
+        } catch (error) {
+            console.error(error)
             throw error;
         }
     }

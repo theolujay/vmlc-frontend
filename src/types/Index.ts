@@ -35,3 +35,11 @@ export type BulkArchiveType={
   question_ids:number[]
 }
 export type VerificationUploadPayloadType = FormData;
+
+export type AnswerItem={
+  question:number;
+  selected_option:string;
+}
+export type CandidateSubmitAnswerType={
+  answers: AnswerItem[]
+}

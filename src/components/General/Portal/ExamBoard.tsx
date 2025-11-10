@@ -1,28 +1,53 @@
 "use client"
 import ResponsiveContainer from '@/components/ui/ResponsiveContainer'
-import React, { useState } from 'react'
-import { ExamCardGoTo } from '../GeneralIcon'
+import Spinner from '@/components/ui/spinner/spinner'
+import useGetExamPortal from '@/hooks/useGetExamPortal'
+import { AvailableExamType } from '@/types/Examtype'
+import { formatDate } from '@/utils/formatFileSize'
+import { formatEndTimeToStringForCandidate, formatTimeToStringForCandidate } from '@/utils/formatTime'
 import clsx from 'clsx'
 import Link from 'next/link'
-import { AvailableExamType } from '@/types/Examtype'
-import { formatDate, formatTimeToString } from '@/utils/formatFileSize'
-import { formatEndTimeToStringForCandidate, formatTime, formatTimeToStringForCandidate } from '@/utils/formatTime'
+import { useState } from 'react'
+import { ExamCardGoTo } from '../GeneralIcon'
 
-export default function ExamBoard({ examType, examList }: { examType?: string, examList?: AvailableExamType[] }) {
+export default function ExamBoard() {
+    const { data, isPending } = useGetExamPortal()
+    const examList = data?.available_exams;
+    const examType = data?.candidate_info?.role||'';
+
+
+    let content;
+
+  if (isPending) {
+    content = (
+      <div className="w-full place-content-center">
+        <Spinner />
+      </div>
+    );
+  } else if (Array.isArray(examList) && examList.length > 0) {
+    content = examList.map((val, index) => (
+      <ExamCard key={`exam-index-${index}`} details={val} />
+    ));
+  } else {
+    content = (
+      <div className="flex place-content-center w-full col-span-4">
+        There are no exams yet
+      </div>
+    );
+  }
+    
     return (
         <ResponsiveContainer className='gap-2'>
             <h2 className='font-bold text-xl'><span className='capitalize'>
                 {examType}
             </span> Exams</h2>
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
-                {/* {
-                    Array.from({ length: 2 }).map((_, index) => <ExamCard key={`exam-index-${index}`} />)
-                } */}
-                {
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-3 min-h-[40vh]">
+
+                {/* {isPending ? <div className='w-full place-content-center'><Spinner /></div> :
                     Array.isArray(examList) && examList.length > 0 ?
                         examList.map((val, index) => <ExamCard key={`exam-index-${index}`} details={val} />) : <div className='flex place-content-center w-full col-span-4'>There are no exams yet</div>
-                }
-
+                } */}
+{content}
 
             </div>
         </ResponsiveContainer>
@@ -30,10 +55,10 @@ export default function ExamBoard({ examType, examList }: { examType?: string, e
 }
 
 
-function ExamCard({ details }: { details: any }) {
-    console.log(details, 'what is in exam details')
+function ExamCard({ details }: { details: AvailableExamType }) {
+
     const [examNotWritten] = useState(true)
-    return <Link href='/exam-portal/exam' className='flex relative mt-8 justify-center flex-col'>
+    return <Link href={`/exam-portal/${details.id}/exam`} className='flex relative mt-8 justify-center flex-col'>
         <div className={clsx('pt-2 pb-7 p-2 absolute w-full -top-8   text-white rounded-t-2xl', examNotWritten && 'bg-[#00455E]')}>
             <div className="flex justify-between">
                 {/* <span className='text-sm'>12 Days to exam</span> */}

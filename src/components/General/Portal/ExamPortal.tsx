@@ -9,14 +9,14 @@ import ExamBoard from './ExamBoard'
 import LeaderBoard from './LeaderBoard'
 
 function ExamPortal() {
-  const { data } = useGetExamPortal()
-  console.log(data,'what did we get for data')
+  // const { data } = useGetExamPortal()
+  // console.log(data,'what did we get for data')
   
   return (
     <PageLayout>
       <WelcomeBanner />
       <InfoBanner />
-      <ExamBoard examList={data?.available_exams} examType={data?.candidate_info?.role ?? ''} />
+      <ExamBoard  />
       <LeaderBoard />
     </PageLayout>
   )
