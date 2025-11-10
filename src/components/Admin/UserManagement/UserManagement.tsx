@@ -1,18 +1,17 @@
 "use client"
 import { AddIcon } from '@/components/General/GettingStarted/GettingStartedAssets'
 import Button from '@/components/ui/Button'
-import ResponsiveContainer from '@/components/ui/ResponsiveContainer'
-import Table from '@/components/ui/Table'
-import { ReactNode } from 'react'
-import AdminHeader from '../AdminHeader'
-import { FilterIcon, SortIcon } from '../AdminIcons'
-import { DoughnutChart } from '../Charts/ProgressRing'
 import CustomTable from '@/components/ui/CustomTable'
+import ResponsiveContainer from '@/components/ui/ResponsiveContainer'
+import useGetStatOverview from '@/hooks/useGetStatOverview'
 import useListUserMgt from '@/hooks/useListUserMgt'
 import { MgtTypeItem } from '@/types/UserMgtType'
 import { formatDate } from '@/utils/formatFileSize'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
-import TablePagination from '@/components/ui/Pagination/TablePagination'
+import { ReactNode } from 'react'
+import AdminHeader from '../AdminHeader'
+import { FilterIcon, SortIcon } from '../AdminIcons'
+import { DoughnutChart } from '../Charts/ProgressRing'
 
 export default function UserManagement() {
     const { data } = useListUserMgt()
@@ -20,7 +19,9 @@ export default function UserManagement() {
     const searchParams = useSearchParams()
     const router = useRouter()
 
+    const {data:testData}=useGetStatOverview()
 
+console.log(testData,'what is in test data')
     function addStaffMember() {
         const params = new URLSearchParams(searchParams.toString())
         params.set('view', 'add-staff')

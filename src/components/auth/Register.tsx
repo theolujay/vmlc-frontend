@@ -63,7 +63,7 @@ export default function Register() {
                 </>
               }
               <div className="grid">
-                <div className="flex  gap-1">
+                <div className="flex items-center gap-1">
                   <Controller name='generate_password' control={form.control} render={({field})=><Checkbox checked={field.value} id='generate' onChange={(e)=>{
                     field.onChange(e)
                     // handleCheckbox(e)
