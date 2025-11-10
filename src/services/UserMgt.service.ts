@@ -9,6 +9,18 @@ export class UserMgtService {
     }
 
 
+    static async getStatOverview(){
+        try {
+            const response=await client.get(UserMgtUrls.STATISTICS_OVERVIEW);
+            console.log(response,'give me response')
+            return response.data
+        } catch (error) {
+            console.error(error,'what is error')
+            throw error;
+        }
+    }
+
+
     static async inviteStaffMember(payload:InviteStaffMemberPayloadType): Promise<{message:string}> {
 
         try {

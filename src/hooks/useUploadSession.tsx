@@ -8,21 +8,22 @@ import z from 'zod'
 const uploadExamSchema = z.object({
 
 
-
+  level: z.string(),
   scheduled_date: z.string(),
   countdown_minutes: z.string(),
   //   start_time: z.date(),
-  start_time: z.string(),
-  end_time: z.string(),
+  scheduled_exam_time: z.string(),
+  open_duration_hours: z.string(),
 
 })
 type ValueType = z.infer<typeof uploadExamSchema>;
 
 const defaultValues: ValueType = {
+  level: '',
   scheduled_date: '',
   countdown_minutes: '',
-  start_time: '',
-  end_time: ''
+  scheduled_exam_time: '',
+  open_duration_hours: ''
 }
 export default function useUploadSession(exam_id: number) {
   const form = useForm({
@@ -34,6 +35,7 @@ export default function useUploadSession(exam_id: number) {
     mutationFn: (payload: any) => ExamPortal.updateExamSession(exam_id, payload),
     onSuccess: () => {
       toast.success('Session uploaded successfully')
+      form.reset()
     }
     ,
     onError: () => {
@@ -45,11 +47,15 @@ export default function useUploadSession(exam_id: number) {
     // mutate(payload)
     console.log(value, 'what is value for upload')
     const payload = {
-      scheduled_date: new Date(value.scheduled_date).toISOString(),
-      open_duration_hours: Number(value.countdown_minutes)
+      scheduled_date: new Date(`${value.scheduled_date}T${value.scheduled_exam_time}`).toISOString(),
+      open_duration_hours: Number(value.open_duration_hours),
+      level: Number(value.level),
+      countdown_minutes: Number(value.countdown_minutes)
     }
 
-    console.log('actual payload', payload)
+
+    mutate(payload)
+
   }
   return { isPending, onSubmit, form }
 }

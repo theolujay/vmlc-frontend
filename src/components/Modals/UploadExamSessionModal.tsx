@@ -3,6 +3,7 @@ import ResponsiveContainer from '@/components/ui/ResponsiveContainer'
 import useUploadSession from '@/hooks/useUploadSession';
 import clsx from 'clsx'
 import { FormProvider } from 'react-hook-form';
+import Spinner from '../ui/spinner/spinner';
 
 export default function UploadExamSessionModal({ open, close, exam_id }: Readonly<{ open: boolean, close: (close: boolean) => void, exam_id: number }>) {
     function handleClose() {
@@ -25,8 +26,17 @@ export default function UploadExamSessionModal({ open, close, exam_id }: Readonl
                                 <label htmlFor="exam" className='mb-1'>LEVEL <span className="text-red-500">*</span></label>
                                 <input required type='date' className='border outline-0 p-2 border-[#D0D5DD] rounded-lg' placeholder='League 1' />
                             </div> */}
+                              <div className="flex flex-col">
+                                <label htmlFor="exam" className='mb-1'>LEVEL <span className="text-red-500">*</span></label>
+                                <input {...form.register('level')} required type="number" className='border no-spinner outline-0 p-2 border-[#D0D5DD] rounded-lg' />
+                            </div>
+                            {form.formState.errors.level && (
+    <p className="text-sm text-red-500 mt-1">
+      {form.formState.errors.level.message as string}
+    </p>
+  )}
                             <div className="flex flex-col">
-                                <label htmlFor="exam" className='mb-1'>EXAM DATE <span className="text-red-500">*</span></label>
+                                <label htmlFor="exam" className='mb-1'>SCHEDULED EXAM DATE <span className="text-red-500">*</span></label>
                                 <input {...form.register('scheduled_date')} required type='date' className='border outline-0 p-2 border-[#D0D5DD] rounded-lg' />
                             </div>
 
@@ -36,22 +46,22 @@ export default function UploadExamSessionModal({ open, close, exam_id }: Readonl
     </p>
   )}
                             <div className="flex flex-col">
-                                <label htmlFor="exam" className='mb-1'>START EXAM TIME <span className="text-red-500">*</span></label>
-                                <input {...form.register('start_time')} required type="time" className='border outline-0 p-2 border-[#D0D5DD] rounded-lg' />
+                                <label htmlFor="exam" className='mb-1'>SCHEDULED EXAM TIME <span className="text-red-500">*</span></label>
+                                <input {...form.register('scheduled_exam_time')} required type="time" className='border outline-0 p-2 border-[#D0D5DD] rounded-lg' />
                             </div>
-                            {form.formState.errors.start_time && (
+                            {form.formState.errors.scheduled_exam_time && (
     <p className="text-sm text-red-500 mt-1">
-      {form.formState.errors.start_time.message as string}
+      {form.formState.errors.scheduled_exam_time.message as string}
     </p>
   )}
                             <div className="flex flex-col">
-                                <label htmlFor="exam" className='mb-1'>END EXAM TIME <span className="text-red-500">*</span></label>
-                                <input {...form.register('end_time')} required type="time" className='border outline-0 p-2 border-[#D0D5DD] rounded-lg' />
+                                <label htmlFor="exam" className='mb-1'>OPEN DURATION HOURS<span className="text-red-500">*</span></label>
+                                <input {...form.register('open_duration_hours')} required type="number" className='border no-spinner outline-0 p-2 border-[#D0D5DD] rounded-lg' />
                             </div>
                             <div className="flex gap-2 justify-between">
                                 <div className="flex flex-col flex-1">
-                                    <label htmlFor="exam" className='mb-1'>COUNTDOWN <span className="text-red-500">*</span></label>
-                                    <input {...form.register('countdown_minutes')} required type="number" className='border outline-0 p-2 border-[#D0D5DD] rounded-lg' />
+                                    <label htmlFor="exam" className='mb-1'>COUNTDOWN MINUTES <span className="text-red-500">*</span></label>
+                                    <input {...form.register('countdown_minutes')} required type="number" className='border no-spinner outline-0 p-2 border-[#D0D5DD] rounded-lg' />
                                 </div>
                                 {form.formState.errors.countdown_minutes && (
     <p className="text-sm text-red-500 mt-1">
@@ -81,7 +91,8 @@ export default function UploadExamSessionModal({ open, close, exam_id }: Readonl
                                 type='submit'
                                     className={clsx("px-4 py-2 rounded-lg cursor-pointer flex-1 text-white bg-[#3E4095]")}
                                 >
-                                    UPLOAD EXAM SESSION
+                                    {isPending?<Spinner/>:'UPLOAD EXAM SESSION'}
+                            
                                 </button>
                             </div>
                             
