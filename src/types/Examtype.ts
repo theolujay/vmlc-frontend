@@ -36,15 +36,22 @@ export type LeaderboardRankingType = {
   total_candidates: number
 }
 
+
+
+
+
 export type AvailableExamType = {
   id: number,
   title: string,
   description: string,
   open_duration_hours: number,
-  exam_date: Date,
+  // exam_date: Date,
   countdown_minutes: number,
   question_count: number,
-  stage: string
+  level:number,
+  scheduled_date:Date
+  stage: string,
+  stage_display:string
 }
 
 

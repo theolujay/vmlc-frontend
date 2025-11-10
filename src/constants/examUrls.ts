@@ -1,5 +1,4 @@
 export const examUrls = {
-    take_exam: (id: number) => `/exams/${id}/take-exam/`,
     create_exam: '/exams/',
     EDIT_SESSION: (exam_id: number) => `/exams/${exam_id}/`,
     CREATE_QUESTION: '/questions/',
@@ -11,5 +10,7 @@ export const examUrls = {
     DELETE_QUESTION: (question_id: number) => `/questions/${question_id}/`,
     BULK_ADD_QUESTION_TO_SESSION: `/questions/bulk-add-to-exams/`,
     BULK_ARCHIVE_QUESTIONS: `/questions/bulk-archive/`,
-    UPDATE_EXAM: (exam_id: number) => `/exams/${exam_id}/`
+    UPDATE_EXAM: (exam_id: number) => `/exams/${exam_id}/`,
+    TAKE_EXAM: (exam_id: string) => `/exams/${exam_id}/take-exam/`,
+    CANDIDATE_SUBMIT_ANSWERS:(exam_id:string)=>`/exams/${exam_id}/submit-exam-answers/`
 }
