@@ -7,6 +7,7 @@ import Input, { ConfirmPasswordInput, PasswordInput, PhoneNumberInput } from '..
 import Spinner from '../ui/spinner/spinner'
 import { MailIcon, OccupationIcon, PasswordIcon, PersonIcon } from '../ui/SvgAsset/GeneralAsset'
 import AuthLayout from './Layout/Layout'
+import { Checkbox } from '../ui/Checkbox'
 
 
 
@@ -23,8 +24,8 @@ export default function RegisterStaff() {
         <div className="flex flex-col p-5 rounded-[12px] bg-[#FFFFFF99]">
 
           <div className="flex gap-1 items-center flex-col">
-            <h2 className='text-[18px] md:text-[28px] font-bold'>Welcome to the candidate portal!</h2>
-            <p>Enter your credentials to register as a candidate</p>
+            <h2 className='text-[18px] md:text-[28px] font-bold'>Staff Registration</h2>
+            <p>Enter your credentials to register as a staff</p>
           
           </div>
           <FormProvider {...form}>
@@ -49,11 +50,17 @@ export default function RegisterStaff() {
               <div className="grid">
                 <ConfirmPasswordInput name='password2' icon={<PasswordIcon />} label='CONFIRM PASSWORD' placeholder='Confirm your password' className='border-[#D0D5DD]' />
               </div>
+               <div className="flex gap-3 items-center mt-6">
+                              <Checkbox/>
+                              <p>I agree to allow my information to be used for promotional purposes and accept {`VMLC’s`} <span className='text-[#018ABB]'>Terms & Conditions</span> and <span className='text-[#018ABB]'>Privacy Policy</span>.</p>
+                            
+                              
+                            </div>
               <div className="grid mt-6">
                 <AuthButton isPending={isPending}>{isPending ? <Spinner/> : 'Register'}</AuthButton>
               </div>
               <div className="flex flex-col gap-3 items-center mt-6">
-                <p>By registering, you agree to {`VMLC’s`} <Link href='/' className='text-[#018ABB]'>Terms & conditions</Link> and <Link href='/' className='text-[#018ABB]'>Privacy Policy</Link></p>
+              
                 <div className='flex gap-2'>
                   <span>Have an account?</span>
                   <Link href='/login' className=' text-[#3E4095] font-[700]'>LOGIN</Link>
