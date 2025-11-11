@@ -25,6 +25,7 @@ const registerSchema = z
   .object({
     email: z.string().email({ message: 'Must be a valid email' }),
     password: z.string().min(8, "Password must be at least 8 characters").optional(),
+    terms:z.boolean(),
     password2: z.string().optional(),
     first_name: z.string().min(2, 'First name field cannot be empty'),
     phone: z.string(),
@@ -62,16 +63,17 @@ const registerSchema = z
   });
 
 
-const defaultValues = {
+  export type ValueType = z.infer<typeof registerSchema>;
+const defaultValues:ValueType = {
     email: '',
     password: '',
     password2: '',
     phone: '',
     first_name: '', last_name: '', school: '',
-    generate_password:false
+    generate_password:false,
+    terms:false,
 }
 
-export type ValueType = z.infer<typeof registerSchema>;
 
 export default function useRegister() {
     const form = useForm({
@@ -97,7 +99,7 @@ export default function useRegister() {
 
     function onSubmit(value: ValueType) {
     // console.log(value,'what is in value')
-        const transformedValue: ValueType = {
+        const transformedValue = {
 
             email: value.email.toLowerCase(),
             first_name: value.first_name,
