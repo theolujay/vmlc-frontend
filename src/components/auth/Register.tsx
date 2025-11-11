@@ -88,8 +88,13 @@ export default function Register() {
              </div>
               </div> */}
               <div className="flex gap-3 items-center mt-6">
-                <Checkbox/>
-                <p>I agree to allow my information to be used for promotional purposes and accept {`VMLC’s`} <span className='text-[#018ABB]'>Terms & Conditions</span> and <span className='text-[#018ABB]'>Privacy Policy</span>.</p>
+                {/* <Checkbox id='terms'/> */}
+
+                 <Controller name='terms' control={form.control} render={({field})=><Checkbox checked={field.value} id='terms' onChange={(e)=>{
+                    field.onChange(e)
+                    // handleCheckbox(e)
+                    }}/>} />
+                <label htmlFor='terms'>I agree to allow my information to be used for promotional purposes and accept {`VMLC’s`} <span className='text-[#018ABB]'>Terms & Conditions</span> and <span className='text-[#018ABB]'>Privacy Policy</span>.</label>
               
                 
               </div>

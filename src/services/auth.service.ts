@@ -1,11 +1,11 @@
 import { authUrls } from "@/constants/authUrls";
-import { ValueType } from "@/hooks/useRegister";
+// import { ValueType } from "@/hooks/useRegister";
 import { StaffValueType } from "@/hooks/useRegisterStaff";
-import { AuthLoginResponse, AuthRegisterResponse, LoginRequest, LogoutRequest, SetNewPasswordType, VerifyRequest, } from "@/types/auth";
+import { AuthLoginResponse, AuthRegisterResponse, LoginRequest, LogoutRequest, RegisterRequestValueType, RegisterStaffRequestValueType, SetNewPasswordType, VerifyRequest, } from "@/types/auth";
 import client from "@/utils/axios";
 
 export class AuthService {
-    static async registerCandidate(user: ValueType): Promise<AuthRegisterResponse> {
+    static async registerCandidate(user: RegisterRequestValueType): Promise<AuthRegisterResponse> {
         try {
             const response = await client.post(authUrls.candidate_registeration, user);
             return response.data.data;
@@ -17,7 +17,7 @@ export class AuthService {
         }
     }
 
-    static async registerStaff(user: StaffValueType): Promise<AuthRegisterResponse> {
+    static async registerStaff(user: RegisterStaffRequestValueType): Promise<AuthRegisterResponse> {
         try {
 
             const response = await client.post(authUrls.staff_registeration, user);
