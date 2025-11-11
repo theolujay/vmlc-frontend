@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - "dev"
+
 jobs:
   merge-branch:
     runs-on: ubuntu-24.04
