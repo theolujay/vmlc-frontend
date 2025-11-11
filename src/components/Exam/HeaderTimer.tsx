@@ -1,5 +1,4 @@
 "use client"
-
 import { useExamContext } from "@/contexts/ExamNavigationProvider"
 import { useRouter } from "next/navigation"
 import { useEffect, useRef, useState } from "react"
@@ -27,10 +26,10 @@ export default function HeaderTimer({
           clearInterval(interval)
 
           if (!hasSubmitted.current) {
-            hasSubmitted.current = true
-            ;(async () => {
+            hasSubmitted.current = true;
+            (async () => {
               try {
-                await onTimeUp?.()  // submit exam
+                await onTimeUp?.() 
               } catch (err) {
                 console.error("Error submitting exam:", err)
               } finally {
