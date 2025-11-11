@@ -25,7 +25,7 @@ const defaultValues: ValueType = {
   scheduled_exam_time: '',
   open_duration_hours: ''
 }
-export default function useUploadSession(exam_id: number) {
+export default function useUploadSession(exam_id: number,onSuccessCallback:()=>void) {
   const form = useForm({
     resolver: zodResolver(uploadExamSchema),
     defaultValues,
@@ -35,6 +35,7 @@ export default function useUploadSession(exam_id: number) {
     mutationFn: (payload: any) => ExamPortal.updateExamSession(exam_id, payload),
     onSuccess: () => {
       toast.success('Session uploaded successfully')
+      onSuccessCallback()
       form.reset()
     }
     ,

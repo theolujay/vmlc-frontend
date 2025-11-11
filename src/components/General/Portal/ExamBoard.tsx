@@ -16,11 +16,12 @@ export default function ExamBoard() {
     const examType = data?.candidate_info?.role||'';
 
 
+    console.log(data,'what is data')
     let content;
 
   if (isPending) {
     content = (
-      <div className="w-full place-content-center">
+      <div className="flex w-full col-span-4 place-content-center">
         <Spinner />
       </div>
     );
