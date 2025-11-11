@@ -24,8 +24,8 @@ export default function RegisterStaff() {
         <div className="flex flex-col p-5 rounded-[12px] bg-[#FFFFFF99]">
 
           <div className="flex gap-1 items-center flex-col">
-            <h2 className='text-[18px] md:text-[28px] font-bold'>Staff Registration</h2>
-            <p>Enter your credentials to register as a staff</p>
+            <h2 className='text-[18px] md:text-[28px] font-bold'>Volunteer Registration</h2>
+            <p>Enter your credentials to get started</p>
           
           </div>
           <FormProvider {...form}>
