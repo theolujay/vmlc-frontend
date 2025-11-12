@@ -16,12 +16,12 @@ import { Checkbox } from '../ui/Checkbox'
 
 export default function Register() {
   // const [autoGenerate, setAutoGenerate] = useState(false)
-  
+
   // function handleCheckbox(e:boolean){
   //   setAutoGenerate(e)
   // }
   const { form, onSubmit, isPending } = useRegister()
-  const autoGenerate=form.watch('generate_password')
+  const autoGenerate = form.watch('generate_password')
   return (
     <AuthLayout>
 
@@ -32,7 +32,7 @@ export default function Register() {
           <div className="flex gap-1 items-center flex-col">
             <h2 className='text-[18px] md:text-[28px] font-bold'>Candidate Registration</h2>
             <p>Enter your details to get started</p>
-          
+
           </div>
           <FormProvider {...form}>
 
@@ -52,28 +52,28 @@ export default function Register() {
               </div>
 
 
-               <div className="flex justify-end items-end">
+              <div className="flex justify-end items-end">
                 <div className="flex items-center gap-1">
-                  <Controller name='generate_password' control={form.control} render={({field})=><Checkbox checked={field.value} id='generate' onChange={(e)=>{
+                  <Controller name='generate_password' control={form.control} render={({ field }) => <Checkbox checked={field.value} id='generate' onChange={(e) => {
                     field.onChange(e)
                     // handleCheckbox(e)
-                    }}/>} />
-               
-                
-                 <label  className='font-semibold text-[#01ACEA]' htmlFor="generate">Generate Password for me</label>
-             </div>
+                  }} />} />
+
+
+                  <label className='font-semibold text-[#01ACEA]' htmlFor="generate">Generate Password for me</label>
+                </div>
               </div>
-              
+
               {
-                !autoGenerate&&<>
-                
-                
-              <div className="grid">
-                <PasswordInput name='password' icon={<PasswordIcon />} label='PASSWORD' placeholder='Create a password' className='border-[#D0D5DD]' />
-              </div>
-              <div className="grid">
-                <ConfirmPasswordInput name='password2' icon={<PasswordIcon />} label='CONFIRM PASSWORD' placeholder='Confirm your password' className='border-[#D0D5DD]' />
-              </div>
+                !autoGenerate && <>
+
+
+                  <div className="grid">
+                    <PasswordInput name='password' icon={<PasswordIcon />} label='PASSWORD' placeholder='Create a password' className='border-[#D0D5DD]' />
+                  </div>
+                  <div className="grid">
+                    <ConfirmPasswordInput name='password2' icon={<PasswordIcon />} label='CONFIRM PASSWORD' placeholder='Confirm your password' className='border-[#D0D5DD]' />
+                  </div>
                 </>
               }
               {/* <div className="grid">
@@ -90,19 +90,19 @@ export default function Register() {
               <div className="flex gap-3 items-center mt-6">
                 {/* <Checkbox id='terms'/> */}
 
-                 <Controller name='terms' control={form.control} render={({field})=><Checkbox checked={field.value} id='terms' onChange={(e)=>{
-                    field.onChange(e)
-                    // handleCheckbox(e)
-                    }}/>} />
-                <label htmlFor='terms'>I agree to allow my information to be used for promotional purposes and accept {`VMLC’s`} <span className='text-[#018ABB]'>Terms & Conditions</span> and <span className='text-[#018ABB]'>Privacy Policy</span>.</label>
-              
-                
+                <Controller name='terms' control={form.control} render={({ field }) => <Checkbox checked={field.value} id='terms' onChange={(e) => {
+                  field.onChange(e)
+                  // handleCheckbox(e)
+                }} />} />
+                <label htmlFor='terms'>I agree to allow my information to be used for promotional purposes and accept {`VMLC’s`} <Link href='/VMLC T&C.pdf' target='_blank' className='text-[#018ABB]'>Terms & Conditions</Link> and <Link href='/VMLC Privacy Policy.pdf' target='_blank' className='text-[#018ABB]'>Privacy Policy</Link>.</label>
+
+
               </div>
               <div className="grid mt-6">
-                <AuthButton isPending={isPending}>{isPending ? <Spinner/> : 'Register'}</AuthButton>
+                <AuthButton isPending={isPending}>{isPending ? <Spinner /> : 'Register'}</AuthButton>
               </div>
               <div className="flex flex-col gap-3 items-center mt-6">
-               
+
                 <div className='flex gap-2'>
                   <span>Have an account?</span>
                   <Link href='/login' className=' text-[#3E4095] font-[700]'>LOGIN</Link>
