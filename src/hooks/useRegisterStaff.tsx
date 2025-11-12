@@ -10,7 +10,10 @@ const registerStaffSchema = z.object({
     email: z.email({ message: 'Must be an email' }),
     password: z.string().min(8, "Password must be at least 8 characters"),
     password2: z.string(),
-    terms:z.boolean(),
+    // terms:z.boolean(),
+    terms: z.boolean().refine(val => val === true, {
+  message: 'You must accept the terms and conditions',
+}),
     first_name: z.string().min(2,'First name field cannot be empty'),
     phone: z.string(),
     last_name: z.string().min(2,'Last name field cannot be empty'),
