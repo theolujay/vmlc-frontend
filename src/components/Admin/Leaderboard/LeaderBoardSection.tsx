@@ -1,29 +1,57 @@
-import CustomTable from "@/components/ui/CustomTable";
 import useGetLeaderBoard from "@/hooks/useGetLeaderboard";
-import { LeaderBoardType, LeaderItemType, LeaderType } from "@/types/LeaderBoardType";
-import { getUserName } from "@/utils/generalUtils";
-import { ScreeningIcon } from "../../General/GeneralIcon";
+import { CandidateType, LeaderItemType } from "@/types/LeaderBoardType";
+import { LeagueIcon, ScreeningIcon } from "../../General/GeneralIcon";
 import Button from "../../ui/Button";
 import ResponsiveContainer from "../../ui/ResponsiveContainer";
 import ScreeningTabWrapper from "../../ui/Tabs/ScreeningTabWrapper";
 import AdminHeader from "../AdminHeader";
 import EmptySession from "../EmptySession";
 import { FirstPosition, SecondPosition, ThirdPosition } from "./LeaderBoardIcon";
+import { TabType } from "@/types/TabType";
+import usePagination from "@/hooks/usePagination";
+import { useState } from "react";
+import Spinner from "@/components/ui/spinner/spinner";
+import { CandidateInfoType } from "@/types/Examtype";
 
 
 
 export default function LeaderBoardSection() {
-  const { data } = useGetLeaderBoard()
+  const { data, isPending } = useGetLeaderBoard()
 
+
+  if (isPending || !data) {
+    return <div className="grid w-full place-content-center"><Spinner /></div>
+  }
+
+  let leaderBoardItems;
+  if ('available_leaderboards' in data) {
+
+    leaderBoardItems = data.available_leaderboards;
+  }
+
+
+
+
+  const leaderBoardTab = leaderBoardItems?.map((val) => {
+    return {
+      label: <ScreeningLabel label={val.stage} />,
+      value: val.stage_display,
+      content: <ScoreComponent stage={val.stage} level={val.level} />
+    }
+  })
   return (
     <div className='flex flex-col gap-1 '>
       <AdminHeader label="Leaderboards" isExport actionButton={<Button className="px-2 bg-grey-base-400 text-white">UPLOAD</Button>} />
       <div className="flex flex-col gap-3 mt-3 w-[96%] mx-auto">
 
-        <ResponsiveContainer className="px-0">
-          <ScreeningTabWrapper tabs={[
-            { label: <ScreeningLabel />, value: 'overall-leaderboard', content: <ScoreComponent results={data?.list ?? []} /> },
-          ]} />
+        <ResponsiveContainer className="px-0 min-h-[60vh]">
+          <ScreeningTabWrapper
+            // tabs={[
+            //   { label: <ScreeningLabel />, value: 'overall-leaderboard', content: <ScoreComponent results={data?.list ?? []} /> },
+            // ]}
+            tabs={leaderBoardTab ?? []}
+          />
+
         </ResponsiveContainer>
       </div>
     </div>
@@ -31,17 +59,37 @@ export default function LeaderBoardSection() {
 }
 
 
-function ScreeningLabel() {
-  return <div className='flex gap-1 items-center'><span><ScreeningIcon /></span><span>Screening</span></div>
+function ScreeningLabel({ label }: { label: string }) {
+  return <div className='flex gap-1 items-center'><span>{handleRankingIcon(label)}</span><span className="capitalize">{label}</span></div>
 }
 
-function ScoreComponent({ results }: Readonly<{ results: LeaderItemType[] }>) {
+function ScoreComponent({ stage, level }: Readonly<{ stage: string, level: number }>) {
+  const { page, setPage } = usePagination()
+  const [filters] = useState({
+    stage,
+    level,
 
-  return <div className="flex flex-col">
-    {results.length == 0 ? <EmptySession desc="Arrangement of result based on the highest score gotten by candidates on the platform would appear here " label='Exams hasn’t happened yet' /> :
+  })
 
+  const { data } = useGetLeaderBoard(page, filters)
+
+
+
+
+  if (!data) {
+    return (
+      <EmptySession
+        desc="Arrangement of result based on the highest score gotten by candidates on the platform would appear here"
+        label="Exams hasn’t happened yet"
+      />
+    );
+  }
+
+  if ('top_three' in data) {
+    // ✅ data is RankedLeaderBoardType here
+    return (
       <div className="flex gap-2 flex-col">
-        <Podium users={results.slice(0, 3)} />
+        <Podium users={data.top_three} />
         {/* <CustomTable columns={[
           { key: 'position', header: 'Position', render: (_, row) => <div className="flex items-center gap-1">{row.rank}</div> },
           { key: 'Name', header: 'Name', render: (_, row) => <div className="flex  items-center gap-1">{getUserName(row.candidate.user.first_name, row.candidate.user.last_name)}</div> },
@@ -63,11 +111,12 @@ function ScoreComponent({ results }: Readonly<{ results: LeaderItemType[] }>) {
               </div>
             ),
           }
-        ]} data={results} /> */}
+        ]} data={data.remaining_candidates} />  */}
       </div>
-      // <EmptySession desc="Arrangement of result based on the highest score gotten by candidates on the platform would appear here " label='Exams hasn’t happened yet' />
-    }
-  </div>
+    );
+  }
+
+
 }
 
 
@@ -85,7 +134,7 @@ const shapeByRank: Record<number, React.ComponentType> = {
 
 
 
-export function Podium({ users }: Readonly<{ users: LeaderItemType[] }>) {
+export function Podium({ users }: Readonly<{ users: CandidateType[] }>) {
   const order = [2, 1, 3];
   // const arranged = [...users].sort(
   //   (a, b) => order.indexOf(a.rank) - order.indexOf(b.rank)
@@ -125,7 +174,16 @@ export function Podium({ users }: Readonly<{ users: LeaderItemType[] }>) {
 
 
 
-
+function handleRankingIcon(value: string) {
+  switch (value) {
+    case 'screening':
+      return <ScreeningIcon />;
+    case 'league':
+      return <LeagueIcon />;
+    default:
+      return <ScreeningIcon />
+  }
+}
 
 
 

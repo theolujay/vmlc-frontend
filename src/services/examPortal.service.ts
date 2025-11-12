@@ -2,7 +2,7 @@ import { candidateUrls } from "@/constants/candidateUrls";
 import { examUrls } from "@/constants/examUrls";
 import { CreateExamSessionType, CreateQuestionType, DashboardType, EditExamSession, QuestionPoolType, SessionQuestionType, SessionType, UpdatedSessionQuestionType } from "@/types/Examtype";
 import { BulkArchiveType, BulkPayloadType, CandidateSubmitAnswerType } from "@/types/Index";
-import { LeaderBoardType } from "@/types/LeaderBoardType";
+import { LeaderBoardResponse, LeaderBoardType } from "@/types/LeaderBoardType";
 import client from "@/utils/axios";
 
 export class ExamPortal {
@@ -13,15 +13,39 @@ export class ExamPortal {
             return response.data;
 
         } catch (error) {
+            console.error(error)
             throw error;
+            
         }
     }
 
 
-    static async getLeaderBoard(): Promise<LeaderBoardType> {
-        try {
+    // static async getLeaderBoard(): Promise<LeaderBoardType> {
+    //     try {
 
-            const response = await client.get(candidateUrls.get_leaderboard)
+    //         const response = await client.get(candidateUrls.get_leaderboard)
+    //         return response.data;
+    //     } catch (error) {
+    //         console.error(error)
+    //         throw error
+    //     }
+    // }
+
+
+
+      
+
+
+
+
+
+     static async getLeaderBoard(page:number=1,filters:Record<string,string|number>={}): Promise<LeaderBoardResponse> {
+        try {
+            const queryParams=new URLSearchParams({
+                page:page.toString(),
+                ...Object.fromEntries(Object.entries(filters).filter(([_,value])=>value!==undefined&&value!==''))
+            });
+            const response = await client.get(candidateUrls.get_leaderboard(queryParams.toString()));
             return response.data;
         } catch (error) {
             console.error(error)

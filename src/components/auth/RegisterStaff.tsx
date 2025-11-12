@@ -56,8 +56,8 @@ export default function RegisterStaff() {
                     field.onChange(e)
                     // handleCheckbox(e)
                     }}/>} />
-                              <label htmlFor='terms'>I agree to allow my information to be used for promotional purposes and accept {`VMLC’s`} <span className='text-[#018ABB]'>Terms & Conditions</span> and <span className='text-[#018ABB]'>Privacy Policy</span>.</label>
-                            
+                              {/* <label htmlFor='terms'>I agree to allow my information to be used for promotional purposes and accept {`VMLC’s`} <span className='text-[#018ABB]'>Terms & Conditions</span> and <span className='text-[#018ABB]'>Privacy Policy</span>.</label> */}
+                             <label htmlFor='terms'>I agree to allow my information to be used for promotional purposes and accept {`VMLC’s`} <Link href='/VMLC T&C.pdf' target='_blank' className='text-[#018ABB]'>Terms & Conditions</Link> and <Link href='/VMLC Privacy Policy.pdf' target='_blank' className='text-[#018ABB]'>Privacy Policy</Link>.</label>
                               
                             </div>
               <div className="grid mt-6">
