@@ -1,5 +1,8 @@
+import Spinner from "@/components/ui/spinner/spinner";
 import useGetLeaderBoard from "@/hooks/useGetLeaderboard";
-import { CandidateType, LeaderItemType } from "@/types/LeaderBoardType";
+import usePagination from "@/hooks/usePagination";
+import { CandidateType } from "@/types/LeaderBoardType";
+import { useState } from "react";
 import { LeagueIcon, ScreeningIcon } from "../../General/GeneralIcon";
 import Button from "../../ui/Button";
 import ResponsiveContainer from "../../ui/ResponsiveContainer";
@@ -7,11 +10,8 @@ import ScreeningTabWrapper from "../../ui/Tabs/ScreeningTabWrapper";
 import AdminHeader from "../AdminHeader";
 import EmptySession from "../EmptySession";
 import { FirstPosition, SecondPosition, ThirdPosition } from "./LeaderBoardIcon";
-import { TabType } from "@/types/TabType";
-import usePagination from "@/hooks/usePagination";
-import { useState } from "react";
-import Spinner from "@/components/ui/spinner/spinner";
-import { CandidateInfoType } from "@/types/Examtype";
+import CustomTable from "@/components/ui/CustomTable";
+import TablePagination from "@/components/ui/Pagination/TablePagination";
 
 
 
@@ -63,19 +63,68 @@ function ScreeningLabel({ label }: { label: string }) {
   return <div className='flex gap-1 items-center'><span>{handleRankingIcon(label)}</span><span className="capitalize">{label}</span></div>
 }
 
-function ScoreComponent({ stage, level }: Readonly<{ stage: string, level: number }>) {
-  const { page, setPage } = usePagination()
-  const [filters] = useState({
-    stage,
-    level,
+// function ScoreComponent({ stage, level }: Readonly<{ stage: string, level: number }>) {
+//   const { page, setPage } = usePagination()
+//   const [filters] = useState({
+//     stage,
+//     level,
 
-  })
+//   })
 
-  const { data } = useGetLeaderBoard(page, filters)
-
-
+//   const { data } = useGetLeaderBoard(page, filters)
 
 
+
+
+//   if (!data) {
+//     return (
+//       <EmptySession
+//         desc="Arrangement of result based on the highest score gotten by candidates on the platform would appear here"
+//         label="Exams hasn’t happened yet"
+//       />
+//     );
+//   }
+
+//   if ('top_three' in data) {
+//     // ✅ data is RankedLeaderBoardType here
+//     return (
+//       <div className="flex gap-2 flex-col">
+//         <Podium users={data.top_three} />
+//         {/* <CustomTable columns={[
+//           { key: 'position', header: 'Position', render: (_, row) => <div className="flex items-center gap-1">{row.rank}</div> },
+//           { key: 'Name', header: 'Name', render: (_, row) => <div className="flex  items-center gap-1">{getUserName(row.candidate.user.first_name, row.candidate.user.last_name)}</div> },
+//           {
+//             key: 'email', header: 'Email Address', render: (_, row) => <div className="flex items-center gap-1">
+//               {row.candidate.user.email}
+//             </div>
+//           },
+//           {
+//             key: 'Score', header: 'Score', render: (_, row) => <div className="flex  items-center gap-1">
+//               {row.total_score}
+//             </div>
+//           },
+//           {
+//             key: 'action', header: "Action", render: () => (
+//               <div className="flex justify-between items-center gap-1">
+
+//                 <button className="cursor-pointer font-semibold text-[#3E4095]">View Details</button>
+//               </div>
+//             ),
+//           }
+//         ]} data={data.remaining_candidates} />  */}
+//       </div>
+//     );
+//   }
+
+
+// }
+
+function ScoreComponent({ stage, level }: Readonly<{ stage: string; level: number }>) {
+  const { page,setPage } = usePagination();
+  const [filters] = useState({ stage, level });
+  const { data } = useGetLeaderBoard(page, filters);
+
+  // First handle "no data" case
   if (!data) {
     return (
       <EmptySession
@@ -85,22 +134,32 @@ function ScoreComponent({ stage, level }: Readonly<{ stage: string, level: numbe
     );
   }
 
-  if ('top_three' in data) {
-    // ✅ data is RankedLeaderBoardType here
+  // Now narrow type properly
+  if ('top_three' in data && 'remaining_candidates' in data) {
+    // ✅ TypeScript now knows `data` is RankedLeaderBoardType
+    if (data.remaining_candidates.length === 0) {
+      return (
+        <EmptySession
+          desc="Arrangement of result based on the highest score gotten by candidates on the platform would appear here"
+          label="Exams hasn’t happened yet"
+        />
+      );
+    }
+
     return (
       <div className="flex gap-2 flex-col">
         <Podium users={data.top_three} />
-        {/* <CustomTable columns={[
+               <CustomTable columns={[
           { key: 'position', header: 'Position', render: (_, row) => <div className="flex items-center gap-1">{row.rank}</div> },
-          { key: 'Name', header: 'Name', render: (_, row) => <div className="flex  items-center gap-1">{getUserName(row.candidate.user.first_name, row.candidate.user.last_name)}</div> },
-          {
-            key: 'email', header: 'Email Address', render: (_, row) => <div className="flex items-center gap-1">
-              {row.candidate.user.email}
-            </div>
-          },
+          { key: 'Name', header: 'Name', render: (_, row) => <div className="flex  items-center gap-1">{row.candidate.full_name}</div> },
+          // {
+          //   key: 'email', header: 'Email Address', render: (_, row) => <div className="flex items-center gap-1">
+          //     {row.candidate.user.email}
+          //   </div>
+          // },
           {
             key: 'Score', header: 'Score', render: (_, row) => <div className="flex  items-center gap-1">
-              {row.total_score}
+              {row.score}
             </div>
           },
           {
@@ -111,13 +170,25 @@ function ScoreComponent({ stage, level }: Readonly<{ stage: string, level: numbe
               </div>
             ),
           }
-        ]} data={data.remaining_candidates} />  */}
+        ]} data={data.remaining_candidates}
+        footer={
+          <TablePagination pageCount={data.pagination.total_pages} currentPage={page} onPageChange={setPage} />
+        }
+         />  
+        {/* <CustomTable data={data.remaining_candidates} ... /> */}
       </div>
     );
   }
 
-
+  // Fallback for LeaderBoardType
+  return (
+    <EmptySession
+      desc="No ranked leaderboard data available for this stage"
+      label="Awaiting results"
+    />
+  );
 }
+
 
 
 
@@ -136,31 +207,34 @@ const shapeByRank: Record<number, React.ComponentType> = {
 
 export function Podium({ users }: Readonly<{ users: CandidateType[] }>) {
   const order = [2, 1, 3];
-  // const arranged = [...users].sort(
-  //   (a, b) => order.indexOf(a.rank) - order.indexOf(b.rank)
-  // );
+  const arranged = [...users].sort(
+    (a, b) => order.indexOf(a.rank) - order.indexOf(b.rank)
+  );
 
+  console.log(users,'waht is users')
 
+  console.log(arranged,'what is in arranged')
 
   return (
 
     <div className="flex flex-col max-w-[96%] mx-auto my-5">
       <div className="flex flex-col md:flex-row justify-between w-full gap-3">
-        {/* {
+        {
           arranged.map((val, index) => {
             const Shape = shapeByRank[val.rank]
             return <div key={`shape-index-${index + 1}`} className="flex justify-between gap-3 items-center flex-col">
               <div className="flex  flex-col">
-                <p className="font-[400] text-2xl">{getUserName(val.candidate.user.first_name, val.candidate.user.last_name)}</p>
-                <span className="text-sm">{val.candidate.user.email}</span>
+                  <p className="font-[400] text-2xl">{val.candidate.full_name}</p>
+                
+                {/* <span className="text-sm">{val.candidate.user.email}</span> */}
               </div>
               <div className="relative">
-                <span className="w-15 h-6 p-2 inline-flex items-center absolute left-1/2 -top-2 bg-[#3E4095] text-white  -translate-x-1/2  whitespace-nowrap font-bold rounded-full">{val.total_score}</span>
+                <span className="w-15 h-6 p-2 inline-flex items-center absolute left-1/2 -top-2 bg-[#3E4095] text-white  -translate-x-1/2  whitespace-nowrap font-bold rounded-full">{val.percentage}</span>
                 <Shape />
               </div>
             </div>
           })
-        } */}
+        }
       </div>
     </div>
   );
