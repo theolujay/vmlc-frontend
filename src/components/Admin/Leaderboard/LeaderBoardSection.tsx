@@ -120,7 +120,7 @@ function ScreeningLabel({ label }: { label: string }) {
 // }
 
 function ScoreComponent({ stage, level }: Readonly<{ stage: string; level: number }>) {
-  const { page,setPage } = usePagination();
+  const { page, setPage } = usePagination();
   const [filters] = useState({ stage, level });
   const { data } = useGetLeaderBoard(page, filters);
 
@@ -129,7 +129,7 @@ function ScoreComponent({ stage, level }: Readonly<{ stage: string; level: numbe
     return (
       <EmptySession
         desc="Arrangement of result based on the highest score gotten by candidates on the platform would appear here"
-        label="Exams hasn’t happened yet"
+        label="Exams has not happened yet"
       />
     );
   }
@@ -141,7 +141,7 @@ function ScoreComponent({ stage, level }: Readonly<{ stage: string; level: numbe
       return (
         <EmptySession
           desc="Arrangement of result based on the highest score gotten by candidates on the platform would appear here"
-          label="Exams hasn’t happened yet"
+          label="Exams has not happened yet"
         />
       );
     }
@@ -149,7 +149,7 @@ function ScoreComponent({ stage, level }: Readonly<{ stage: string; level: numbe
     return (
       <div className="flex gap-2 flex-col">
         <Podium users={data.top_three} />
-               <CustomTable columns={[
+        <CustomTable columns={[
           { key: 'position', header: 'Position', render: (_, row) => <div className="flex items-center gap-1">{row.rank}</div> },
           { key: 'Name', header: 'Name', render: (_, row) => <div className="flex  items-center gap-1">{row.candidate.full_name}</div> },
           // {
@@ -158,6 +158,9 @@ function ScoreComponent({ stage, level }: Readonly<{ stage: string; level: numbe
           //   </div>
           // },
           {
+            key:'School',header:'School',render:(_,row)=><div className="flex items-center gap-1">{row.candidate.school}</div>
+          },
+          {
             key: 'Score', header: 'Score', render: (_, row) => <div className="flex  items-center gap-1">
               {row.score}
             </div>
@@ -165,22 +168,21 @@ function ScoreComponent({ stage, level }: Readonly<{ stage: string; level: numbe
           {
             key: 'action', header: "Action", render: () => (
               <div className="flex justify-between items-center gap-1">
-
                 <button className="cursor-pointer font-semibold text-[#3E4095]">View Details</button>
               </div>
             ),
           }
         ]} data={data.remaining_candidates}
-        footer={
-          <TablePagination pageCount={data.pagination.total_pages} currentPage={page} onPageChange={setPage} />
-        }
-         />  
-        {/* <CustomTable data={data.remaining_candidates} ... /> */}
+          footer={
+            <TablePagination pageCount={data.pagination.total_pages} currentPage={page} onPageChange={setPage} />
+          }
+        />
+      
       </div>
     );
   }
 
-  // Fallback for LeaderBoardType
+  
   return (
     <EmptySession
       desc="No ranked leaderboard data available for this stage"
@@ -211,9 +213,7 @@ export function Podium({ users }: Readonly<{ users: CandidateType[] }>) {
     (a, b) => order.indexOf(a.rank) - order.indexOf(b.rank)
   );
 
-  console.log(users,'waht is users')
 
-  console.log(arranged,'what is in arranged')
 
   return (
 
@@ -224,9 +224,9 @@ export function Podium({ users }: Readonly<{ users: CandidateType[] }>) {
             const Shape = shapeByRank[val.rank]
             return <div key={`shape-index-${index + 1}`} className="flex justify-between gap-3 items-center flex-col">
               <div className="flex  flex-col">
-                  <p className="font-[400] text-2xl">{val.candidate.full_name}</p>
-                
-                {/* <span className="text-sm">{val.candidate.user.email}</span> */}
+                <p className="font-[400] text-2xl">{val.candidate.full_name}</p>
+
+                <span className="">{val.candidate.school}</span>
               </div>
               <div className="relative">
                 <span className="w-15 h-6 p-2 inline-flex items-center absolute left-1/2 -top-2 bg-[#3E4095] text-white  -translate-x-1/2  whitespace-nowrap font-bold rounded-full">{val.percentage}</span>
@@ -264,70 +264,3 @@ function handleRankingIcon(value: string) {
 
 
 
-// type Option = {
-//   id: string;
-//   label: string;
-//   value: string;
-// };
-
-// type QuestionProps = {
-//   question: string;
-//   options: Option[];
-//   correctAnswer: string;
-// };
-
-// export function QuestionExample({
-//   question,
-//   options,
-//   correctAnswer,
-// }: Readonly<QuestionProps>) {
-//   const [selected, setSelected] = useState<string>("");
-
-//   return (
-//     <div className="max-w-xl mx-auto p-4 border-b border-gray-200">
-//       <p className="font-medium text-lg mb-3">{question}</p>
-
-//       <div className="flex flex-col gap-2">
-//         {options.map((opt) => {
-//           const isSelected = selected === opt.value;
-//           const isCorrect = selected && opt.value === correctAnswer;
-//           const isWrong = isSelected && opt.value !== correctAnswer;
-
-//           return (
-//             <label
-//               key={opt.id}
-//               className={`flex items-center gap-2 p-2 rounded-lg cursor-pointer transition
-//                 ${
-//                   isCorrect
-//                     ? "bg-green-50 border border-green-500"
-//                     : isWrong
-//                     ? "bg-red-50 border border-red-500"
-//                     : "border border-gray-300 hover:bg-gray-50"
-//                 }`}
-//             >
-//               <input
-//                 type="radio"
-//                 name="quiz"
-//                 value={opt.value}
-//                 checked={isSelected}
-//                 onChange={() => setSelected(opt.value)}
-//                 className="accent-blue-600"
-//               />
-//               <span
-//                 className={`text-sm ${
-//                   isCorrect
-//                     ? "text-green-700 font-semibold"
-//                     : isWrong
-//                     ? "text-red-700 font-semibold"
-//                     : "text-gray-800"
-//                 }`}
-//               >
-//                 {opt.label}
-//               </span>
-//             </label>
-//           );
-//         })}
-//       </div>
-//     </div>
-//   );
-// }

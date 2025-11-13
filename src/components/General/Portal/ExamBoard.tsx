@@ -16,7 +16,7 @@ export default function ExamBoard() {
     const examType = data?.candidate_info?.role||'';
 
 
-    console.log(data,'what is data')
+    
     let content;
 
   if (isPending) {

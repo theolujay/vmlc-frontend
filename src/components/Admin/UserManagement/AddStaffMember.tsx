@@ -32,7 +32,7 @@ export default function AddStaffMember() {
 
 
 
-  // console.log('is form valid', isValid,form.formState);
+  
   return (
     <div className='flex flex-col gap-1 '>
       <AdminHeader isExport={false} label='Add staff' actionButton={<Button onClick={handleOpenModal}  className={clsx("inline-flex gap-2 border min-w-10 px-2 items-center text-sm")}><span><SendIcon /></span><span>SEND INVITE</span></Button>} />
