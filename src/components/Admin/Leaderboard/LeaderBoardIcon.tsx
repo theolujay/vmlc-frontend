@@ -1,3 +1,5 @@
+import React from "react"
+
 export function ThirdPosition(props:Readonly<React.SVGProps<SVGSVGElement>>){
 return <svg {...props} width="320" height="147" viewBox="0 0 320 147" fill="none" xmlns="http://www.w3.org/2000/svg">
 <path d="M60.9056 3.83708C63.5036 1.9158 66.6495 0.878906 69.8807 0.878906H250.119C253.35 0.878906 256.496 1.9158 259.094 3.83708L318.159 47.5174C318.744 47.9502 318.438 48.8789 317.71 48.8789H2.28983C1.56196 48.8789 1.25583 47.9502 1.84106 47.5174L60.9056 3.83708Z" fill="url(#paint0_linear_122_6320)"/>
@@ -57,3 +59,37 @@ export function FirstPosition(props:Readonly<React.SVGProps<SVGSVGElement>>){
 }
 
 
+
+export function CandidateNameIcon(props:Readonly<React.SVGProps<SVGSVGElement>>){
+    return <svg {...props} width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+<rect width="48" height="48" rx="24" fill="#E6F7FD"/>
+<path d="M23.9999 27C20.8298 27 18.0106 28.5306 16.2158 30.906C15.8296 31.4172 15.6364 31.6728 15.6427 32.0183C15.6476 32.2852 15.8152 32.6219 16.0252 32.7867C16.297 33 16.6737 33 17.4271 33H30.5726C31.326 33 31.7027 33 31.9745 32.7867C32.1845 32.6219 32.3521 32.2852 32.357 32.0183C32.3633 31.6728 32.1701 31.4172 31.7839 30.906C29.9891 28.5306 27.1699 27 23.9999 27Z" stroke="#01678C" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+<path d="M23.9999 24C26.4851 24 28.4999 21.9853 28.4999 19.5C28.4999 17.0147 26.4851 15 23.9999 15C21.5146 15 19.4999 17.0147 19.4999 19.5C19.4999 21.9853 21.5146 24 23.9999 24Z" stroke="#01678C" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
+
+}
+
+
+export function PositionIcon(props:Readonly<React.SVGProps<SVGSVGElement>>){
+    return <svg {...props} width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+<rect width="48" height="48" rx="24" fill="#E6F7FD"/>
+<path d="M20.8762 25.0953L16.7012 19.8765C16.4413 19.5517 16.3114 19.3892 16.219 19.2083C16.137 19.0479 16.0771 18.877 16.0408 18.7005C16 18.5016 16 18.2935 16 17.8775V17.2C16 16.0799 16 15.5198 16.218 15.092C16.4097 14.7157 16.7157 14.4097 17.092 14.218C17.5198 14 18.0799 14 19.2 14H28.8C29.9201 14 30.4802 14 30.908 14.218C31.2843 14.4097 31.5903 14.7157 31.782 15.092C32 15.5198 32 16.0799 32 17.2V17.8775C32 18.2935 32 18.5016 31.9592 18.7005C31.9229 18.877 31.863 19.0479 31.781 19.2083C31.6886 19.3892 31.5587 19.5517 31.2988 19.8765L27.1238 25.0953M17.0001 15L24.0001 24L31 15M27.5355 25.4645C29.4882 27.4171 29.4882 30.5829 27.5355 32.5355C25.5829 34.4882 22.4171 34.4882 20.4645 32.5355C18.5118 30.5829 18.5118 27.4171 20.4645 25.4645C22.4171 23.5118 25.5829 23.5118 27.5355 25.4645Z" stroke="#01678C" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+</svg>
+
+}
+
+export function StartTimeIcon(props:Readonly<React.SVGProps<SVGSVGElement>>){
+    return <svg {...props} width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+<rect width="48" height="48" rx="24" fill="#E6F7FD"/>
+<path d="M24 18V24L28 26M34 24C34 29.5228 29.5228 34 24 34C18.4772 34 14 29.5228 14 24C14 18.4772 18.4772 14 24 14C29.5228 14 34 18.4772 34 24Z" stroke="#01678C" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+</svg>
+
+}
+
+export function EndTimeIcon(props:Readonly<React.SVGProps<SVGSVGElement>>){
+    return <svg {...props} width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+<rect width="48" height="48" rx="24" fill="#E6F7FD"/>
+<path d="M24 21.5V25.5L26.5 27M24 17C19.3056 17 15.5 20.8056 15.5 25.5C15.5 30.1944 19.3056 34 24 34C28.6944 34 32.5 30.1944 32.5 25.5C32.5 20.8056 28.6944 17 24 17ZM24 17V14M22 14H26M32.329 17.592L30.829 16.092L31.579 16.842M15.671 17.592L17.171 16.092L16.421 16.842" stroke="#01678C" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+</svg>
+
+}

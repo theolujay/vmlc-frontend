@@ -1,5 +1,3 @@
-
-
 import { useAuth } from '@/contexts/AuthProvider';
 import { useRouter, usePathname, useSearchParams } from 'next/navigation';
 import React, { useEffect } from 'react';

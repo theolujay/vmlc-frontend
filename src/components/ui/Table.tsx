@@ -73,7 +73,7 @@ const searchParams = useSearchParams();
 const href = (() => {
   const query = new URLSearchParams(searchParams.toString());
   query.set("view", "view-details");
-  query.set("id", id); // 👈 attach id here
+  query.set("id", id);
   return `${pathName}?${query.toString()}`;
 })();
 

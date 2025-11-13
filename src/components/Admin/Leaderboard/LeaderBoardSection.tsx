@@ -12,6 +12,8 @@ import EmptySession from "../EmptySession";
 import { FirstPosition, SecondPosition, ThirdPosition } from "./LeaderBoardIcon";
 import CustomTable from "@/components/ui/CustomTable";
 import TablePagination from "@/components/ui/Pagination/TablePagination";
+import { usePathname, useSearchParams } from "next/navigation";
+import Link from "next/link";
 
 
 
@@ -33,6 +35,7 @@ export default function LeaderBoardSection() {
 
 
   const leaderBoardTab = leaderBoardItems?.map((val) => {
+    console.log(val,'what is in val here')
     return {
       label: <ScreeningLabel label={val.stage} />,
       value: val.stage_display,
@@ -70,7 +73,19 @@ function ScoreComponent({ stage, level }: Readonly<{ stage: string; level: numbe
   const [filters] = useState({ stage, level });
   const { data } = useGetLeaderBoard(page, filters);
 
-  
+
+  const pathName = usePathname()
+  const searchParams = useSearchParams()
+  // const href = (() => {
+  //   const query = new URLSearchParams(searchParams.toString());
+  //   query.set("view", "view-candidate");
+  //   query.set('level', level.toString())
+  //   query.set('stage', stage)
+  //   // query.set("id", id);
+  //   return `${pathName}?${query.toString()}`;
+  // })();
+
+
   if (!data) {
     return (
       <EmptySession
@@ -80,18 +95,18 @@ function ScoreComponent({ stage, level }: Readonly<{ stage: string; level: numbe
     );
   }
 
-  
+
   if ('top_three' in data && 'remaining_candidates' in data) {
-    
     if (data.remaining_candidates.length === 0) {
       return (
         <EmptySession
-          desc="Arrangement of result based on the highest score gotten by candidates on the platform would appear here"
-          label="Exams has not happened yet"
+        desc="Arrangement of result based on the highest score gotten by candidates on the platform would appear here"
+        label="Exams has not happened yet"
         />
       );
     }
-
+    
+    console.log(data,'what is in data hwew')
     return (
       <div className="flex gap-2 flex-col">
         <Podium users={data.top_three} />
@@ -104,7 +119,7 @@ function ScoreComponent({ stage, level }: Readonly<{ stage: string; level: numbe
           //   </div>
           // },
           {
-            key:'School',header:'School',render:(_,row)=><div className="flex items-center gap-1">{row.candidate.school}</div>
+            key: 'School', header: 'School', render: (_, row) => <div className="flex items-center gap-1">{row.candidate.school}</div>
           },
           {
             key: 'Score', header: 'Score', render: (_, row) => <div className="flex  items-center gap-1">
@@ -112,23 +127,37 @@ function ScoreComponent({ stage, level }: Readonly<{ stage: string; level: numbe
             </div>
           },
           {
-            key: 'action', header: "Action", render: () => (
-              <div className="flex justify-between items-center gap-1">
-                <button className="cursor-pointer font-semibold text-[#3E4095]">View Details</button>
-              </div>
-            ),
+            key: 'action', header: "Action", render: (_, row) => {
+              const query = new URLSearchParams(searchParams.toString());
+              query.set("view", "view-candidate");
+              query.set('level', level.toString())
+              query.set('stage', stage)
+              query.set("id", row.candidate.id.toString());
+              const href = `${pathName}?${query.toString()}`;
+
+
+              console.log(row,'what is in id')
+
+
+
+              return (
+                <div className="flex justify-between items-center gap-1">
+                  <Link href={href} className="cursor-pointer font-semibold text-[#3E4095]">View Details</Link>
+                </div>
+              )
+            },
           }
         ]} data={data.remaining_candidates}
           footer={
             <TablePagination pageCount={data.pagination.total_pages} currentPage={page} onPageChange={setPage} />
           }
         />
-      
+
       </div>
     );
   }
 
-  
+
   return (
     <EmptySession
       desc="No ranked leaderboard data available for this stage"

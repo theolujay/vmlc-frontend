@@ -10,6 +10,7 @@ import ExamSectionWrapper from './ExamSystem/ExamSectionWrapper'
 import LeaderBoardSection from './Leaderboard/LeaderBoardSection'
 import OverviewSectionWrapper from './OverviewSection/OverviewSectionWrapper'
 import StaffMgtWrapper from './UserManagement/StaffMgtWrapper'
+import LeaderBoardWrapper from './Leaderboard/LeaderBoardWrapper'
 
 
 
@@ -45,7 +46,8 @@ const tabs: TabType[] = [
     {
         value: 'Leaderboards',
         label: <LeaderboardsLabel />,
-        content: <LeaderBoardSection />
+        // content: <LeaderBoardSection />
+        content:<LeaderBoardWrapper/>
     },
     {
         value: 'User Management',
