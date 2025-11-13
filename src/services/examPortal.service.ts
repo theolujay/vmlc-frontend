@@ -15,7 +15,7 @@ export class ExamPortal {
         } catch (error) {
             console.error(error)
             throw error;
-            
+
         }
     }
 
@@ -33,17 +33,17 @@ export class ExamPortal {
 
 
 
-      
 
 
 
 
 
-     static async getLeaderBoard(page:number=1,filters:Record<string,string|number>={}): Promise<LeaderBoardResponse> {
+
+    static async getLeaderBoard(page: number = 1, filters: Record<string, string | number> = {}): Promise<LeaderBoardResponse> {
         try {
-            const queryParams=new URLSearchParams({
-                page:page.toString(),
-                ...Object.fromEntries(Object.entries(filters).filter(([_,value])=>value!==undefined&&value!==''))
+            const queryParams = new URLSearchParams({
+                page: page.toString(),
+                ...Object.fromEntries(Object.entries(filters).filter(([_, value]) => value !== undefined && value !== ''))
             });
             const response = await client.get(candidateUrls.get_leaderboard(queryParams.toString()));
             return response.data;
