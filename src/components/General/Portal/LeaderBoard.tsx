@@ -17,7 +17,7 @@ export default function LeaderBoard() {
 
 function Board(){
     const {data}=useGetLeaderBoard()
-    console.log(data,'what is the data here')
+
 
     const tabs:TabType[]=[{
         value:'Screening',

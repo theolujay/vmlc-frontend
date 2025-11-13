@@ -12,21 +12,21 @@ import { ActiveIcon, AngleIcon, BroadcastIcon, FilterIcon, InactiveIcon, ManageQ
 
 
 
-function shouldShowHeaderButtons(role:string):boolean{
+function shouldShowHeaderButtons(role: string): boolean {
     switch (role) {
-    case 'volunteer':
-    case 'moderator':
-      return false; 
+        case 'volunteer':
+        case 'moderator':
+            return false;
 
-    case 'admin':
-    case 'manager':
-    case 'superadmin':
-    case 'sponsor':
-      return true; 
+        case 'admin':
+        case 'manager':
+        case 'superadmin':
+        case 'sponsor':
+            return true;
 
-    default:
-      return false;
-  }
+        default:
+            return false;
+    }
 }
 
 
@@ -36,25 +36,25 @@ function shouldShowHeaderButtons(role:string):boolean{
 
 
 export default function OverviewSection() {
-    const {page,setPage}=usePagination()
-    const {data}=useGetCandidateList(page)
-    console.log(data,'what is data in overview')
-    
+    const { page, setPage } = usePagination()
+    const { data } = useGetCandidateList(page)
+
+
     return (
         <div className='flex flex-col gap-1 '>
             {/* <OverviewHeader /> */}
-            <AdminHeader isExport  label='Overview' actionButton={<Button className="inline-flex gap-2 border px-2 items-center text-sm">SEND BROADCAST</Button> } />
+            <AdminHeader isExport label='Overview' actionButton={<Button className="inline-flex gap-2 border px-2 items-center text-sm">SEND BROADCAST</Button>} />
             <div className="flex flex-col gap-3 mt-3 w-[96%] mx-auto">
-                <OverviewSummaryCard registeredStudents={data?.pagination.count??0} />
+                <OverviewSummaryCard registeredStudents={data?.pagination.count ?? 0} />
                 <QuickActionsCard />
-                <ActivityHistoryCard page_count={data?.pagination.total_pages??0} currentPage={page} onPageChange={setPage} data={data?.results??[]} />
+                <ActivityHistoryCard page_count={data?.pagination.total_pages ?? 0} currentPage={page} onPageChange={setPage} data={data?.results ?? []} />
             </div>
         </div>
     )
 }
 
 
-function ActivityHistoryCard({data, onPageChange,currentPage,page_count}:Readonly<{data:ActivityHistoryUserType[],onPageChange:Dispatch<SetStateAction<number>>,currentPage:number,page_count:number}>){
+function ActivityHistoryCard({ data, onPageChange, currentPage, page_count }: Readonly<{ data: ActivityHistoryUserType[], onPageChange: Dispatch<SetStateAction<number>>, currentPage: number, page_count: number }>) {
     return <ResponsiveContainer className='flex gap-4 py-3 px-0 flex-col mx-auto'>
         <div className="flex justify-between px-3">
             <div className="flex gap-1 flex-col">
@@ -65,11 +65,11 @@ function ActivityHistoryCard({data, onPageChange,currentPage,page_count}:Readonl
                 <div className="flex">
                     <input type="text" placeholder='Search by student, staff name or ID' className='border h-10 px-2 py-1 rounded-md border-[#E4E7EC] outline-none' />
                 </div>
-                <button className='inline-flex items-center gap-2 border h-10 rounded-md px-2 py-1 border-[#E4E7EC] cursor-pointer '   ><span><SortIcon/></span><span className='text-[#344054]'>Sort</span></button>
-                <button className='inline-flex items-center gap-2 border h-10 rounded-md px-2 py-1 border-[#E4E7EC] cursor-pointer ' ><span><FilterIcon/></span><span className='text-[#344054]'>Filter</span></button>
+                <button className='inline-flex items-center gap-2 border h-10 rounded-md px-2 py-1 border-[#E4E7EC] cursor-pointer '   ><span><SortIcon /></span><span className='text-[#344054]'>Sort</span></button>
+                <button className='inline-flex items-center gap-2 border h-10 rounded-md px-2 py-1 border-[#E4E7EC] cursor-pointer ' ><span><FilterIcon /></span><span className='text-[#344054]'>Filter</span></button>
             </div>
         </div>
-        <Table footer={<TablePagination currentPage={currentPage} pageCount={page_count} onPageChange={onPageChange} />} label='No activity has been made yet' desc={<>All application made on the platform would appear here </>} data={data} columns={['Submission ID','Name','User Role','Email Address','Application Date','Status','Action']} />
+        <Table footer={<TablePagination currentPage={currentPage} pageCount={page_count} onPageChange={onPageChange} />} label='No activity has been made yet' desc={<>All application made on the platform would appear here </>} data={data} columns={['Submission ID', 'Name', 'User Role', 'Email Address', 'Application Date', 'Status', 'Action']} />
     </ResponsiveContainer>
 }
 
@@ -106,7 +106,7 @@ function QuickActionsCard() {
 }
 
 
-function OverviewSummaryCard({registeredStudents}:{registeredStudents:number}) {
+function OverviewSummaryCard({ registeredStudents }: { registeredStudents: number }) {
     return <ResponsiveContainer className='flex gap-2 px-3 flex-col mx-auto'>
         <div className="flex justify-between">
             <div className="flex gap-4 flex-col">

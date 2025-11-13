@@ -46,7 +46,7 @@ export default function useUploadSession(exam_id: number,onSuccessCallback:()=>v
 
   function onSubmit(value: ValueType) {
     // mutate(payload)
-    console.log(value, 'what is value for upload')
+    
     const payload = {
       scheduled_date: new Date(`${value.scheduled_date}T${value.scheduled_exam_time}`).toISOString(),
       open_duration_hours: Number(value.open_duration_hours),
