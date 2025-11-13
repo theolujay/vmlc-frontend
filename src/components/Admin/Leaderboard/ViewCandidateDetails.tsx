@@ -1,12 +1,8 @@
-import React, { useState } from 'react'
-import AdminHeader from '../AdminHeader'
-import Button from '@/components/ui/Button'
-import { CandidateIcon, SortIcon } from '../AdminIcons'
-import ResponsiveContainer from '@/components/ui/ResponsiveContainer'
-// import QuestionsTable from '../QuestionsTable'
-import { CandidateNameIcon, EndTimeIcon, PositionIcon, StartTimeIcon } from './LeaderBoardIcon'
 import CustomTable from '@/components/ui/CustomTable'
-// import useGetLeaderBoardCandidateDetail from '@/hooks/useGetLeaderBoardCandidateDetail'
+import ResponsiveContainer from '@/components/ui/ResponsiveContainer'
+import AdminHeader from '../AdminHeader'
+import { CandidateIcon, SortIcon } from '../AdminIcons'
+import { CandidateNameIcon, EndTimeIcon, PositionIcon, StartTimeIcon } from './LeaderBoardIcon'
 
 export default function ViewCandidateDetails({ candidate_id, level, stage }: { candidate_id: string, level: string, stage: string }) {
     // const {data}=useGetLeaderBoardCandidateDetail(stage,level,candidate_id);
@@ -65,17 +61,7 @@ function CandidateInfoCard() {
 
 
 function QuestionsTable() {
-    const [openRemoveQuestion, setOpenRemoveQuestion] = useState(false);
-    const [openDrawer, setOpenDrawer] = useState(false)
-    const [selectedQuestionId, setSelectedQuestionId] = useState<number>(0);
-    //   const [currentQuestion, setCurrentQuestion] = useState<SessionQuestionItemType | null>(null)
-
-
-
-    function handleOpenModal() {
-        setOpenRemoveQuestion(true);
-    }
-
+   
 
     return <ResponsiveContainer className='flex gap-4 py-3 px-0 flex-col mx-auto'>
         <div className="flex justify-between px-3">

@@ -28,7 +28,7 @@ export default function LeaderBoardSection() {
   let leaderBoardItems;
   if ('available_leaderboards' in data) {
 
-    leaderBoardItems = data.available_leaderboards;
+    leaderBoardItems = data.available_leaderboards.toReversed();
   }
 
 
@@ -41,7 +41,7 @@ export default function LeaderBoardSection() {
       value: val.stage_display,
       content: <ScoreComponent stage={val.stage} level={val.level} />
     }
-  })
+  });
   return (
     <div className='flex flex-col gap-1 '>
       <AdminHeader label="Leaderboards" isExport actionButton={<Button className="px-2 bg-grey-base-400 text-white">UPLOAD</Button>} />
