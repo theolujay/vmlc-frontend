@@ -63,68 +63,14 @@ function ScreeningLabel({ label }: { label: string }) {
   return <div className='flex gap-1 items-center'><span>{handleRankingIcon(label)}</span><span className="capitalize">{label}</span></div>
 }
 
-// function ScoreComponent({ stage, level }: Readonly<{ stage: string, level: number }>) {
-//   const { page, setPage } = usePagination()
-//   const [filters] = useState({
-//     stage,
-//     level,
 
-//   })
-
-//   const { data } = useGetLeaderBoard(page, filters)
-
-
-
-
-//   if (!data) {
-//     return (
-//       <EmptySession
-//         desc="Arrangement of result based on the highest score gotten by candidates on the platform would appear here"
-//         label="Exams hasn’t happened yet"
-//       />
-//     );
-//   }
-
-//   if ('top_three' in data) {
-//     // ✅ data is RankedLeaderBoardType here
-//     return (
-//       <div className="flex gap-2 flex-col">
-//         <Podium users={data.top_three} />
-//         {/* <CustomTable columns={[
-//           { key: 'position', header: 'Position', render: (_, row) => <div className="flex items-center gap-1">{row.rank}</div> },
-//           { key: 'Name', header: 'Name', render: (_, row) => <div className="flex  items-center gap-1">{getUserName(row.candidate.user.first_name, row.candidate.user.last_name)}</div> },
-//           {
-//             key: 'email', header: 'Email Address', render: (_, row) => <div className="flex items-center gap-1">
-//               {row.candidate.user.email}
-//             </div>
-//           },
-//           {
-//             key: 'Score', header: 'Score', render: (_, row) => <div className="flex  items-center gap-1">
-//               {row.total_score}
-//             </div>
-//           },
-//           {
-//             key: 'action', header: "Action", render: () => (
-//               <div className="flex justify-between items-center gap-1">
-
-//                 <button className="cursor-pointer font-semibold text-[#3E4095]">View Details</button>
-//               </div>
-//             ),
-//           }
-//         ]} data={data.remaining_candidates} />  */}
-//       </div>
-//     );
-//   }
-
-
-// }
 
 function ScoreComponent({ stage, level }: Readonly<{ stage: string; level: number }>) {
   const { page, setPage } = usePagination();
   const [filters] = useState({ stage, level });
   const { data } = useGetLeaderBoard(page, filters);
 
-  // First handle "no data" case
+  
   if (!data) {
     return (
       <EmptySession
@@ -134,9 +80,9 @@ function ScoreComponent({ stage, level }: Readonly<{ stage: string; level: numbe
     );
   }
 
-  // Now narrow type properly
+  
   if ('top_three' in data && 'remaining_candidates' in data) {
-    // ✅ TypeScript now knows `data` is RankedLeaderBoardType
+    
     if (data.remaining_candidates.length === 0) {
       return (
         <EmptySession
@@ -229,7 +175,7 @@ export function Podium({ users }: Readonly<{ users: CandidateType[] }>) {
                 <span className="">{val.candidate.school}</span>
               </div>
               <div className="relative">
-                <span className="w-15 h-6 p-2 inline-flex items-center absolute left-1/2 -top-2 bg-[#3E4095] text-white  -translate-x-1/2  whitespace-nowrap font-bold rounded-full">{val.percentage}</span>
+                <span className="w-15 h-6 p-2 inline-flex items-center absolute left-1/2 -top-2 bg-[#3E4095] text-white  -translate-x-1/2  whitespace-nowrap font-bold rounded-full">{val.score}</span>
                 <Shape />
               </div>
             </div>
