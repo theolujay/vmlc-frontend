@@ -162,7 +162,7 @@ export default function QuestionPoolTable({
   }
 
 
-  console.log(selectedQuestions,'what do we have here')
+
  
 
   function handleOpenExamSessionModal() {

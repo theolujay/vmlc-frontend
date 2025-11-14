@@ -10,7 +10,7 @@ export default function BulkRemoveQuestionsModal({ open, close, questions }: Rea
     function handleClose() {
         close(!open)
     }
-    console.log(questions,'what is bulk delete questions')
+
     const { onSubmit, isPending } = useBulkArchiveQuestions(handleClose);
     return (
         <AppDialog open={open}>

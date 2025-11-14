@@ -11,7 +11,6 @@ export default function QuestionInformation({ open, setOpen, information }: Read
 
     // const options = getOptionAsArray(information)
     const options = useMemo(() => getOptionAsArray(information) || [], [information])
-    console.log(options, 'what is options')
     const formattedDate = formatDate(information.created_at);
     const formattedTime = formatTimeToString(information.created_at)
     const correct = options.find((val) => val.optionKey.endsWith(information.correct_answer.toLowerCase()));

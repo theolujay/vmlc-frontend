@@ -1,7 +1,7 @@
 "use client"
 import useRegisterStaff from '@/hooks/useRegisterStaff'
 import Link from 'next/link'
-import { FormProvider } from 'react-hook-form'
+import { Controller, FormProvider } from 'react-hook-form'
 import AuthButton from '../ui/Button'
 import Input, { ConfirmPasswordInput, PasswordInput, PhoneNumberInput } from '../ui/Input'
 import Spinner from '../ui/spinner/spinner'
@@ -14,7 +14,7 @@ import { Checkbox } from '../ui/Checkbox'
 
 
 export default function RegisterStaff() {
-  
+
   const { form, onSubmit, isPending } = useRegisterStaff()
   return (
     <AuthLayout>
@@ -26,7 +26,7 @@ export default function RegisterStaff() {
           <div className="flex gap-1 items-center flex-col">
             <h2 className='text-[18px] md:text-[28px] font-bold'>Volunteer Registration</h2>
             <p>Enter your credentials to get started</p>
-          
+
           </div>
           <FormProvider {...form}>
 
@@ -50,17 +50,19 @@ export default function RegisterStaff() {
               <div className="grid">
                 <ConfirmPasswordInput name='password2' icon={<PasswordIcon />} label='CONFIRM PASSWORD' placeholder='Confirm your password' className='border-[#D0D5DD]' />
               </div>
-               <div className="flex gap-3 items-center mt-6">
-                              <Checkbox/>
-                              <p>I agree to allow my information to be used for promotional purposes and accept {`VMLC’s`} <span className='text-[#018ABB]'>Terms & Conditions</span> and <span className='text-[#018ABB]'>Privacy Policy</span>.</p>
-                            
-                              
-                            </div>
+              <div className="flex gap-3 items-center mt-6">
+                {/* <Checkbox id='terms' /> */}
+                <Controller name='terms' control={form.control} render={({ field }) => <Checkbox checked={field.value} id='terms' onChange={(e) => {
+                  field.onChange(e)
+                  // handleCheckbox(e)
+                }} />} />
+              <label htmlFor='terms'>I agree to allow my information to be used for promotional purposes and accept {`VMLC’s`} <Link href='/VMLC T&C.pdf' target='_blank' className='text-[#018ABB]'>Terms & Conditions</Link> and <Link href='/VMLC Privacy Policy.pdf' target='_blank' className='text-[#018ABB]'>Privacy Policy</Link>.</label>
+              </div>
               <div className="grid mt-6">
-                <AuthButton isPending={isPending}>{isPending ? <Spinner/> : 'Register'}</AuthButton>
+                <AuthButton isPending={isPending}>{isPending ? <Spinner /> : 'Register'}</AuthButton>
               </div>
               <div className="flex flex-col gap-3 items-center mt-6">
-              
+
                 <div className='flex gap-2'>
                   <span>Have an account?</span>
                   <Link href='/login' className=' text-[#3E4095] font-[700]'>LOGIN</Link>

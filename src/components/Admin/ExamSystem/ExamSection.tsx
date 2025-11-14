@@ -38,7 +38,7 @@ export default function ExamSection() {
 
 
 
-  console.log(data, 'exam session data')
+
 
 
 

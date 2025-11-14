@@ -19,9 +19,9 @@ export default function UserManagement() {
     const searchParams = useSearchParams()
     const router = useRouter()
 
-    const {data:testData}=useGetStatOverview()
+    const { data: testData } = useGetStatOverview()
 
-console.log(testData,'what is in test data')
+
     function addStaffMember() {
         const params = new URLSearchParams(searchParams.toString())
         params.set('view', 'add-staff')
@@ -174,7 +174,7 @@ function UserHistoryTable({ candidates }: { candidates: MgtTypeItem[] }) {
                 }
             ]}
             data={candidates}
-            // footer={<TablePagination />}
+        // footer={<TablePagination />}
         />
     </ResponsiveContainer>
 }

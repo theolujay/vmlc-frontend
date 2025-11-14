@@ -38,7 +38,7 @@ export default function QuestionPool() {
     return filters;
   }, [filters])
   const { data ,isPending} = useListQuestions(page, memoizedFilters)
-  console.log(data,'data from question pool')
+  
 
   return (
     <div className='flex flex-col gap-1 '>

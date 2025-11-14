@@ -18,6 +18,7 @@ import React from 'react'
 export default function Button({
   children,
   // invite,
+  pendingState= 'bg-[#3E4095] hover:bg-[#2d2f6e]',
   onClick,
   className = '',
   isPending = false,
@@ -29,6 +30,7 @@ export default function Button({
   onClick?: () => void
   className?: string
   disabled?: boolean
+  pendingState?:string
 }>) {
   return (
     <button
@@ -40,7 +42,8 @@ export default function Button({
         className,
         (disabled || isPending)
           ? 'bg-gray-400 cursor-not-allowed'
-          : 'bg-[#3E4095] hover:bg-[#2d2f6e]'
+          :pendingState
+          // : 'bg-[#3E4095] hover:bg-[#2d2f6e]'
       )}
     >
       {children}

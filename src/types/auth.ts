@@ -102,3 +102,25 @@ export type ActivityHistoryUserType = {
     is_user_verified: boolean
 }
 
+
+export type RegisterRequestValueType= {
+    email: string;
+    
+    first_name: string;
+    phone: string;
+    last_name: string;
+    school: string;
+    generate_password: boolean;
+    password?: string | undefined;
+    password2?: string | undefined;
+}
+
+export type RegisterStaffRequestValueType={
+    email: string;
+    password: string;
+    password2: string;
+    first_name: string;
+    phone: string;
+    last_name: string;
+    occupation: string;
+}
