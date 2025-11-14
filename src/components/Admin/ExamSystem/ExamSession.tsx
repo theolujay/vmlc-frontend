@@ -28,24 +28,41 @@ export default function ExamSession() {
   const { data, isPending } = useViewExamQuestions(id)
   const [openUpload, setOpenUpload] = useState(false);
 
-  
 
 
-  function handleOpenUpload(){
+
+  function handleCanUploadButton(status: string|undefined){
+  switch (status) {
+    case 'draft':
+      return <Button key='button-one' onClick={handleOpenUpload} className="inline-flex gap-2 border px-2 items-center text-sm"><span>UPLOAD</span></Button>
+    case 'scheduled':
+    case 'concluded':
+    case 'cancelled':
+     return <Button key='button-one' disabled className="inline-flex uppercase gap-2 border px-2 items-center cursor-not-allowed text-sm"><span>{status}</span></Button>;
+    case 'ongoing':
+     return <Button key='button-one' disabled pendingState='hover:opacity-50'  className=" inline-flex uppercase bg-[#d42620] gap-2 border px-2 items-center text-sm"><span>{status}</span></Button>;
+    default:
+       return <Button key='button-one' onClick={handleOpenUpload} className="inline-flex gap-2 border px-2 items-center text-sm"><span>UPLOAD</span></Button>;
+  }
+}
+
+
+  function handleOpenUpload() {
     setOpenUpload(true);
   }
 
   return (
     <div className='flex flex-col gap-1 '>
-      <AdminHeader isExport={false} label='Exam System' actionButton={[<Button key='button-one' onClick={handleOpenUpload} className="inline-flex gap-2 border px-2 items-center text-sm"><span>UPLOAD</span></Button>,
+      <AdminHeader isExport={false} label='Exam System' actionButton={[handleCanUploadButton(data?.status),
+      // <Button key='button-one' onClick={handleOpenUpload} className="inline-flex gap-2 border px-2 items-center text-sm"><span>UPLOAD</span></Button>,
       <ExamSessionDropdownDialog exam_id={id} key='button-two' />
       ]} />
       {isPending ? <div className='w-full h-full grid place-content-center'>
         <Spinner />
       </div> :
         <div className="flex flex-col gap-3 mt-3 w-[96%] mx-auto">
-          <SessionDetails dateCreated={data?.created_at??new Date()} title={data?.title} description={data?.description} />
-          <QuestionSummaryCard moderate_question={data?.questions.question_pool_data.moderate_questions_count??0} hard_question={data?.questions.question_pool_data.hard_questions_count??0} easy_question={data?.questions.question_pool_data.easy_questions_count??0} total={data?.questions.question_pool_data.total_questions ?? 0} />
+          <SessionDetails dateCreated={data?.created_at ?? new Date()} title={data?.title} description={data?.description} />
+          <QuestionSummaryCard moderate_question={data?.questions.question_pool_data.moderate_questions_count ?? 0} hard_question={data?.questions.question_pool_data.hard_questions_count ?? 0} easy_question={data?.questions.question_pool_data.easy_questions_count ?? 0} total={data?.questions.question_pool_data.total_questions ?? 0} />
           <QuestionsTable page_count={data?.questions.total_pages ?? 0} currentPage={page} onPageChange={setPage} questions={(data?.questions?.results ?? []) as SessionQuestionItemType[]} />
         </div>
       }
@@ -56,7 +73,7 @@ export default function ExamSession() {
 }
 
 
-function SessionDetails({title,description,dateCreated}:Readonly<{title?:string,description?:string,dateCreated:Date}>) {
+function SessionDetails({ title, description, dateCreated }: Readonly<{ title?: string, description?: string, dateCreated: Date }>) {
   return <ResponsiveContainer className='gap-10 p-4 flex flex-col'>
     <div className="flex justify-between">
       <div className='flex flex-col gap-1'>
@@ -101,3 +118,6 @@ function SummaryCard({ label, value, isActive = false }: Readonly<{ textColor?: 
     </div>
   </div>
 }
+
+
+

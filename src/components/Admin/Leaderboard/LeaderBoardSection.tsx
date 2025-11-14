@@ -34,14 +34,14 @@ export default function LeaderBoardSection() {
 
 
 
-  const leaderBoardTab = leaderBoardItems?.map((val) => {
-    console.log(val,'what is in val here')
-    return {
-      label: <ScreeningLabel label={val.stage} />,
-      value: val.stage_display,
-      content: <ScoreComponent stage={val.stage} level={val.level} />
-    }
-  });
+  
+
+  const leaderBoardTab = leaderBoardItems?.map((val) => ({
+    label: <ScreeningLabel label={val.stage} />,
+    value: val.stage_display,
+    content: <ScoreComponent stage={val.stage} level={val.level} />
+  }));
+
   return (
     <div className='flex flex-col gap-1 '>
       <AdminHeader label="Leaderboards" isExport actionButton={<Button className="px-2 bg-grey-base-400 text-white">UPLOAD</Button>} />
@@ -49,9 +49,6 @@ export default function LeaderBoardSection() {
 
         <ResponsiveContainer className="px-0 min-h-[60vh]">
           <ScreeningTabWrapper
-            // tabs={[
-            //   { label: <ScreeningLabel />, value: 'overall-leaderboard', content: <ScoreComponent results={data?.list ?? []} /> },
-            // ]}
             tabs={leaderBoardTab ?? []}
           />
 
@@ -100,13 +97,13 @@ function ScoreComponent({ stage, level }: Readonly<{ stage: string; level: numbe
     if (data.remaining_candidates.length === 0) {
       return (
         <EmptySession
-        desc="Arrangement of result based on the highest score gotten by candidates on the platform would appear here"
-        label="Exams has not happened yet"
+          desc="Arrangement of result based on the highest score gotten by candidates on the platform would appear here"
+          label="Exams has not happened yet"
         />
       );
     }
-    
-    console.log(data,'what is in data hwew')
+
+    console.log(data, 'what is in data hwew')
     return (
       <div className="flex gap-2 flex-col">
         <Podium users={data.top_three} />
@@ -136,7 +133,7 @@ function ScoreComponent({ stage, level }: Readonly<{ stage: string; level: numbe
               const href = `${pathName}?${query.toString()}`;
 
 
-              console.log(row,'what is in id')
+              console.log(row, 'what is in id')
 
 
 
