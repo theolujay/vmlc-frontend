@@ -15,8 +15,6 @@ export default function TabWrapper({
 
   return (
     <Tabs.Root
-    // onValueChange={handleTabChange}
-    // value={activeTab}
       defaultValue={defaultValue ?? tabs[0]?.value}
       className="flex flex-col "
     >
