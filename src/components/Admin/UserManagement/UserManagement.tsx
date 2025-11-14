@@ -5,19 +5,23 @@ import CustomTable from '@/components/ui/CustomTable'
 import ResponsiveContainer from '@/components/ui/ResponsiveContainer'
 import useGetStatOverview from '@/hooks/useGetStatOverview'
 import useListUserMgt from '@/hooks/useListUserMgt'
-import { MgtTypeItem } from '@/types/UserMgtType'
+import { MgtItem, MgtTypeItem } from '@/types/UserMgtType'
 import { formatDate } from '@/utils/formatFileSize'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { ReactNode } from 'react'
 import AdminHeader from '../AdminHeader'
 import { FilterIcon, SortIcon } from '../AdminIcons'
 import { DoughnutChart } from '../Charts/ProgressRing'
+import { getUserName } from '@/utils/generalUtils'
 
 export default function UserManagement() {
     const { data } = useListUserMgt()
     const pathName = usePathname();
     const searchParams = useSearchParams()
     const router = useRouter()
+
+
+    console.log(data,'what is data list here')
 
     const { data: testData } = useGetStatOverview()
 
@@ -119,7 +123,7 @@ function UserCard({ header }: Readonly<{ header: ReactNode }>) {
 
 
 
-function UserHistoryTable({ candidates }: { candidates: MgtTypeItem[] }) {
+function UserHistoryTable({ candidates }: { candidates: MgtItem[] }) {
 
     return <ResponsiveContainer className='flex gap-4 py-3 px-0 flex-col mx-auto'>
         <div className="flex justify-between px-3">
@@ -139,29 +143,29 @@ function UserHistoryTable({ candidates }: { candidates: MgtTypeItem[] }) {
         <CustomTable
             columns={[
                 {
-                    key: 'S/N',
-                    header: 'S/N',
-                    render: (_, __, index) => <div className="flex  items-center gap-1">{index + 1}</div>
+                    key: 'Name',
+                    header: 'Name',
+                    render: (_,row) => <div className="flex  items-center gap-1">{getUserName(row.first_name,row.last_name)}</div>
                 },
                 {
                     key: 'role',
                     header: 'Role',
-                    render: (_, row) => <div className="flex  items-center gap-1">{row.role}</div>
+                    render: (_, row) => <div className="flex  items-center gap-1">{row.last_name}</div>
                 },
                 {
                     key: 'email',
                     header: 'Email Address',
-                    render: (_, row) => <div className="flex  items-center gap-1">{row.user.email}</div>
+                    render: (_, row) => <div className="flex  items-center gap-1">{row.email}</div>
                 },
                 {
                     key: 'application',
                     header: 'Application Date',
-                    render: (_, row) => <div className="flex  items-center gap-1">{formatDate(row.user.date_joined)}</div>
+                    render: (_, row) => <div className="flex  items-center gap-1">{formatDate(row.date_joined)}</div>
                 },
                 {
                     key: 'status',
                     header: 'Status',
-                    render: (_, row) => <div className="flex capitalize items-center gap-1">{row.role}</div>
+                    render: (_, row) => <div className="flex capitalize items-center gap-1">{row.is_email_verified?'Approved':'Pending'}</div>
                 },
                 {
                     key: 'action',

@@ -2,6 +2,7 @@ import UploadExamSessionModal from '@/components/Modals/UploadExamSessionModal'
 import Spinner from '@/components/ui/spinner/spinner'
 import usePagination from '@/hooks/usePagination'
 import useViewExamQuestions from '@/hooks/useViewExamQuestions'
+import { SessionQuestionItemType } from '@/types/Examtype'
 import { formatDate } from '@/utils/formatFileSize'
 import clsx from 'clsx'
 import { useSearchParams } from 'next/navigation'
@@ -13,8 +14,6 @@ import AdminHeader from '../AdminHeader'
 import { SummaryIcon } from '../AdminIcons'
 import QuestionsTable from '../QuestionsTable'
 import ExamSessionDropdownDialog from './ExamSessionDropdownDialog'
-import RemoveQuestionModal from '@/components/Modals/RemoveQuestionModal'
-import { SessionQuestionItemType } from '@/types/Examtype'
 
 
 
@@ -31,20 +30,20 @@ export default function ExamSession() {
 
 
 
-  function handleCanUploadButton(status: string|undefined){
-  switch (status) {
-    case 'draft':
-      return <Button key='button-one' onClick={handleOpenUpload} className="inline-flex gap-2 border px-2 items-center text-sm"><span>UPLOAD</span></Button>
-    case 'scheduled':
-    case 'concluded':
-    case 'cancelled':
-     return <Button key='button-one' disabled className="inline-flex uppercase gap-2 border px-2 items-center cursor-not-allowed text-sm"><span>{status}</span></Button>;
-    case 'ongoing':
-     return <Button key='button-one' disabled pendingState='hover:opacity-50'  className=" inline-flex uppercase bg-[#d42620] gap-2 border px-2 items-center text-sm"><span>{status}</span></Button>;
-    default:
-       return <Button key='button-one' onClick={handleOpenUpload} className="inline-flex gap-2 border px-2 items-center text-sm"><span>UPLOAD</span></Button>;
+  function handleCanUploadButton(status: string | undefined) {
+    switch (status) {
+      case 'draft':
+        return <Button key='button-one' onClick={handleOpenUpload} className="inline-flex gap-2 border px-2 items-center text-sm"><span>UPLOAD</span></Button>
+      case 'scheduled':
+      case 'concluded':
+      case 'cancelled':
+        return <Button key='button-one' disabled className="inline-flex uppercase gap-2 border px-2 items-center cursor-not-allowed text-sm"><span>{status}</span></Button>;
+      case 'ongoing':
+        return <Button key='button-one' disabled pendingState='hover:opacity-50' className=" inline-flex uppercase bg-[#d42620] gap-2 border px-2 items-center text-sm"><span>{status}</span></Button>;
+      default:
+        return <Button key='button-one' onClick={handleOpenUpload} className="inline-flex gap-2 border px-2 items-center text-sm"><span>UPLOAD</span></Button>;
+    }
   }
-}
 
 
   function handleOpenUpload() {
@@ -82,7 +81,7 @@ function SessionDetails({ title, description, dateCreated }: Readonly<{ title?: 
       </div>
       <div className="flex flex-col gap-1">
         <span className='text-sm'>DATE CREATED</span>
-        {/* <span>08 July, 2025</span> */}
+      
         <span>{formatDate(dateCreated)}</span>
       </div>
     </div>
