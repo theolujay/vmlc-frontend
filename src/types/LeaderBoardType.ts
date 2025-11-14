@@ -58,14 +58,14 @@ export type CandidateType = {
     rank: number,
     candidate: EachCandidate,
     score: number
-    percentage:number
+    percentage: number
 }
 
 
-type EachCandidate={
-    id:number
-    school:string
-    full_name:string
+type EachCandidate = {
+    id: string
+    school: string
+    full_name: string
 }
 
 
@@ -75,7 +75,45 @@ type EachCandidate={
 
 
 
+type CandidateExamDetailType = {
+    id: number,
+    title: string,
+    stage: string,
+    level: number,
+    scheduled_date: Date,
+    concluded_at: Date,
+    total_questions: number,
+    total_candidates: number,
+    average_score: number
+}
 
+
+export type SubmissionItem = {
+    option_a: string,
+    option_b: string,
+    option_c: string,
+    option_d: string,
+    is_correct: boolean,
+    answered_at: Date,
+    question_id: number,
+    question_text: string,
+    correct_answer: string,
+    selected_option: string
+}
+export type ViewCandidateDetailType = {
+    exam_details: CandidateExamDetailType,
+    candidate_performance: {
+        rank: number,
+        score: number,
+        candidate: {
+            id: string,
+            school: string,
+            full_name: string,
+            submissions: SubmissionItem[]
+        },
+        "percentage": number
+    }
+}
 
 
 

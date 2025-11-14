@@ -125,15 +125,21 @@ function ScoreComponent({ stage, level }: Readonly<{ stage: string; level: numbe
           },
           {
             key: 'action', header: "Action", render: (_, row) => {
+              console.log({
+               stage: stage,
+               level:level,
+               candidateid:row.candidate.id
+
+              },'is it rubbish here too')
               const query = new URLSearchParams(searchParams.toString());
               query.set("view", "view-candidate");
               query.set('level', level.toString())
               query.set('stage', stage)
-              query.set("id", row.candidate.id.toString());
+              query.set("id", row.candidate.id);
               const href = `${pathName}?${query.toString()}`;
 
 
-              console.log(row, 'what is in id')
+              console.log(row,query.toString(), 'what is in id')
 
 
 
