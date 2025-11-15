@@ -81,8 +81,8 @@ function QuestionsTable({ questions }: { questions: SubmissionItem[] }) {
                 <div className="flex">
                     <input type="text" placeholder='Search questions' className='border h-10 px-2 py-1 rounded-md border-[#E4E7EC] outline-none' />
                 </div>
-                <button className='inline-flex items-center gap-2 border rounded-md h-10 px-2 py-1 border-[#E4E7EC] cursor-pointer '   ><span><SortIcon /></span><span className='text-[#344054]'>Sort</span></button>
-                {/* <button className='inline-flex items-center gap-2 border rounded-md px-2 h-10 py-1 border-[#E4E7EC] cursor-pointer ' ><span><FilterIcon /></span><span className='text-[#344054]'>Filter</span></button> */}
+                <button className='inline-flex items-center gap-2 border rounded-md h-10 px-2 py-1 border-[#E4E7EC] cursor-pointer'><span><SortIcon /></span><span className='text-[#344054]'>Sort</span></button>
+            
             </div>
         </div>
         <CustomTable
@@ -115,41 +115,14 @@ function QuestionsTable({ questions }: { questions: SubmissionItem[] }) {
                         </div>
                     }
                 },
-                // {
-                //   key: 'difficulty', header: 'Difficulty', render: (_, row) => <div>
-                //     <span className={clsx(getAppropriateColor(row.), 'px-3 capitalize rounded-full text-sm font-bold py-2')}>{row.difficulty}</span>
-                //   </div>
-                // },
+               
                 {
                     key: 'Status', header: 'Status', render: (_, row) => <div>
                         {questionPassedStatus(row.is_correct)}
 
                     </div>
                 },
-                // {
-                //   key: 'date_created', header: "Date Added", render: (_, row) => {
-
-                //     return (
-                //       <div className="flex justify-center items-center gap-1">
-                //         <span>{formatDate(row.created_at)}</span>
-                //       </div>
-                //     )
-                //   },
-                // },
-                // {
-                //   key: 'action', header: "Action", render: (_, row) => (
-                //     <div className="flex justify-between items-center gap-1">
-                //       <button onClick={() => {
-                //         setSelectedQuestionId(row.id);
-                //         handleOpenModal()
-                //       }} className="cursor-pointer font-semibold text-[#475467]">Remove</button>
-                //       <button onClick={() => {
-                //         setOpenDrawer(true)
-                //         setCurrentQuestion(row)
-                //       }} className="cursor-pointer font-semibold text-[#6941C6]">View</button>
-                //     </div>
-                //   ),
-                // }
+               
             ]}
         //   footer={<TablePagination currentPage={currentPage} pageCount={page_count} onPageChange={onPageChange} />}
         />
@@ -175,7 +148,7 @@ export function getOrdinal(n: number): string {
     const v = n % 100;
 
     if (v >= 11 && v <= 13) {
-        return `${n}TH`; // special case: 11th, 12th, 13th
+        return `${n}TH`; 
     }
 
     switch (n % 10) {
