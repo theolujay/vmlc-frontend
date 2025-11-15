@@ -1,7 +1,12 @@
+import UploadConfirmationModal from "@/components/Modals/UploadConfirmationModal";
+import CustomTable from "@/components/ui/CustomTable";
+import TablePagination from "@/components/ui/Pagination/TablePagination";
 import Spinner from "@/components/ui/spinner/spinner";
 import useGetLeaderBoard from "@/hooks/useGetLeaderboard";
 import usePagination from "@/hooks/usePagination";
 import { CandidateType } from "@/types/LeaderBoardType";
+import Link from "next/link";
+import { usePathname, useSearchParams } from "next/navigation";
 import { useState } from "react";
 import { LeagueIcon, ScreeningIcon } from "../../General/GeneralIcon";
 import Button from "../../ui/Button";
@@ -10,12 +15,6 @@ import ScreeningTabWrapper from "../../ui/Tabs/ScreeningTabWrapper";
 import AdminHeader from "../AdminHeader";
 import EmptySession from "../EmptySession";
 import { FirstPosition, SecondPosition, ThirdPosition } from "./LeaderBoardIcon";
-import CustomTable from "@/components/ui/CustomTable";
-import TablePagination from "@/components/ui/Pagination/TablePagination";
-import { usePathname, useSearchParams } from "next/navigation";
-import Link from "next/link";
-import usePublishLeaderboard from "@/hooks/usePublishLeaderboard";
-import UploadConfirmationModal from "@/components/Modals/UploadConfirmationModal";
 
 
 
@@ -68,7 +67,7 @@ const [openPublishModal,setOpenPublishModal]=useState(false)
 }
 
 
-function ScreeningLabel({ label }: { label: string }) {
+export function ScreeningLabel({ label }: { label: string }) {
   return <div className='flex gap-1 items-center'><span>{handleRankingIcon(label)}</span><span className="capitalize">{label}</span></div>
 }
 
