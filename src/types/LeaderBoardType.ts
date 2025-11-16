@@ -102,6 +102,7 @@ export type SubmissionItem = {
 }
 export type ViewCandidateDetailType = {
     exam_details: CandidateExamDetailType,
+   
     candidate_performance: {
         rank: number,
         score: number,
@@ -111,7 +112,8 @@ export type ViewCandidateDetailType = {
             full_name: string,
             submissions: SubmissionItem[]
         },
-        "percentage": number
+        percentage: number,
+         participated_at:Date,
     }
 }
 
