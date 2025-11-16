@@ -255,62 +255,137 @@ export function ConfirmPasswordInput({ name, icon, placeholder, className, label
 
 
 
-export function OTP({ className, label }:Readonly< { className?: string; label: string }>) {
-    const inputs = useRef<(HTMLInputElement | null)[]>([]);
-    const { register, setValue, watch, formState: { errors } } = useFormContext();
+// export function OTP({ className, label }:Readonly< { className?: string; label: string }>) {
+//     const inputs = useRef<(HTMLInputElement | null)[]>([]);
+//     const { register, setValue, watch, formState: { errors } } = useFormContext();
 
-    const otp = watch('otp') || '';
+//     const otp = watch('otp') || '';
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>, index: number) => {
-        const value = e.target.value.replace(/\D/, ''); // only digits
-        const otpArray = otp.split('');
-        otpArray[index] = value;
-        const newOtp = otpArray.join('');
-        setValue('otp', newOtp);
+//     const handleChange = (e: React.ChangeEvent<HTMLInputElement>, index: number) => {
+//         const value = e.target.value.replace(/\D/, ''); // only digits
+//         const otpArray = otp.split('');
+//         otpArray[index] = value;
+//         const newOtp = otpArray.join('');
+//         setValue('otp', newOtp);
 
-        if (value && index < inputs.current.length - 1) {
-            inputs.current[index + 1]?.focus();
-        }
-    };
+//         if (value && index < inputs.current.length - 1) {
+//             inputs.current[index + 1]?.focus();
+//         }
+//     };
 
-    const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>, index: number) => {
-        if (e.key === 'Backspace' && !e.currentTarget.value && index > 0) {
-            inputs.current[index - 1]?.focus();
-        }
-    };
+//     const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>, index: number) => {
+//         if (e.key === 'Backspace' && !e.currentTarget.value && index > 0) {
+//             inputs.current[index - 1]?.focus();
+//         }
+//     };
 
-    useEffect(() => {
-        inputs.current[0]?.focus();
-    }, []);
+//     useEffect(() => {
+//         inputs.current[0]?.focus();
+//     }, []);
 
-    return (
-        <div className="flex flex-col gap-1 w-full">
-            <span className="text-[14px] ml-1">{label}</span>
-            <div className="flex gap-3 w-full">
-                {Array.from({ length: 6 }).map((_, index) => (
-                    <div
-                        key={`otpfield-${index}`}
-                        className={clsx(
-                            'flex border-2 w-1/6 bg-white focus-within:border-[#01ACEA] gap-1 items-center px-2 rounded-[8px]',
-                            className
-                        )}
-                    >
-                        <input
-                            type="text"
-                            maxLength={1}
-                            value={otp[index] || ''}
-                            {...register('otp')}
-                            onChange={(e) => handleChange(e, index)}
-                            onKeyDown={(e) => handleKeyDown(e, index)}
-                            ref={(el) => { inputs.current[index] = el }}
-                            className="border-0 w-full p-2 bg-white outline-0 text-center"
-                        />
-                    </div>
-                ))}
-            </div>
-              {errors['otp'] && (
-                <span className="text-red-500 text-sm">{errors['otp'].message as string}</span>
+//     return (
+//         <div className="flex flex-col gap-1 w-full">
+//             <span className="text-[14px] ml-1">{label}</span>
+//             <div className="flex gap-3 w-full">
+//                 {Array.from({ length: 6 }).map((_, index) => (
+//                     <div
+//                         key={`otpfield-${index}`}
+//                         className={clsx(
+//                             'flex border-2 w-1/6 bg-white focus-within:border-[#01ACEA] gap-1 items-center px-2 rounded-[8px]',
+//                             className
+//                         )}
+//                     >
+//                         <input
+//                             type="text"
+//                             maxLength={1}
+//                             value={otp[index] || ''}
+//                             {...register('otp')}
+//                             onChange={(e) => handleChange(e, index)}
+//                             onKeyDown={(e) => handleKeyDown(e, index)}
+//                             ref={(el) => { inputs.current[index] = el }}
+//                             className="border-0 w-full p-2 bg-white outline-0 text-center"
+//                         />
+//                     </div>
+//                 ))}
+//             </div>
+//               {errors['otp'] && (
+//                 <span className="text-red-500 text-sm">{errors['otp'].message as string}</span>
+//             )}
+//         </div>
+//     );
+// }
+
+
+
+export function OTP({ className, label }: { className?: string; label: string }) {
+  const inputs = useRef<(HTMLInputElement | null)[]>([]);
+  const { register, setValue, watch, formState: { errors } } = useFormContext();
+
+  // register the field manually
+  useEffect(() => {
+    register("otp", {
+      required: "OTP is required",
+      minLength: { value: 6, message: "OTP must be 6 digits" },
+      maxLength: { value: 6, message: "OTP must be 6 digits" }
+    });
+  }, [register]);
+
+  const otp = watch("otp") || "";
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>, index: number) => {
+    const value = e.target.value.replace(/\D/, ""); 
+    const otpArray = otp.split("");
+    otpArray[index] = value;
+    const newOtp = otpArray.join("");
+
+    setValue("otp", newOtp, { shouldValidate: true });
+
+    if (value && index < 5) {
+      inputs.current[index + 1]?.focus();
+    }
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>, index: number) => {
+    if (e.key === "Backspace" && !e.currentTarget.value && index > 0) {
+      inputs.current[index - 1]?.focus();
+    }
+  };
+
+  useEffect(() => {
+    inputs.current[0]?.focus();
+  }, []);
+
+  return (
+    <div className="flex flex-col gap-1 w-full">
+      <span className="text-[14px] ml-1">{label}</span>
+      <div className="flex gap-3 w-full">
+
+        {Array.from({ length: 6 }).map((_, index) => (
+          <div
+            key={index}
+            className={clsx(
+              "flex border-2 w-1/6 bg-white focus-within:border-[#01ACEA] items-center px-2 rounded-[8px]",
+              className
             )}
-        </div>
-    );
+          >
+            <input
+              type="text"
+              maxLength={1}
+              value={otp[index] || ""}
+              onChange={(e) => handleChange(e, index)}
+              onKeyDown={(e) => handleKeyDown(e, index)}
+              ref={(el) => { inputs.current[index] = el }}
+              className="border-0 w-full p-2 bg-white outline-0 text-center"
+            />
+          </div>
+        ))}
+
+      </div>
+
+      {errors.otp && (
+        <span className="text-red-500 text-sm">{errors.otp.message as string}</span>
+      )}
+    </div>
+  );
 }
+

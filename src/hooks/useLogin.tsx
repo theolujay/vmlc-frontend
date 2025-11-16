@@ -4,6 +4,7 @@ import { isDev } from "@/utils/isDev";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
+import { toast } from "react-toastify";
 import z from "zod";
 
 const loginSchema = z.object({
@@ -33,10 +34,15 @@ export default function useLogin() {
     mutationFn: AuthService.login,
     onSuccess: (value) => {
 
+    
       setTimeout(() => {
         dispatch({ type: 'loginSuccess', payload: value });
       }, 1000)
     },
+    onError:(error)=>{
+      console.log(error)
+      toast.error('Encountered error logging in')
+    }
 
   })
 
