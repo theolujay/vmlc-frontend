@@ -5,6 +5,7 @@ import client from "@/utils/axios";
 export class UserMgtService {
     static async getUserList(): Promise<UserMgtType> {
         const response = await client.get(UserMgtUrls.getUserList);
+        console.log(response,'what is the response for user list')
         return response.data;
     }
 

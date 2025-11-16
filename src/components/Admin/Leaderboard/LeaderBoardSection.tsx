@@ -1,7 +1,12 @@
+import UploadConfirmationModal from "@/components/Modals/UploadConfirmationModal";
+import CustomTable from "@/components/ui/CustomTable";
+import TablePagination from "@/components/ui/Pagination/TablePagination";
 import Spinner from "@/components/ui/spinner/spinner";
 import useGetLeaderBoard from "@/hooks/useGetLeaderboard";
 import usePagination from "@/hooks/usePagination";
 import { CandidateType } from "@/types/LeaderBoardType";
+import Link from "next/link";
+import { usePathname, useSearchParams } from "next/navigation";
 import { useState } from "react";
 import { LeagueIcon, ScreeningIcon } from "../../General/GeneralIcon";
 import Button from "../../ui/Button";
@@ -10,16 +15,14 @@ import ScreeningTabWrapper from "../../ui/Tabs/ScreeningTabWrapper";
 import AdminHeader from "../AdminHeader";
 import EmptySession from "../EmptySession";
 import { FirstPosition, SecondPosition, ThirdPosition } from "./LeaderBoardIcon";
-import CustomTable from "@/components/ui/CustomTable";
-import TablePagination from "@/components/ui/Pagination/TablePagination";
-import { usePathname, useSearchParams } from "next/navigation";
-import Link from "next/link";
 
 
 
 export default function LeaderBoardSection() {
   const { data, isPending } = useGetLeaderBoard()
+const [openPublishModal,setOpenPublishModal]=useState(false)
 
+  // const { onSubmit } = usePublishLeaderboard()
 
   if (isPending || !data) {
     return <div className="grid w-full place-content-center"><Spinner /></div>
@@ -34,8 +37,11 @@ export default function LeaderBoardSection() {
 
 
 
-  
 
+
+  function handleModal(){
+    setOpenPublishModal(true)
+  }
   const leaderBoardTab = leaderBoardItems?.map((val) => ({
     label: <ScreeningLabel label={val.stage} />,
     value: val.stage_display,
@@ -44,7 +50,7 @@ export default function LeaderBoardSection() {
 
   return (
     <div className='flex flex-col gap-1 '>
-      <AdminHeader label="Leaderboards" isExport actionButton={<Button className="px-2 bg-grey-base-400 text-white">UPLOAD</Button>} />
+      <AdminHeader label="Leaderboards" isExport actionButton={<Button onClick={handleModal} className="px-2 bg-[#3e4095] text-white">UPLOAD</Button>} />
       <div className="flex flex-col gap-3 mt-3 w-[96%] mx-auto">
 
         <ResponsiveContainer className="px-0 min-h-[60vh]">
@@ -54,12 +60,14 @@ export default function LeaderBoardSection() {
 
         </ResponsiveContainer>
       </div>
+      <UploadConfirmationModal open={openPublishModal} close={setOpenPublishModal} />
+      {/* <PublishLeaderboardModal/> */}
     </div>
   )
 }
 
 
-function ScreeningLabel({ label }: { label: string }) {
+export function ScreeningLabel({ label }: { label: string }) {
   return <div className='flex gap-1 items-center'><span>{handleRankingIcon(label)}</span><span className="capitalize">{label}</span></div>
 }
 
@@ -73,14 +81,7 @@ function ScoreComponent({ stage, level }: Readonly<{ stage: string; level: numbe
 
   const pathName = usePathname()
   const searchParams = useSearchParams()
-  // const href = (() => {
-  //   const query = new URLSearchParams(searchParams.toString());
-  //   query.set("view", "view-candidate");
-  //   query.set('level', level.toString())
-  //   query.set('stage', stage)
-  //   // query.set("id", id);
-  //   return `${pathName}?${query.toString()}`;
-  // })();
+  
 
 
   if (!data) {
@@ -125,15 +126,21 @@ function ScoreComponent({ stage, level }: Readonly<{ stage: string; level: numbe
           },
           {
             key: 'action', header: "Action", render: (_, row) => {
+              console.log({
+                stage: stage,
+                level: level,
+                candidateid: row.candidate.id
+
+              }, 'is it rubbish here too')
               const query = new URLSearchParams(searchParams.toString());
               query.set("view", "view-candidate");
               query.set('level', level.toString())
               query.set('stage', stage)
-              query.set("id", row.candidate.id.toString());
+              query.set("id", row.candidate.id);
               const href = `${pathName}?${query.toString()}`;
 
 
-              console.log(row, 'what is in id')
+              console.log(row, query.toString(), 'what is in id')
 
 
 

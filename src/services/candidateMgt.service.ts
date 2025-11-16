@@ -1,6 +1,6 @@
 import { candidateUrls } from "@/constants/candidateUrls";
 import { CandidateListType, CandidateType } from "@/types/CandidateType";
-import { LeaderBoardResponse } from "@/types/LeaderBoardType";
+import { LeaderBoardResponse, ViewCandidateDetailType } from "@/types/LeaderBoardType";
 import client from "@/utils/axios";
 
 export class CandidateMgtService {
@@ -40,9 +40,8 @@ export class CandidateMgtService {
 
 
 
-    static async getLeaderBoardCandidateDetail(stage: string, level: string, candidate_id: string): Promise<any> {
+    static async getLeaderBoardCandidateDetail(stage: string, level: string, candidate_id: string): Promise<ViewCandidateDetailType> {
         try {
-
             const response = await client.get(candidateUrls.GET_LEADERBOARD_CANDIDATE_DETAIL(stage, level, candidate_id));
             return response.data;
         } catch (error) {
@@ -53,6 +52,16 @@ export class CandidateMgtService {
 
 
 
+
+    static async publishLeaderBoard(){
+        try {
+            const response=await client.post(candidateUrls.PUBLISH_LEADERBOARD);
+            console.log(response,'what is in response for publish')
+            return response.data;
+        } catch (error) {
+            
+        }
+    }
 
 
 
