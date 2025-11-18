@@ -31,12 +31,11 @@ client.interceptors.request.use(
     (error) => Promise.reject(error)
 );
 
-// RESPONSE INTERCEPTOR
+
 client.interceptors.response.use(
     (response) => response,
     async (error) => {
         if (error.response?.status === 401) {
-            // Optionally, you can clear storage or redirect to login
             console.warn("Unauthorized - logging out");
             localStorage.removeItem("session");
             window.location.href = "/login";

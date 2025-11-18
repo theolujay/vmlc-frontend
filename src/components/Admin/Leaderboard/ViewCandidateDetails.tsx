@@ -18,7 +18,7 @@ export default function ViewCandidateDetails({ candidate_id, level, stage }: { c
         <div className='flex flex-col gap-1 '>
             <AdminHeader isExport={false} label='Leaderboards' actionButton={<button className="inline-flex gap-2 border px-2   cursor-pointer py-2 font-bold uppercase rounded-[8px] transition-colors duration-200 items-center text-sm"><span><CandidateIcon /></span><span>View Candidate Profile</span></button>} />
             <div className="flex flex-col gap-3 mt-3 w-[96%] mx-auto">
-                <CandidateInfoCard startTime={data?.exam_details.scheduled_date as Date} position={data?.candidate_performance.rank ?? 0} userName={data?.candidate_performance.candidate.full_name ?? ''} />
+                <CandidateInfoCard endTime={data?.candidate_performance.participated_at as Date} startTime={data?.exam_details.scheduled_date as Date} position={data?.candidate_performance.rank ?? 0} userName={data?.candidate_performance.candidate.full_name ?? ''} />
                 <QuestionsTable questions={data?.candidate_performance.candidate.submissions ?? []} />
             </div>
         </div>
@@ -27,8 +27,8 @@ export default function ViewCandidateDetails({ candidate_id, level, stage }: { c
 
 
 
-function CandidateInfoCard({ userName, position, startTime }: { userName: string, position: number, startTime: Date }) {
-
+function CandidateInfoCard({ userName, position, startTime,endTime }: { userName: string, position: number, startTime: Date,endTime:Date }) {
+console.log(endTime,'what is in end time')
     return <ResponsiveContainer className='flex gap-2 flex-col'>
         <h2 className='font-semibold text-lg'>Candidate Info</h2>
         <div className="flex justify-between">
@@ -58,7 +58,8 @@ function CandidateInfoCard({ userName, position, startTime }: { userName: string
                 <span><EndTimeIcon /></span>
                 <div className="flex flex-col">
                     <span className='text-sm text-[#667185]'>EXAM END TIME</span>
-                    <p>09:00:08 AM</p>
+                    <p>{formatTimeToString(endTime)}</p>
+                    {/* <p>09:00:08 AM</p> */}
                 </div>
             </div>
         </div>
@@ -100,7 +101,7 @@ function QuestionsTable({ questions }: { questions: SubmissionItem[] }) {
                 {
                     key: 'data.text', header: 'Question', render: (_, row) => {
                         const options = getOptionAsArray(row)
-                        console.log(options, 'what is in options')
+                        
                         return <div className="flex text-start flex-col justify-start items-start gap-1">
                             <span>{row.question_text}</span>
                             <div className="flex gap-3 w-full"  >
