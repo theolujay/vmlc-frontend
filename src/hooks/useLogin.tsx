@@ -3,6 +3,7 @@ import { AuthService } from "@/services/auth.service";
 import { isDev } from "@/utils/isDev";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
+import { AxiosError } from "axios";
 import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 import z from "zod";
@@ -39,9 +40,9 @@ export default function useLogin() {
         dispatch({ type: 'loginSuccess', payload: value });
       }, 1000)
     },
-    onError:(error)=>{
-      console.log(error)
-      toast.error('Encountered error logging in')
+    onError:(error:AxiosError<any>)=>{
+      
+      toast.error(error?.response?.data.detail||'Encountered error logging in')
     }
 
   })

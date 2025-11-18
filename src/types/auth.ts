@@ -99,6 +99,7 @@ export type ActivityHistoryUserType = {
     user: RequestUserType,
     school: string,
     role: string,
+    status:string,
     is_user_verified: boolean
 }
 

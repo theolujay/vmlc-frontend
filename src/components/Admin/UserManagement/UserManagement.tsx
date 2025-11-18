@@ -5,7 +5,7 @@ import CustomTable from '@/components/ui/CustomTable'
 import ResponsiveContainer from '@/components/ui/ResponsiveContainer'
 import useGetStatOverview from '@/hooks/useGetStatOverview'
 import useListUserMgt from '@/hooks/useListUserMgt'
-import { MgtItem, MgtTypeItem } from '@/types/UserMgtType'
+import { MgtItem, MgtTypeItem, OverviewType, StatOverviewType } from '@/types/UserMgtType'
 import { formatDate } from '@/utils/formatFileSize'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { ReactNode } from 'react'
@@ -24,7 +24,10 @@ export default function UserManagement() {
     console.log(data,'what is data list here')
 
     const { data: testData } = useGetStatOverview()
+console.log(testData,'what is in test data')
 
+
+const overview=data?.stats_overview;
 
     function addStaffMember() {
         const params = new URLSearchParams(searchParams.toString())
@@ -40,7 +43,7 @@ export default function UserManagement() {
             <AdminHeader isExport label='Exam System' actionButton={<Button onClick={addStaffMember} className="inline-flex gap-2 border px-2 items-center text-sm"><span><AddIcon /></span><span>ADD STAFF</span></Button>} />
             <div className="flex flex-col gap-3 mt-3 w-[96%] mx-auto">
 
-                <UserSummaryCard />
+                <UserSummaryCard overview={overview} />
                 <UserHistoryTable candidates={data?.results ?? []} />
             </div>
 
@@ -50,10 +53,12 @@ export default function UserManagement() {
 
 
 
-function UserSummaryCard() {
+function UserSummaryCard({overview}:{overview?:StatOverviewType}) {
+    if (!overview) return null;
+
     return <ResponsiveContainer className='grid grid-cols-1 md:grid-cols-2 gap-2'>
-        <UserCard header='TOTAL STAFFS' />
-        <UserCard header='TOTAL STUDENTS' />
+        <UserCard stat={overview?.staff} header='TOTAL STAFFS' />
+        <UserCard stat={overview?.candidates} header='TOTAL STUDENTS' />
     </ResponsiveContainer>
 }
 
@@ -62,22 +67,32 @@ function UserSummaryCard() {
 
 
 
+// const chartData = [
+//     { value: 30, color: "#0088cc" }, // blue
+//     { value: 12, color: "#f4a300" }, // orange
+//     { value: 4, color: "#e04c4c" },  // red
+// ];
+
+
+
+
+
+
+
+
+
+
+function UserCard({ header,stat }: Readonly<{ header: ReactNode,stat:OverviewType }>) {
 const chartData = [
-    { value: 30, color: "#0088cc" }, // blue
-    { value: 12, color: "#f4a300" }, // orange
-    { value: 4, color: "#e04c4c" },  // red
+    { value: stat.active, color: "#0088cc" }, // blue
+    { value: stat.pending_verification, color: "#f4a300" }, // orange
+    { value: stat.inactive, color: "#e04c4c" },  // red
+    // {value:stat.inactive,color:''}
 ];
 
 
 
-
-
-
-
-
-
-
-function UserCard({ header }: Readonly<{ header: ReactNode }>) {
+    console.log(stat,'stat from user card')
     return <div className='flex flex-col gap-2 rounded-2xl border-[#E4E7EC] border'>
         <div className="flex header p-2 font-bold bg-[#F7F9FC]  rounded-tr-2xl rounded-tl-2xl">
             {header}
@@ -85,7 +100,7 @@ function UserCard({ header }: Readonly<{ header: ReactNode }>) {
         <div className="flex px-3 gap-3 pb-2 justify-between items-center">
             {/* <DoughnutChart /> */}
             <div className="flex">
-                <DoughnutChart data={chartData} total={46} />
+                <DoughnutChart data={chartData} total={stat.registered} />
                 {/* <ProgressRing/> */}
             </div>
             <div className="flex-1 gap-1">
@@ -95,7 +110,7 @@ function UserCard({ header }: Readonly<{ header: ReactNode }>) {
                         <span>Active</span>
 
                     </div>
-                    <span>0</span>
+                    <span>{stat.active}</span>
                 </div>
                 <div className="flex justify-between">
                     <div className="flex items-center gap-1">
@@ -103,15 +118,15 @@ function UserCard({ header }: Readonly<{ header: ReactNode }>) {
                         <span>Pending</span>
 
                     </div>
-                    <span>0</span>
+                    <span>{stat.pending_verification}</span>
                 </div>
                 <div className="flex justify-between">
                     <div className="flex items-center gap-1">
                         <span className="w-3 rounded-full bg-[#DD524D] h-3"></span>
-                        <span>Deactivated</span>
+                        <span>Inactive</span>
 
                     </div>
-                    <span>0</span>
+                    <span>{stat.inactive}</span>
                 </div>
             </div>
         </div>
@@ -124,6 +139,7 @@ function UserCard({ header }: Readonly<{ header: ReactNode }>) {
 
 
 function UserHistoryTable({ candidates }: { candidates: MgtItem[] }) {
+    
 
     return <ResponsiveContainer className='flex gap-4 py-3 px-0 flex-col mx-auto'>
         <div className="flex justify-between px-3">
@@ -147,11 +163,11 @@ function UserHistoryTable({ candidates }: { candidates: MgtItem[] }) {
                     header: 'Name',
                     render: (_,row) => <div className="flex  items-center gap-1">{getUserName(row.first_name,row.last_name)}</div>
                 },
-                {
-                    key: 'role',
-                    header: 'Role',
-                    render: (_, row) => <div className="flex  items-center gap-1">{row.last_name}</div>
-                },
+                // {
+                //     key: 'role',
+                //     header: 'Role',
+                //     render: (_, row) => <div className="flex  items-center gap-1">{row.last_name}</div>
+                // },
                 {
                     key: 'email',
                     header: 'Email Address',

@@ -1,6 +1,7 @@
 import { AuthService } from "@/services/auth.service";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
+import { AxiosError } from "axios";
 import { useRouter } from "next/navigation";
 import { useForm } from 'react-hook-form';
 import { toast } from "react-toastify";
@@ -43,6 +44,7 @@ const registerSchema = z
         ctx.addIssue({
           path: ['password'],
           message: 'Password is required when auto-generate is off',
+          // code:z.
           code: z.ZodIssueCode.custom,
         });
       }
@@ -94,8 +96,8 @@ export default function useRegister() {
             form.reset()
             router.push('/login')
         },
-        onError:()=>{
-          toast.error('Registration was not successful')
+        onError:(error:AxiosError<any>)=>{
+          toast.error(error?.response?.data.detail||'Registration was not successful')
         }
         
 
