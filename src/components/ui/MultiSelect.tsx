@@ -2,11 +2,9 @@
 "use client";
 
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
-// import { CheckIcon, ChevronDownIcon } from "@radix-ui/react-icons";
-import clsx from "clsx";
-import { useState } from "react";
-import { CheckedIcon, ChevronDownIcon } from "./SvgAsset/GeneralAsset";
 import { SelectItem } from "@/types/Index";
+import clsx from "clsx";
+import { CheckedIcon, ChevronDownIcon } from "./SvgAsset/GeneralAsset";
 
 
 

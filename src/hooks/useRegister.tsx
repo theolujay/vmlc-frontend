@@ -82,7 +82,7 @@ export default function useRegister() {
     const form = useForm({
         resolver: zodResolver(registerSchema),
         defaultValues,
-        mode: 'onSubmit',
+        mode: 'onChange',
   shouldUnregister: true, 
     });
     const router = useRouter()
@@ -91,8 +91,12 @@ export default function useRegister() {
         mutationFn: AuthService.registerCandidate,
         onSuccess: () => {
             toast.success("Registration successful")
+            form.reset()
             router.push('/login')
         },
+        onError:()=>{
+          toast.error('Registration was not successful')
+        }
         
 
     })

@@ -33,7 +33,6 @@ export default function useEditExamSession(exam_id: number,onSuccessCallback:()=
 
     function onSubmit(payload: ValueType) {
         mutate(payload)
-        // console.log(exam_id,payload,'whats hte issue')
     }
     return { onSubmit, isPending, form }
 }
