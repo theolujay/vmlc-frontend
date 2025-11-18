@@ -84,9 +84,10 @@ function UserSummaryCard({overview}:{overview?:StatOverviewType}) {
 
 function UserCard({ header,stat }: Readonly<{ header: ReactNode,stat:OverviewType }>) {
 const chartData = [
-    { value: 30, color: "#0088cc" }, // blue
-    { value: 12, color: "#f4a300" }, // orange
-    { value: 4, color: "#e04c4c" },  // red
+    { value: stat.active, color: "#0088cc" }, // blue
+    { value: stat.pending_verification, color: "#f4a300" }, // orange
+    { value: stat.inactive, color: "#e04c4c" },  // red
+    // {value:stat.inactive,color:''}
 ];
 
 
@@ -122,10 +123,10 @@ const chartData = [
                 <div className="flex justify-between">
                     <div className="flex items-center gap-1">
                         <span className="w-3 rounded-full bg-[#DD524D] h-3"></span>
-                        <span>Deactivated</span>
+                        <span>Inactive</span>
 
                     </div>
-                    <span>{stat.deactivated}</span>
+                    <span>{stat.inactive}</span>
                 </div>
             </div>
         </div>
@@ -138,7 +139,7 @@ const chartData = [
 
 
 function UserHistoryTable({ candidates }: { candidates: MgtItem[] }) {
-    console.log(candidates,'what is in candidates')
+    
 
     return <ResponsiveContainer className='flex gap-4 py-3 px-0 flex-col mx-auto'>
         <div className="flex justify-between px-3">

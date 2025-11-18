@@ -21,7 +21,7 @@ export default function Table({ columns, data, label, desc, footer }: Readonly<{
                 <tbody>
                     {
                         data.length == 0 ? <tr><td colSpan={columns.length + 1}><EmptyRecords label={label} desc={desc} /></td></tr> :
-                            data.map((val, index) => <TableRowData key={index} userRole={val.role} status='' userName={[val.user.first_name, val.user.last_name].join(' ')} email={val.user.email} id={val.user.id} applicationDate={val.user.date_joined} />
+                            data.map((val, index) => <TableRowData key={index} userRole={val.role} status={val.status} userName={[val.user.first_name, val.user.last_name].join(' ')} email={val.user.email} id={val.user.id} applicationDate={val.user.date_joined} />
                                 //    <tr key={index} className='border-b  border-[#E4E7EC] last:border-0'>
                                 //         <td className='text-center py-2'>1</td>
                                 //         <td className='text-center py-2'><div className="flex justify-center gap-0.5 items-center">
