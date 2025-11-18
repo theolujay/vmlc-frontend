@@ -99,7 +99,7 @@ export default function Register() {
 
               </div>
               <div className="grid mt-6">
-                <AuthButton isPending={isPending}>{isPending ? <Spinner /> : 'Register'}</AuthButton>
+                <AuthButton disabled={!form.formState.isValid || isPending} isPending={isPending}>{isPending ? <Spinner /> : 'Register'}</AuthButton>
               </div>
               <div className="flex flex-col gap-3 items-center mt-6">
 
