@@ -43,6 +43,7 @@ const registerSchema = z
         ctx.addIssue({
           path: ['password'],
           message: 'Password is required when auto-generate is off',
+          // code:z.
           code: z.ZodIssueCode.custom,
         });
       }

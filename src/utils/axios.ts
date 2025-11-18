@@ -18,13 +18,13 @@ const client = axios.create({
 
 client.interceptors.request.use(
     (config) => {
-        if (typeof window !==undefined) {
+        if (typeof window !== undefined) {
             const token = localStorage.getItem("session");
             if (token) {
                 const storedtoken = JSON.parse(token);
                 config.headers.Authorization = `Bearer ${storedtoken.access}`;
             }
-            
+
         }
         return config;
     },
@@ -35,8 +35,14 @@ client.interceptors.request.use(
 client.interceptors.response.use(
     (response) => response,
     async (error) => {
-        if (error.response?.status === 401) {
-            console.warn("Unauthorized - logging out");
+        // if (error.response?.status === 401) {
+        //     console.warn("Unauthorized - logging out");
+        //     localStorage.removeItem("session");
+        //     window.location.href = "/login";
+        // }
+        const isLogin = error.config?.url?.includes("login");
+
+        if (error.response?.status === 401 && !isLogin) {
             localStorage.removeItem("session");
             window.location.href = "/login";
         }

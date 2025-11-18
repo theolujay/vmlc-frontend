@@ -34,12 +34,18 @@ export type AddStaffMemberFormProps<T extends FieldValues> = {
 };
 
 
-export type UserMgtType = {
-  pagination: PaginationType,
-  stats_overview: {
+export type StatOverviewType={
     candidates: OverviewType,
     staff: OverviewType
-  },
+  }
+
+export type UserMgtType = {
+  pagination: PaginationType,
+  // stats_overview: {
+  //   candidates: OverviewType,
+  //   staff: OverviewType
+  // },
+  stats_overview:StatOverviewType,
   results: MgtItem[ ]
 }
 
