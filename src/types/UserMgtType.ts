@@ -34,10 +34,10 @@ export type AddStaffMemberFormProps<T extends FieldValues> = {
 };
 
 
-export type StatOverviewType={
-    candidates: OverviewType,
-    staff: OverviewType
-  }
+export type StatOverviewType = {
+  candidates: OverviewType,
+  staff: OverviewType
+}
 
 export type UserMgtType = {
   pagination: PaginationType,
@@ -45,19 +45,21 @@ export type UserMgtType = {
   //   candidates: OverviewType,
   //   staff: OverviewType
   // },
-  stats_overview:StatOverviewType,
-  results: MgtItem[ ]
+  stats_overview: StatOverviewType,
+  results: MgtItem[]
 }
 
 
 
-export type OverviewType={
-      registered: number,
-      active: number,
-      inactive: number,
-      pending_verification: number,
-      deactivated: number
-    }
+
+
+export type OverviewType = {
+  registered: number,
+  active: number,
+  inactive: number,
+  pending_verification: number,
+  deactivated: number
+}
 
 export type MgtItem = {
   id: string,
@@ -68,4 +70,28 @@ export type MgtItem = {
   profile_picture: string | null,
   phone: string | null,
   date_joined: Date
+}
+
+export type StaffUserType=RequestUserType & {
+ is_email_verified: boolean,
+      profile_picture:string| null,
+}
+
+
+export type UserProfileType={
+    user:StaffUserType
+    occupation: string,
+    face_id: string|null,
+    role: string,
+    is_active:boolean,
+    is_user_verified: boolean,
+    id_card:string| null,
+    verification_document:string| null,
+    created_at: Date,
+    updated_at:Date
+  }
+
+export type StaffDetailsType = {
+  profile:UserProfileType
+  
 }

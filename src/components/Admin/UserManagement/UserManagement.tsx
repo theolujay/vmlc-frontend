@@ -13,6 +13,8 @@ import AdminHeader from '../AdminHeader'
 import { FilterIcon, SortIcon } from '../AdminIcons'
 import { DoughnutChart } from '../Charts/ProgressRing'
 import { getUserName } from '@/utils/generalUtils'
+import Spinner from '@/components/ui/spinner/spinner'
+import Link from 'next/link'
 
 export default function UserManagement() {
     const { data } = useListUserMgt()
@@ -83,6 +85,9 @@ function UserSummaryCard({overview}:{overview?:StatOverviewType}) {
 
 
 function UserCard({ header,stat }: Readonly<{ header: ReactNode,stat:OverviewType }>) {
+    if (!stat) {
+        return <Spinner/>
+    }
 const chartData = [
     { value: stat.active, color: "#0088cc" }, // blue
     { value: stat.pending_verification, color: "#f4a300" }, // orange
@@ -141,6 +146,19 @@ const chartData = [
 function UserHistoryTable({ candidates }: { candidates: MgtItem[] }) {
     
 
+    const pathName = usePathname();
+    const searchParams = useSearchParams();
+    
+
+//     const href = (() => {
+//   const query = new URLSearchParams(searchParams.toString());
+//   query.set("view", "view-user");
+//   query.set("id", id);
+//   return `${pathName}?${query.toString()}`;
+// })();
+
+
+
     return <ResponsiveContainer className='flex gap-4 py-3 px-0 flex-col mx-auto'>
         <div className="flex justify-between px-3">
             <div className="flex gap-1 flex-col">
@@ -186,11 +204,18 @@ function UserHistoryTable({ candidates }: { candidates: MgtItem[] }) {
                 {
                     key: 'action',
                     header: "Action",
-                    render: () => (
+                    render: (_,row) => {
+                         const href = (() => {
+  const query = new URLSearchParams(searchParams.toString());
+  query.set("view", "view-user");
+  query.set("id", row.id);
+  return `${pathName}?${query.toString()}`;
+})();
+                        return (
                         <div className="flex justify-between items-center gap-1">
-                            <button className="cursor-pointer font-semibold text-[#3E4095]">View Details</button>
+                            <Link href={href} className="cursor-pointer font-semibold text-[#3E4095]">View Details</Link>
                         </div>
-                    ),
+                    )},
                 }
             ]}
             data={candidates}
