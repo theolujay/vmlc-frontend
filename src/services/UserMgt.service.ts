@@ -4,9 +4,15 @@ import client from "@/utils/axios";
 
 export class UserMgtService {
     static async getUserList(): Promise<UserMgtType> {
-        const response = await client.get(UserMgtUrls.getUserList);
-        console.log(response, 'what is the response for user list')
-        return response.data;
+        try {
+            
+            const response = await client.get(UserMgtUrls.getUserList);
+            console.log(response, 'what is the response for user list')
+            return response.data;
+        } catch (error) {
+            console.error(error,'Error getting list')
+            throw error;
+        }
     }
 
 
@@ -39,7 +45,7 @@ export class UserMgtService {
             const response = await client.get(UserMgtUrls.ACCOUNT_DETAILS(user_id));
             return response.data;
         } catch (error) {
-            console.error('Error fetching account details')
+            console.error(error,'Error fetching account details')
             throw error;
         }
     }

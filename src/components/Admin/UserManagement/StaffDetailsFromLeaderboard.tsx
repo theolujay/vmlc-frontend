@@ -48,10 +48,12 @@ export default withAuthentication(ViewStaffDetailsFromLeaderboard)
 
 
 function ProfileComponent(
-    { userName, status, email, dateJoined, occupation, role, userType, phone }: { phone: string, userType: string, userName: string, email: string, status: string, dateJoined: Date, occupation: string, role: string }
+    { userName, status, email, dateJoined, occupation, role, userType, phone,document }: { phone: string, userType: string, userName: string, email: string, status: string, dateJoined: Date, occupation: string,document:string, role: string }
 ) {
     // const userInitials = getUserInitials(userName)
     return <div className='flex gap-3 flex-col p-8'>
+
+    <div className='flex gap-3 mb-3 border-b border-[#E4E7EC] flex-col p-8'>
 
         <div className="flex flex-col gap-1">
             <span className='text-sm'>VERIFICATION STATUS</span>
@@ -59,7 +61,7 @@ function ProfileComponent(
         </div>
         <div className="flex flex-col gap-1">
             <span className='text-sm'>NAME</span>
-            <span className='font-bold text-xl'>{userName}</span>
+            <span className='font-bold text-2xl'>{userName}</span>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2">
@@ -69,8 +71,8 @@ function ProfileComponent(
                     <span className='border rounded-2xl text-[#01ACEA] border-[#01ACEA] w-fit   px-2 bg-[#F5FCFE]'>{userType}</span>
                 </div>
                 <div className="flex-col gap-1 flex">
-                    <span className='text-sm text-[#475367]'>PHONE NUMBER</span>
-                    <span className=' w-fit px-2 '>{phone}</span>
+                    <span className='text-sm items-start text-[#475367]'>PHONE NUMBER</span>
+                    <span className=' w-fit '>{phone}</span>
                 </div>
                 <div className="flex-col text-sm  gap-1 flex">
                     <span className='text-[#475367] text-sm'>OCCUPATION</span>
@@ -93,6 +95,24 @@ function ProfileComponent(
             </div>
         </div>
     </div>
+    <div className='flex gap-3 mb-3 border-b border-[#E4E7EC] flex-col p-8'>
+            <span className='text-[#475367] text-sm'>DOCUMENTS</span>
+          {/* <div className="flex flex-col gap-1">
+            <span>{status}</span>
+        </div> */}
+        <div className="flex gap-2 items-center">
+            <span className="document-icon"></span>
+            <div className="flex flex-col">
+                <span>{document}</span>
+                <span className='text-sm'>200kb</span>
+            </div>
+        <div className="flex">
+            <span className='text-[#3E4095] text-xs'>View</span>
+        </div>
+        </div>
+    </div>
+    </div>
+
 }
 
 
@@ -104,7 +124,7 @@ function ViewDetailsTabSection({ detailsData }: { detailsData: UserProfileType }
         {
             label: <ProfileLabel />,
             value: 'Profile',
-            content: <ProfileComponent userType={detailsData.role} phone={detailsData.user.phone} status={detailsData.is_user_verified?'Approved':'Pending'} occupation={detailsData.occupation} role={detailsData.role} dateJoined={detailsData.user.date_joined} userName={userName} email={detailsData.user.email} />
+            content: <ProfileComponent document='' userType={detailsData.role} phone={detailsData.user.phone} status={detailsData.is_user_verified?'Approved':'Pending'} occupation={detailsData.occupation} role={detailsData.role} dateJoined={detailsData.user.date_joined} userName={userName} email={detailsData.user.email} />
         },
         {
             label: <ActionsLabel />,
@@ -162,7 +182,7 @@ function ActionsComponent(
                     },
                 ]} data={results} />
                 {/* <Table data={[]} columns={['Activity', 'Date', 'Time']} /> */}
-            </div> : <EmptySession desc="Arrangement of result based on the highest score gotten by candidates on the platform would appear here " label='Exams hasn’t happened yet' />}
+            </div> : <EmptySession desc="Activities done on this platform by this user would appear here " label='No actions yet' />}
     </div>
 }
 

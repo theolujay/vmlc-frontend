@@ -9,19 +9,18 @@ import { MailIcon, PasswordIcon, PersonIcon, SchoolIcon } from '../ui/SvgAsset/G
 import AuthLayout from './Layout/Layout'
 import { useState } from 'react'
 import { Checkbox } from '../ui/Checkbox'
+import useIsRegistrationAvailable from '@/hooks/useIsRegistrationAvailable'
 
 
 
 
 
 export default function Register() {
-  // const [autoGenerate, setAutoGenerate] = useState(false)
-
-  // function handleCheckbox(e:boolean){
-  //   setAutoGenerate(e)
-  // }
+  
   const { form, onSubmit, isPending } = useRegister()
   const autoGenerate = form.watch('generate_password')
+  const { isRegistrationAvailable } = useIsRegistrationAvailable()
+  console.log(isRegistrationAvailable, 'registration available')
   return (
     <AuthLayout>
 
@@ -87,16 +86,25 @@ export default function Register() {
                  <label  className='font-semibold text-[#01ACEA]' htmlFor="generate">Generate Password for me</label>
              </div>
               </div> */}
+              <div className="flex flex-col">
+                
               <div className="flex gap-3 items-center mt-6">
-                {/* <Checkbox id='terms'/> */}
+              
 
-                <Controller name='terms' control={form.control} render={({ field }) => <Checkbox checked={field.value} id='terms' onChange={(e) => {
-                  field.onChange(e)
-                  // handleCheckbox(e)
-                }} />} />
+                <Controller
+                  name='terms'
+                  control={form.control}
+                  render={({ field }) => <Checkbox checked={field.value} id='terms' onChange={(e) => {
+                    field.onChange(e)
+                  }} />} />
                 <label htmlFor='terms'>I agree to allow my information to be used for promotional purposes and accept {`VMLC’s`} <Link href='/VMLC T&C.pdf' target='_blank' className='text-[#018ABB]'>Terms & Conditions</Link> and <Link href='/VMLC Privacy Policy.pdf' target='_blank' className='text-[#018ABB]'>Privacy Policy</Link>.</label>
 
-
+              </div>
+                {form.formState.errors.terms && (
+                  <p className="text-red-500 text-sm mt-1">
+                    {form.formState.errors.terms.message as string}
+                  </p>
+                )}
               </div>
               <div className="grid mt-6">
                 <AuthButton disabled={!form.formState.isValid || isPending} isPending={isPending}>{isPending ? <Spinner /> : 'Register'}</AuthButton>
@@ -112,9 +120,6 @@ export default function Register() {
           </FormProvider>
         </div>
       </div>
-
-
-
     </AuthLayout>
   )
 }
