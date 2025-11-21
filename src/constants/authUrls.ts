@@ -1,4 +1,5 @@
 export const authUrls={
+    is_registrations_available:'/registration/',
     candidate_registeration:'/register/candidate/',
     staff_registeration:'/register/staff/',
     login:'/auth/login/',

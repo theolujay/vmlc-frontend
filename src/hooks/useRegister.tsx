@@ -34,7 +34,7 @@ const registerSchema = z
     first_name: z.string().min(2, 'First name field cannot be empty'),
     phone: z.string(),
     last_name: z.string().min(2, 'Last name field cannot be empty'),
-    school: z.string(),
+    school: z.string().min(2, 'School field cannot be empty'),
     generate_password: z.boolean()
   })
   .superRefine((data, ctx) => {

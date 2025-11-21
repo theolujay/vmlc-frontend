@@ -5,6 +5,18 @@ import { AuthLoginResponse, AuthRegisterResponse, LoginRequest, LogoutRequest, R
 import client from "@/utils/axios";
 
 export class AuthService {
+
+    static async isRegistrationAvailable(){
+        try {
+            const response=await client.get(authUrls.is_registrations_available);
+            return response.data;
+        } catch (error) {
+            console.error(error);
+            throw error;
+        }
+    }
+
+
     static async registerCandidate(user: RegisterRequestValueType): Promise<AuthRegisterResponse> {
         try {
             const response = await client.post(authUrls.candidate_registeration, user);
