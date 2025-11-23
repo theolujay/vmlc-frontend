@@ -59,7 +59,7 @@ export default function RegisterStaff() {
               <label htmlFor='terms'>I agree to allow my information to be used for promotional purposes and accept {`VMLC’s`} <Link href='/VMLC T&C.pdf' target='_blank' className='text-[#018ABB]'>Terms & Conditions</Link> and <Link href='/VMLC Privacy Policy.pdf' target='_blank' className='text-[#018ABB]'>Privacy Policy</Link>.</label>
               </div>
               <div className="grid mt-6">
-                <AuthButton isPending={isPending}>{isPending ? <Spinner /> : 'Register'}</AuthButton>
+                <AuthButton disabled={!form.formState.isValid || isPending} isPending={isPending}>{isPending ? <Spinner /> : 'Register'}</AuthButton>
               </div>
               <div className="flex flex-col gap-3 items-center mt-6">
 
