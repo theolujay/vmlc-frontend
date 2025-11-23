@@ -49,11 +49,12 @@ export default function useLogin() {
 
 
   function onSubmit(value: LoginType) {
-    const payload = {
-      email: value.email,
-      password: value.password,
-    }
-    mutate(payload)
+    // const payload = {
+    //   email: value.email,
+    //   password: value.password,
+    // }
+    // mutate(payload)
+    mutate(value)
   }
 
 
