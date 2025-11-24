@@ -23,9 +23,9 @@ function ViewStaffDetailsFromLeaderboard({ id }: Readonly<{ id: string }>) {
 
     const { data, isPending } = useGetAccountDetails(id)
 
-    console.log(data, 'what is in data for account details')
 
-    
+
+
     return (
 
         <div className='flex flex-col gap-1 '>
@@ -34,7 +34,7 @@ function ViewStaffDetailsFromLeaderboard({ id }: Readonly<{ id: string }>) {
                 <Spinner />
             </div> :
                 <div className="flex flex-col gap-3 mt-3  w-[96%] mx-auto">
-                 
+
                     <ViewDetailsTabSection detailsData={data?.profile as UserProfileType} />
                 </div>
             }
@@ -48,69 +48,73 @@ export default withAuthentication(ViewStaffDetailsFromLeaderboard)
 
 
 function ProfileComponent(
-    { userName, status, email, dateJoined, occupation, role, userType, phone,document }: { phone: string, userType: string, userName: string, email: string, status: string, dateJoined: Date, occupation: string,document:string, role: string }
+    { userName, status, email, dateJoined, occupation, role, userType, phone, document }: { phone: string, userType: string, userName: string, email: string, status: string, dateJoined: Date, occupation: string, document: string | null, role: string }
 ) {
     // const userInitials = getUserInitials(userName)
     return <div className='flex gap-3 flex-col p-8'>
 
-    <div className='flex gap-3 mb-3 border-b border-[#E4E7EC] flex-col p-8'>
+        <div className='flex gap-3 mb-3 border-b border-[#E4E7EC] flex-col p-8'>
 
-        <div className="flex flex-col gap-1">
-            <span className='text-sm'>VERIFICATION STATUS</span>
-            <span>{status}</span>
-        </div>
-        <div className="flex flex-col gap-1">
-            <span className='text-sm'>NAME</span>
-            <span className='font-bold text-2xl'>{userName}</span>
-        </div>
+            <div className="flex flex-col gap-1">
+                <span className='text-sm'>VERIFICATION STATUS</span>
+                <span>{status}</span>
+            </div>
+            <div className="flex flex-col gap-1">
+                <span className='text-sm'>NAME</span>
+                <span className='font-bold text-2xl'>{userName}</span>
+            </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2">
-            <div className="flex flex-col gap-2">
-                <div className="flex-col  gap-1 flex">
-                    <span className='text-sm text-[#475367]'>USER TYPE</span>
-                    <span className='border rounded-2xl text-[#01ACEA] border-[#01ACEA] w-fit   px-2 bg-[#F5FCFE]'>{userType}</span>
+            <div className="grid grid-cols-1 md:grid-cols-2">
+                <div className="flex flex-col gap-2">
+                    <div className="flex-col  gap-1 flex">
+                        <span className='text-sm text-[#475367]'>USER TYPE</span>
+                        <span className='border rounded-2xl text-[#01ACEA] border-[#01ACEA] w-fit   px-2 bg-[#F5FCFE]'>{userType}</span>
+                    </div>
+                    <div className="flex-col gap-1 flex">
+                        <span className='text-sm items-start text-[#475367]'>PHONE NUMBER</span>
+                        <span className=' w-fit '>{phone}</span>
+                    </div>
+                    <div className="flex-col text-sm  gap-1 flex">
+                        <span className='text-[#475367] text-sm'>OCCUPATION</span>
+                        <span>{occupation}</span>
+                    </div>
                 </div>
-                <div className="flex-col gap-1 flex">
-                    <span className='text-sm items-start text-[#475367]'>PHONE NUMBER</span>
-                    <span className=' w-fit '>{phone}</span>
-                </div>
-                <div className="flex-col text-sm  gap-1 flex">
-                    <span className='text-[#475367] text-sm'>OCCUPATION</span>
-                    <span>{occupation}</span>
+                <div className="flex flex-col gap-2">
+                    <div className="flex-col gap-1 flex">
+                        <span className='text-[#475367] text-sm'>ROLE</span>
+                        <span className='bg-[#FFF1F3] rounded-full w-fit px-2 py-1 text-[#C01048]'>{role}</span>
+                    </div>
+                    <div className="flex-col gap-1 flex">
+                        <span className='text-[#475367] text-sm'>EMAIL</span>
+                        <span>{email}</span>
+                    </div>
+                    <div className="flex-col gap-1 flex">
+                        <span className='text-[#475367] text-sm'>DATE JOINED</span>
+                        <span>{formatDate(dateJoined)}</span>
+                    </div>
                 </div>
             </div>
-            <div className="flex flex-col gap-2">
-                <div className="flex-col gap-1 flex">
-                    <span className='text-[#475367] text-sm'>ROLE</span>
-                    <span className='bg-[#FFF1F3] rounded-full w-fit px-2 py-1 text-[#C01048]'>{role}</span>
-                </div>
-                <div className="flex-col gap-1 flex">
-                    <span className='text-[#475367] text-sm'>EMAIL</span>
-                    <span>{email}</span>
-                </div>
-                <div className="flex-col gap-1 flex">
-                    <span className='text-[#475367] text-sm'>DATE JOINED</span>
-                    <span>{formatDate(dateJoined)}</span>
-                </div>
-            </div>
         </div>
-    </div>
-    <div className='flex gap-3 mb-3 border-b border-[#E4E7EC] flex-col p-8'>
+        <div className='flex gap-3 mb-3 border-b border-[#E4E7EC] flex-col p-8'>
             <span className='text-[#475367] text-sm'>DOCUMENTS</span>
-          {/* <div className="flex flex-col gap-1">
+            {/* <div className="flex flex-col gap-1">
             <span>{status}</span>
         </div> */}
-        <div className="flex gap-2 items-center">
-            <span className="document-icon"></span>
-            <div className="flex flex-col">
-                <span>{document}</span>
-                <span className='text-sm'>200kb</span>
-            </div>
-        <div className="flex">
-            <span className='text-[#3E4095] text-xs'>View</span>
+
+        {
+            document?
+            <div className="flex gap-2 items-center">
+                <span className="document-icon"></span>
+                <div className="flex flex-col">
+                    <span>{document}</span>
+                    {/* <span className='text-sm'>200kb</span> */}
+                </div>
+                <div className="flex">
+                    <span className='text-[#3E4095] text-xs'>View</span>
+                </div>
+            </div>:<span>No document uploaded</span>
+        }
         </div>
-        </div>
-    </div>
     </div>
 
 }
@@ -119,12 +123,12 @@ function ProfileComponent(
 
 function ViewDetailsTabSection({ detailsData }: { detailsData: UserProfileType }) {
 
-    const userName=getUserName(detailsData.user.first_name,detailsData.user.last_name)
+    const userName = getUserName(detailsData.user.first_name, detailsData.user.last_name)
     const profileTabs = [
         {
             label: <ProfileLabel />,
             value: 'Profile',
-            content: <ProfileComponent document='' userType={detailsData.role} phone={detailsData.user.phone} status={detailsData.is_user_verified?'Approved':'Pending'} occupation={detailsData.occupation} role={detailsData.role} dateJoined={detailsData.user.date_joined} userName={userName} email={detailsData.user.email} />
+            content: <ProfileComponent document='' userType={detailsData.profile_type} phone={detailsData.user.phone} status={detailsData.is_user_verified ? 'Approved' : 'Pending'} occupation={detailsData.occupation} role={detailsData.role} dateJoined={detailsData.user.date_joined} userName={userName} email={detailsData.user.email} />
         },
         {
             label: <ActionsLabel />,

@@ -83,6 +83,7 @@ export type UserProfileType={
     occupation: string,
     face_id: string|null,
     role: string,
+    profile_type: string,
     is_active:boolean,
     is_user_verified: boolean,
     id_card:string| null,
