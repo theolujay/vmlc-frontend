@@ -21,7 +21,7 @@ export default function Table({ columns, data, label, desc, footer }: Readonly<{
                 <tbody>
                     {
                         data.length == 0 ? <tr><td colSpan={columns.length + 1}><EmptyRecords label={label} desc={desc} /></td></tr> :
-                            data.map((val, index) => <TableRowData key={index} userRole={val.role} status={val.status} userName={[val.user.first_name, val.user.last_name].join(' ')} email={val.user.email} id={val.user.id} applicationDate={val.user.date_joined} />
+                            data.map((val, index) => <TableRowData key={index} index={index+1} userRole={val.role} status={val.status} userName={[val.user.first_name, val.user.last_name].join(' ')} email={val.user.email} id={val.user.id} applicationDate={val.user.date_joined} />
                                 //    <tr key={index} className='border-b  border-[#E4E7EC] last:border-0'>
                                 //         <td className='text-center py-2'>1</td>
                                 //         <td className='text-center py-2'><div className="flex justify-center gap-0.5 items-center">
@@ -53,7 +53,7 @@ function EmptyRecords({ label = "Result not available yet", desc = <>Arrangement
 }
 
 
-function TableRowData({ id, email, userName, userRole, applicationDate, status }: Readonly<{ id: string, email: string, userName: string, userRole: string, applicationDate: Date, status: string }>) {
+function TableRowData({ id, email, userName, userRole, applicationDate, status,index }: Readonly<{ id: string,index:number, email: string, userName: string, userRole: string, applicationDate: Date, status: string }>) {
 
 
 
@@ -81,7 +81,7 @@ const href = (() => {
 
 
     return <tr className='border-b  border-[#E4E7EC] last:border-0'>
-        <td className='text-center py-2 max-w-[6vw] overflow-clip'>{id}</td>
+        <td className='text-center py-2 max-w-[6vw] overflow-clip'>{index}</td>
         <td className='text-center py-2'>
             <div className="flex justify-center gap-0.5 items-center">
             {/* <div className=" w-12 h-12 rounded-full gap-1">

@@ -70,7 +70,7 @@ function ActivityHistoryCard({ data, onPageChange, currentPage, page_count }: Re
                 <button className='inline-flex items-center gap-2 border h-10 rounded-md px-2 py-1 border-[#E4E7EC] cursor-pointer ' ><span><FilterIcon /></span><span className='text-[#344054]'>Filter</span></button>
             </div>
         </div>
-        <Table footer={<TablePagination currentPage={currentPage} pageCount={page_count} onPageChange={onPageChange} />} label='No activity has been made yet' desc={<>All application made on the platform would appear here </>} data={data} columns={['Submission ID', 'Name', 'User Role', 'Email Address', 'Application Date', 'Status', 'Action']} />
+        <Table footer={<TablePagination currentPage={currentPage} pageCount={page_count} onPageChange={onPageChange} />} label='No activity has been made yet' desc={<>All application made on the platform would appear here </>} data={data} columns={['S/N', 'Name', 'User Role', 'Email Address', 'Application Date', 'Status', 'Action']} />
     </ResponsiveContainer>
 }
 
