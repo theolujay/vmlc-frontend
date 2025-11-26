@@ -1,14 +1,14 @@
 import { authUrls } from "@/constants/authUrls";
 // import { ValueType } from "@/hooks/useRegister";
 import { StaffValueType } from "@/hooks/useRegisterStaff";
-import { AuthLoginResponse, AuthRegisterResponse, LoginRequest, LogoutRequest, RegisterRequestValueType, RegisterStaffRequestValueType, SetNewPasswordType, VerifyRequest, } from "@/types/auth";
+import { AuthLoginResponse, AuthRegisterResponse, LoginRequest, LogoutRequest, RegAvailableType, RegisterRequestValueType, RegisterStaffRequestValueType, SetNewPasswordType, VerifyRequest, } from "@/types/auth";
 import client from "@/utils/axios";
 
 export class AuthService {
 
-    static async isRegistrationAvailable(){
+    static async isRegistrationAvailable(): Promise<RegAvailableType> {
         try {
-            const response=await client.get(authUrls.is_registrations_available);
+            const response = await client.get(authUrls.is_registrations_available);
             return response.data;
         } catch (error) {
             console.error(error);
@@ -81,8 +81,8 @@ export class AuthService {
 
 
 
-    static async sendOtp(payload:{email:string}){
-        const response=await client.post(authUrls.sendOtp,payload);
+    static async sendOtp(payload: { email: string }) {
+        const response = await client.post(authUrls.sendOtp, payload);
         return response.data;
     }
 

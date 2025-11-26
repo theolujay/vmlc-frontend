@@ -125,3 +125,12 @@ export type RegisterStaffRequestValueType={
     last_name: string;
     occupation: string;
 }
+
+
+
+
+export type RegAvailableType = {
+    is_candidate_reg_open:boolean,
+    is_staff_reg_open:boolean,
+    support_email: string
+}

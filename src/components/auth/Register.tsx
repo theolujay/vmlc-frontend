@@ -1,31 +1,33 @@
 "use client"
+import useIsRegistrationAvailable from '@/hooks/useIsRegistrationAvailable'
 import useRegister from '@/hooks/useRegister'
 import Link from 'next/link'
 import { Controller, FormProvider } from 'react-hook-form'
 import AuthButton from '../ui/Button'
+import { Checkbox } from '../ui/Checkbox'
 import Input, { ConfirmPasswordInput, PasswordInput, PhoneNumberInput } from '../ui/Input'
 import Spinner from '../ui/spinner/spinner'
 import { MailIcon, PasswordIcon, PersonIcon, SchoolIcon } from '../ui/SvgAsset/GeneralAsset'
 import AuthLayout from './Layout/Layout'
-import { useState } from 'react'
-import { Checkbox } from '../ui/Checkbox'
-import useIsRegistrationAvailable from '@/hooks/useIsRegistrationAvailable'
+import RegistrationClosed from './RegistrationClosed'
 
 
 
 
 
 export default function Register() {
-  
+
   const { form, onSubmit, isPending } = useRegister()
   const autoGenerate = form.watch('generate_password')
   const { isRegistrationAvailable } = useIsRegistrationAvailable()
   console.log(isRegistrationAvailable, 'registration available')
   return (
     <AuthLayout>
-
-
-      <div className="flex flex-col lg:w-[50%] gap-3 items-center justify-center mx-auto p-4 ">
+    
+      {
+      
+      isRegistrationAvailable?.is_candidate_reg_open
+      ?  <div className="flex flex-col lg:w-[50%] gap-3 items-center justify-center mx-auto p-4 ">
         <div className="flex flex-col p-5 rounded-[12px] bg-[#FFFFFF99]">
 
           <div className="flex gap-1 items-center flex-col">
@@ -87,19 +89,19 @@ export default function Register() {
              </div>
               </div> */}
               <div className="flex flex-col">
-                
-              <div className="flex gap-3 items-center mt-6">
-              
 
-                <Controller
-                  name='terms'
-                  control={form.control}
-                  render={({ field }) => <Checkbox checked={field.value} id='terms' onChange={(e) => {
-                    field.onChange(e)
-                  }} />} />
-                <label htmlFor='terms'>I agree to allow my information to be used for promotional purposes and accept {`VMLC’s`} <Link href='/VMLC T&C.pdf' target='_blank' className='text-[#018ABB]'>Terms & Conditions</Link> and <Link href='/VMLC Privacy Policy.pdf' target='_blank' className='text-[#018ABB]'>Privacy Policy</Link>.</label>
+                <div className="flex gap-3 items-center mt-6">
 
-              </div>
+
+                  <Controller
+                    name='terms'
+                    control={form.control}
+                    render={({ field }) => <Checkbox checked={field.value} id='terms' onChange={(e) => {
+                      field.onChange(e)
+                    }} />} />
+                  <label htmlFor='terms'>I agree to allow my information to be used for promotional purposes and accept {`VMLC’s`} <Link href='/VMLC T&C.pdf' target='_blank' className='text-[#018ABB]'>Terms & Conditions</Link> and <Link href='/VMLC Privacy Policy.pdf' target='_blank' className='text-[#018ABB]'>Privacy Policy</Link>.</label>
+
+                </div>
                 {form.formState.errors.terms && (
                   <p className="text-red-500 text-sm mt-1">
                     {form.formState.errors.terms.message as string}
@@ -119,7 +121,12 @@ export default function Register() {
             </form>
           </FormProvider>
         </div>
-      </div>
+      </div>:<RegistrationClosed mail={isRegistrationAvailable?.support_email} />}
+
+
+    
     </AuthLayout>
   )
 }
+
+
