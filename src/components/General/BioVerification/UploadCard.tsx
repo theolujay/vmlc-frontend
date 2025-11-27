@@ -13,6 +13,7 @@ import React from 'react'
 import { DeleteIcon, TrustIcon, UploadDocumentIcon, UploadIcon } from '../GeneralIcon'
 import { formatStorageSize } from '@/utils/formatFileSize';
 import { useAuth } from '@/contexts/AuthProvider';
+import { toast } from 'react-toastify';
 
 export default function UploadCard({
   label,
@@ -29,6 +30,11 @@ export default function UploadCard({
 
   function handleFile(event: React.ChangeEvent<HTMLInputElement>) {
     const selectedFile = event.target.files?.[0];
+    if (selectedFile && selectedFile.size > 2 * 1024 * 1024) {
+      toast.error("File too large! Must be less than 2MB.");
+      event.target.value = "";
+      return;
+    }
     if (selectedFile) {
       onFileChange(selectedFile);
 
@@ -38,7 +44,7 @@ export default function UploadCard({
 
 
   const { authState } = useAuth()
-  console.log("user auth state in upload card", authState)
+  
   return (
     <ResponsiveContainer className='md:col-span-2 gap-4 '>
       <div className="flex border-b border-[#E4E7EC]">
