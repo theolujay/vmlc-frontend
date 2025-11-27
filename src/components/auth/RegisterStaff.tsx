@@ -24,7 +24,7 @@ export default function RegisterStaff() {
 
       {
 
-        isRegistrationAvailable?.is_candidate_reg_open ?
+        isRegistrationAvailable?.is_staff_reg_open ?
 
 
           <div className="flex flex-col lg:w-[50%] gap-3 items-center justify-center mx-auto p-4 ">
