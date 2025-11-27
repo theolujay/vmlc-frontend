@@ -121,7 +121,7 @@ export default function Register() {
             </form>
           </FormProvider>
         </div>
-      </div>:<RegistrationClosed mail={isRegistrationAvailable?.support_email} />}
+      <RegistrationClosed mail={isRegistrationAvailable?.support_email} profile_type="candidate" />
 
 
     
