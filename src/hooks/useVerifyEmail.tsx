@@ -4,6 +4,7 @@ import { useMutation } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
+import { toast } from 'react-toastify';
 import z from 'zod';
 
 
@@ -18,7 +19,7 @@ export default function useVerifyEmail() {
   const [currentUserEmail, setCurrentUserEmail] = useState<string | null>(null);
 
 
-  const router=useRouter()
+  const router = useRouter()
   // ✅ Load email from localStorage only on client side
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -38,16 +39,20 @@ export default function useVerifyEmail() {
   const { isPending, mutate } = useMutation({
     mutationFn: AuthService.verifyEmail,
     onSuccess: (value) => {
-    
+
       localStorage.removeItem('email');
+      toast.success(value.message || 'Email verified successfully');
       router.push('/login')
+    },
+    onError: (error: any) => {
+      toast.error(error?.response?.data?.message || 'An error occurred. Please try again.');
     }
   })
 
 
   const { mutate: resendMutate, isPending: resendPending } = useMutation({
     mutationFn: AuthService.resendOtp,
-    
+
   })
 
   function onSubmit(value: VerifySchemaType) {
@@ -58,7 +63,7 @@ export default function useVerifyEmail() {
       email: currentUserEmail,
       otp: value.otp
     }
-    
+
     mutate(payload)
   }
 

@@ -112,7 +112,7 @@ export default function CaptureDialog({
       <div className="bg-white rounded-lg p-6 w-[400px] flex flex-col items-center">
         <h2 className="text-lg font-bold">Image Capture</h2>
         <p className="text-lg text-gray-600 text-center mb-4">
-          Position your face within the circle. The border turns green when aligned.
+          Position your face within the circle and make sure there is light in your background. The border turns green when aligned.
         </p>
 
         {capturedImage ? (

@@ -16,6 +16,7 @@ function VerificationInformation() {
   const [files, setFiles] = useState<VerificationDocumentType>({})
   const [currentStepIndex, setCurrentStepIndex] = useState(0)
   const { isPending, onSubmit,isSuccess } = useUploadVerification()
+  const [open, setOpen] = useState(true)
 
   // update a file when uploaded or captured
   function handleFileChange(field: keyof typeof files, file: File | null) {
@@ -23,6 +24,18 @@ function VerificationInformation() {
   }
 
 
+
+  function isNextDisabled() {
+  if (currentStepIndex === 0) return !files.verification_document;
+  if (currentStepIndex === 1) return !files.id_card;
+  if (currentStepIndex === 2) return !files.face_id; // optional if needed
+  return false;
+}
+
+
+function openCapture(){
+    setOpen(true)
+}
 
   // move to the next step
   function goToNextStep() {
@@ -33,10 +46,12 @@ function VerificationInformation() {
     {
       button: (
         <Button
+        disabled={isNextDisabled()}
           className="px-2 text-sm"
           onClick={goToNextStep}
         >
-          UPLOAD
+          NEXT
+          {/* UPLOAD */}
         </Button>
       ),
       label: 'Upload Document',
@@ -47,10 +62,12 @@ function VerificationInformation() {
     {
       button: (
         <Button
+          disabled={isNextDisabled()}
           className="px-2 text-sm"
           onClick={goToNextStep}
         >
-          UPLOAD
+           NEXT
+          {/* UPLOAD */}
         </Button>
       ),
       label: 'Upload ID',
@@ -61,15 +78,17 @@ function VerificationInformation() {
     {
       button: (
         <Button
+          // disabled={isNextDisabled()}
           className="px-2 text-sm"
-          onClick={goToNextStep}
+          onClick={openCapture}
+          // onClick={goToNextStep}
         >
           PROCEED TO CAPTURE
         </Button>
       ),
       label: 'Capture Face',
       icon: <CaptureIcon />,
-      component: <CaptureFaceCard isSuccess={isSuccess} isPending={isPending} onCapture={(file) => {
+      component: <CaptureFaceCard  open={open} handleOpen={setOpen} isSuccess={isSuccess} isPending={isPending} onCapture={(file) => {
         handleFileChange('face_id', file)
         onSubmit({...files,face_id:file})
       }

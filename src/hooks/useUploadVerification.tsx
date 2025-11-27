@@ -2,6 +2,7 @@ import VerificationMessage from '@/components/General/BioVerification/Verificati
 import { VerificationService } from '@/services/verification.service';
 import { VerificationDocumentType } from '@/types/Index';
 import { useMutation } from '@tanstack/react-query';
+import { AxiosError } from 'axios';
 import { useRouter } from 'next/navigation';
 import { toast } from 'react-toastify';
 
@@ -11,11 +12,16 @@ export default function useUploadVerification() {
     const { isPending, mutate,isSuccess } = useMutation({
         mutationFn: VerificationService.uploadVerificationDocuments,
         onSuccess:()=>{
-            toast(<VerificationMessage/>,{
-                className:'bg-green-200',
-                ariaLabel:'Verification successful'
-            })
+            // toast(<VerificationMessage/>,{
+            //     className:'bg-green-200',
+            //     ariaLabel:'Verification successful'
+            // })
+            toast.success('Verification documents uploaded successfully')
             router.push('/get-started')
+        },
+        onError:(error:AxiosError<any>)=>{
+            
+            toast.error(error?.response?.data?.detail||'Failed to upload verification documents. Please try again.')
         }
 
     })

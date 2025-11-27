@@ -10,9 +10,15 @@ export class VerificationService {
 
 
     static async uploadVerificationDocuments(payload: VerificationUploadPayloadType) {
-        const response = await client.post(verificationUrls.UPLOAD_VERIFICATION, payload, {
-            headers: { 'Content-Type': 'multipart/form-data' }
-        });
-        return response.data;
+        
+        try {
+            const response = await client.post(verificationUrls.UPLOAD_VERIFICATION, payload, {
+                headers: { 'Content-Type': 'multipart/form-data' }
+            });
+            return response.data;
+            
+        } catch (error) {
+          throw error;  
+        }
     }
 }
