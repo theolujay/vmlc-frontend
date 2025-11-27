@@ -7,7 +7,7 @@ export default function RegistrationClosed({
   mail?: string; 
   profile_type?: string; 
 }>)  {
-  const year = new Date().getFullYear();
+  
   
   // Capitalize first letter of profile_type
   const profileTitle = profile_type 

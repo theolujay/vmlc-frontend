@@ -5,13 +5,14 @@ import { CaptureZoneIcon, TrustIcon } from "../GeneralIcon";
 import CaptureDialog from "./CaptureDialog";
 import VerificationSuccessfulDialog from "../../Modals/VerificationSuccessfulDialog";
 
-export default function CaptureFaceCard({ onCapture, isPending, isSuccess }: { onCapture: (file: File) => void, isPending: boolean, isSuccess: boolean }) {
-    const [open, setOpen] = useState(true)
+export default function CaptureFaceCard({ onCapture, isPending, isSuccess,open,handleOpen }: { onCapture: (file: File) => void, isPending: boolean, isSuccess: boolean ,open:boolean,handleOpen:(open: boolean) => void}) {
+    // const [open, setOpen] = useState(true)
     const [openSucces,setOpenSuccess]=useState(false)
 
      useEffect(() => {
     if (isSuccess) {
-      setOpen(false);
+        handleOpen(false)
+    //   setOpen(false);
     }
   }, [isSuccess]);
     return (
@@ -47,7 +48,8 @@ export default function CaptureFaceCard({ onCapture, isPending, isSuccess }: { o
         <CaptureDialog
           isPending={isPending}
           onCaptureFile={onCapture}
-          close={setOpen}
+          close={handleOpen}
+        //   close={setOpen}
           open={open}
         />
       )}

@@ -75,6 +75,7 @@ export default function InfoBoard() {
         <div className='flex justify-between gap-2'> <span> <CircularProgress progress={completionPercentage} />{" "}</span><span className='text-[#01ACEA]'>{completionPercentage}% completed</span></div>
       </div>
       <div className="flex flex-col gap-10">
+        <button onClick={handleVerification} className="cta cursor-pointer p-2 rounded-lg border text-[#475367] border-[#E4E7EC]">Setup Verification Details</button>
         {/* <button onClick={handleOpenEmailVerification} className="cta p-2 rounded-lg inline-flex justify-between border text-[#475367] gap-1 items-center  border-[#E4E7EC]"><span>Verify Email</span></button> */}
         <InfoItem isApproved buttons={<button className="cta font-bold text-[#099137]  border-[#E7F6EC] border   bg-[#E7F6EC] p-2 rounded-lg">Completed</button>} icon={<AccountCreationIcon />} label='Initiate Account Creation' desc='Register a candidate account with your basic information.' />
         <InfoItem isApproved={data?.user?.is_email_verified} buttons={data?.user?.is_email_verified ? <button className="cta font-bold text-[#099137]  border-[#E7F6EC] border   bg-[#E7F6EC] p-2 rounded-lg">Email Verified</button> : <button onClick={handleOpenEmailVerification} className="cta p-2 rounded-lg inline-flex justify-between border text-[#475367] gap-1 items-center  border-[#E4E7EC]"><span>Verify Email</span></button>} icon={<EmailVerificationIcon />} label='Email Verification' desc='Verify your registered email address.' />
