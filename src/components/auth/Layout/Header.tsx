@@ -48,6 +48,12 @@ export default function Header() {
           >
             Competition Stages
           </Link>
+           <Link
+            href="/register/staff"
+            className="text-[#3E4095] p-3 font-semibold rounded-full bg-[#E2E2EF] transition-colors"
+          >
+            Become a volunteer
+          </Link>
         </nav>
 
         {/* Mobile Menu Button */}
@@ -80,6 +86,12 @@ export default function Header() {
             onClick={() => setMenuOpen(false)}
           >
             Competition Stages
+          </Link>
+           <Link
+            href="/register/staff"
+            className="text-[#3E4095] p-3 font-semibold rounded-full bg-[#E2E2EF] transition-colors"
+          >
+            Become a volunteer
           </Link>
         </div>
       )}

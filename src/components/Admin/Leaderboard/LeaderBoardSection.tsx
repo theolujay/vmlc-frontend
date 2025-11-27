@@ -104,10 +104,10 @@ function ScoreComponent({ stage, level }: Readonly<{ stage: string; level: numbe
       );
     }
 
-    console.log(data, 'what is in data hwew')
+    
     return (
       <div className="flex gap-2 flex-col">
-        <Podium users={data.top_three} />
+        <Podium stage={stage} level={level} users={data.top_three} />
         <CustomTable columns={[
           { key: 'position', header: 'Position', render: (_, row) => <div className="flex items-center gap-1">{row.rank}</div> },
           { key: 'Name', header: 'Name', render: (_, row) => <div className="flex  items-center gap-1">{row.candidate.full_name}</div> },
@@ -126,12 +126,7 @@ function ScoreComponent({ stage, level }: Readonly<{ stage: string; level: numbe
           },
           {
             key: 'action', header: "Action", render: (_, row) => {
-              console.log({
-                stage: stage,
-                level: level,
-                candidateid: row.candidate.id
-
-              }, 'is it rubbish here too')
+             
               const query = new URLSearchParams(searchParams.toString());
               query.set("view", "view-candidate");
               query.set('level', level.toString())
@@ -185,14 +180,14 @@ const shapeByRank: Record<number, React.ComponentType> = {
 
 
 
-
-export function Podium({ users }: Readonly<{ users: CandidateType[] }>) {
+export function Podium({ users,stage,level }: Readonly<{ users: CandidateType[] ,stage:string,level:number}>) {
   const order = [2, 1, 3];
   const arranged = [...users].sort(
     (a, b) => order.indexOf(a.rank) - order.indexOf(b.rank)
   );
 
-
+const searchParams = useSearchParams()
+  const pathName = usePathname()
 
   return (
 
@@ -201,10 +196,21 @@ export function Podium({ users }: Readonly<{ users: CandidateType[] }>) {
         {
           arranged.map((val, index) => {
             const Shape = shapeByRank[val.rank]
+
+
+              const query = new URLSearchParams(searchParams.toString());
+              query.set("view", "view-candidate");
+              query.set('level', level.toString())
+              query.set('stage', stage)
+              query.set("id", val.candidate.id);
+              const href = `${pathName}?${query.toString()}`;
+
+
+
             return <div key={`shape-index-${index + 1}`} className="flex justify-between gap-3 items-center flex-col">
               <div className="flex  flex-col">
-                <p className="font-[400] text-2xl">{val.candidate.full_name}</p>
-
+                {/* <p className="font-[400] text-2xl">{val.candidate.full_name}</p> */}
+                 <Link href={href} className="font-[400] hover:text-[#3e4095] hover:underline text-2xl">{val.candidate.full_name}</Link>
                 <span className="">{val.candidate.school}</span>
               </div>
               <div className="relative">
