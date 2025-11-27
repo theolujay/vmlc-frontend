@@ -99,7 +99,7 @@ export default function Register() {
                     render={({ field }) => <Checkbox checked={field.value} id='terms' onChange={(e) => {
                       field.onChange(e)
                     }} />} />
-                  <label htmlFor='terms'>I agree to allow my information to be used for promotional purposes and accept {`VMLC’s`} <Link href='/VMLC T&C.pdf' target='_blank' className='text-[#018ABB]'>Terms & Conditions</Link> and <Link href='/VMLC Privacy Policy.pdf' target='_blank' className='text-[#018ABB]'>Privacy Policy</Link>.</label>
+                  <label htmlFor='terms'>I agree to allow my information to be used for promotional purposes and accept {`VMLC's`} <Link href='/VMLC T&C.pdf' target='_blank' className='text-[#018ABB]'>Terms & Conditions</Link> and <Link href='/VMLC Privacy Policy.pdf' target='_blank' className='text-[#018ABB]'>Privacy Policy</Link>.</label>
 
                 </div>
                 {form.formState.errors.terms && (
@@ -121,12 +121,10 @@ export default function Register() {
             </form>
           </FormProvider>
         </div>
-      </div>:<RegistrationClosed mail={isRegistrationAvailable?.support_email} />}
-
-
-    
+      </div>
+      :
+      <RegistrationClosed mail={isRegistrationAvailable?.support_email} profile_type="candidate" />
+      }
     </AuthLayout>
   )
 }
-
-
