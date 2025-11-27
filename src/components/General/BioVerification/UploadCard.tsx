@@ -1,7 +1,7 @@
 
 "use client"
 
-type UploadCardType={
+type UploadCardType = {
   label: string;
   file?: File | null;
   onFileChange: (file: File | null) => void;
@@ -12,14 +12,15 @@ import ResponsiveContainer from '@/components/ui/ResponsiveContainer'
 import React from 'react'
 import { DeleteIcon, TrustIcon, UploadDocumentIcon, UploadIcon } from '../GeneralIcon'
 import { formatStorageSize } from '@/utils/formatFileSize';
+import { useAuth } from '@/contexts/AuthProvider';
 
 export default function UploadCard({
   label,
   file,
   onFileChange,
-}: 
+}:
 
-UploadCardType
+  UploadCardType
 ) {
 
   function handleDelete() {
@@ -30,11 +31,14 @@ UploadCardType
     const selectedFile = event.target.files?.[0];
     if (selectedFile) {
       onFileChange(selectedFile);
-      
+
     }
     event.target.value = "";
   }
 
+
+  const { authState } = useAuth()
+  console.log("user auth state in upload card", authState)
   return (
     <ResponsiveContainer className='md:col-span-2 gap-4 '>
       <div className="flex border-b border-[#E4E7EC]">
@@ -50,7 +54,8 @@ UploadCardType
         <p className='font-bold'>Verification Requirement</p>
         <p>
           To continue with the verification process, please upload one of the following documents:
-          your passport, or National Identification Number (NIN).
+          {authState?.userType === 'candidate' ? ' recent school result' : ' recent utility bill or National Identification Number (NIN).'}
+          {/* your passport,  */}
         </p>
       </div>
 
