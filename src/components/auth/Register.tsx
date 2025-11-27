@@ -20,7 +20,7 @@ export default function Register() {
   const { form, onSubmit, isPending } = useRegister()
   const autoGenerate = form.watch('generate_password')
   const { isRegistrationAvailable } = useIsRegistrationAvailable()
-  console.log(isRegistrationAvailable, 'registration available')
+  
   return (
     <AuthLayout>
     
