@@ -23,10 +23,10 @@ export default function UserManagement() {
     const router = useRouter()
 
 
-    console.log(data,'what is data list here')
+    
 
-    const { data: testData } = useGetStatOverview()
-console.log(testData,'what is in test data')
+    // const { data: testData } = useGetStatOverview()
+
 
 
 const overview=data?.stats_overview;
@@ -97,7 +97,7 @@ const chartData = [
 
 
 
-    console.log(stat,'stat from user card')
+
     return <div className='flex flex-col gap-2 rounded-2xl border-[#E4E7EC] border'>
         <div className="flex header p-2 font-bold bg-[#F7F9FC]  rounded-tr-2xl rounded-tl-2xl">
             {header}

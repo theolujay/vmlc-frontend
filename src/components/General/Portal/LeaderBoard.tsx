@@ -21,7 +21,7 @@ export default function LeaderBoard() {
 function Board() {
     const { isPending, data } = useGetLeaderBoard()
 
-    console.log(data, 'what do we have for data')
+    
     if (isPending || !data) {
         return <div className="grid w-full place-content-center"><Spinner /></div>
     }
@@ -56,7 +56,7 @@ function ScreeningTab({ stage, level }: { stage: string; level: number }) {
     const [filters] = useState({ stage, level });
     const { data } = useGetLeaderBoard(page, filters);
 
-    console.log("what is data details here", data);
+    
 
     
     if (!data) {
@@ -89,7 +89,7 @@ function ScreeningTab({ stage, level }: { stage: string; level: number }) {
     }
 
     const allCandidates = [...data.top_three, ...data.remaining_candidates];
-    console.log(allCandidates, "what is in candidates");
+    
 
     return (
         <div className="flex flex-col">

@@ -135,7 +135,7 @@ function ScoreComponent({ stage, level }: Readonly<{ stage: string; level: numbe
               const href = `${pathName}?${query.toString()}`;
 
 
-              console.log(row, query.toString(), 'what is in id')
+              
 
 
 

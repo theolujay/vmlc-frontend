@@ -39,7 +39,7 @@ export default function OverviewSection() {
     const { page, setPage } = usePagination()
     const { data } = useGetCandidateList(page)
 
-    console.log(data,'what is overview data')
+    
 
     return (
         <div className='flex flex-col gap-1 '>

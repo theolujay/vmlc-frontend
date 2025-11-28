@@ -28,7 +28,7 @@ export default function ViewCandidateDetails({ candidate_id, level, stage }: { c
 
 
 function CandidateInfoCard({ userName, position, startTime,endTime }: { userName: string, position: number, startTime: Date,endTime:Date }) {
-console.log(endTime,'what is in end time')
+
     return <ResponsiveContainer className='flex gap-2 flex-col'>
         <h2 className='font-semibold text-lg'>Candidate Info</h2>
         <div className="flex justify-between">

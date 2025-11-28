@@ -7,7 +7,7 @@ export class UserMgtService {
         try {
             
             const response = await client.get(UserMgtUrls.getUserList);
-            console.log(response, 'what is the response for user list')
+            
             return response.data;
         } catch (error) {
             console.error(error,'Error getting list')
@@ -19,7 +19,7 @@ export class UserMgtService {
     static async getStatOverview() {
         try {
             const response = await client.get(UserMgtUrls.STATISTICS_OVERVIEW);
-            console.log(response, 'give me response')
+        
             return response.data
         } catch (error) {
             console.error(error, 'what is error')
