@@ -4,8 +4,6 @@ This is the frontend for the VMLC platform, built with Next.js.
 
 ## Getting Started
 
-...
-
 ### Prerequisites
 
 
