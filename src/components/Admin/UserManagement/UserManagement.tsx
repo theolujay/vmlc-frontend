@@ -8,28 +8,31 @@ import useListUserMgt from '@/hooks/useListUserMgt'
 import { MgtItem, MgtTypeItem, OverviewType, StatOverviewType } from '@/types/UserMgtType'
 import { formatDate } from '@/utils/formatFileSize'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
-import { ReactNode } from 'react'
+import { Dispatch, ReactNode, SetStateAction, useState } from 'react'
 import AdminHeader from '../AdminHeader'
 import { FilterIcon, SortIcon } from '../AdminIcons'
 import { DoughnutChart } from '../Charts/ProgressRing'
 import { getUserName } from '@/utils/generalUtils'
 import Spinner from '@/components/ui/spinner/spinner'
 import Link from 'next/link'
+import { useDebouncedSearch } from '@/hooks/useDebouncedSearch'
 
 export default function UserManagement() {
-    const { data } = useListUserMgt()
     const pathName = usePathname();
     const searchParams = useSearchParams()
     const router = useRouter()
-
-
     
+    const [filters, setFilters] = useState<Record<string, string>>({
+        search: ''
+    })
 
+    const { data } = useListUserMgt(filters)
+    
     // const { data: testData } = useGetStatOverview()
 
 
 
-const overview=data?.stats_overview;
+    const overview = data?.stats_overview;
 
     function addStaffMember() {
         const params = new URLSearchParams(searchParams.toString())
@@ -46,7 +49,7 @@ const overview=data?.stats_overview;
             <div className="flex flex-col gap-3 mt-3 w-[96%] mx-auto">
 
                 <UserSummaryCard overview={overview} />
-                <UserHistoryTable candidates={data?.results ?? []} />
+                <UserHistoryTable handleSearch={setFilters} candidates={data?.results ?? []} />
             </div>
 
         </div>
@@ -55,7 +58,7 @@ const overview=data?.stats_overview;
 
 
 
-function UserSummaryCard({overview}:{overview?:StatOverviewType}) {
+function UserSummaryCard({ overview }: { overview?: StatOverviewType }) {
     if (!overview) return null;
 
     return <ResponsiveContainer className='grid grid-cols-1 md:grid-cols-2 gap-2'>
@@ -84,16 +87,16 @@ function UserSummaryCard({overview}:{overview?:StatOverviewType}) {
 
 
 
-function UserCard({ header,stat }: Readonly<{ header: ReactNode,stat:OverviewType }>) {
+function UserCard({ header, stat }: Readonly<{ header: ReactNode, stat: OverviewType }>) {
     if (!stat) {
-        return <Spinner/>
+        return <Spinner />
     }
-const chartData = [
-    { value: stat.active, color: "#0088cc" }, // blue
-    { value: stat.pending_verification, color: "#f4a300" }, // orange
-    { value: stat.inactive, color: "#e04c4c" },  // red
-    // {value:stat.inactive,color:''}
-];
+    const chartData = [
+        { value: stat.active, color: "#0088cc" }, // blue
+        { value: stat.pending_verification, color: "#f4a300" }, // orange
+        { value: stat.inactive, color: "#e04c4c" },  // red
+        // {value:stat.inactive,color:''}
+    ];
 
 
 
@@ -143,19 +146,14 @@ const chartData = [
 
 
 
-function UserHistoryTable({ candidates }: { candidates: MgtItem[] }) {
-    
+function UserHistoryTable({ candidates, handleSearch }: { candidates: MgtItem[], handleSearch: Dispatch<SetStateAction<{}>> }) {
+
 
     const pathName = usePathname();
     const searchParams = useSearchParams();
-    
 
-//     const href = (() => {
-//   const query = new URLSearchParams(searchParams.toString());
-//   query.set("view", "view-user");
-//   query.set("id", id);
-//   return `${pathName}?${query.toString()}`;
-// })();
+    const { searchInput, setSearchInput } = useDebouncedSearch(handleSearch);
+   
 
 
 
@@ -167,7 +165,8 @@ function UserHistoryTable({ candidates }: { candidates: MgtItem[] }) {
             </div>
             <div className="flex justify-between items-center gap-2">
                 <div className="flex ">
-                    <input type="text" placeholder='Search questions' className='border h-10 px-2 py-1 rounded-md border-[#E4E7EC] outline-none' />
+                    <input value={searchInput}
+                        onChange={(e) => setSearchInput(e.target.value)} type="text" placeholder='Search by candidate, staff name or ID' className='border h-10 px-2 py-1 rounded-md border-[#E4E7EC] outline-none' />
                 </div>
                 <button className='inline-flex items-center gap-2 border rounded-md h-10 px-2 py-1 border-[#E4E7EC] cursor-pointer '   ><span><SortIcon /></span><span className='text-[#344054]'>Sort</span></button>
                 <button className='inline-flex items-center gap-2 border rounded-md h-10 px-2 py-1 border-[#E4E7EC] cursor-pointer ' ><span><FilterIcon /></span><span className='text-[#344054]'>Filter</span></button>
@@ -179,7 +178,7 @@ function UserHistoryTable({ candidates }: { candidates: MgtItem[] }) {
                 {
                     key: 'Name',
                     header: 'Name',
-                    render: (_,row) => <div className="flex  items-center gap-1">{getUserName(row.first_name,row.last_name)}</div>
+                    render: (_, row) => <div className="flex  items-center gap-1">{getUserName(row.first_name, row.last_name)}</div>
                 },
                 // {
                 //     key: 'role',
@@ -199,23 +198,24 @@ function UserHistoryTable({ candidates }: { candidates: MgtItem[] }) {
                 {
                     key: 'status',
                     header: 'Status',
-                    render: (_, row) => <div className="flex capitalize items-center gap-1">{row.is_email_verified?'Approved':'Pending'}</div>
+                    render: (_, row) => <div className="flex capitalize items-center gap-1">{row.is_email_verified ? 'Approved' : 'Pending'}</div>
                 },
                 {
                     key: 'action',
                     header: "Action",
-                    render: (_,row) => {
-                         const href = (() => {
-  const query = new URLSearchParams(searchParams.toString());
-  query.set("view", "view-user");
-  query.set("id", row.id);
-  return `${pathName}?${query.toString()}`;
-})();
+                    render: (_, row) => {
+                        const href = (() => {
+                            const query = new URLSearchParams(searchParams.toString());
+                            query.set("view", "view-user");
+                            query.set("id", row.id);
+                            return `${pathName}?${query.toString()}`;
+                        })();
                         return (
-                        <div className="flex justify-between items-center gap-1">
-                            <Link href={href} className="cursor-pointer font-semibold text-[#3E4095]">View Details</Link>
-                        </div>
-                    )},
+                            <div className="flex justify-between items-center gap-1">
+                                <Link href={href} className="cursor-pointer font-semibold text-[#3E4095]">View Details</Link>
+                            </div>
+                        )
+                    },
                 }
             ]}
             data={candidates}

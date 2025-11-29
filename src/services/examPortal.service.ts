@@ -113,6 +113,7 @@ export class ExamPortal {
                 page: page.toString(),
                 ...Object.fromEntries(Object.entries(filters).filter(([_, value]) => value !== undefined && value !== ''))
             });
+            console.log(queryParams.toString(), 'query params in service')
             const response = await client.get(examUrls.LIST_QUESTIONS(queryParams.toString()))
             return response.data;
         } catch (error) {

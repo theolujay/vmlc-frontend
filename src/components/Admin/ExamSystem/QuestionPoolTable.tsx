@@ -12,6 +12,7 @@ import { Checkbox } from "@/components/ui/Checkbox";
 import QuestionPoolDropdown from "./QuestionPoolDropdown";
 import AddToExamSessionModal from "@/components/Modals/AddToExamSessionModal";
 import BulkRemoveQuestionsModal from "@/components/Modals/BulkRemoveQuestionsModal";
+import { useDebouncedSearch } from "@/hooks/useDebouncedSearch";
 
 type ColumnType<T> = {
   key: keyof T | string;
@@ -86,11 +87,11 @@ function CustomTable<T extends { id: number }>({
                     const value =
                       typeof col.key === "string" && col.key.includes(".")
                         ? col.key
-                            .split(".")
-                            .reduce(
-                              (acc, k) => (acc && acc[k as keyof typeof acc]) || "",
-                              row as any
-                            )
+                          .split(".")
+                          .reduce(
+                            (acc, k) => (acc && acc[k as keyof typeof acc]) || "",
+                            row as any
+                          )
                         : (row as any)[col.key as keyof T];
 
                     return (
@@ -130,16 +131,18 @@ export default function QuestionPoolTable({
   onPageChange,
   currentPage,
   page_count,
+  handleSearch
 }: Readonly<{
   questions: SessionQuestionItemType[];
   onPageChange: Dispatch<SetStateAction<number>>;
   currentPage: number;
   page_count: number;
+  handleSearch: Dispatch<SetStateAction<{}>>
 }>) {
   const [selectedQuestions, setSelectedQuestions] = useState<number[]>([]);
   const [openRemoveQuestion, setOpenRemoveQuestion] = useState(false);
-  const [openExamSession,setOpenExamSession]=useState(false)
-  const [openBulkDelete,setOpenBulkDelete]=useState(false)
+  const [openExamSession, setOpenExamSession] = useState(false)
+  const [openBulkDelete, setOpenBulkDelete] = useState(false)
   const [openDrawer, setOpenDrawer] = useState(false);
   const [selectedQuestionId, setSelectedQuestionId] = useState<number>(0);
   const [currentQuestion, setCurrentQuestion] = useState<SessionQuestionItemType | null>(null);
@@ -163,14 +166,20 @@ export default function QuestionPoolTable({
 
 
 
- 
+
 
   function handleOpenExamSessionModal() {
     setOpenExamSession(true);
   }
-   function handleOpenDeleteModal() {
+  function handleOpenDeleteModal() {
     setOpenBulkDelete(true);
   }
+
+
+  const { searchInput, setSearchInput } = useDebouncedSearch(handleSearch);
+
+  console.log(searchInput, 'search input from question table')
+
 
   return (
     <ResponsiveContainer className="flex gap-4 py-3 px-0 flex-col mx-auto">
@@ -182,6 +191,8 @@ export default function QuestionPoolTable({
         <div className="flex justify-between items-center gap-2">
           <div className="flex">
             <input
+              value={searchInput}
+              onChange={(e) => setSearchInput(e.target.value)}
               type="text"
               placeholder="Search questions"
               className="border h-10 px-2 py-1 rounded-md border-[#E4E7EC] outline-none"
@@ -198,14 +209,14 @@ export default function QuestionPoolTable({
         </div>
       </div>
       {
-        selectedQuestions.length>0&&
-      <div className="flex px-3 bg-[#F7F9FC] items-center py-2 -mb-3 justify-between">
-        <span className="text-lg font-bold">{selectedQuestions.length} Question{selectedQuestions.length>1&&'s'} selected</span>
-        <div className="flex gap-2">
-             <button onClick={handleOpenDeleteModal} className="rounded-xl py-2 font-semibold bg-[#FBEAE9] cursor-pointer text-[#CB1A14] px-3">Delete Question</button>
+        selectedQuestions.length > 0 &&
+        <div className="flex px-3 bg-[#F7F9FC] items-center py-2 -mb-3 justify-between">
+          <span className="text-lg font-bold">{selectedQuestions.length} Question{selectedQuestions.length > 1 && 's'} selected</span>
+          <div className="flex gap-2">
+            <button onClick={handleOpenDeleteModal} className="rounded-xl py-2 font-semibold bg-[#FBEAE9] cursor-pointer text-[#CB1A14] px-3">Delete Question</button>
             <button onClick={handleOpenExamSessionModal} className="rounded-xl py-2 font-semibold bg-[#3E4095] cursor-pointer text-white px-3">Add to exam session</button>
+          </div>
         </div>
-      </div>
       }
 
       <CustomTable
@@ -265,9 +276,9 @@ export default function QuestionPoolTable({
             header: "Action",
             render: (_, row) => (
               <div className="flex justify-between items-center gap-1">
-             
+
                 <QuestionPoolDropdown information={row} exam_id={row.id} />
-               
+
               </div>
             ),
           },

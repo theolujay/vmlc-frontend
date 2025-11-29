@@ -3,10 +3,13 @@ import { InviteStaffMemberPayloadType, StaffDetailsType, UserMgtType } from "@/t
 import client from "@/utils/axios";
 
 export class UserMgtService {
-    static async getUserList(): Promise<UserMgtType> {
+    static async getUserList(filters:Record<string,string>): Promise<UserMgtType> {
         try {
+             const queryParams=new URLSearchParams(
             
-            const response = await client.get(UserMgtUrls.getUserList);
+                Object.fromEntries(Object.entries(filters).filter(([_,value])=>value!==undefined && value!==''))
+            )
+            const response = await client.get(UserMgtUrls.getUserList(queryParams.toString()));
             
             return response.data;
         } catch (error) {
