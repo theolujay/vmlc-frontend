@@ -56,7 +56,7 @@ export class CandidateMgtService {
     static async publishLeaderBoard(){
         try {
             const response=await client.post(candidateUrls.PUBLISH_LEADERBOARD);
-            console.log(response,'what is in response for publish')
+            
             return response.data;
         } catch (error) {
             

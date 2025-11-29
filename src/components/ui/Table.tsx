@@ -1,14 +1,16 @@
+import { ActivityHistoryUserType } from '@/types/auth'
+import { formatDate } from '@/utils/formatFileSize'
+import Link from 'next/link'
+import { usePathname, useSearchParams } from 'next/navigation'
 import React from 'react'
 import { TableIcon } from '../General/GeneralIcon'
-import { ActivityHistoryUserType } from '@/types/auth'
-import Link from 'next/link'
-import { useParams, usePathname, useSearchParams } from 'next/navigation'
-import { formatDate } from '@/utils/formatFileSize'
 
 export default function Table({ columns, data, label, desc, footer }: Readonly<{ columns: string[], data: ActivityHistoryUserType[], label?: string, desc?: React.ReactNode, footer?: React.ReactNode }>) {
+   console.log(data,'table data')
     return (
         <div className="flex flex-col">
             <div className="w-full overflow-x-auto">
+                
 
             <table className='w-full overflow-x-auto'>
                 <thead>
@@ -83,7 +85,7 @@ const href = (() => {
     return <tr className='border-b  border-[#E4E7EC] last:border-0'>
         <td className='text-center py-2 max-w-[6vw] overflow-clip'>{index}</td>
         <td className='text-center py-2'>
-            <div className="flex justify-center gap-0.5 items-center">
+            <div className="flex items-center gap-0.5 ">
             {/* <div className=" w-12 h-12 rounded-full gap-1">
                 <img loading='lazy' src={undefined} alt="" className='object-contain outline-0 block align-middle rounded-full bg-grey-200 w-full h-full' />
                 </div> */}
