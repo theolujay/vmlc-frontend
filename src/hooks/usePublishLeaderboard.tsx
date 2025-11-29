@@ -8,7 +8,7 @@ export default function usePublishLeaderboard(onSuccessCallback: () => void) {
         mutationFn: CandidateMgtService.publishLeaderBoard,
         onSuccess: () => {
 
-            toast.success('Dashboard published successfully')
+            toast.success('Exam leaderboard result has been uploaded to all participant successfully')
             onSuccessCallback()
         },
         onError: () => {

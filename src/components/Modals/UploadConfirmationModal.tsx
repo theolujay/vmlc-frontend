@@ -27,7 +27,7 @@ export default function UploadConfirmationModal({ open, close }: Readonly<{ open
                         disabled={isPending}
                         className={clsx("px-4 py-2 rounded-lg font-semibold cursor-pointer flex-1 text-white bg-[#3E4095]")}
                     >
-                        {isPending?<Spinner/>:'CONFIRM UPLOAD'}
+                        {isPending?<Spinner/>:'CONFIRM UPDATE'}
                         
                     </button>
                 </div>

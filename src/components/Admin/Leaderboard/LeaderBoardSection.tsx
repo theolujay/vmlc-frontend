@@ -5,6 +5,7 @@ import Spinner from "@/components/ui/spinner/spinner";
 import useGetLeaderBoard from "@/hooks/useGetLeaderboard";
 import usePagination from "@/hooks/usePagination";
 import { CandidateType } from "@/types/LeaderBoardType";
+import { getUserInitials } from "@/utils/capitalizeWords";
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
 import { useState } from "react";
@@ -20,7 +21,7 @@ import { FirstPosition, SecondPosition, ThirdPosition } from "./LeaderBoardIcon"
 
 export default function LeaderBoardSection() {
   const { data, isPending } = useGetLeaderBoard()
-const [openPublishModal,setOpenPublishModal]=useState(false)
+  const [openPublishModal, setOpenPublishModal] = useState(false)
 
   // const { onSubmit } = usePublishLeaderboard()
 
@@ -39,18 +40,19 @@ const [openPublishModal,setOpenPublishModal]=useState(false)
 
 
 
-  function handleModal(){
+  function handleModal() {
     setOpenPublishModal(true)
   }
+  
   const leaderBoardTab = leaderBoardItems?.map((val) => ({
-    label: <ScreeningLabel label={val.stage} />,
+    label: <ScreeningLabel label={val.stage_display} />,
     value: val.stage_display,
     content: <ScoreComponent stage={val.stage} level={val.level} />
   }));
 
   return (
     <div className='flex flex-col gap-1 '>
-      <AdminHeader label="Leaderboards" isExport actionButton={<Button onClick={handleModal} className="px-2 bg-[#3e4095] text-white">UPLOAD</Button>} />
+      <AdminHeader label="Leaderboards" isExport actionButton={<Button onClick={handleModal} className="px-2 bg-[#3e4095] text-white">UPDATE</Button>} />
       <div className="flex flex-col gap-3 mt-3 w-[96%] mx-auto">
 
         <ResponsiveContainer className="px-0 min-h-[60vh]">
@@ -67,8 +69,13 @@ const [openPublishModal,setOpenPublishModal]=useState(false)
 }
 
 
+
 export function ScreeningLabel({ label }: { label: string }) {
-  return <div className='flex gap-1 items-center'><span>{handleRankingIcon(label)}</span><span className="capitalize">{label}</span></div>
+  console.log(label, 'label in screening')
+
+
+
+  return <div className='flex gap-1 items-center'><span>{handleRankingIcon(label)}</span><span className="capitalize">{formatLabel(label)}</span></div>
 }
 
 
@@ -81,8 +88,14 @@ function ScoreComponent({ stage, level }: Readonly<{ stage: string; level: numbe
 
   const pathName = usePathname()
   const searchParams = useSearchParams()
-  
 
+
+
+  
+  // const {authState}=useAuth()
+  // console.log(authState,'auth state in leaderboard score component')
+  // const userName = [authState?.user?.first_name, authState?.user?.last_name].join(' ')
+  //     const userInitials=getUserInitials(userName)
 
   if (!data) {
     return (
@@ -104,18 +117,21 @@ function ScoreComponent({ stage, level }: Readonly<{ stage: string; level: numbe
       );
     }
 
-    
+
     return (
       <div className="flex gap-2 flex-col">
         <Podium stage={stage} level={level} users={data.top_three} />
         <CustomTable columns={[
           { key: 'position', header: 'Position', render: (_, row) => <div className="flex items-center gap-1">{row.rank}</div> },
-          { key: 'Name', header: 'Name', render: (_, row) => <div className="flex  items-center gap-1">{row.candidate.full_name}</div> },
-          // {
-          //   key: 'email', header: 'Email Address', render: (_, row) => <div className="flex items-center gap-1">
-          //     {row.candidate.user.email}
-          //   </div>
-          // },
+          { key: 'Name', header: 'Name', render: (_, row) =>{ 
+            const userInitials=getUserInitials(row.candidate.full_name)
+          return <div className="flex  items-center gap-2">
+             <div className="bg-[#CCEEFB] flex items-center justify-center w-[35px] h-[35px] rounded-full">
+                            <span className="font-semibold ">{userInitials}</span>
+                        </div>
+            <span>{row.candidate.full_name}</span></div> }
+            },
+        
           {
             key: 'School', header: 'School', render: (_, row) => <div className="flex items-center gap-1">{row.candidate.school}</div>
           },
@@ -126,7 +142,7 @@ function ScoreComponent({ stage, level }: Readonly<{ stage: string; level: numbe
           },
           {
             key: 'action', header: "Action", render: (_, row) => {
-             
+
               const query = new URLSearchParams(searchParams.toString());
               query.set("view", "view-candidate");
               query.set('level', level.toString())
@@ -135,7 +151,7 @@ function ScoreComponent({ stage, level }: Readonly<{ stage: string; level: numbe
               const href = `${pathName}?${query.toString()}`;
 
 
-              
+
 
 
 
@@ -180,13 +196,13 @@ const shapeByRank: Record<number, React.ComponentType> = {
 
 
 
-export function Podium({ users,stage,level }: Readonly<{ users: CandidateType[] ,stage:string,level:number}>) {
+export function Podium({ users, stage, level }: Readonly<{ users: CandidateType[], stage: string, level: number }>) {
   const order = [2, 1, 3];
   const arranged = [...users].sort(
     (a, b) => order.indexOf(a.rank) - order.indexOf(b.rank)
   );
 
-const searchParams = useSearchParams()
+  const searchParams = useSearchParams()
   const pathName = usePathname()
 
   return (
@@ -198,19 +214,19 @@ const searchParams = useSearchParams()
             const Shape = shapeByRank[val.rank]
 
 
-              const query = new URLSearchParams(searchParams.toString());
-              query.set("view", "view-candidate");
-              query.set('level', level.toString())
-              query.set('stage', stage)
-              query.set("id", val.candidate.id);
-              const href = `${pathName}?${query.toString()}`;
+            const query = new URLSearchParams(searchParams.toString());
+            query.set("view", "view-candidate");
+            query.set('level', level.toString())
+            query.set('stage', stage)
+            query.set("id", val.candidate.id);
+            const href = `${pathName}?${query.toString()}`;
 
 
 
             return <div key={`shape-index-${index + 1}`} className="flex justify-between gap-3 items-center flex-col">
               <div className="flex  flex-col">
                 {/* <p className="font-[400] text-2xl">{val.candidate.full_name}</p> */}
-                 <Link href={href} className="font-[400] hover:text-[#3e4095] hover:underline text-2xl">{val.candidate.full_name}</Link>
+                <Link href={href} className="font-[400] hover:text-[#3e4095] hover:underline text-2xl">{val.candidate.full_name}</Link>
                 <span className="">{val.candidate.school}</span>
               </div>
               <div className="relative">
@@ -229,6 +245,14 @@ const searchParams = useSearchParams()
 
 
 
+
+function formatLabel(label: string) {
+  // return label.charAt(0).toUpperCase() + label.slice(1);
+  if (label.startsWith('screening')) {
+    return 'Screening';
+  }
+  return label.split('_').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
+}
 
 
 
