@@ -8,11 +8,12 @@ import { formatDate } from '@/utils/formatFileSize';
 import { getUserName } from '@/utils/generalUtils';
 import Link from 'next/link';
 import { usePathname, useSearchParams } from 'next/navigation';
-import { Dispatch, SetStateAction } from 'react';
+import { Dispatch, SetStateAction, useState } from 'react';
 import Button from '../../ui/Button';
 import ResponsiveContainer from '../../ui/ResponsiveContainer';
 import AdminHeader from '../AdminHeader';
 import { ActiveIcon, AngleIcon, BroadcastIcon, FilterIcon, InactiveIcon, ManageQuestionIcon, PendingIcon, RegisteredIcon, SortIcon, ViewLeaderBoardIcon } from '../AdminIcons';
+import { useDebouncedSearch } from '@/hooks/useDebouncedSearch';
 
 
 
@@ -41,9 +42,13 @@ function shouldShowHeaderButtons(role: string): boolean {
 
 export default function OverviewSection() {
     const { page, setPage } = usePagination()
-    const { data } = useGetCandidateList(page)
+    const [filters, setFilters] = useState<Record<string, string>>({
+        search: ''
+    })
+    const { data } = useGetCandidateList(page, filters)
 
-console.log(data,'overview section data')
+
+    
 
     return (
         <div className='flex flex-col gap-1 '>
@@ -52,16 +57,22 @@ console.log(data,'overview section data')
             <div className="flex flex-col gap-3 mt-3 w-[96%] mx-auto">
                 <OverviewSummaryCard registeredStudents={data?.pagination.count ?? 0} />
                 <QuickActionsCard />
-                <ActivityHistoryCard page_count={data?.pagination.total_pages ?? 0} currentPage={page} onPageChange={setPage} data={data?.results ?? []} />
+                <ActivityHistoryCard handleSearch={setFilters} page_count={data?.pagination.total_pages ?? 0} currentPage={page} onPageChange={setPage} data={data?.results ?? []} />
             </div>
         </div>
     )
 }
 
 
-function ActivityHistoryCard({ data, onPageChange, currentPage, page_count }: Readonly<{ data: ActivityHistoryUserType[], onPageChange: Dispatch<SetStateAction<number>>, currentPage: number, page_count: number }>) {
+
+
+
+function ActivityHistoryCard({ data, onPageChange, currentPage, page_count, handleSearch }: Readonly<{ data: ActivityHistoryUserType[], handleSearch: Dispatch<SetStateAction<{}>>, onPageChange: Dispatch<SetStateAction<number>>, currentPage: number, page_count: number }>) {
     const pathName = usePathname();
     const searchParams = useSearchParams();
+    const { searchInput, setSearchInput } = useDebouncedSearch(handleSearch);
+
+
     return <ResponsiveContainer className='flex gap-4 py-3 px-0 flex-col mx-auto'>
         <div className="flex justify-between px-3">
             <div className="flex gap-1 flex-col">
@@ -70,7 +81,9 @@ function ActivityHistoryCard({ data, onPageChange, currentPage, page_count }: Re
             </div>
             <div className="flex justify-between items-center gap-2">
                 <div className="flex">
-                    <input type="text" placeholder='Search by student, staff name or ID' className='border h-10 px-2 py-1 rounded-md border-[#E4E7EC] outline-none' />
+                    <input value={searchInput}
+                        onChange={(e) => setSearchInput(e.target.value)}
+                        type="text" placeholder='Search by student, staff name or ID' className='border h-10 px-2 py-1 rounded-md border-[#E4E7EC] outline-none' />
                 </div>
                 <button className='inline-flex items-center gap-2 border h-10 rounded-md px-2 py-1 border-[#E4E7EC] cursor-pointer '   ><span><SortIcon /></span><span className='text-[#344054]'>Sort</span></button>
                 <button className='inline-flex items-center gap-2 border h-10 rounded-md px-2 py-1 border-[#E4E7EC] cursor-pointer ' ><span><FilterIcon /></span><span className='text-[#344054]'>Filter</span></button>
@@ -95,7 +108,7 @@ function ActivityHistoryCard({ data, onPageChange, currentPage, page_count }: Re
             },
             { key: 'Email Address', header: 'Email Address', render: (_, row) => <div className='flex items-center gap-1'>{row.user.email}</div> },
             { key: 'Application Date', header: 'Application Date', render: (_, row) => <div className='flex items-center gap-1'>{formatDate(row.user.date_joined)}</div> },
-            { key: 'Status', header: 'Status', render: (_, row) => <div className='flex items-center gap-1'>{row.status}</div> },
+            { key: 'Status', header: 'Status', render: (_, row) => <div className='flex items-center capitalize gap-1'>{row.status}</div> },
             {
                 key: 'Action', header: 'Action', render: (_, row) => {
                     const href = (() => {
@@ -106,7 +119,6 @@ function ActivityHistoryCard({ data, onPageChange, currentPage, page_count }: Re
                     })();
                     return <Link
                         href={href}
-
                         className='text-[#3E4095] font-semibold '>View details</Link>
                 }
             }]}
