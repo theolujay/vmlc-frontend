@@ -2,22 +2,21 @@
 import { AddIcon } from '@/components/General/GettingStarted/GettingStartedAssets'
 import Button from '@/components/ui/Button'
 import CustomTable from '@/components/ui/CustomTable'
+import TablePagination from '@/components/ui/Pagination/TablePagination'
 import ResponsiveContainer from '@/components/ui/ResponsiveContainer'
-import useGetStatOverview from '@/hooks/useGetStatOverview'
+import Spinner from '@/components/ui/spinner/spinner'
+import { useDebouncedSearch } from '@/hooks/useDebouncedSearch'
 import useListUserMgt from '@/hooks/useListUserMgt'
-import { MgtItem, MgtTypeItem, OverviewType, StatOverviewType } from '@/types/UserMgtType'
+import usePagination from '@/hooks/usePagination'
+import { MgtItemType, OverviewType, StatOverviewType } from '@/types/UserMgtType'
 import { formatDate } from '@/utils/formatFileSize'
+import { getUserName } from '@/utils/generalUtils'
+import Link from 'next/link'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { Dispatch, ReactNode, SetStateAction, useState } from 'react'
 import AdminHeader from '../AdminHeader'
 import { FilterIcon, SortIcon } from '../AdminIcons'
 import { DoughnutChart } from '../Charts/ProgressRing'
-import { getUserName } from '@/utils/generalUtils'
-import Spinner from '@/components/ui/spinner/spinner'
-import Link from 'next/link'
-import { useDebouncedSearch } from '@/hooks/useDebouncedSearch'
-import TablePagination from '@/components/ui/Pagination/TablePagination'
-import usePagination from '@/hooks/usePagination'
 
 export default function UserManagement() {
     const pathName = usePathname();
@@ -52,7 +51,7 @@ export default function UserManagement() {
             <div className="flex flex-col gap-3 mt-3 w-[96%] mx-auto">
 
                 <UserSummaryCard overview={overview} />
-                <UserHistoryTable page_count={data?.pagination.total_pages??0} currentPage={page} onPageChange={setPage} handleSearch={setFilters} candidates={data?.results ?? []} />
+                <UserHistoryTable page_count={data?.pagination.total_pages??0} currentPage={page} onPageChange={setPage} handleSearch={setFilters} candidates={data?.results as MgtItemType[]?? []} />
             </div>
 
         </div>
@@ -149,7 +148,7 @@ function UserCard({ header, stat }: Readonly<{ header: ReactNode, stat: Overview
 
 
 
-function UserHistoryTable({ candidates, handleSearch, onPageChange, currentPage, page_count, }: { candidates: MgtItem[], handleSearch: Dispatch<SetStateAction<{}>> , onPageChange: Dispatch<SetStateAction<number>>, currentPage: number, page_count: number }) {
+function UserHistoryTable({ candidates, handleSearch, onPageChange, currentPage, page_count, }: { candidates: MgtItemType[], handleSearch: Dispatch<SetStateAction<{}>> , onPageChange: Dispatch<SetStateAction<number>>, currentPage: number, page_count: number }) {
 
 
     const pathName = usePathname();
@@ -158,8 +157,8 @@ function UserHistoryTable({ candidates, handleSearch, onPageChange, currentPage,
     const { searchInput, setSearchInput } = useDebouncedSearch(handleSearch);
    
 
- const { page, setPage } = usePagination()
-
+//  const { page, setPage } = usePagination()
+console.log(candidates,'candidates in user history table')
     return <ResponsiveContainer className='flex gap-4 py-3 px-0 flex-col mx-auto'>
         <div className="flex justify-between px-3">
             <div className="flex gap-1 flex-col">
@@ -181,8 +180,10 @@ function UserHistoryTable({ candidates, handleSearch, onPageChange, currentPage,
                 {
                     key: 'Name',
                     header: 'Name',
-                    render: (_, row) => <div className="flex  items-center gap-1">{getUserName(row.first_name, row.last_name)}</div>
-                },
+                    render: (_, row) => {
+                        console.log(row)
+                        return <div className="flex  items-center gap-1">{getUserName(row.first_name, row.last_name)}</div>
+                },},
                 // {
                 //     key: 'role',
                 //     header: 'Role',
