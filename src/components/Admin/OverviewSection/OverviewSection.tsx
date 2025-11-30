@@ -1,9 +1,11 @@
 "use client"
 import CustomTable from '@/components/ui/CustomTable';
 import TablePagination from '@/components/ui/Pagination/TablePagination';
-import { useGetCandidateList } from '@/hooks/useCandidateMgt';
+import { useDebouncedSearch } from '@/hooks/useDebouncedSearch';
+import useListUserMgt from '@/hooks/useListUserMgt';
 import usePagination from '@/hooks/usePagination';
 import { ActivityHistoryUserType } from '@/types/auth';
+import { MgtItem } from '@/types/UserMgtType';
 import { formatDate } from '@/utils/formatFileSize';
 import { getUserName } from '@/utils/generalUtils';
 import Link from 'next/link';
@@ -13,9 +15,6 @@ import Button from '../../ui/Button';
 import ResponsiveContainer from '../../ui/ResponsiveContainer';
 import AdminHeader from '../AdminHeader';
 import { ActiveIcon, AngleIcon, BroadcastIcon, FilterIcon, InactiveIcon, ManageQuestionIcon, PendingIcon, RegisteredIcon, SortIcon, ViewLeaderBoardIcon } from '../AdminIcons';
-import { useDebouncedSearch } from '@/hooks/useDebouncedSearch';
-import useListUserMgt from '@/hooks/useListUserMgt';
-import { MgtItem } from '@/types/UserMgtType';
 
 
 
@@ -48,13 +47,11 @@ export default function OverviewSection() {
         search: '',
         profile:'candidate'
     })
-    const { data } = useGetCandidateList(page, filters)
+    // const { data } = useGetCandidateList(page, filters)
 
-// const {data}=useListUserMgt(page,filters)
-// console.log(data,'overview section data')
-//     const { data:valueData } = useListUserMgt(filters)
-// console.log(valueData,'value data in overview section')
-
+const {data}=useListUserMgt(page,filters)
+console.log(data,'overview section data')
+   
     
 
     return (
@@ -62,9 +59,9 @@ export default function OverviewSection() {
             {/* <OverviewHeader /> */}
             <AdminHeader isExport label='Overview' actionButton={<Button className="inline-flex gap-2 border px-2 items-center text-sm">SEND BROADCAST</Button>} />
             <div className="flex flex-col gap-3 mt-3 w-[96%] mx-auto">
-                <OverviewSummaryCard registeredStudents={data?.pagination.count ?? 0} />
+                <OverviewSummaryCard active={data?.stats_overview.candidates.active??0} inactive={data?.stats_overview.candidates.inactive??0} pending={data?.stats_overview.candidates.pending_verification??0} registeredStudents={data?.stats_overview.candidates.registered??0} />
                 <QuickActionsCard />
-                <ActivityHistoryCard handleSearch={setFilters} page_count={data?.pagination.total_pages ?? 0} currentPage={page} onPageChange={setPage} data={data?.results ?? []} />
+                <ActivityHistoryCard handleSearch={setFilters} page_count={data?.pagination.total_pages ?? 0} currentPage={page} onPageChange={setPage} data={data?.results as MgtItem[] ?? []} />
             </div>
         </div>
     )
@@ -169,7 +166,7 @@ function QuickActionsCard() {
 }
 
 
-function OverviewSummaryCard({ registeredStudents }: { registeredStudents: number }) {
+function OverviewSummaryCard({ registeredStudents,pending,active,inactive }: { registeredStudents: number,pending:number,active:number,inactive:number }) {
     return <ResponsiveContainer className='flex gap-2 px-3 flex-col mx-auto'>
         <div className="flex justify-between">
             <div className="flex gap-4 flex-col">
@@ -188,7 +185,7 @@ function OverviewSummaryCard({ registeredStudents }: { registeredStudents: numbe
                     <span><PendingIcon /></span>
                     <p>PENDING CANDIDATES</p>
                 </div>
-                <div className='flex gap-3 items-center'><span className='font-bold text-2xl'>0</span>
+                <div className='flex gap-3 items-center'><span className='font-bold text-2xl'>{pending}</span>
                     <div className="flex"><span className='text-xs text-[#0F973D]'>0%</span></div>
                 </div>
             </div>
@@ -200,7 +197,7 @@ function OverviewSummaryCard({ registeredStudents }: { registeredStudents: numbe
                     <span><ActiveIcon /></span>
                     <p>ACTIVE CANDIDATES</p>
                 </div>
-                <div className='flex gap-3 items-center'><span className='font-bold text-2xl'>0</span>
+                <div className='flex gap-3 items-center'><span className='font-bold text-2xl'>{active}</span>
                     <div className="flex"><span className='text-xs text-[#0F973D]'>0%</span></div>
                 </div>
             </div>
@@ -212,7 +209,7 @@ function OverviewSummaryCard({ registeredStudents }: { registeredStudents: numbe
                     <span><InactiveIcon /></span>
                     <p>INACTIVE CANDIDATES</p>
                 </div>
-                <div className='flex gap-3 items-center'><span className='font-bold text-2xl'>0</span>
+                <div className='flex gap-3 items-center'><span className='font-bold text-2xl'>{inactive}</span>
                     <div className="flex"><span className='text-xs text-[#0F973D]'>0%</span></div>
                 </div>
             </div>

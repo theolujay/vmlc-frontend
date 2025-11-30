@@ -46,7 +46,7 @@ export type UserMgtType = {
   //   staff: OverviewType
   // },
   stats_overview: StatOverviewType,
-  results: MgtItem[]
+  results: MgtItem[]|MgtItemType[]
 }
 
 
@@ -61,7 +61,18 @@ export type OverviewType = {
   deactivated: number
 }
 
+
+
+
 export type MgtItem = {
+  user: RequestUserType & { is_email_verified: boolean, },
+  school: string,
+  role: string,
+  status: string,
+  is_user_verified: boolean
+}
+
+export type MgtItemType = {
   id: string,
   email: string,
   is_email_verified: boolean,
@@ -72,27 +83,27 @@ export type MgtItem = {
   date_joined: Date
 }
 
-export type StaffUserType=RequestUserType & {
- is_email_verified: boolean,
-      profile_picture:string| null,
+export type StaffUserType = RequestUserType & {
+  is_email_verified: boolean,
+  profile_picture: string | null,
 }
 
 
-export type UserProfileType={
-    user:StaffUserType
-    occupation: string,
-    face_id: string|null,
-    role: string,
-    profile_type: string,
-    is_active:boolean,
-    is_user_verified: boolean,
-    id_card:string| null,
-    verification_document:string| null,
-    created_at: Date,
-    updated_at:Date
-  }
+export type UserProfileType = {
+  user: StaffUserType
+  occupation: string,
+  face_id: string | null,
+  role: string,
+  profile_type: string,
+  is_active: boolean,
+  is_user_verified: boolean,
+  id_card: string | null,
+  verification_document: string | null,
+  created_at: Date,
+  updated_at: Date
+}
 
 export type StaffDetailsType = {
-  profile:UserProfileType
-  
+  profile: UserProfileType
+
 }
