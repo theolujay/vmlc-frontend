@@ -16,17 +16,20 @@ import { getUserName } from '@/utils/generalUtils'
 import Spinner from '@/components/ui/spinner/spinner'
 import Link from 'next/link'
 import { useDebouncedSearch } from '@/hooks/useDebouncedSearch'
+import TablePagination from '@/components/ui/Pagination/TablePagination'
+import usePagination from '@/hooks/usePagination'
 
 export default function UserManagement() {
     const pathName = usePathname();
     const searchParams = useSearchParams()
     const router = useRouter()
+     const { page, setPage } = usePagination()
     
     const [filters, setFilters] = useState<Record<string, string>>({
         search: ''
     })
 
-    const { data } = useListUserMgt(filters)
+    const { data } = useListUserMgt(page,filters)
     
     // const { data: testData } = useGetStatOverview()
 
@@ -49,7 +52,7 @@ export default function UserManagement() {
             <div className="flex flex-col gap-3 mt-3 w-[96%] mx-auto">
 
                 <UserSummaryCard overview={overview} />
-                <UserHistoryTable handleSearch={setFilters} candidates={data?.results ?? []} />
+                <UserHistoryTable page_count={data?.pagination.total_pages??0} currentPage={page} onPageChange={setPage} handleSearch={setFilters} candidates={data?.results ?? []} />
             </div>
 
         </div>
@@ -146,7 +149,7 @@ function UserCard({ header, stat }: Readonly<{ header: ReactNode, stat: Overview
 
 
 
-function UserHistoryTable({ candidates, handleSearch }: { candidates: MgtItem[], handleSearch: Dispatch<SetStateAction<{}>> }) {
+function UserHistoryTable({ candidates, handleSearch, onPageChange, currentPage, page_count, }: { candidates: MgtItem[], handleSearch: Dispatch<SetStateAction<{}>> , onPageChange: Dispatch<SetStateAction<number>>, currentPage: number, page_count: number }) {
 
 
     const pathName = usePathname();
@@ -155,7 +158,7 @@ function UserHistoryTable({ candidates, handleSearch }: { candidates: MgtItem[],
     const { searchInput, setSearchInput } = useDebouncedSearch(handleSearch);
    
 
-
+ const { page, setPage } = usePagination()
 
     return <ResponsiveContainer className='flex gap-4 py-3 px-0 flex-col mx-auto'>
         <div className="flex justify-between px-3">
@@ -219,7 +222,8 @@ function UserHistoryTable({ candidates, handleSearch }: { candidates: MgtItem[],
                 }
             ]}
             data={candidates}
-        // footer={<TablePagination />}
-        />
+            
+         footer={<TablePagination currentPage={currentPage} pageCount={page_count} onPageChange={onPageChange} />} />
+    
     </ResponsiveContainer>
 }

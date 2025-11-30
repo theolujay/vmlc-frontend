@@ -14,6 +14,8 @@ import ResponsiveContainer from '../../ui/ResponsiveContainer';
 import AdminHeader from '../AdminHeader';
 import { ActiveIcon, AngleIcon, BroadcastIcon, FilterIcon, InactiveIcon, ManageQuestionIcon, PendingIcon, RegisteredIcon, SortIcon, ViewLeaderBoardIcon } from '../AdminIcons';
 import { useDebouncedSearch } from '@/hooks/useDebouncedSearch';
+import useListUserMgt from '@/hooks/useListUserMgt';
+import { MgtItem } from '@/types/UserMgtType';
 
 
 
@@ -43,10 +45,15 @@ function shouldShowHeaderButtons(role: string): boolean {
 export default function OverviewSection() {
     const { page, setPage } = usePagination()
     const [filters, setFilters] = useState<Record<string, string>>({
-        search: ''
+        search: '',
+        profile:'candidate'
     })
     const { data } = useGetCandidateList(page, filters)
 
+// const {data}=useListUserMgt(page,filters)
+// console.log(data,'overview section data')
+//     const { data:valueData } = useListUserMgt(filters)
+// console.log(valueData,'value data in overview section')
 
     
 
@@ -67,7 +74,10 @@ export default function OverviewSection() {
 
 
 
-function ActivityHistoryCard({ data, onPageChange, currentPage, page_count, handleSearch }: Readonly<{ data: ActivityHistoryUserType[], handleSearch: Dispatch<SetStateAction<{}>>, onPageChange: Dispatch<SetStateAction<number>>, currentPage: number, page_count: number }>) {
+function ActivityHistoryCard({ data, onPageChange, currentPage, page_count, handleSearch }: Readonly<{
+     data: ActivityHistoryUserType[], 
+    // data: MgtItem[],
+    handleSearch: Dispatch<SetStateAction<{}>>, onPageChange: Dispatch<SetStateAction<number>>, currentPage: number, page_count: number }>) {
     const pathName = usePathname();
     const searchParams = useSearchParams();
     const { searchInput, setSearchInput } = useDebouncedSearch(handleSearch);

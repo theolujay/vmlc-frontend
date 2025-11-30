@@ -1,7 +1,7 @@
 
 
 "use client"
-import { AverageIcon, GotoSummaryIcon, LeaderBoardSummaryIcon, ScreeningSummaryIcon } from '@/components/General/GeneralIcon'
+import { AverageIcon, GotoSummaryIcon, LeaderBoardSummaryIcon, ScreeningSummaryIcon, SubmittedDocumentIcon, ViewArrow } from '@/components/General/GeneralIcon'
 import Button from '@/components/ui/Button'
 import CustomTable from '@/components/ui/CustomTable'
 import ResponsiveContainer from '@/components/ui/ResponsiveContainer'
@@ -11,18 +11,18 @@ import ScreeningTabWrapper from '@/components/ui/Tabs/ScreeningTabWrapper'
 import withAuthentication from '@/hocs/withAuthentication'
 import useGetAccountDetails from '@/hooks/useGetAccountDetails'
 import { ExamTakenType } from '@/types/CandidateType'
+import { UserProfileType } from '@/types/UserMgtType'
 import { formatDate } from '@/utils/formatFileSize'
+import { getUserName } from '@/utils/generalUtils'
+import Link from 'next/link'
 import AdminHeader from '../AdminHeader'
 import { ActionsIcon } from '../AdminIcons'
 import EmptySession from '../EmptySession'
-import { UserProfileType } from '@/types/UserMgtType'
-import { getUserName } from '@/utils/generalUtils'
-import { User } from '@/types/Index'
 
 function ViewStaffDetailsFromLeaderboard({ id }: Readonly<{ id: string }>) {
 
     const { data, isPending } = useGetAccountDetails(id)
-
+    console.log(data, 'data in staff details from leaderboard')
 
 
 
@@ -48,8 +48,10 @@ export default withAuthentication(ViewStaffDetailsFromLeaderboard)
 
 
 function ProfileComponent(
-    { userName, status, email, dateJoined, occupation, role, userType, phone, document }: { phone: string, userType: string, userName: string, email: string, status: string, dateJoined: Date, occupation: string, document: string | null, role: string }
+    { userName, status, email, dateJoined, occupation, role, userType, phone, document, facial }: { phone: string, userType: string, userName: string, email: string, status: string, dateJoined: Date, occupation: string, document: string[], role: string, facial: string | null }
 ) {
+
+    console.log(document, document.length, 'document in profile component')
     // const userInitials = getUserInitials(userName)
     return <div className='flex gap-3 flex-col p-8'>
 
@@ -57,7 +59,10 @@ function ProfileComponent(
 
             <div className="flex flex-col gap-1">
                 <span className='text-sm'>VERIFICATION STATUS</span>
-                <span>{status}</span>
+                <div className="flex justify-between max-w-[30vw] items-center ">
+                    <span className='bg-[#FEF6E7] rounded-full w-fit px-2 py-1 text-[#865503]'>{status}</span>
+                    <span><ViewArrow /></span>
+                </div>
             </div>
             <div className="flex flex-col gap-1">
                 <span className='text-sm'>NAME</span>
@@ -65,7 +70,7 @@ function ProfileComponent(
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2">
-                <div className="flex flex-col gap-2">
+                <div className="flex flex-col gap-8">
                     <div className="flex-col  gap-1 flex">
                         <span className='text-sm text-[#475367]'>USER TYPE</span>
                         <span className='border rounded-2xl text-[#01ACEA] border-[#01ACEA] w-fit   px-2 bg-[#F5FCFE]'>{userType}</span>
@@ -79,7 +84,7 @@ function ProfileComponent(
                         <span>{occupation}</span>
                     </div>
                 </div>
-                <div className="flex flex-col gap-2">
+                <div className="flex flex-col  gap-8 ">
                     <div className="flex-col gap-1 flex">
                         <span className='text-[#475367] text-sm'>ROLE</span>
                         <span className='bg-[#FFF1F3] rounded-full w-fit px-2 py-1 text-[#C01048]'>{role}</span>
@@ -97,23 +102,51 @@ function ProfileComponent(
         </div>
         <div className='flex gap-3 mb-3 border-b border-[#E4E7EC] flex-col p-8'>
             <span className='text-[#475367] text-sm'>DOCUMENTS</span>
-            {/* <div className="flex flex-col gap-1">
-            <span>{status}</span>
-        </div> */}
 
-        {
-            document?
-            <div className="flex gap-2 items-center">
-                <span className="document-icon"></span>
-                <div className="flex flex-col">
-                    <span>{document}</span>
-                    {/* <span className='text-sm'>200kb</span> */}
-                </div>
-                <div className="flex">
-                    <span className='text-[#3E4095] text-xs'>View</span>
-                </div>
-            </div>:<span>No document uploaded</span>
-        }
+
+            {
+                document && document.length > 0 ?
+                    <div className="flex w-full gap-3 overflow-x-auto">
+                        {document.map((doc, index) => (
+                            <div key={index} className="flex gap-2 items-center">
+                                <span className="document-icon"><SubmittedDocumentIcon /></span>
+                                <div className="flex flex-col">
+                                    <span className='max-w-[15vw] whitespace-nowrap overflow-clip'>{doc}</span>
+                                    {/* <span className='text-sm'>200kb</span> */}
+                                </div>
+                                <div className="flex items-center gap-1">
+                                    <Link target='_blank' href={doc} className='text-[#3E4095] '>View</Link>
+                                    <span><ViewArrow /></span>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                    : <span>No document uploaded</span>
+            }
+        </div>
+
+        <div className='flex gap-3 mb-3 border-b border-[#E4E7EC] flex-col p-8'>
+            <span className='text-[#475367] text-sm'>FACIAL CAPTURE</span>
+
+
+            {
+                facial ?
+                    <div className="flex w-full gap-3 overflow-x-auto">
+
+                        <div className="flex gap-2 items-center">
+                            <span className="document-icon"><img className='rounded-full w-20 h-20' alt='User face id' src={facial} /></span>
+
+
+
+                            <div className="flex items-center gap-1">
+                                <span className='text-[#3E4095] '>View</span>
+                                <span><ViewArrow /></span>
+                            </div>
+                        </div>
+
+                    </div>
+                    : <span>No picture uploaded</span>
+            }
         </div>
     </div>
 
@@ -122,13 +155,26 @@ function ProfileComponent(
 
 
 function ViewDetailsTabSection({ detailsData }: { detailsData: UserProfileType }) {
+    console.log(detailsData, 'details data in view details tab section')
 
     const userName = getUserName(detailsData.user.first_name, detailsData.user.last_name)
+    // const documents=[detailsData?.verification_document??'',detailsData?.face_id??'']
+    let documents: string[] = []
+
+    if (detailsData.verification_document) {
+        documents.push(detailsData.verification_document)
+    }
+    if (detailsData.face_id) {
+        documents.push(detailsData.face_id)
+    }
+
+
+
     const profileTabs = [
         {
             label: <ProfileLabel />,
             value: 'Profile',
-            content: <ProfileComponent document='' userType={detailsData.profile_type} phone={detailsData.user.phone} status={detailsData.is_user_verified ? 'Approved' : 'Pending'} occupation={detailsData.occupation} role={detailsData.role} dateJoined={detailsData.user.date_joined} userName={userName} email={detailsData.user.email} />
+            content: <ProfileComponent facial={detailsData.face_id} document={documents} userType={detailsData.profile_type} phone={detailsData.user.phone} status={detailsData.is_user_verified ? 'Approved' : 'Pending'} occupation={detailsData.occupation} role={detailsData.role} dateJoined={detailsData.user.date_joined} userName={userName} email={detailsData.user.email} />
         },
         {
             label: <ActionsLabel />,
