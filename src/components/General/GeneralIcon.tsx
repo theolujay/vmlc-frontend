@@ -5,6 +5,22 @@ export function DocumentIcon(props:Readonly<React.SVGProps<SVGSVGElement>>){
 
 }
 
+export function ViewArrow(props:Readonly<React.SVGProps<SVGSVGElement>>){
+    return <svg {...props} width="6" height="10" viewBox="0 0 6 10" fill="none" xmlns="http://www.w3.org/2000/svg">
+<path d="M0.800781 8.79981L4.80078 4.79981L0.800781 0.799805" stroke="#3E4095" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
+
+}
+
+
+export function SubmittedDocumentIcon(props:Readonly<React.SVGProps<SVGSVGElement>>){
+    return <svg {...props} width="56" height="56" viewBox="0 0 56 56" fill="none" xmlns="http://www.w3.org/2000/svg">
+<rect width="56" height="56" rx="28" fill="#F0F2F5"/>
+<path d="M30 18.2695V22.4C30 22.9601 30 23.2401 30.109 23.454C30.2049 23.6422 30.3578 23.7951 30.546 23.891C30.7599 24 31.0399 24 31.6 24H35.7305M36 25.9882V33.2C36 34.8802 36 35.7202 35.673 36.362C35.3854 36.9265 34.9265 37.3854 34.362 37.673C33.7202 38 32.8802 38 31.2 38H24.8C23.1198 38 22.2798 38 21.638 37.673C21.0735 37.3854 20.6146 36.9265 20.327 36.362C20 35.7202 20 34.8802 20 33.2V22.8C20 21.1198 20 20.2798 20.327 19.638C20.6146 19.0735 21.0735 18.6146 21.638 18.327C22.2798 18 23.1198 18 24.8 18H28.0118C28.7455 18 29.1124 18 29.4577 18.0829C29.7638 18.1564 30.0564 18.2776 30.3249 18.4421C30.6276 18.6276 30.887 18.887 31.4059 19.4059L34.5941 22.5941C35.113 23.113 35.3724 23.3724 35.5579 23.6751C35.7224 23.9436 35.8436 24.2362 35.9171 24.5423C36 24.8876 36 25.2545 36 25.9882Z" stroke="#344054" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+</svg>
+
+}
+
 
 export function SubmissionIcon(props:Readonly<React.SVGProps<SVGSVGElement>>){
     return <svg {...props} width="76" height="76" viewBox="0 0 76 76" fill="none" xmlns="http://www.w3.org/2000/svg">
