@@ -32,7 +32,8 @@ export default function LeaderBoardSection() {
   let leaderBoardItems;
   if ('available_leaderboards' in data) {
 
-    leaderBoardItems = data.available_leaderboards.toReversed();
+    leaderBoardItems = data.available_leaderboards;
+    // leaderBoardItems = data.available_leaderboards.toReversed();
   }
 
 
@@ -43,7 +44,9 @@ export default function LeaderBoardSection() {
   function handleModal() {
     setOpenPublishModal(true)
   }
+
   
+
   const leaderBoardTab = leaderBoardItems?.map((val) => ({
     label: <ScreeningLabel label={val.stage_display} />,
     value: val.stage_display,
@@ -71,11 +74,8 @@ export default function LeaderBoardSection() {
 
 
 export function ScreeningLabel({ label }: { label: string }) {
-  console.log(label, 'label in screening')
-
-
-
-  return <div className='flex gap-1 items-center'><span>{handleRankingIcon(label)}</span><span className="capitalize">{formatLabel(label)}</span></div>
+  const parsedLabel = label.split('_')[0];
+  return <div className='flex gap-1 items-center'><span>{handleRankingIcon(parsedLabel)}</span><span className="capitalize">{formatLabel(label)}</span></div>
 }
 
 
@@ -91,7 +91,7 @@ function ScoreComponent({ stage, level }: Readonly<{ stage: string; level: numbe
 
 
 
-  
+
   // const {authState}=useAuth()
   // console.log(authState,'auth state in leaderboard score component')
   // const userName = [authState?.user?.first_name, authState?.user?.last_name].join(' ')
@@ -123,15 +123,17 @@ function ScoreComponent({ stage, level }: Readonly<{ stage: string; level: numbe
         <Podium stage={stage} level={level} users={data.top_three} />
         <CustomTable columns={[
           { key: 'position', header: 'Position', render: (_, row) => <div className="flex items-center gap-1">{row.rank}</div> },
-          { key: 'Name', header: 'Name', render: (_, row) =>{ 
-            const userInitials=getUserInitials(row.candidate.full_name)
-          return <div className="flex  items-center gap-2">
-             <div className="bg-[#CCEEFB] flex items-center justify-center w-[35px] h-[35px] rounded-full">
-                            <span className="font-semibold ">{userInitials}</span>
-                        </div>
-            <span>{row.candidate.full_name}</span></div> }
-            },
-        
+          {
+            key: 'Name', header: 'Name', render: (_, row) => {
+              const userInitials = getUserInitials(row.candidate.full_name)
+              return <div className="flex  items-center gap-2">
+                <div className="bg-[#CCEEFB] flex items-center justify-center w-[35px] h-[35px] rounded-full">
+                  <span className="font-semibold ">{userInitials}</span>
+                </div>
+                <span>{row.candidate.full_name}</span></div>
+            }
+          },
+
           {
             key: 'School', header: 'School', render: (_, row) => <div className="flex items-center gap-1">{row.candidate.school}</div>
           },

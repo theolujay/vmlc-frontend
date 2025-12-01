@@ -1,6 +1,5 @@
 "use client"
 import { AuthLoginResponse, AuthState } from '@/types/auth';
-import client from '@/utils/axios';
 import React, { createContext, Dispatch, useContext, useEffect, useReducer } from 'react';
 
 type Actions =
@@ -56,7 +55,8 @@ const reducer = (state: AuthState, action: Actions) => {
 
         case DESTROY_SESSION: {
             localStorage.removeItem('session')
-            sessionStorage.removeItem('returnURL');
+            sessionStorage.removeItem("returnURL");
+            
             return {
                 token: null,
                 refreshToken: null,

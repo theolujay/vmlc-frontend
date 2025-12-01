@@ -97,7 +97,7 @@ function UserCard({ header, stat }: Readonly<{ header: ReactNode, stat: Overview
         { value: stat.active, color: "#0088cc" }, // blue
         { value: stat.pending_verification, color: "#f4a300" }, // orange
         { value: stat.inactive, color: "#e04c4c" },  // red
-        // {value:stat.inactive,color:''}
+        
     ];
 
 
