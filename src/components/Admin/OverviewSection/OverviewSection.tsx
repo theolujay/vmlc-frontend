@@ -59,7 +59,7 @@ console.log(data,'overview section data')
             {/* <OverviewHeader /> */}
             <AdminHeader isExport label='Overview' actionButton={<Button className="inline-flex gap-2 border px-2 items-center text-sm">SEND BROADCAST</Button>} />
             <div className="flex flex-col gap-3 mt-3 w-[96%] mx-auto">
-                <OverviewSummaryCard active={data?.stats_overview.candidates.active??0} inactive={data?.stats_overview.candidates.inactive??0} pending={data?.stats_overview.candidates.pending_verification??0} registeredStudents={data?.stats_overview.candidates.registered??0} />
+                <OverviewSummaryCard active={data?.stats_overview?.candidates?.active??0} inactive={data?.stats_overview?.candidates?.inactive??0} pending={data?.stats_overview.candidates?.pending_verification??0} registeredStudents={data?.stats_overview.candidates?.registered??0} />
                 <QuickActionsCard />
                 <ActivityHistoryCard handleSearch={setFilters} page_count={data?.pagination.total_pages ?? 0} currentPage={page} onPageChange={setPage} data={data?.results as MgtItem[] ?? []} />
             </div>
