@@ -3,14 +3,16 @@ import { InviteStaffMemberPayloadType, StaffDetailsType, UserMgtType } from "@/t
 import client from "@/utils/axios";
 
 export class UserMgtService {
-    static async getUserList(): Promise<UserMgtType> {
+    static async getUserList(page: number, filters: Record<string, string>): Promise<UserMgtType> {
         try {
-            
-            const response = await client.get(UserMgtUrls.getUserList);
-            console.log(response, 'what is the response for user list')
+            const queryParams = new URLSearchParams({
+                page: page.toString(),
+                ...Object.fromEntries(Object.entries(filters).filter(([_, value]) => value !== undefined && value !== ''))
+            })
+            const response = await client.get(UserMgtUrls.getUserList(queryParams.toString()));
             return response.data;
         } catch (error) {
-            console.error(error,'Error getting list')
+            console.error(error, 'Error getting list')
             throw error;
         }
     }
@@ -19,7 +21,7 @@ export class UserMgtService {
     static async getStatOverview() {
         try {
             const response = await client.get(UserMgtUrls.STATISTICS_OVERVIEW);
-            console.log(response, 'give me response')
+
             return response.data
         } catch (error) {
             console.error(error, 'what is error')
@@ -45,7 +47,7 @@ export class UserMgtService {
             const response = await client.get(UserMgtUrls.ACCOUNT_DETAILS(user_id));
             return response.data;
         } catch (error) {
-            console.error(error,'Error fetching account details')
+            console.error(error, 'Error fetching account details')
             throw error;
         }
     }

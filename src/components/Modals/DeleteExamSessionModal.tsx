@@ -1,8 +1,7 @@
-import clsx from 'clsx'
 import AppDialog from '@/components/ui/Modals/AppDialog'
-import { LogoutIcon, ModalDeleteIcon } from '../Admin/AdminIcons'
-import useLogout from '@/hooks/useLogout'
 import useDeleteExamSession from '@/hooks/useDeleteExamSession'
+import clsx from 'clsx'
+import { ModalDeleteIcon } from '../Admin/AdminIcons'
 import Spinner from '../ui/spinner/spinner'
 
 export default function DeleteExamSessionModal({ open, close ,session_id}:Readonly< { open: boolean, close: (close: boolean) => void ,session_id:number }>) {

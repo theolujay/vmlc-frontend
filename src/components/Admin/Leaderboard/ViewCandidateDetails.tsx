@@ -8,15 +8,44 @@ import clsx from 'clsx'
 import AdminHeader from '../AdminHeader'
 import { CandidateIcon, SortIcon } from '../AdminIcons'
 import { CandidateNameIcon, EndTimeIcon, PositionIcon, StartTimeIcon } from './LeaderBoardIcon'
+import { useAuth } from '@/contexts/AuthProvider'
+import { ReactNode } from 'react'
+
+
+
+function viewCandidateDetailsByType(role: string): ReactNode {
+    switch (role) {
+        case 'volunteer':
+        case 'moderator':
+            return <></>;
+
+        case 'admin':
+        case 'manager':
+        case 'superadmin':
+            return <button className="inline-flex gap-2 border px-2   cursor-pointer py-2 font-bold uppercase rounded-[8px] transition-colors duration-200 items-center text-sm"><span><CandidateIcon /></span><span>View Candidate Profile</span></button>;
+
+        default:
+            return <></>;
+    }
+}
+
+
+
 
 export default function ViewCandidateDetails({ candidate_id, level, stage }: { candidate_id: string, level: string, stage: string }) {
 
 
+       const { authState } = useAuth()
+        // const userTabs = getTabsForRole(authState?.user?.role!)
+        const userButton=viewCandidateDetailsByType(authState?.user?.role!);
     const { data } = useGetLeaderBoardCandidateDetail(stage, level, candidate_id);
-    
+    // kf
     return (
         <div className='flex flex-col gap-1 '>
-            <AdminHeader isExport={false} label='Leaderboards' actionButton={<button className="inline-flex gap-2 border px-2   cursor-pointer py-2 font-bold uppercase rounded-[8px] transition-colors duration-200 items-center text-sm"><span><CandidateIcon /></span><span>View Candidate Profile</span></button>} />
+            <AdminHeader isExport={false} label='Leaderboards' actionButton={
+                userButton
+                // <button className="inline-flex gap-2 border px-2   cursor-pointer py-2 font-bold uppercase rounded-[8px] transition-colors duration-200 items-center text-sm"><span><CandidateIcon /></span><span>View Candidate Profile</span></button>
+                } />
             <div className="flex flex-col gap-3 mt-3 w-[96%] mx-auto">
                 <CandidateInfoCard endTime={data?.candidate_performance.participated_at as Date} startTime={data?.exam_details.scheduled_date as Date} position={data?.candidate_performance.rank ?? 0} userName={data?.candidate_performance.candidate.full_name ?? ''} />
                 <QuestionsTable questions={data?.candidate_performance.candidate.submissions ?? []} />
@@ -28,7 +57,7 @@ export default function ViewCandidateDetails({ candidate_id, level, stage }: { c
 
 
 function CandidateInfoCard({ userName, position, startTime,endTime }: { userName: string, position: number, startTime: Date,endTime:Date }) {
-console.log(endTime,'what is in end time')
+
     return <ResponsiveContainer className='flex gap-2 flex-col'>
         <h2 className='font-semibold text-lg'>Candidate Info</h2>
         <div className="flex justify-between">
@@ -118,7 +147,7 @@ function QuestionsTable({ questions }: { questions: SubmissionItem[] }) {
                 },
                
                 {
-                    key: 'Status', header: 'Status', render: (_, row) => <div>
+                    key: 'Performance', header: 'Performance', render: (_, row) => <div className='flex items-center'>
                         {questionPassedStatus(row.is_correct)}
 
                     </div>

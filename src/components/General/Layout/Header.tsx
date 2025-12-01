@@ -21,6 +21,8 @@ export default function Header() {
    
     const userInitials=getUserInitials(userName)
     const [menuOpen, setMenuOpen] = useState(false)
+
+    
     return (
         <header className="flex bg-white px-6 items-center">
             <div className="flex mx-auto justify-between w-full py-4">

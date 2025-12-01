@@ -17,7 +17,7 @@ export default function QuestionPool() {
 
   const { page, setPage } = usePagination()
   const [open, setOpen] = useState(false);
-  const [filters, setFilters] = useState({
+  const [filters, setFilters] = useState<Record<string, string>>({
     difficulty: 'total',
     search: ''
   })
@@ -31,13 +31,35 @@ export default function QuestionPool() {
   }, [searchParams])
 
 
+  // const memoizedFilters = useMemo(() => {
+  //   if (filters.difficulty == 'total') {
+  //     return {};
+  //   }
+  //   return filters;
+  // }, [filters])
+
   const memoizedFilters = useMemo(() => {
-    if (filters.difficulty == 'total') {
-      return {};
-    }
-    return filters;
-  }, [filters])
+  const { difficulty, search } = filters;
+
+  const cleaned: Record<string, string> = {};
+
+  // Include search ALWAYS if not empty
+  if (search.trim() !== '') {
+    cleaned.search = search.trim();
+  }
+
+  // Include difficulty ONLY if not "total"
+  if (difficulty !== 'total') {
+    cleaned.difficulty = difficulty;
+  }
+
+  return cleaned;
+}, [filters]);
+
+
+  console.log(memoizedFilters, 'memoized filters in question pool')
   const { data ,isPending} = useListQuestions(page, memoizedFilters)
+  // const { data ,isPending} = useListQuestions(page, filters)
   
 
   return (
@@ -46,7 +68,7 @@ export default function QuestionPool() {
       <div className="flex flex-col gap-3 mt-3 w-[96%] mx-auto">
         <QuestionSummaryCard easy_questions={data?.question_pool_data.easy_questions_count??0} total_questions={data?.question_pool_data.total_questions??0} moderate_questions={data?.question_pool_data.moderate_questions_count??0} hard_questions={data?.question_pool_data.hard_questions_count??0} />
 
-        <QuestionPoolTable page_count={data?.pagination.total_pages??0} currentPage={page} onPageChange={setPage} questions={data?.results ?? []} />
+        <QuestionPoolTable handleSearch={setFilters} page_count={data?.pagination.total_pages??0} currentPage={page} onPageChange={setPage} questions={data?.results ?? []} />
 
 
 
@@ -84,30 +106,3 @@ function EmptyState() {
 
 
 
-// function QuestionsTable(){
-//   const columns=['S/N','Question','Difficulty','Date Added','Action']
-//   return <div className="flex flex-col">
-
-//     <Table data={[]} columns={columns}/>
-//   </div>
-// }
-
-// function QuestionsTable() {
-//   const columns = ['S/N', 'Question', 'Difficulty', 'Date Added', 'Action']
-//   return <ResponsiveContainer className='flex gap-4 py-3 px-0 flex-col mx-auto'>
-//     <div className="flex justify-between px-3">
-//       <div className="flex gap-1 flex-col">
-//         <h2 className='font-bold'>Questions</h2>
-//         <p>Questions added to the platform</p>
-//       </div>
-//       <div className="flex justify-between gap-2">
-//         <div className="flex">
-//           <input type="text" placeholder='Search questions' className='border px-2 py-1 rounded-md border-[#E4E7EC] outline-none' />
-//         </div>
-//         <button className='inline-flex items-center gap-2 border rounded-md px-2 py-1 border-[#E4E7EC] cursor-pointer '   ><span><SortIcon /></span><span className='text-[#344054]'>Sort</span></button>
-//         <button className='inline-flex items-center gap-2 border rounded-md px-2 py-1 border-[#E4E7EC] cursor-pointer ' ><span><FilterIcon /></span><span className='text-[#344054]'>Filter</span></button>
-//       </div>
-//     </div>
-//     <Table data={[]} columns={columns} />
-//   </ResponsiveContainer>
-// }

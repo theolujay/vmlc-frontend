@@ -14,10 +14,9 @@ export class BroadcastMgtService {
     }
 
 
-    static async createBroadcastMessage(payload:CreateBroadCastType){
-        try { 
-            const response=await client.post(BroadcastUrls.create_broadcast,payload);
-            console.log(response,'what is in broadcast')
+    static async createBroadcastMessage(payload: CreateBroadCastType) {
+        try {
+            const response = await client.post(BroadcastUrls.create_broadcast, payload);
             return response.data;
         } catch (error) {
             console.error(error)

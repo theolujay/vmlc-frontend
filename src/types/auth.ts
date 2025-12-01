@@ -95,6 +95,9 @@ export type AuthState = {
 
 
 
+
+
+
 export type ActivityHistoryUserType = {
     user: RequestUserType,
     school: string,

@@ -4,10 +4,39 @@ import { LeaderBoardResponse, ViewCandidateDetailType } from "@/types/LeaderBoar
 import client from "@/utils/axios";
 
 export class CandidateMgtService {
-    static async getCandidateList(page = 1): Promise<CandidateListType> {
-        const response = await client.get(candidateUrls.LIST_CANDIDATES(page));
+
+
+
+
+
+   
+
+
+     static async getCandidateList(page = 1,filters:Record<string,string>={}): Promise<CandidateListType> {
+        try {
+            const queryParams=new URLSearchParams({
+                page:page.toString(),
+                ...Object.fromEntries(Object.entries(filters).filter(([_,value])=>value!==undefined && value!==''))
+            })
+             const response = await client.get(candidateUrls.LIST_CANDIDATES(queryParams.toString()));
         return response.data;
+        } catch (error) {
+            throw error;
+        }
+       
     }
+
+
+
+
+
+
+
+
+    // static async getCandidateList(page = 1): Promise<CandidateListType> {
+    //     const response = await client.get(candidateUrls.LIST_CANDIDATES(page));
+    //     return response.data;
+    // }
 
     static async getCandidateDetails(id: string): Promise<CandidateType> {
         const response = await client.get(candidateUrls.CANDIDATE_DETAILS(id))
@@ -56,7 +85,7 @@ export class CandidateMgtService {
     static async publishLeaderBoard(){
         try {
             const response=await client.post(candidateUrls.PUBLISH_LEADERBOARD);
-            console.log(response,'what is in response for publish')
+            
             return response.data;
         } catch (error) {
             
