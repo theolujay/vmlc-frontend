@@ -21,9 +21,14 @@ export default function SelectInput({
                 className="inline-flex h-[40px] w-full border border-[#D0D5DD] items-center justify-between gap-[5px] rounded-md bg-white px-[15px] leading-none outline-none"
                 aria-label="stages"
             >
-                <Select.Value asChild>
+                {/* <Select.Value asChild>
   <span className="capitalize text-gray-700">{value || placeholder}</span>
-</Select.Value>
+</Select.Value> */}
+<Select.Value
+  className="capitalize text-gray-700"
+  placeholder={placeholder}
+/>
+
 
                 {/* <Select.Value className="capitalize" placeholder={placeholder} /> */}
                 <Select.Icon className="text-violet">
@@ -31,10 +36,10 @@ export default function SelectInput({
                 </Select.Icon>
             </Select.Trigger>
             <Select.Portal>
-                <Select.Content className="z-50 shadow-md bg-white rounded-md" position="popper" sideOffset={5}>
-                    <Select.Viewport className="p-2">
+                <Select.Content align="start" className="z-50 shadow-md w-[var(--radix-select-trigger-width)] bg-white rounded-md" position="popper" sideOffset={5}>
+                    <Select.Viewport className="p-2 w-full">
                         {items.map((val) => (
-                            <SelectItem key={val} value={val} className="capitalize">{val}</SelectItem>
+                            <SelectItem key={val} value={val} className="capitalize w-full">{val}</SelectItem>
                         ))}
                     </Select.Viewport>
                 </Select.Content>

@@ -10,10 +10,11 @@ import { CandidateIcon, SortIcon } from '../AdminIcons'
 import { CandidateNameIcon, EndTimeIcon, PositionIcon, StartTimeIcon } from './LeaderBoardIcon'
 import { useAuth } from '@/contexts/AuthProvider'
 import { ReactNode } from 'react'
+import Link from 'next/link'
 
 
 
-function viewCandidateDetailsByType(role: string): ReactNode {
+function viewCandidateDetailsByType(role: string,id:string): ReactNode {
     switch (role) {
         case 'volunteer':
         case 'moderator':
@@ -22,7 +23,8 @@ function viewCandidateDetailsByType(role: string): ReactNode {
         case 'admin':
         case 'manager':
         case 'superadmin':
-            return <button className="inline-flex gap-2 border px-2   cursor-pointer py-2 font-bold uppercase rounded-[8px] transition-colors duration-200 items-center text-sm"><span><CandidateIcon /></span><span>View Candidate Profile</span></button>;
+             return <Link href={`/admin/overview?tab=Overview&view=view-details&id=${id}`} className="inline-flex gap-2 border px-2   cursor-pointer py-2 font-bold uppercase rounded-[8px] transition-colors duration-200 items-center text-sm"><span><CandidateIcon /></span><span>View Candidate Profile</span></Link>;
+            // return <button className="inline-flex gap-2 border px-2   cursor-pointer py-2 font-bold uppercase rounded-[8px] transition-colors duration-200 items-center text-sm"><span><CandidateIcon /></span><span>View Candidate Profile</span></button>;
 
         default:
             return <></>;
@@ -37,7 +39,7 @@ export default function ViewCandidateDetails({ candidate_id, level, stage }: { c
 
        const { authState } = useAuth()
         // const userTabs = getTabsForRole(authState?.user?.role!)
-        const userButton=viewCandidateDetailsByType(authState?.user?.role!);
+        const userButton=viewCandidateDetailsByType(authState?.user?.role!,candidate_id);
     const { data } = useGetLeaderBoardCandidateDetail(stage, level, candidate_id);
     // kf
     return (

@@ -107,3 +107,17 @@ export type StaffDetailsType = {
   profile: UserProfileType
 
 }
+
+
+export type VerificationStatusPayloadType = {
+ is_approved: boolean
+}
+
+
+
+export type RejectionStatusPayloadType = {
+  is_rejected: boolean,
+  rejection_reason: string
+}
+
+export type HandleVerificationStatusPayloadType = VerificationStatusPayloadType | RejectionStatusPayloadType;

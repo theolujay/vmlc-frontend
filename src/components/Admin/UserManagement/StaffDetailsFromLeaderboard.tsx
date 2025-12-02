@@ -2,6 +2,7 @@
 
 "use client"
 import { AverageIcon, GotoSummaryIcon, LeaderBoardSummaryIcon, ScreeningSummaryIcon, SubmittedDocumentIcon, ViewArrow } from '@/components/General/GeneralIcon'
+import ApprovalStatusModal from '@/components/Modals/ApprovalStatusModal'
 import Button from '@/components/ui/Button'
 import CustomTable from '@/components/ui/CustomTable'
 import ResponsiveContainer from '@/components/ui/ResponsiveContainer'
@@ -15,6 +16,7 @@ import { UserProfileType } from '@/types/UserMgtType'
 import { formatDate } from '@/utils/formatFileSize'
 import { getUserName } from '@/utils/generalUtils'
 import Link from 'next/link'
+import { useState } from 'react'
 import AdminHeader from '../AdminHeader'
 import { ActionsIcon } from '../AdminIcons'
 import EmptySession from '../EmptySession'
@@ -48,21 +50,23 @@ export default withAuthentication(ViewStaffDetailsFromLeaderboard)
 
 
 function ProfileComponent(
-    { userName, status, email, dateJoined, occupation, role, userType, phone, document, facial }: { phone: string, userType: string, userName: string, email: string, status: string, dateJoined: Date, occupation: string, document: string[], role: string, facial: string | null }
+    { userName, status, email, dateJoined, occupation, role, userType, phone, document, facial ,user_id}: {user_id:string, phone: string, userType: string, userName: string, email: string, status: string, dateJoined: Date, occupation: string, document: string[], role: string, facial: string | null }
 ) {
 
     console.log(document, document.length, 'document in profile component')
     // const userInitials = getUserInitials(userName)
+
+    const [openApproval, setOpenApproval] = useState(false)
     return <div className='flex gap-3 flex-col p-8'>
 
         <div className='flex gap-3 mb-3 border-b border-[#E4E7EC] flex-col p-8'>
 
             <div className="flex flex-col gap-1">
                 <span className='text-sm'>VERIFICATION STATUS</span>
-                <div className="flex justify-between max-w-[30vw] items-center ">
+                <button onClick={()=>setOpenApproval(true)} className="flex cursor-pointer justify-between max-w-[30vw] items-center ">
                     <span className='bg-[#FEF6E7] rounded-full w-fit px-2 py-1 text-[#865503]'>{status}</span>
                     <span><ViewArrow /></span>
-                </div>
+                </button>
             </div>
             <div className="flex flex-col gap-1">
                 <span className='text-sm'>NAME</span>
@@ -81,7 +85,7 @@ function ProfileComponent(
                     </div>
                     <div className="flex-col text-sm  gap-1 flex">
                         <span className='text-[#475367] text-sm'>OCCUPATION</span>
-                        <span>{occupation}</span>
+                        <span className='text-base'>{occupation}</span>
                     </div>
                 </div>
                 <div className="flex flex-col  gap-8 ">
@@ -148,6 +152,7 @@ function ProfileComponent(
                     : <span>No picture uploaded</span>
             }
         </div>
+        <ApprovalStatusModal user_id={user_id} open={openApproval} close={setOpenApproval} />
     </div>
 
 }
@@ -174,7 +179,7 @@ function ViewDetailsTabSection({ detailsData }: { detailsData: UserProfileType }
         {
             label: <ProfileLabel />,
             value: 'Profile',
-            content: <ProfileComponent facial={detailsData.face_id} document={documents} userType={detailsData.profile_type} phone={detailsData.user.phone} status={detailsData.is_user_verified ? 'Approved' : 'Pending'} occupation={detailsData.occupation} role={detailsData.role} dateJoined={detailsData.user.date_joined} userName={userName} email={detailsData.user.email} />
+            content: <ProfileComponent user_id={detailsData.user.id} facial={detailsData.face_id} document={documents} userType={detailsData.profile_type} phone={detailsData.user.phone} status={detailsData.is_user_verified ? 'Approved' : 'Pending'} occupation={detailsData.occupation} role={detailsData.role} dateJoined={detailsData.user.date_joined} userName={userName} email={detailsData.user.email} />
         },
         {
             label: <ActionsLabel />,

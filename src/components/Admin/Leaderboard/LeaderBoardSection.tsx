@@ -8,7 +8,7 @@ import { CandidateType } from "@/types/LeaderBoardType";
 import { getUserInitials } from "@/utils/capitalizeWords";
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
-import { useState } from "react";
+import { ReactNode, useState } from "react";
 import { LeagueIcon, ScreeningIcon } from "../../General/GeneralIcon";
 import Button from "../../ui/Button";
 import ResponsiveContainer from "../../ui/ResponsiveContainer";
@@ -248,8 +248,8 @@ export function Podium({ users, stage, level }: Readonly<{ users: CandidateType[
 
 
 
-function formatLabel(label: string) {
-  // return label.charAt(0).toUpperCase() + label.slice(1);
+function formatLabel(label: string) :string{
+  
   if (label.startsWith('screening')) {
     return 'Screening';
   }
@@ -259,7 +259,7 @@ function formatLabel(label: string) {
 
 
 
-function handleRankingIcon(value: string) {
+function handleRankingIcon(value: string):ReactNode {
   switch (value) {
     case 'screening':
       return <ScreeningIcon />;
