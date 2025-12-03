@@ -93,7 +93,7 @@ function ScreeningTab({ stage, level }: { stage: string; level: number }) {
     }
 
     // const allCandidates = [...data.top_three, ...data.remaining_candidates];
-    let allCandidates;
+    let allCandidates=[];
     if(page===1){
         allCandidates=[...data.top_three, ...data.remaining_candidates];
     }else{
@@ -103,9 +103,12 @@ function ScreeningTab({ stage, level }: { stage: string; level: number }) {
     const userName=getUserName(authState?.user?.first_name!,authState?.user?.last_name!);
     const user=allCandidates.find((item)=>item.candidate.full_name===userName);
 
+
     return (
         <div className="flex flex-col">
+            {user&&
             <InfoDesk examtype={data.exam_details.stage} rank={user?.rank!} score={user?.score??0} />
+            }
             <CustomTable columns={[
                 { key: 'position', header: 'Position', render: (_, row) => <div className="flex items-center gap-1">{row.rank}</div> },
                 { key: 'Name', header: 'Name', render: (_, row) => {
