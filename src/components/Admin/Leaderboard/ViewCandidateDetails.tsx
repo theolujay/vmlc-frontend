@@ -3,7 +3,7 @@ import ResponsiveContainer from '@/components/ui/ResponsiveContainer'
 import useGetLeaderBoardCandidateDetail from '@/hooks/useGetLeaderBoardCandidateDetail'
 import { SubmissionItem } from '@/types/LeaderBoardType'
 import { formatTimeToString } from '@/utils/formatFileSize'
-import { getOptionAsArray } from '@/utils/generalUtils'
+import { getOptionAsArray, getOrdinal } from '@/utils/generalUtils'
 import clsx from 'clsx'
 import AdminHeader from '../AdminHeader'
 import { CandidateIcon, SortIcon } from '../AdminIcons'
@@ -175,22 +175,4 @@ function questionPassedStatus(status: boolean) {
 }
 
 
-export function getOrdinal(n: number): string {
 
-    const v = n % 100;
-
-    if (v >= 11 && v <= 13) {
-        return `${n}TH`; 
-    }
-
-    switch (n % 10) {
-        case 1:
-            return `${n}ST`;
-        case 2:
-            return `${n}ND`;
-        case 3:
-            return `${n}RD`;
-        default:
-            return `${n}TH`;
-    }
-}

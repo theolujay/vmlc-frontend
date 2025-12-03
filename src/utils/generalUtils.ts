@@ -78,3 +78,25 @@ export function getOptionAsArray<T extends Record<string, any>>(
 
   return optionsArray;
 }
+
+
+
+export function getOrdinal(n: number): string {
+
+    const v = n % 100;
+
+    if (v >= 11 && v <= 13) {
+        return `${n}TH`; 
+    }
+
+    switch (n % 10) {
+        case 1:
+            return `${n}ST`;
+        case 2:
+            return `${n}ND`;
+        case 3:
+            return `${n}RD`;
+        default:
+            return `${n}TH`;
+    }
+}
