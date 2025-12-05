@@ -9,8 +9,7 @@ import ExamBoard from './ExamBoard'
 import LeaderBoard from './LeaderBoard'
 
 function ExamPortal() {
-  // const { data } = useGetExamPortal()
-  // console.log(data,'what did we get for data')
+  
   
   return (
     <PageLayout>
