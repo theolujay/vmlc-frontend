@@ -19,6 +19,7 @@ const staffRoles = new Set(['volunteer', 'moderator', 'admin', 'manager', 'super
 const reducer = (state: AuthState, action: Actions) => {
     switch (action.type) {
         case INIT_SESSION: {
+            sessionStorage.removeItem("returnURL"); 
             const payload = action.payload
             localStorage.setItem('session', JSON.stringify(payload));
             if (!payload) {

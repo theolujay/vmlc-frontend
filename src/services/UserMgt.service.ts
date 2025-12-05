@@ -1,5 +1,5 @@
 import { UserMgtUrls } from "@/constants/UserMgtUrls";
-import { InviteStaffMemberPayloadType, StaffDetailsType, UserMgtType } from "@/types/UserMgtType";
+import { HandleVerificationStatusPayloadType, InviteStaffMemberPayloadType, StaffDetailsType, UserMgtType } from "@/types/UserMgtType";
 import client from "@/utils/axios";
 
 export class UserMgtService {
@@ -39,6 +39,18 @@ export class UserMgtService {
         } catch (error) {
             console.error('Error inviting staff member:', error);
             throw new Error('Failed to invite staff member');
+        }
+    }
+
+
+    static async handleVerificationStatus(user_id:string,payload:HandleVerificationStatusPayloadType){
+        try {
+            
+            const response = await client.post(UserMgtUrls.HANDLE_VERIFICATION_STATUS(user_id), payload);
+            return response.data;
+        } catch (error) {
+            console.error(error, 'Error handling verification status')
+            throw error;
         }
     }
 
