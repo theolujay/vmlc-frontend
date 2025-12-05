@@ -100,7 +100,7 @@ export type AuthState = {
 
 export type ActivityHistoryUserType = {
     user: RequestUserType,
-    school: string,
+    school: string | null,
     role: string,
     status:string,
     is_user_verified: boolean
