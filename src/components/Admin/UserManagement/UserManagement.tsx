@@ -97,10 +97,14 @@ function UserCard({ header, stat }: Readonly<{ header: ReactNode, stat: Overview
         { value: stat.active, color: "#0088cc" }, // blue
         { value: stat.pending_verification, color: "#f4a300" }, // orange
         { value: stat.inactive, color: "#e04c4c" },  // red
+        // {value:stat.deactivated,color:'#d4107'}
+
+        {value:stat.deactivated,color:'#000'}
         
     ];
 
 
+    
 
 
     return <div className='flex flex-col gap-2 rounded-2xl border-[#E4E7EC] border'>
@@ -137,6 +141,14 @@ function UserCard({ header, stat }: Readonly<{ header: ReactNode, stat: Overview
 
                     </div>
                     <span>{stat.inactive}</span>
+                </div>
+                <div className="flex justify-between">
+                    <div className="flex items-center gap-1">
+                        <span className="w-3 rounded-full bg-[#000] h-3"></span>
+                        <span>Deactivated</span>
+
+                    </div>
+                    <span>{stat.deactivated}</span>
                 </div>
             </div>
         </div>
