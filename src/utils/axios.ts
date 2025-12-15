@@ -8,8 +8,6 @@ const client = axios.create({
     headers: {
         Accept: "application/json",
         'X-Api-Key': process.env.NEXT_PUBLIC_API_KEY
-
-
     }
 });
 
@@ -49,18 +47,6 @@ client.interceptors.response.use(
         return Promise.reject(error);
     }
 );
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 export default client;
