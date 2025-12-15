@@ -6,5 +6,5 @@ export default function useIsRegistrationAvailable() {
     queryKey: ['isRegistrationAvailable'],
     queryFn: AuthService.isRegistrationAvailable
   })
-  return { isPending, isRegistrationAvailable: data }
+  return {isRegPending: isPending, isRegistrationAvailable: data }
 }
