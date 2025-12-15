@@ -19,6 +19,7 @@ import { FirstPosition, SecondPosition, ThirdPosition } from "./LeaderBoardIcon"
 
 
 
+
 export default function LeaderBoardSection() {
   const { data, isPending } = useGetLeaderBoard()
   const [openPublishModal, setOpenPublishModal] = useState(false)
