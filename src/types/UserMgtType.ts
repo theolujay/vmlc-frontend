@@ -66,9 +66,11 @@ export type OverviewType = {
 
 export type MgtItem = {
   user: RequestUserType & { is_email_verified: boolean, },
-  school: string,
+  school: string | null,
   role: string,
   status: string,
+  profile_type: string,
+  occupation: string | null,
   is_user_verified: boolean
 }
 
@@ -107,3 +109,17 @@ export type StaffDetailsType = {
   profile: UserProfileType
 
 }
+
+
+export type VerificationStatusPayloadType = {
+ is_approved: boolean
+}
+
+
+
+export type RejectionStatusPayloadType = {
+  is_rejected: boolean,
+  rejection_reason: string
+}
+
+export type HandleVerificationStatusPayloadType = VerificationStatusPayloadType | RejectionStatusPayloadType;

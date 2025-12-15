@@ -39,8 +39,12 @@ export class CandidateMgtService {
     // }
 
     static async getCandidateDetails(id: string): Promise<CandidateType> {
-        const response = await client.get(candidateUrls.CANDIDATE_DETAILS(id))
-        return response.data;
+        try { 
+            const response = await client.get(candidateUrls.CANDIDATE_DETAILS(id))
+            return response.data;
+        } catch (error) {
+            throw error;
+        }
     }
 
 

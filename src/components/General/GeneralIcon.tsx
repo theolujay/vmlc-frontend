@@ -7,7 +7,7 @@ export function DocumentIcon(props:Readonly<React.SVGProps<SVGSVGElement>>){
 
 export function ViewArrow(props:Readonly<React.SVGProps<SVGSVGElement>>){
     return <svg {...props} width="6" height="10" viewBox="0 0 6 10" fill="none" xmlns="http://www.w3.org/2000/svg">
-<path d="M0.800781 8.79981L4.80078 4.79981L0.800781 0.799805" stroke="#3E4095" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M0.800781 8.79981L4.80078 4.79981L0.800781 0.799805" stroke="#3E4095" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
 </svg>
 
 }

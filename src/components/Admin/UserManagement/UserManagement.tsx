@@ -8,7 +8,7 @@ import Spinner from '@/components/ui/spinner/spinner'
 import { useDebouncedSearch } from '@/hooks/useDebouncedSearch'
 import useListUserMgt from '@/hooks/useListUserMgt'
 import usePagination from '@/hooks/usePagination'
-import { MgtItemType, OverviewType, StatOverviewType } from '@/types/UserMgtType'
+import { MgtItem, OverviewType, StatOverviewType } from '@/types/UserMgtType'
 import { formatDate } from '@/utils/formatFileSize'
 import { getUserName } from '@/utils/generalUtils'
 import Link from 'next/link'
@@ -51,7 +51,7 @@ export default function UserManagement() {
             <div className="flex flex-col gap-3 mt-3 w-[96%] mx-auto">
 
                 <UserSummaryCard overview={overview} />
-                <UserHistoryTable page_count={data?.pagination.total_pages??0} currentPage={page} onPageChange={setPage} handleSearch={setFilters} candidates={data?.results as MgtItemType[]?? []} />
+                <UserHistoryTable page_count={data?.pagination.total_pages??0} currentPage={page} onPageChange={setPage} handleSearch={setFilters} candidates={data?.results as MgtItem[]?? []} />
             </div>
 
         </div>
@@ -148,7 +148,7 @@ function UserCard({ header, stat }: Readonly<{ header: ReactNode, stat: Overview
 
 
 
-function UserHistoryTable({ candidates, handleSearch, onPageChange, currentPage, page_count, }: { candidates: MgtItemType[], handleSearch: Dispatch<SetStateAction<{}>> , onPageChange: Dispatch<SetStateAction<number>>, currentPage: number, page_count: number }) {
+function UserHistoryTable({ candidates, handleSearch, onPageChange, currentPage, page_count, }: { candidates: MgtItem[], handleSearch: Dispatch<SetStateAction<{}>> , onPageChange: Dispatch<SetStateAction<number>>, currentPage: number, page_count: number }) {
 
 
     const pathName = usePathname();
@@ -162,8 +162,8 @@ console.log(candidates,'candidates in user history table')
     return <ResponsiveContainer className='flex gap-4 py-3 px-0 flex-col mx-auto'>
         <div className="flex justify-between px-3">
             <div className="flex gap-1 flex-col">
-                <h2 className='font-bold'>Users History</h2>
-                <p>This table shows the users history on the platform.</p>
+                <h2 className='font-bold'>Users</h2>
+                <p>List of candidate and staff users on the portal</p>
             </div>
             <div className="flex justify-between items-center gap-2">
                 <div className="flex ">
@@ -182,27 +182,32 @@ console.log(candidates,'candidates in user history table')
                     header: 'Name',
                     render: (_, row) => {
                         console.log(row)
-                        return <div className="flex  items-center gap-1">{getUserName(row.first_name, row.last_name)}</div>
+                        return <div className="flex  items-center gap-1">{getUserName(row.user.first_name, row.user.last_name)}</div>
                 },},
-                // {
-                //     key: 'role',
-                //     header: 'Role',
-                //     render: (_, row) => <div className="flex  items-center gap-1">{row.last_name}</div>
-                // },
                 {
                     key: 'email',
                     header: 'Email Address',
-                    render: (_, row) => <div className="flex  items-center gap-1">{row.email}</div>
+                    render: (_, row) => <div className="flex items-center gap-1">{row.user.email}</div>
+                },
+                {
+                    key: 'role',
+                    header: 'Role',
+                    render: (_, row) => <div className="flex capitalize items-center gap-1">{row.role}</div>
+                },
+                {
+                    key: 'profile_type',
+                    header: 'Profile',
+                    render: (_, row) => <div className="flex  capitalize items-center gap-1">{row.profile_type}</div>
                 },
                 {
                     key: 'application',
-                    header: 'Application Date',
-                    render: (_, row) => <div className="flex  items-center gap-1">{formatDate(row.date_joined)}</div>
+                    header: 'Joined',
+                    render: (_, row) => <div className="flex  items-center gap-1">{formatDate(row.user.date_joined)}</div>
                 },
                 {
                     key: 'status',
                     header: 'Status',
-                    render: (_, row) => <div className="flex capitalize items-center gap-1">{row.is_email_verified ? 'Approved' : 'Pending'}</div>
+                    render: (_, row) => <div className="flex capitalize items-center gap-1">{row.status}</div>
                 },
                 {
                     key: 'action',
@@ -211,12 +216,12 @@ console.log(candidates,'candidates in user history table')
                         const href = (() => {
                             const query = new URLSearchParams(searchParams.toString());
                             query.set("view", "view-user");
-                            query.set("id", row.id);
+                            query.set("id", row.user.id);
                             return `${pathName}?${query.toString()}`;
                         })();
                         return (
                             <div className="flex justify-between items-center gap-1">
-                                <Link href={href} className="cursor-pointer font-semibold text-[#3E4095]">View Details</Link>
+                                <Link href={href} className="cursor-pointer font-semibold text-[#3E4095]">Details</Link>
                             </div>
                         )
                     },

@@ -19,6 +19,7 @@ export type CandidateListType = {
 export type CandidateType = {
     user: RequestUserType,
     school: string,
+    status: string,
     face_id: string | null,
     role: string,
     is_active: boolean,
@@ -41,8 +42,12 @@ export type RecordsType = {
 
 export type StatsType = {
     total_score: number,
-    average_score: number
-    leaderboard_ranking: number | null,
+    average_score: number,
+    leaderboard_ranking:{
+                    current_rank: number,
+                    total_candidates: number
+                } | null,
+    // leaderboard_ranking: number | null,
     latest_score: {
         score: number | null,
         exam_title: number | null,

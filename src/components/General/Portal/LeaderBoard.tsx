@@ -1,11 +1,15 @@
 import EmptySession from '@/components/Admin/EmptySession'
 import { ScreeningLabel } from '@/components/Admin/Leaderboard/LeaderBoardSection'
 import CustomTable from '@/components/ui/CustomTable'
+import TablePagination from '@/components/ui/Pagination/TablePagination'
 import ResponsiveContainer from '@/components/ui/ResponsiveContainer'
 import Spinner from '@/components/ui/spinner/spinner'
 import ScreeningTabWrapper from '@/components/ui/Tabs/ScreeningTabWrapper'
+import { useAuth } from '@/contexts/AuthProvider'
 import useGetLeaderBoard from '@/hooks/useGetLeaderboard'
 import usePagination from '@/hooks/usePagination'
+import { getUserInitials } from '@/utils/capitalizeWords'
+import { getOrdinal, getUserName } from '@/utils/generalUtils'
 import { useState } from 'react'
 
 export default function LeaderBoard() {
@@ -52,7 +56,7 @@ function Board() {
 
 
 function ScreeningTab({ stage, level }: { stage: string; level: number }) {
-    const { page} = usePagination();
+    const { page,setPage} = usePagination();
     const [filters] = useState({ stage, level });
     const { data } = useGetLeaderBoard(page, filters);
 
@@ -88,15 +92,34 @@ function ScreeningTab({ stage, level }: { stage: string; level: number }) {
         );
     }
 
-    const allCandidates = [...data.top_three, ...data.remaining_candidates];
-    
+    // const allCandidates = [...data.top_three, ...data.remaining_candidates];
+    let allCandidates=[];
+    if(page===1){
+        allCandidates=[...data.top_three, ...data.remaining_candidates];
+    }else{
+        allCandidates=[...data.remaining_candidates];
+    }
+    const {authState}=useAuth()
+    const userName=getUserName(authState?.user?.first_name!,authState?.user?.last_name!);
+    const user=allCandidates.find((item)=>item.candidate.full_name===userName);
+
 
     return (
         <div className="flex flex-col">
-            <InfoDesk />
+            {user&&
+            <InfoDesk examtype={data.exam_details.stage} rank={user?.rank!} score={user?.score??0} />
+            }
             <CustomTable columns={[
                 { key: 'position', header: 'Position', render: (_, row) => <div className="flex items-center gap-1">{row.rank}</div> },
-                { key: 'Name', header: 'Name', render: (_, row) => <div className="flex  items-center gap-1">{row.candidate.full_name}</div> },
+                { key: 'Name', header: 'Name', render: (_, row) => {
+                    const userInitials = getUserInitials(row.candidate.full_name)
+                                  return <div className="flex  items-center gap-2">
+                                    <div className="bg-[#CCEEFB] flex items-center justify-center w-[35px] h-[35px] rounded-full">
+                                      <span className="font-semibold ">{userInitials}</span>
+                                    </div>
+                                    <span>{row.candidate.full_name}</span></div>}
+                // <div className="flex  items-center gap-1">{row.candidate.full_name}</div>
+             },
 
 
                 {
@@ -106,6 +129,7 @@ function ScreeningTab({ stage, level }: { stage: string; level: number }) {
                 },
 
             ]} data={allCandidates}
+            footer={<TablePagination pageCount={data.pagination.total_pages} currentPage={page} onPageChange={setPage} />}
 
             />
 
@@ -114,13 +138,15 @@ function ScreeningTab({ stage, level }: { stage: string; level: number }) {
 }
 
 
-function InfoDesk() {
+function InfoDesk({score, rank,examtype}:{score:number,rank:number,examtype:string}) {
+
+    const userRank=getOrdinal(rank)
     return (
         <div className="flex text-white flex-col gap-1 bg-[#00455E] p-2">
             <p className="text-xl">Congratulations!</p>
             <p className="text-sm">
-                Congratulations on scoring 92% on the screening exam! You've secured the
-                13th spot on the leaderboard, which qualifies you for the next stage of
+                Congratulations on scoring {score}% on the {examtype} exam! You've secured the
+              {' '}  {userRank.toLowerCase()} spot on the leaderboard, which qualifies you for the next stage of
                 the league exams. Keep up the great work, and best of luck moving
                 forward!
             </p>
