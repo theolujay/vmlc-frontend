@@ -19,12 +19,15 @@ export default function Register() {
 
   const { form, onSubmit, isPending } = useRegister()
   const autoGenerate = form.watch('generate_password')
-  const { isRegistrationAvailable } = useIsRegistrationAvailable()
+  const { isRegistrationAvailable,isRegPending } = useIsRegistrationAvailable()
   
   return (
     <AuthLayout>
     
       {
+         isRegPending?<div className="flex items-center justify-center min-h-[60vh]">
+      <Spinner />
+    </div>:
       
       isRegistrationAvailable?.is_candidate_reg_open
       ?  <div className="flex flex-col lg:w-[50%] gap-3 items-center justify-center mx-auto p-4 ">

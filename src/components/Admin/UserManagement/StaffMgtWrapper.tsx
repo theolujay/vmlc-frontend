@@ -7,8 +7,7 @@ import { useSearchParams } from 'next/navigation';
 export default function StaffMgtWrapper() {
     const searchParams=useSearchParams()
     const currentView = searchParams.get('view');
-     const userId = searchParams.get("id");
-
+    const userId = searchParams.get("id");
     return renderAppropriateComponent(currentView,userId);
 }
 
@@ -22,7 +21,6 @@ function renderAppropriateComponent(view: string | null, id: string | null) {
             return <AddStaffMember />;
         case "view-user":
             return <ViewStaffDetailsFromLeaderboard id={id!} />;
-
         default:
             return <UserManagement />;
     }
