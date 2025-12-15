@@ -24,13 +24,13 @@ export default function Header() {
         <nav className="hidden md:flex justify-between items-center gap-6">
           <Link
             href="https://www.verboheit.org/#about"
-            className="text-gray-700 hover:text-blue-600 transition-colors"
+            className="text-gray-700 hover:text-[#3E4095] transition-colors"
           >
             About the Competition
           </Link>
           <Link
             href="https://www.verboheit.org/#stages"
-            className="text-gray-700 hover:text-blue-600 transition-colors"
+            className="text-gray-700 hover:text-[#3E4095] transition-colors"
           >
             Competition Stages
           </Link>
