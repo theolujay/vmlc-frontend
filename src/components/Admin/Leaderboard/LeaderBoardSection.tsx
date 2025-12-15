@@ -17,8 +17,6 @@ import AdminHeader from "../AdminHeader";
 import EmptySession from "../EmptySession";
 import { FirstPosition, SecondPosition, ThirdPosition } from "./LeaderBoardIcon";
 
-
-
 export default function LeaderBoardSection() {
   const { data, isPending } = useGetLeaderBoard()
   const [openPublishModal, setOpenPublishModal] = useState(false)
@@ -41,11 +39,6 @@ export default function LeaderBoardSection() {
     leaderBoardItems = data.available_leaderboards;
     // leaderBoardItems = data.available_leaderboards.toReversed();
   }
-
-
-
-
-
 
   function handleModal() {
     setOpenPublishModal(true)
