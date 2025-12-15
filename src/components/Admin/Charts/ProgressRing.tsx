@@ -73,6 +73,7 @@ export const DoughnutChart: React.FC<DoughnutChartProps> = ({
 
   // Accumulated offset
   let cumulative = 0;
+  
 
   return (
     <svg width={radius * 2 + strokeWidth} height={radius * 2 + strokeWidth}>
