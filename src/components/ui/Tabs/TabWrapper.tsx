@@ -4,8 +4,6 @@ import * as Tabs from "@radix-ui/react-tabs"
 import { TabWrapperProps } from "@/types/TabType"
 import { useRouter, useSearchParams } from "next/navigation"
 
-
-
 export default function TabWrapper({
   tabs,
   defaultValue,
