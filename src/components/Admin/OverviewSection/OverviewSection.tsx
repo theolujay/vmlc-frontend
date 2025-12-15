@@ -15,6 +15,7 @@ import Button from '../../ui/Button';
 import ResponsiveContainer from '../../ui/ResponsiveContainer';
 import AdminHeader from '../AdminHeader';
 import { ActiveIcon, AngleIcon, BroadcastIcon, FilterIcon, InactiveIcon, ManageQuestionIcon, PendingIcon, RegisteredIcon, SortIcon, ViewLeaderBoardIcon } from '../AdminIcons';
+import { profile } from 'console';
 
 
 
@@ -45,12 +46,13 @@ export default function OverviewSection() {
     const { page, setPage } = usePagination()
     const [filters, setFilters] = useState<Record<string, string>>({
         search: '',
+        // profile:'staff'
         profile:'candidate'
     })
     // const { data } = useGetCandidateList(page, filters)
 
 const {data}=useListUserMgt(page,filters)
-console.log(data,'overview section data')
+
    
     
 
@@ -111,7 +113,7 @@ function ActivityHistoryCard({ data, onPageChange, currentPage, page_count, hand
             {
                 key: 'User Role',
                 header: 'User Role',
-                render: (_, row) => <div className='flex items-center gap-1'>{row.role}</div>
+                render: (_, row) => <div className='flex items-center gap-1'><span className='bg-[#F5FCFE] font-semibold rounded-full border-2 py-1 px-2 text-[#01ACEA] border-[#01ACEA]'>{row.role}</span></div>
             },
             { key: 'Email Address', header: 'Email Address', render: (_, row) => <div className='flex items-center gap-1'>{row.user.email}</div> },
             { key: 'Application Date', header: 'Application Date', render: (_, row) => <div className='flex items-center gap-1'>{formatDate(row.user.date_joined)}</div> },

@@ -18,12 +18,14 @@ import RegistrationClosed from './RegistrationClosed'
 export default function RegisterStaff() {
 
   const { form, onSubmit, isPending } = useRegisterStaff()
-  const { isRegistrationAvailable } = useIsRegistrationAvailable()
+  const { isRegistrationAvailable ,isRegPending} = useIsRegistrationAvailable()
   return (
     <AuthLayout>
 
       {
-
+ isRegPending?<div className="flex items-center justify-center min-h-[60vh]">
+      <Spinner />
+    </div>:
         isRegistrationAvailable?.is_staff_reg_open ?
 
 
