@@ -98,6 +98,20 @@ jobs:
           ref: release
           fetch-depth: 0
 
+      - name: Check if PR is needed
+        id: check
+        run: |
+          git fetch origin main:main
+          AHEAD=$(git rev-list --count main..release)
+          echo "commits_ahead=$AHEAD" >> "$GITHUB_OUTPUT"
+          if [ "$AHEAD" -eq 0 ]; then
+            echo "No changes between release and main. Skipping PR creation."
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "Found $AHEAD commit(s) to promote to production."
+            echo "skip=false" >> "$GITHUB_OUTPUT"
+          fi
+
       - name: Create Pull Request to Production
         id: cpr
         uses: peter-evans/create-pull-request@v7
