@@ -14,18 +14,20 @@ import { ActivitiesIcon, ScoresIcon } from '../AdminIcons'
 import EmptySession from '../EmptySession'
 import Spinner from '@/components/ui/spinner/spinner'
 import CustomTable from '@/components/ui/CustomTable'
+import { getUserName } from '@/utils/generalUtils'
 
 function ViewUserDetails({ id }: Readonly<{ id: string }>) {
 
     const { data, isPending } = useGetCandidateDetails(id)
 
 
-    const userName = [data?.user?.first_name, data?.user?.last_name].join(' ')
+    // const userName = [data?.user?.first_name, data?.user?.last_name].join(' ')
     console.log(data, 'candidate details data')
-
+    
     if (!data) {
         return <EmptySession label='Cannot load user details at this time' desc='User details on this platform would appear here ' />
     }
+    const userName=getUserName(data?.user?.first_name,data?.user.last_name);
     return (
 
         <div className='flex flex-col gap-1 '>
