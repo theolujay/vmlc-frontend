@@ -22,9 +22,9 @@ function ViewUserDetails({ id }: Readonly<{ id: string }>) {
 
 
     // const userName = [data?.user?.first_name, data?.user?.last_name].join(' ')
-    console.log(data, 'candidate details data')
     
-    if (!data) {
+    
+    if (!data||Object.entries(data).length==0) {
         return <EmptySession label='Cannot load user details at this time' desc='User details on this platform would appear here ' />
     }
     const userName=getUserName(data?.user?.first_name,data?.user.last_name);
