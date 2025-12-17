@@ -27,10 +27,13 @@ export default function LeaderBoardSection() {
     return <div className="grid w-full place-content-center"><Spinner /></div>
   }
   if (!data) {
-    return <EmptySession
-        desc="Arrangement of result based on the highest score gotten by candidates on the platform would appear here"
-        label="Exams has not happened yet"
-      />
+    return <ResponsiveContainer>
+
+      <EmptySession
+          desc="Arrangement of result based on the highest score gotten by candidates on the platform would appear here"
+          label="Exams has not happened yet"
+        />
+    </ResponsiveContainer>
   }
 
   let leaderBoardItems;

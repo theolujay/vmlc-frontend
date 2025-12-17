@@ -74,11 +74,25 @@ export const DoughnutChart: React.FC<DoughnutChartProps> = ({
   // Accumulated offset
   let cumulative = 0;
   
+  const hasData = data.length > 0 && total > 0;
 
   return (
     <svg width={radius * 2 + strokeWidth} height={radius * 2 + strokeWidth}>
       <g transform={`translate(${radius + strokeWidth / 2},${radius + strokeWidth / 2})`}>
-        {data.map((d, i) => {
+
+       {!hasData && (
+          <circle
+            r={radius}
+            fill="transparent"
+            stroke="#E5E7EB" // light gray
+            strokeWidth={strokeWidth}
+            transform="rotate(-90)"
+          />
+        )}
+
+
+
+        {hasData&&data.map((d, i) => {
           const valuePercent = d.value / total;
           const dash = valuePercent * circumference;
           const gap = circumference - dash;
@@ -127,4 +141,14 @@ export const DoughnutChart: React.FC<DoughnutChartProps> = ({
     </svg>
   );
 };
+
+
+
+
+
+
+
+
+
+
 

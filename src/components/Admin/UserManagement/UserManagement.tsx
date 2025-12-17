@@ -90,9 +90,10 @@ function UserSummaryCard({ overview }: { overview?: StatOverviewType }) {
 
 
 function UserCard({ header, stat }: Readonly<{ header: ReactNode, stat: OverviewType }>) {
-    if (!stat) {
-        return <Spinner />
-    }
+    // if (!stat) {
+        
+    //     return <Spinner />
+    // }
     const chartData = [
         { value: stat.active, color: "#0088cc" }, // blue
         { value: stat.pending_verification, color: "#f4a300" }, // orange
