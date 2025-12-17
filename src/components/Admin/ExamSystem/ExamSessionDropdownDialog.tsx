@@ -1,5 +1,6 @@
 import { DeleteIcon } from '@/components/General/GeneralIcon';
 import { AddIcon, EditIcon } from '@/components/General/GettingStarted/GettingStartedAssets';
+import AddQuestionModal from '@/components/Modals/AddQuestionModal';
 import DeleteExamSessionModal from '@/components/Modals/DeleteExamSessionModal';
 import EditSessionModal from '@/components/Modals/EditSession';
 import AppDropdownDialog from '@/components/ui/Dropdown/AppDropdownDialog';
@@ -12,9 +13,15 @@ type Props = Readonly<{ exam_id: number }>
 export default function ExamSessionDropdownDialog({ exam_id }: Props) {
     const [openEditModal, setOpenEditModal] = useState(false)
     const [openDeleteModal, setOpenDeleteModal] = useState(false)
+    const [openAddQuestion,setAddQuestion]=useState(false)
 
     function deleteExamSessionModal() {
         setOpenDeleteModal(true)
+    }
+
+
+     function addExamSessionModal() {
+        setAddQuestion(true)
     }
 
     function handleOpenEditModal() {
@@ -30,7 +37,8 @@ export default function ExamSessionDropdownDialog({ exam_id }: Props) {
                     <span>
                         Add Question
                     </span>
-                </div>
+                </div>,
+                onClick:addExamSessionModal
             },
             {
                 label: <div className='flex justify-between'>
@@ -62,6 +70,7 @@ export default function ExamSessionDropdownDialog({ exam_id }: Props) {
             <span className="w-1 h-1 bg-gray-700 rounded-full"></span>
         </button>} >
             <EditSessionModal exam_id={exam_id} open={openEditModal} close={setOpenEditModal} />
+            <AddQuestionModal open={openAddQuestion} close={setAddQuestion} />
             <DeleteExamSessionModal session_id={exam_id} open={openDeleteModal} close={setOpenDeleteModal} />
         </AppDropdownDialog>
     )
