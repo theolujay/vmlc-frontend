@@ -19,7 +19,7 @@ export class CandidateMgtService {
                 ...Object.fromEntries(Object.entries(filters).filter(([_,value])=>value!==undefined && value!==''))
             })
              const response = await client.get(candidateUrls.LIST_CANDIDATES(queryParams.toString()));
-        return response.data;
+             return response.data;
         } catch (error) {
             throw error;
         }
@@ -50,8 +50,13 @@ export class CandidateMgtService {
 
 
     static async getAccountDetails() {
-        const response = await client.get(candidateUrls.ACCOUNT_MGT)
-        return response.data.profile;
+        try {
+            
+            const response = await client.get(candidateUrls.ACCOUNT_MGT)
+            return response.data.profile;
+        } catch (error) {
+            throw error;
+        }
     }
 
 
@@ -89,10 +94,9 @@ export class CandidateMgtService {
     static async publishLeaderBoard(){
         try {
             const response=await client.post(candidateUrls.PUBLISH_LEADERBOARD);
-            
             return response.data;
         } catch (error) {
-            
+            throw error;
         }
     }
 
