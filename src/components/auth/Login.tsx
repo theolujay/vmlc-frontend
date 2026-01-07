@@ -7,6 +7,9 @@ import { NeutralInput, OrdinaryPasswordInput } from '../ui/Input'
 import Spinner from '../ui/spinner/spinner'
 import { MailIcon, PasswordIcon } from '../ui/SvgAsset/GeneralAsset'
 import AuthLayout from './Layout/Layout'
+import config from '../../../config'
+
+const landingUrl = config.LANDING_URL
 
 export default function Login() {
   const { form, onSubmit, isPending } = useLogin()
@@ -45,7 +48,7 @@ export default function Login() {
 
                 <div className='flex gap-2'>
                   <span>{`Don't`} have an account?</span>
-                  <Link href='/register' className=' text-[#3E4095] font-[700]'>REGISTER</Link>
+                  <a href={`${landingUrl}/register`} className=' text-[#3E4095] font-[700]'>REGISTER</a>
                 </div>
               </div>
             </form>
