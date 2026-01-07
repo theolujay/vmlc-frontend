@@ -3,6 +3,9 @@ import Logo from '@/components/ui/SvgAsset/Logo'
 import Link from 'next/link'
 import React, { useState } from 'react'
 import { usePathname } from 'next/navigation'
+import config from '../../../../config'
+
+const landingUrl = config.LANDING_URL
 
 export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false)
@@ -23,13 +26,13 @@ export default function Header() {
         {/* Desktop Navigation */}
         <nav className="hidden md:flex justify-between items-center gap-6">
           <Link
-            href="https://www.verboheit.org/#about"
+            href={`${landingUrl}/#about`}
             className="text-gray-700 hover:text-[#3E4095] transition-colors"
           >
             About the Competition
           </Link>
           <Link
-            href="https://www.verboheit.org/#stages"
+            href={`${landingUrl}/#stages`}
             className="text-gray-700 hover:text-[#3E4095] transition-colors"
           >
             Competition Stages
@@ -38,7 +41,7 @@ export default function Header() {
           {/* Show volunteer link when on candidate page */}
           {isOnCandidatePage && (
             <Link
-              href="/register/staff"
+              href={`${landingUrl}/register?type=volunteer`}
               className="text-[#3E4095] p-3 font-semibold rounded-full bg-[#E2E2EF] hover:bg-[#D0D0E0] transition-colors"
             >
               Become a volunteer
@@ -48,7 +51,7 @@ export default function Header() {
           {/* Show candidate link when on volunteer page */}
           {isOnVolunteerPage && (
             <Link
-              href="/register"
+              href={`${landingUrl}/register`}
               className="text-[#3E4095] p-3 font-semibold rounded-full bg-[#E2E2EF] hover:bg-[#D0D0E0] transition-colors"
             >
               Register as candidate
@@ -74,14 +77,14 @@ export default function Header() {
       {menuOpen && (
         <div className="absolute top-16 left-0 w-full bg-white border-t shadow-md p-4 flex flex-col gap-4 md:hidden z-50">
           <Link
-            href="https://www.verboheit.org/#about"
+            href={`${landingUrl}/#about`}
             className="text-gray-700 hover:text-blue-600 transition-colors"
             onClick={() => setMenuOpen(false)}
           >
             About the Competition
           </Link>
           <Link
-            href="https://www.verboheit.org/#stages"
+            href={`${landingUrl}/#stages`}
             className="text-gray-700 hover:text-blue-600 transition-colors"
             onClick={() => setMenuOpen(false)}
           >
@@ -90,19 +93,19 @@ export default function Header() {
           
           {/* Show volunteer link when on candidate page */}
           {isOnCandidatePage && (
-            <Link
-              href="/register/staff"
+            <a
+              href={`${landingUrl}/register?type=volunteer`}
               className="text-[#3E4095] p-3 font-semibold rounded-full bg-[#E2E2EF] hover:bg-[#D0D0E0] transition-colors text-center"
               onClick={() => setMenuOpen(false)}
             >
               Become a volunteer
-            </Link>
+            </a>
           )}
           
           {/* Show candidate link when on volunteer page */}
           {isOnVolunteerPage && (
             <Link
-              href="/register"
+              href={`${landingUrl}/register`}
               className="text-[#3E4095] p-3 font-semibold rounded-full bg-[#E2E2EF] hover:bg-[#D0D0E0] transition-colors text-center"
               onClick={() => setMenuOpen(false)}
             >

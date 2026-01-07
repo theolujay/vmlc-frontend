@@ -5,6 +5,7 @@ import Footer from './Footer'
 import { useRouter } from 'next/navigation'
 import { useAuth } from '@/contexts/AuthProvider'
 
+
 export default function AuthLayout({ children }: Readonly<{ children: ReactNode }>) {
   const router = useRouter()
   const { authState } = useAuth()
