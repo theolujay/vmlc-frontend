@@ -5,5 +5,20 @@ const nextConfig: NextConfig = {
   eslint: {
     ignoreDuringBuilds: true,
   },
+  async redirects() {
+    return [
+      {
+        source: '/register',
+        destination: 'https://staging.verboheit.org/register',
+        permanent: true,
+      },
+      {
+        source: '/register/staff',
+        destination: 'https://staging.verboheit.org/register?type=volunteer',
+        permanent: true,
+      },
+    ]
+  },
 }
+
 export default nextConfig;
