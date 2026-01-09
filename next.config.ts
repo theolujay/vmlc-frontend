@@ -9,12 +9,12 @@ const nextConfig: NextConfig = {
     return [
       {
         source: '/register',
-        destination: 'https://staging.verboheit.org/register',
+        destination: 'https://verboheit.org/register',
         permanent: true,
       },
       {
         source: '/register/staff',
-        destination: 'https://staging.verboheit.org/register?type=volunteer',
+        destination: 'https://verboheit.org/register?type=volunteer',
         permanent: true,
       },
     ]
