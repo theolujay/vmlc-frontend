@@ -1,4 +1,4 @@
-"use client"
+'use client';
 import CustomTable from '@/components/ui/CustomTable';
 import TablePagination from '@/components/ui/Pagination/TablePagination';
 import { useDebouncedSearch } from '@/hooks/useDebouncedSearch';
