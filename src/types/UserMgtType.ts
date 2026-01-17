@@ -57,7 +57,7 @@ export type OverviewType = {
   registered: number,
   active: number,
   inactive: number,
-  pending_verification: number,
+  pre_registered: number,
   deactivated: number
 }
 

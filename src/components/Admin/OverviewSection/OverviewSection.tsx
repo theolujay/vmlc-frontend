@@ -76,7 +76,7 @@ export default function OverviewSection() {
         <OverviewSummaryCard
           active={data?.stats_overview?.candidates?.active ?? 0}
           inactive={data?.stats_overview?.candidates?.inactive ?? 0}
-          pending={data?.stats_overview?.candidates?.pending_verification ?? 0}
+          preRegisteredStudents={data?.stats_overview?.candidates?.pre_registered ?? 0}
           registeredStudents={data?.stats_overview?.candidates?.registered ?? 0}
         />
         <QuickActionsCard />
@@ -290,12 +290,12 @@ function QuickActionsCard() {
 
 function OverviewSummaryCard({
   registeredStudents,
-  pending,
+  preRegisteredStudents,
   active,
   inactive,
 }: {
   registeredStudents: number;
-  pending: number;
+  preRegisteredStudents: number;
   active: number;
   inactive: number;
 }) {
@@ -322,10 +322,10 @@ function OverviewSummaryCard({
             <span>
               <PendingIcon />
             </span>
-            <p>PENDING CANDIDATES</p>
+            <p>PRE-REGISTERED CANDIDATES</p>
           </div>
           <div className="flex gap-3 items-center">
-            <span className="font-bold text-2xl">{pending}</span>
+            <span className="font-bold text-2xl">{preRegisteredStudents}</span>
             <div className="flex">
               <span className="text-xs text-[#0F973D]">0%</span>
             </div>

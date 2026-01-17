@@ -96,7 +96,7 @@ function UserCard({ header, stat }: Readonly<{ header: ReactNode, stat: Overview
     // }
     const chartData = [
         { value: stat.active, color: "#0088cc" }, // blue
-        { value: stat.pending_verification, color: "#f4a300" }, // orange
+        { value: stat.pre_registered, color: "#f4a300" }, // orange
         { value: stat.inactive, color: "#e04c4c" },  // red
         // {value:stat.deactivated,color:'#d4107'}
 
@@ -133,7 +133,7 @@ function UserCard({ header, stat }: Readonly<{ header: ReactNode, stat: Overview
                         <span>Pending</span>
 
                     </div>
-                    <span>{stat.pending_verification}</span>
+                    <span>{stat.pre_registered}</span>
                 </div>
                 <div className="flex justify-between">
                     <div className="flex items-center gap-1">
