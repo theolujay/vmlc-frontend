@@ -40,7 +40,7 @@ const reducer = (state: AuthState, action: Actions) => {
             const user = {
                 ...payload.profile.user,
                 role: payload.profile.role,
-                school: payload.profile.school
+                school_name: payload.profile.school_name
             }
             const returnUrl = sessionStorage.getItem("returnURL");
             const homePath = isStudent || isStaff ? returnUrl || '/get-started' : '/login';

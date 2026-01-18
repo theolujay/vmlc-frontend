@@ -18,7 +18,7 @@ export type CandidateListType = {
 
 export type CandidateType = {
     user: RequestUserType,
-    school: string,
+    school_name: string,
     status: string,
     face_id: string | null,
     role: string,

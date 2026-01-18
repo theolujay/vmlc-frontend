@@ -34,7 +34,7 @@ const registerSchema = z
     first_name: z.string().min(2, 'First name field cannot be empty'),
     phone: z.string(),
     last_name: z.string().min(2, 'Last name field cannot be empty'),
-    school: z.string().min(2, 'School field cannot be empty'),
+    school_name: z.string().min(2, 'School field cannot be empty'),
     generate_password: z.boolean()
   })
   .superRefine((data, ctx) => {
@@ -74,7 +74,7 @@ const defaultValues:ValueType = {
     password: '',
     password2: '',
     phone: '',
-    first_name: '', last_name: '', school: '',
+    first_name: '', last_name: '', school_name: '',
     generate_password:false,
     terms:false,
 }
@@ -115,7 +115,7 @@ export default function useRegister() {
             last_name: value.last_name,
             phone: value.phone,
             password: value.password,
-            school: value.school,
+            school_name: value.school_name,
             password2: value.password2,
             generate_password:value.generate_password
         }
