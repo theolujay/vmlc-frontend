@@ -27,6 +27,7 @@ import {
   ViewLeaderBoardIcon,
 } from '../AdminIcons';
 import SendBulkMessageModal from '@/components/Modals/SendBulkMessageModal';
+import { useAuth } from '@/contexts/AuthProvider';
 
 function shouldShowHeaderButtons(role: string): boolean {
   switch (role) {
@@ -46,6 +47,7 @@ function shouldShowHeaderButtons(role: string): boolean {
 }
 
 export default function OverviewSection() {
+  const { authState } = useAuth();
   const { page, setPage } = usePagination();
   const [open, setOpen] = useState(false);
   const [filters, setFilters] = useState<Record<string, string>>({
@@ -55,19 +57,23 @@ export default function OverviewSection() {
 
   const { data } = useListUserMgt(page, filters);
 
+  const showBroadcast = shouldShowHeaderButtons(authState?.user?.role ?? '');
+
   return (
     <div className="flex flex-col gap-1">
       <AdminHeader
         isExport
         label="Overview"
         actionButton={
-          <Button
-            onClick={() => setOpen(true)}
-            className="inline-flex gap-2 border px-2 sm:px-4 items-center text-xs sm:text-sm whitespace-nowrap"
-          >
-            <span className="hidden sm:inline">SEND BROADCAST</span>
-            <span className="sm:hidden">BROADCAST</span>
-          </Button>
+          showBroadcast ? (
+            <Button
+              onClick={() => setOpen(true)}
+              className="inline-flex gap-2 border px-2 sm:px-4 items-center text-xs sm:text-sm whitespace-nowrap"
+            >
+              <span className="hidden sm:inline">SEND BROADCAST</span>
+              <span className="sm:hidden">BROADCAST</span>
+            </Button>
+          ) : undefined
         }
       />
       <div className="flex flex-col gap-3 sm:gap-4 mt-3 w-full sm:w-[96%] px-2 sm:px-0 sm:mx-auto">
@@ -83,7 +89,7 @@ export default function OverviewSection() {
           page_count={data?.pagination.total_pages ?? 0}
           currentPage={page}
           onPageChange={setPage}
-          data={(data?.results as MgtItem[]) ?? []}
+          data={(data?.results as unknown as MgtItem[]) ?? []}
         />
       </div>
       <SendBulkMessageModal open={open} close={setOpen} />
@@ -323,9 +329,9 @@ function OverviewSummaryCard({
             </div>
             <div className="flex gap-3 items-center">
               <span className="font-bold text-xl sm:text-2xl">{stat.value}</span>
-              <div className="flex">
+              {/* <div className="flex">
                 <span className="text-xs text-[#0F973D]">{stat.change}</span>
-              </div>
+              </div> */}
             </div>
           </div>
         ))}
