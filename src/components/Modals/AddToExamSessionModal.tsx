@@ -28,7 +28,7 @@ export default function AddToExamSessionModal({
     const { onSubmit, isPending } = useBulkAddQuestionsToSession(handleClose)
     const selectedSessionIds = selected.map((val) => val.id)
     const payload = { question_ids: selectedQuestionIds, exam_ids: selectedSessionIds };
-    const sessionItems: SelectItem[] = data?.results.map((val) => ({ id: val.id, label: val.title })) as SelectItem[];
+    const sessionItems: SelectItem[] = data?.results.map((val) => ({ id: val.id, label: val.title })) ?? [];
 
     return (
         <AppDialog open={open}>

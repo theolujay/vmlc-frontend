@@ -9,7 +9,7 @@ export type LeaderType = {
 export type LeaderCandidateType = {
     role: string,
     user: RequestUserType
-    school: string
+    school_name: string
 }
 
 export type LeaderItemType = {
@@ -41,7 +41,7 @@ export type LeaderBoardResponse = LeaderBoardType | RankedLeaderBoardType;
 
 
 type ExamDetailsType = {
-    id: number,
+    id: string,
     title: string,
     stage: string,
     level: number,
@@ -64,7 +64,7 @@ export type CandidateType = {
 
 type EachCandidate = {
     id: string
-    school: string
+    school_name: string
     full_name: string
 }
 
@@ -76,7 +76,7 @@ type EachCandidate = {
 
 
 type CandidateExamDetailType = {
-    id: number,
+    id: string,
     title: string,
     stage: string,
     level: number,
@@ -108,7 +108,7 @@ export type ViewCandidateDetailType = {
         score: number,
         candidate: {
             id: string,
-            school: string,
+            school_name: string,
             full_name: string,
             submissions: SubmissionItem[]
         },

@@ -21,12 +21,13 @@ import {
   FilterIcon,
   InactiveIcon,
   ManageQuestionIcon,
-  PendingIcon,
+  PreRegisteredIcon,
   RegisteredIcon,
   SortIcon,
   ViewLeaderBoardIcon,
 } from '../AdminIcons';
 import SendBulkMessageModal from '@/components/Modals/SendBulkMessageModal';
+import { useAuth } from '@/contexts/AuthProvider';
 
 function shouldShowHeaderButtons(role: string): boolean {
   switch (role) {
@@ -46,33 +47,36 @@ function shouldShowHeaderButtons(role: string): boolean {
 }
 
 export default function OverviewSection() {
+  const { authState } = useAuth();
   const { page, setPage } = usePagination();
   const [open, setOpen] = useState(false);
   const [filters, setFilters] = useState<Record<string, string>>({
     search: '',
-    // profile:'staff'
     profile: 'candidate',
   });
-  // const { data } = useGetCandidateList(page, filters)
 
   const { data } = useListUserMgt(page, filters);
 
+  const showBroadcast = shouldShowHeaderButtons(authState?.user?.role ?? '');
+
   return (
-    <div className="flex flex-col gap-1 ">
-      {/* <OverviewHeader /> */}
+    <div className="flex flex-col gap-1">
       <AdminHeader
         isExport
         label="Overview"
         actionButton={
-          <Button
-            onClick={() => setOpen(true)}
-            className="inline-flex gap-2 border px-2 items-center text-sm"
-          >
-            SEND BROADCAST
-          </Button>
+          showBroadcast ? (
+            <Button
+              onClick={() => setOpen(true)}
+              className="inline-flex gap-2 border px-2 sm:px-4 items-center text-xs sm:text-sm whitespace-nowrap"
+            >
+              <span className="hidden sm:inline">SEND BROADCAST</span>
+              <span className="sm:hidden">BROADCAST</span>
+            </Button>
+          ) : undefined
         }
       />
-      <div className="flex flex-col gap-3 mt-3 w-[96%] mx-auto">
+      <div className="flex flex-col gap-3 sm:gap-4 mt-3 w-full sm:w-[96%] px-2 sm:px-0 sm:mx-auto">
         <OverviewSummaryCard
           active={data?.stats_overview?.candidates?.active ?? 0}
           inactive={data?.stats_overview?.candidates?.inactive ?? 0}
@@ -85,7 +89,7 @@ export default function OverviewSection() {
           page_count={data?.pagination.total_pages ?? 0}
           currentPage={page}
           onPageChange={setPage}
-          data={(data?.results as MgtItem[]) ?? []}
+          data={(data?.results as unknown as MgtItem[]) ?? []}
         />
       </div>
       <SendBulkMessageModal open={open} close={setOpen} />
@@ -112,44 +116,48 @@ function ActivityHistoryCard({
   const { searchInput, setSearchInput } = useDebouncedSearch(handleSearch);
 
   return (
-    <ResponsiveContainer className="flex gap-4 py-3 px-0 flex-col mx-auto">
-      <div className="flex justify-between px-3">
+    <ResponsiveContainer className="flex gap-4 py-3 px-0 flex-col w-full">
+      <div className="flex flex-col sm:flex-row sm:justify-between gap-3 sm:gap-0 px-1 sm:px-3">
         <div className="flex gap-1 flex-col">
-          <h2 className="font-bold">Activity History</h2>
-          <p>This table shows the total activity history on the platform</p>
+          <h2 className="font-bold text-lg sm:text-xl">Candidate List</h2>
+          <p className="text-sm text-gray-600">Sorted by recent joins</p>
         </div>
-        <div className="flex justify-between items-center gap-2">
-          <div className="flex">
+        <div className="flex flex-col sm:flex-row gap-2 sm:items-center">
+          <div className="flex w-full sm:w-auto">
             <input
               value={searchInput}
               onChange={(e) => setSearchInput(e.target.value)}
               type="text"
-              placeholder="Search by student, staff name or ID"
-              className="border h-10 px-2 py-1 rounded-md border-[#E4E7EC] outline-none"
+              placeholder="Search"
+              className="border h-10 px-3 py-1 rounded-md border-[#E4E7EC] outline-none w-full sm:w-auto text-sm"
             />
           </div>
-          <button className="inline-flex items-center gap-2 border h-10 rounded-md px-2 py-1 border-[#E4E7EC] cursor-pointer ">
-            <span>
-              <SortIcon />
-            </span>
-            <span className="text-[#344054]">Sort</span>
-          </button>
-          <button className="inline-flex items-center gap-2 border h-10 rounded-md px-2 py-1 border-[#E4E7EC] cursor-pointer ">
-            <span>
-              <FilterIcon />
-            </span>
-            <span className="text-[#344054]">Filter</span>
-          </button>
+          <div className="flex gap-2">
+            <button className="inline-flex items-center justify-center gap-2 border h-10 rounded-md px-3 py-1 border-[#E4E7EC] cursor-pointer flex-1 sm:flex-none">
+              <span>
+                <SortIcon />
+              </span>
+              <span className="text-[#344054] text-sm">Sort</span>
+            </button>
+            <button className="inline-flex items-center justify-center gap-2 border h-10 rounded-md px-3 py-1 border-[#E4E7EC] cursor-pointer flex-1 sm:flex-none">
+              <span>
+                <FilterIcon />
+              </span>
+              <span className="text-[#344054] text-sm">Filter</span>
+            </button>
+          </div>
         </div>
       </div>
       <CustomTable
         data={data}
+        minWidth="1100px"
         columns={[
           {
             key: 'S/N',
             header: 'S/N',
+            align: 'center',
             render: (_, __, index) => (
-              <div className="text-center py-2 max-w-[6vw] overflow-clip">
+              <div className="py-2">
                 {index + 1}
               </div>
             ),
@@ -162,48 +170,37 @@ function ActivityHistoryCard({
                 row.user.first_name,
                 row.user.last_name
               );
-              return <div className="flex items-center gap-1">{userName}</div>;
+              return <div className="font-medium text-gray-900">{userName}</div>;
             },
           },
           {
-            key: 'User Role',
-            header: 'User Role',
-            render: (_, row) => (
-              <div className="flex items-center gap-1">
-                <span className="bg-[#F5FCFE] font-semibold rounded-full border-2 py-1 px-2 text-[#01ACEA] border-[#01ACEA]">
-                  {row.role}
-                </span>
-              </div>
-            ),
+            key: 'current_class',
+            header: 'Class',
+            render: (_, row) => <div>{row.current_class}</div>
           },
           {
-            key: 'Email Address',
-            header: 'Email Address',
-            render: (_, row) => (
-              <div className="flex items-center gap-1">{row.user.email}</div>
-            ),
+            key: 'school_name',
+            header: 'School',
+            render: (_, row) => <div className="max-w-[250px] truncate" title={row.school_name || ''}>{row.school_name}</div>
           },
           {
-            key: 'Application Date',
-            header: 'Application Date',
+            key: 'state',
+            header: 'State',
+            render: (_, row) => <div>{row.user.state}</div>
+          },
+          {
+            key: 'Joined',
+            header: 'Joined',
             render: (_, row) => (
-              <div className="flex items-center gap-1">
+              <div>
                 {formatDate(row.user.date_joined)}
               </div>
             ),
           },
           {
-            key: 'Status',
-            header: 'Status',
-            render: (_, row) => (
-              <div className="flex items-center capitalize gap-1">
-                {row.status}
-              </div>
-            ),
-          },
-          {
             key: 'Action',
-            header: 'Action',
+            header: 'Detail',
+            align: 'right',
             render: (_, row) => {
               const href = (() => {
                 const query = new URLSearchParams(searchParams.toString());
@@ -212,8 +209,8 @@ function ActivityHistoryCard({
                 return `${pathName}?${query.toString()}`;
               })();
               return (
-                <Link href={href} className="text-[#3E4095] font-semibold ">
-                  View details
+                <Link href={href} className="text-[#3E4095] font-bold hover:underline px-3 text-sm">
+                  View
                 </Link>
               );
             },
@@ -233,53 +230,48 @@ function ActivityHistoryCard({
 
 function QuickActionsCard() {
   return (
-    <ResponsiveContainer className="flex overflow-x-auto w-full gap-4 p-3 flex-col mx-auto">
-      <h2 className="capitalize text-xl font-bold">quick actions</h2>
-      <div className="flex justify-between">
+    <ResponsiveContainer className="flex w-full gap-3 sm:gap-4 p-3 sm:p-4 flex-col mx-auto">
+      <h2 className="text-lg sm:text-xl font-bold">Quick Actions</h2>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <Link
           href="/admin/overview?tab=Exam+System&page=1"
-          className="flex gap-2 items-center"
+          className="flex justify-between items-center p-4 rounded-xl border border-[#3E4095]/10 hover:bg-[#3E4095]/5 transition-all group"
         >
-          <span>
-            <ManageQuestionIcon />
-          </span>
-          <div className="flex flex-col">
-            <p className="text-sm">Manage Exam Questions</p>
-            <p className="text-xs">Manage Exam Questions</p>
+          <div className="flex gap-3 items-center">
+            <span className="flex-shrink-0">
+              <ManageQuestionIcon />
+            </span>
+            <p className="text-m text-gray-700 tracking-tight">Explore Questions</p>
           </div>
-          <span className="ml-10">
+          <span className="flex-shrink-0 group-hover:translate-x-1 transition-transform">
             <AngleIcon />
           </span>
         </Link>
         <Link
           href="/admin/overview?tab=Leaderboards"
-          className="flex gap-2 items-center justify-between"
+          className="flex justify-between items-center p-4 rounded-xl border border-[#3E4095]/10 hover:bg-[#3E4095]/5 transition-all group"
         >
-          <span>
-            <ViewLeaderBoardIcon />
-          </span>
-          <div className="flex flex-col">
-            <p className="text-sm">View Leaderboard</p>
-            <p className="text-xs">Keep updated on student scores</p>
+          <div className="flex gap-3 items-center">
+            <span className="flex-shrink-0">
+              <ViewLeaderBoardIcon />
+            </span>
+            <p className="text-m text-gray-700 tracking-tight">View Leaderboard</p>
           </div>
-          <span className="ml-10">
+          <span className="flex-shrink-0 group-hover:translate-x-1 transition-transform">
             <AngleIcon />
           </span>
         </Link>
         <Link
           href="/admin/overview?tab=Announcement"
-          className="flex gap-2 items-center"
+          className="flex justify-between items-center p-4 rounded-xl border border-[#3E4095]/10 hover:bg-[#3E4095]/5 transition-all group"
         >
-          <span>
-            <BroadcastIcon />
-          </span>
-          <div className="flex flex-col">
-            <p className="text-sm">Send Broadcast</p>
-            <p className="text-xs">
-              Send important notifications to all members
-            </p>
+          <div className="flex gap-3 items-center">
+            <span className="flex-shrink-0">
+              <BroadcastIcon />
+            </span>
+            <p className="text-m text-gray-700 tracking-tight">Manage Broadcast</p>
           </div>
-          <span className="ml-10">
+          <span className="flex-shrink-0 group-hover:translate-x-1 transition-transform">
             <AngleIcon />
           </span>
         </Link>
@@ -299,68 +291,50 @@ function OverviewSummaryCard({
   active: number;
   inactive: number;
 }) {
+  const stats = [
+    {
+      icon: <RegisteredIcon />,
+      label: 'REGISTERED CANDIDATES',
+      value: registeredStudents,
+      // change: '0%'
+    },
+    {
+      icon: <PreRegisteredIcon />,
+      label: 'PRE-REGISTERED CANDIDATES',
+      value: preRegisteredStudents,
+      // change: '0%'
+    },
+    {
+      icon: <ActiveIcon />,
+      label: 'ACTIVE CANDIDATES',
+      value: active,
+      // change: '0%'
+    },
+    {
+      icon: <InactiveIcon />,
+      label: 'INACTIVE CANDIDATES',
+      value: inactive,
+      // change: '0%'
+    }
+  ];
+
   return (
-    <ResponsiveContainer className="flex gap-2 px-3 flex-col mx-auto">
-      <div className="flex justify-between">
-        <div className="flex gap-4 flex-col">
-          <div className="flex gap-2">
-            <span>
-              <RegisteredIcon />
-            </span>
-            <p>REGISTERED CANDIDATES</p>
-          </div>
-          <div className="flex gap-3 items-center">
-            <span className="font-bold text-2xl">{registeredStudents}</span>
-            <div className="flex">
-              <span className="text-xs text-[#0F973D]">0%</span>
+    <ResponsiveContainer className="flex gap-3 sm:gap-4 px-2 sm:px-3 flex-col mx-auto">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+        {stats.map((stat, index) => (
+          <div key={index} className="flex gap-3 sm:gap-4 flex-col p-4 sm:p-0 bg-gray-50 sm:bg-transparent rounded-lg sm:rounded-none">
+            <div className="flex gap-2 items-center">
+              <span className="flex-shrink-0">{stat.icon}</span>
+              <p className="text-xs sm:text-sm font-medium text-gray-700 leading-tight">{stat.label}</p>
+            </div>
+            <div className="flex gap-3 items-center">
+              <span className="font-bold text-xl sm:text-2xl">{stat.value}</span>
+              {/* <div className="flex">
+                <span className="text-xs text-[#0F973D]">{stat.change}</span>
+              </div> */}
             </div>
           </div>
-        </div>
-
-        <div className="flex gap-4 flex-col">
-          <div className="flex gap-2">
-            <span>
-              <PendingIcon />
-            </span>
-            <p>PRE-REGISTERED CANDIDATES</p>
-          </div>
-          <div className="flex gap-3 items-center">
-            <span className="font-bold text-2xl">{preRegisteredStudents}</span>
-            <div className="flex">
-              <span className="text-xs text-[#0F973D]">0%</span>
-            </div>
-          </div>
-        </div>
-
-        <div className="flex gap-4 flex-col">
-          <div className="flex gap-2">
-            <span>
-              <ActiveIcon />
-            </span>
-            <p>ACTIVE CANDIDATES</p>
-          </div>
-          <div className="flex gap-3 items-center">
-            <span className="font-bold text-2xl">{active}</span>
-            <div className="flex">
-              <span className="text-xs text-[#0F973D]">0%</span>
-            </div>
-          </div>
-        </div>
-
-        <div className="flex gap-4 flex-col">
-          <div className="flex gap-2">
-            <span>
-              <InactiveIcon />
-            </span>
-            <p>INACTIVE CANDIDATES</p>
-          </div>
-          <div className="flex gap-3 items-center">
-            <span className="font-bold text-2xl">{inactive}</span>
-            <div className="flex">
-              <span className="text-xs text-[#0F973D]">0%</span>
-            </div>
-          </div>
-        </div>
+        ))}
       </div>
     </ResponsiveContainer>
   );

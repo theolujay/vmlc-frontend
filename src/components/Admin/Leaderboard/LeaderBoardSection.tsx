@@ -137,7 +137,7 @@ function ScoreComponent({ stage, level }: Readonly<{ stage: string; level: numbe
           },
 
           {
-            key: 'School', header: 'School', render: (_, row) => <div className="flex items-center gap-1">{row.candidate.school}</div>
+            key: 'School', header: 'School', render: (_, row) => <div className="flex items-center gap-1">{row.candidate.school_name}</div>
           },
           {
             key: 'Score', header: 'Score', render: (_, row) => <div className="flex  items-center gap-1">
@@ -231,7 +231,7 @@ export function Podium({ users, stage, level }: Readonly<{ users: CandidateType[
               <div className="flex  flex-col">
                 {/* <p className="font-[400] text-2xl">{val.candidate.full_name}</p> */}
                 <Link href={href} className="font-[400] hover:text-[#3e4095] hover:underline text-2xl">{val.candidate.full_name}</Link>
-                <span className="">{val.candidate.school}</span>
+                <span className="">{val.candidate.school_name}</span>
               </div>
               <div className="relative">
                 <span className="w-15 h-6 p-2 inline-flex items-center absolute left-1/2 -top-2 bg-[#3E4095] text-white  -translate-x-1/2  whitespace-nowrap font-bold rounded-full">{val.score}</span>

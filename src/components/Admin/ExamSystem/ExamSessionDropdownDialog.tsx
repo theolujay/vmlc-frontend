@@ -8,7 +8,7 @@ import { useState } from 'react';
 
 
 
-type Props = Readonly<{ exam_id: number }>
+type Props = Readonly<{ exam_id: string }>
 
 export default function ExamSessionDropdownDialog({ exam_id }: Props) {
     const [openEditModal, setOpenEditModal] = useState(false)

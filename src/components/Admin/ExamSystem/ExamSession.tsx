@@ -22,7 +22,7 @@ import ExamSessionDropdownDialog from './ExamSessionDropdownDialog'
 
 export default function ExamSession() {
   const searchParams = useSearchParams();
-  const id = Number(searchParams.get("id")!);
+  const id = searchParams.get("id")!;
   const { page, setPage } = usePagination()
   const { data, isPending } = useViewExamQuestions(id)
   const [openUpload, setOpenUpload] = useState(false);

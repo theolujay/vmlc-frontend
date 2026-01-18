@@ -9,6 +9,7 @@ import TablePagination from "../ui/Pagination/TablePagination"
 import ResponsiveContainer from "../ui/ResponsiveContainer"
 import { FilterIcon, SortIcon } from "./AdminIcons"
 import QuestionInformation from "../Drawer/QuestionInformation"
+import MathRenderer from "@/components/Exam/MathRenderer"
 
 export default function QuestionsTable({ questions, onPageChange, currentPage, page_count }: Readonly<{
   // questions: QuestionType[], 
@@ -56,13 +57,17 @@ export default function QuestionsTable({ questions, onPageChange, currentPage, p
         {
           key: 'data.text', header: 'Question', render: (_, row) => {
             const options = getOptionAsArray(row)
-            return <div className="flex text-start flex-col justify-start items-start gap-1">
-              <span>{row.text}</span>
-              <div className="flex gap-3 w-full"  >
+            return <div className="flex text-start flex-col justify-start items-start gap-1 min-w-[300px]">
+              <div className="font-medium text-gray-900">
+                <MathRenderer content={row.text} />
+              </div>
+              <div className="flex flex-wrap gap-x-4 gap-y-1 w-full mt-1">
                 {
-                  options.map((val, index) => <div key={`option-${index + 1}`} className="option flex gap-1">
-                    <input id={val.optionKey} type="radio" readOnly checked={val.optionKey.endsWith(row.correct_answer.toLowerCase())} />
-                    <label htmlFor={val.optionKey}>{val.option}</label>
+                  options.map((val, index) => <div key={`option-${index + 1}`} className="option flex gap-2 items-center">
+                    <input id={val.optionKey} type="radio" disabled checked={val.optionKey.endsWith(row.correct_answer.toLowerCase())} className="w-3 h-3 text-[#3E4095]" />
+                    <label htmlFor={val.optionKey} className="text-xs text-gray-600">
+                        <MathRenderer content={val.option} inline />
+                    </label>
                   </div>
                   )
                 }

@@ -38,7 +38,7 @@ function ViewUserDetails({ id }: Readonly<{ id: string }>) {
                 <Spinner />
             </div> :
                 <div className="flex flex-col gap-3 mt-3  w-[96%] mx-auto">
-                    <Details role={data?.role ?? ''} status={data?.status ?? ''} school={data?.school ?? ''} dateJoined={data?.user?.date_joined ?? new Date()}
+                    <Details role={data?.role ?? ''} status={data?.status ?? ''} school_name={data?.school_name ?? ''} dateJoined={data?.user?.date_joined ?? new Date()}
                         // userName={data?.candidate_info?.name??''} 
                         userName={userName}
                         email={data?.user?.email ?? ''} />
@@ -54,7 +54,7 @@ export default withAuthentication(ViewUserDetails)
 
 
 
-function Details({ userName, email, dateJoined, school, role, status }: { status: string, userName: string, email: string, dateJoined: Date, school: string, role: string }) {
+function Details({ userName, email, dateJoined, school_name, role, status }: { status: string, userName: string, email: string, dateJoined: Date, school_name: string, role: string }) {
     const userInitials = getUserInitials(userName)
     return <ResponsiveContainer className='flex gap-3 flex-col p-8'>
         <div className="flex items-center gap-2">
@@ -76,7 +76,7 @@ function Details({ userName, email, dateJoined, school, role, status }: { status
                 </div>
                 <div className="flex-col text-sm  gap-1 flex">
                     <span className='text-[#475367] text-sm'>INSTITUTION NAME</span>
-                    <span className='text-base'>{school}</span>
+                    <span className='text-base'>{school_name}</span>
                 </div>
             </div>
             <div className="flex flex-col gap-2">

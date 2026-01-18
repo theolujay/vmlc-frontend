@@ -222,23 +222,6 @@ console.log(candidates,'candidates in user history table')
                     header: 'Status',
                     render: (_, row) => <div className="flex capitalize items-center gap-1">{row.status}</div>
                 },
-                {
-                    key: 'action',
-                    header: "Action",
-                    render: (_, row) => {
-                        const href = (() => {
-                            const query = new URLSearchParams(searchParams.toString());
-                            query.set("view", "view-user");
-                            query.set("id", row.user.id);
-                            return `${pathName}?${query.toString()}`;
-                        })();
-                        return (
-                            <div className="flex justify-between items-center gap-1">
-                                <Link href={href} className="cursor-pointer font-semibold text-[#3E4095]">Details</Link>
-                            </div>
-                        )
-                    },
-                }
             ]}
             data={candidates}
             

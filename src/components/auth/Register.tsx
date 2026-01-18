@@ -52,7 +52,7 @@ export default function Register() {
                 <Input name='email' icon={<MailIcon />} label='EMAIL' placeholder='johndoe@gmail.com' className='border-[#D0D5DD]' />
               </div>
               <div className="grid">
-                <Input name='school' icon={<SchoolIcon />} label='SCHOOL' placeholder="King's college, Yaba, Lagos" className='border-[#D0D5DD]' />
+                <Input name='school_name' icon={<SchoolIcon />} label='SCHOOL' placeholder="King's college, Yaba, Lagos" className='border-[#D0D5DD]' />
               </div>
 
 

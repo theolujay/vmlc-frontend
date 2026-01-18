@@ -5,7 +5,7 @@ import clsx from 'clsx'
 import { FormProvider } from 'react-hook-form';
 import Spinner from '../ui/spinner/spinner';
 
-export default function UploadExamSessionModal({ open, close, exam_id }: Readonly<{ open: boolean, close: (close: boolean) => void, exam_id: number }>) {
+export default function UploadExamSessionModal({ open, close, exam_id }: Readonly<{ open: boolean, close: (close: boolean) => void, exam_id: string }>) {
     function handleClose() {
         close(!open)
     }

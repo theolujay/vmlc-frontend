@@ -7,7 +7,7 @@ export type RegisterRequest = {
     },
     password: string,
     password2: string,
-    school: string
+    school_name: string
 }
 
 export type LoginRequest = {
@@ -55,7 +55,7 @@ export type AuthLoginResponse = {
         //     date_joined: Date;
         // },
         user: RequestUserType,
-        school: string;
+        school_name: string;
         role: string;
     }
 }
@@ -63,7 +63,7 @@ export type AuthLoginResponse = {
 
 type User = RequestUserType & {
     role: string,
-    school: string
+    school_name: string
 }
 
 export type RequestUserType = {
@@ -72,6 +72,7 @@ export type RequestUserType = {
     first_name: string;
     last_name: string;
     phone: string;
+    state: string;
     date_joined: Date;
 }
 
@@ -100,7 +101,8 @@ export type AuthState = {
 
 export type ActivityHistoryUserType = {
     user: RequestUserType,
-    school: string | null,
+    school_name: string | null,
+    current_class: string | null,
     role: string,
     status:string,
     is_user_verified: boolean
@@ -113,7 +115,7 @@ export type RegisterRequestValueType= {
     first_name: string;
     phone: string;
     last_name: string;
-    school: string;
+    school_name: string;
     generate_password: boolean;
     password?: string | undefined;
     password2?: string | undefined;

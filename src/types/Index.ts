@@ -20,14 +20,14 @@ export type VerificationDocumentType = {
 
 
 export type SelectItem={
-    id:number,
+    id:number | string,
     label:string
 }
 
 
 export type BulkPayloadType= {
     question_ids: number[],
-    exam_ids: number[]
+    exam_ids: (number | string)[]
 }
 
 

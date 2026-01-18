@@ -15,7 +15,7 @@ const defaultValues = {
     description: ''
 }
 type ValueType = z.infer<typeof editExamSessionSchema>;
-export default function useEditExamSession(exam_id: number,onSuccessCallback:()=>void) {
+export default function useEditExamSession(exam_id: string,onSuccessCallback:()=>void) {
     const form = useForm({
         resolver: zodResolver(editExamSessionSchema),
         defaultValues
