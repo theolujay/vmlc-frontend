@@ -24,7 +24,7 @@ Output only the formatted text.`
       config: { temperature: 0.1 },
     });
 
-    return response.text() || rawText;
+    return response.text || rawText;
   } catch (error) {
     console.error("Gemini formatting error:", error instanceof Error ? error.message : error);
     return rawText;
@@ -84,7 +84,7 @@ Text: """${bulkText}"""`
       }
     });
 
-    const responseText = response.text();
+    const responseText = response.text;
     if (!responseText) {
       throw new Error("Empty response from AI");
     }

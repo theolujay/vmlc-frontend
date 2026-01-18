@@ -67,6 +67,7 @@ export type OverviewType = {
 export type MgtItem = {
   user: RequestUserType & { is_email_verified: boolean, },
   school_name: string | null,
+  current_class: string | null,
   role: string,
   status: string,
   profile_type: string,
