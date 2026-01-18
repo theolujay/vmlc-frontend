@@ -3,6 +3,7 @@ import QueryProvider from "@/contexts/QueryProviders";
 import type { Metadata } from "next";
 import { Suspense } from "react";
 import "./globals.css";
+import "@fortawesome/fontawesome-free/css/all.min.css";
 import {ToastContainer} from 'react-toastify'
 import AppErrorBoundary from "./AppErrorBoundary";
 import Spinner from "@/components/ui/spinner/spinner";
