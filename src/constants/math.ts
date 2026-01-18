@@ -25,6 +25,6 @@ export const MATH_CATEGORIES = {
     ]
   };
   
-  export const DIFFICULTY_OPTIONS = ['Easy', 'Medium', 'Hard'];
+  export const DIFFICULTY_OPTIONS = ['Easy', 'Moderate', 'Hard'];
   export const OPTION_TYPES = ['Single Select', 'Multiple Select', 'Numerical', 'True/False'];
 

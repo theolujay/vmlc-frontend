@@ -272,7 +272,7 @@ type QuestionPoolDataType = {
 // type MetaType = {
 //   total_count: number,
 //   hard_questions_count: number,
-//   medium_questions_count: number,
+//   moderate_questions_count: number,
 //   easy_questions_count: number
 // }
 

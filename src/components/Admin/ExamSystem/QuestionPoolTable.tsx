@@ -13,6 +13,7 @@ import QuestionPoolDropdown from "./QuestionPoolDropdown";
 import AddToExamSessionModal from "@/components/Modals/AddToExamSessionModal";
 import BulkRemoveQuestionsModal from "@/components/Modals/BulkRemoveQuestionsModal";
 import { useDebouncedSearch } from "@/hooks/useDebouncedSearch";
+import MathRenderer from "@/components/Exam/MathRenderer";
 
 type ColumnType<T> = {
   key: keyof T | string;
@@ -233,18 +234,23 @@ export default function QuestionPoolTable({
             render: (_, row) => {
               const options = getOptionAsArray(row);
               return (
-                <div className="flex text-start flex-col gap-1">
-                  <span>{row.text}</span>
-                  <div className="flex gap-3 w-full">
+                <div className="flex text-start flex-col gap-1 min-w-[300px]">
+                  <div className="font-medium text-gray-900">
+                    <MathRenderer content={row.text} />
+                  </div>
+                  <div className="flex flex-wrap gap-x-4 gap-y-1 w-full mt-1">
                     {options.map((val, index) => (
-                      <div key={index} className="option flex gap-1">
+                      <div key={index} className="option flex gap-2 items-center">
                         <input
                           id={val.optionKey}
                           type="radio"
-                          readOnly
+                          disabled
+                          className="w-3 h-3 text-[#3E4095]"
                           checked={val.optionKey.endsWith(row.correct_answer.toLowerCase())}
                         />
-                        <label htmlFor={val.optionKey}>{val.option}</label>
+                        <label htmlFor={val.optionKey} className="text-xs text-gray-600">
+                           <MathRenderer content={val.option} inline />
+                        </label>
                       </div>
                     ))}
                   </div>

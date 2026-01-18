@@ -5,6 +5,7 @@ import { getOptionAsArray, getUserName } from '@/utils/generalUtils'
 import { formatDate, formatTimeToString, getAppropriateColor } from '@/utils/formatFileSize'
 import clsx from 'clsx'
 import { useMemo } from 'react'
+import MathRenderer from '@/components/Exam/MathRenderer'
 
 
 export default function QuestionInformation({ open, setOpen, information }: Readonly<{ open: boolean, setOpen: (open: boolean) => void, information: SessionQuestionItemType }>) {
@@ -33,7 +34,9 @@ export default function QuestionInformation({ open, setOpen, information }: Read
                     </div>
                     <div className="justify-start items-start flex flex-col gap-0.5 mt-3">
                         <span className='text-sm text-[#344054]'>QUESTION</span>
-                        <span>{information.text}</span>
+                        <div className="text-gray-900 font-medium">
+                            <MathRenderer content={information.text} />
+                        </div>
                     </div>
                     <div className="justify-start items-start flex flex-col gap-0.5 mt-3">
                         <span className='text-sm text-[#344054]'>OPTIONS</span>
@@ -42,9 +45,11 @@ export default function QuestionInformation({ open, setOpen, information }: Read
                                 options.map((val, index) => {
                                     const [, key] = val.optionKey.split('_');
                                     
-                                    return <div key={`option-${index + 1}`} className="option flex gap-1">
-                                        <input id={val.optionKey} type="radio" readOnly />
-                                        <label htmlFor={val.optionKey}>({key}) {val.option}</label>
+                                    return <div key={`option-${index + 1}`} className="option flex gap-2 items-center">
+                                        <input id={val.optionKey} type="radio" disabled className="w-4 h-4 text-[#3E4095]" />
+                                        <label htmlFor={val.optionKey} className="text-gray-700">
+                                            ({key.toUpperCase()}) <MathRenderer content={val.option} inline />
+                                        </label>
                                     </div>
                                 }
                                 )
@@ -54,9 +59,11 @@ export default function QuestionInformation({ open, setOpen, information }: Read
 
                     <div className="justify-start items-start flex flex-col gap-0.5 mt-3 mb-3">
                         <span className='text-sm text-[#344054]'>ANSWER</span>
-                        <div className="flex text-[#3E4095]">
-                            <span className=''>({information.correct_answer.toLowerCase()})</span><span className='ml-2'>{correct?.option}</span>
-
+                        <div className="flex text-[#3E4095] font-semibold">
+                            <span className=''>({information.correct_answer.toUpperCase()})</span>
+                            <span className='ml-2'>
+                                <MathRenderer content={correct?.option || ''} inline />
+                            </span>
                         </div>
                     </div>
                 </div>

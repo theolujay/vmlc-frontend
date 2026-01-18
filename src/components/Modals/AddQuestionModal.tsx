@@ -310,7 +310,7 @@ export default function AddQuestionModal({
                   Saving...
                 </>
               ) : (
-                'Publish Question'
+                'Add Question'
               )}
             </button>
           </div>
