@@ -41,7 +41,7 @@ export type LeaderBoardResponse = LeaderBoardType | RankedLeaderBoardType;
 
 
 type ExamDetailsType = {
-    id: number,
+    id: string,
     title: string,
     stage: string,
     level: number,
@@ -76,7 +76,7 @@ type EachCandidate = {
 
 
 type CandidateExamDetailType = {
-    id: number,
+    id: string,
     title: string,
     stage: string,
     level: number,

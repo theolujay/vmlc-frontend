@@ -78,7 +78,7 @@ export type StatsType = {
 
 
 export type ExamTakenType = {
-    exam_id: number,
+    exam_id: string,
     exam_title: string,
     exam_stage: string,
     exam_date: Date,

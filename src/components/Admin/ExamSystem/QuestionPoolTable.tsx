@@ -277,7 +277,7 @@ export default function QuestionPoolTable({
             render: (_, row) => (
               <div className="flex justify-between items-center gap-1">
 
-                <QuestionPoolDropdown information={row} exam_id={row.id} />
+                <QuestionPoolDropdown information={row} question_id={row.id} />
 
               </div>
             ),

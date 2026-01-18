@@ -4,7 +4,7 @@ import clsx from 'clsx'
 import { ModalDeleteIcon } from '../Admin/AdminIcons'
 import Spinner from '../ui/spinner/spinner'
 
-export default function DeleteExamSessionModal({ open, close ,session_id}:Readonly< { open: boolean, close: (close: boolean) => void ,session_id:number }>) {
+export default function DeleteExamSessionModal({ open, close ,session_id}:Readonly< { open: boolean, close: (close: boolean) => void ,session_id:string }>) {
     const {isPending,onSubmit}=useDeleteExamSession(handleClose)
      function handleClose() {
         close(!open)

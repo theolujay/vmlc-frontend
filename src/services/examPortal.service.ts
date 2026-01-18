@@ -48,7 +48,7 @@ export class ExamPortal {
         }
     }
 
-    static async viewExamQuestions(id: number): Promise<UpdatedSessionQuestionType> {
+    static async viewExamQuestions(id: string): Promise<UpdatedSessionQuestionType> {
         try {
 
             const response = await client.get(examUrls.VIEW_QUESTIONS(id))
@@ -71,7 +71,7 @@ export class ExamPortal {
 
 
 
-    static async deleteExamSession(id: number) {
+    static async deleteExamSession(id: string) {
         try {
 
             const response = await client.delete(examUrls.DELETE_EXAM_SESSION(id))
@@ -96,7 +96,7 @@ export class ExamPortal {
     }
 
 
-    static async editExamSession(examId: number, payload: EditExamSession) {
+    static async editExamSession(examId: string, payload: EditExamSession) {
         try {
             const response = await client.put(examUrls.EDIT_SESSION(examId), payload);
             return response.data;
@@ -145,7 +145,7 @@ export class ExamPortal {
     }
 
 
-    static async updateExamSession(exam_id: number, payload: any) {
+    static async updateExamSession(exam_id: string, payload: any) {
         try {
             const response = await client.put(examUrls.UPDATE_EXAM(exam_id), payload);
             return response.data;

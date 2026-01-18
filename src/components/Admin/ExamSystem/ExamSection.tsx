@@ -126,7 +126,7 @@ function QuestionSession({ sessions, total_pages, onPageChange, currentPage }: R
 
 
 
-function ExamSession({ data, id }: Readonly<{ id: number, data: any }>) {
+function ExamSession({ data, id }: Readonly<{ id: string, data: any }>) {
 
 
   const pathName = usePathname();

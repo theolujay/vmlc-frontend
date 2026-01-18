@@ -1,8 +1,7 @@
 import QuestionInformation from '@/components/Drawer/QuestionInformation';
 import { DeleteIcon } from '@/components/General/GeneralIcon';
-import { AddIcon, EditIcon, EyeIcon } from '@/components/General/GettingStarted/GettingStartedAssets';
-import DeleteExamSessionModal from '@/components/Modals/DeleteExamSessionModal';
-import EditSessionModal from '@/components/Modals/EditSession';
+import { AddIcon, EyeIcon } from '@/components/General/GettingStarted/GettingStartedAssets';
+import RemoveQuestionModal from '@/components/Modals/RemoveQuestionModal';
 import AppDropdownDialog from '@/components/ui/Dropdown/AppDropdownDialog';
 import { SessionQuestionItemType } from '@/types/Examtype';
 import { useState } from 'react';
@@ -10,13 +9,13 @@ import { useState } from 'react';
 
 
 
-type Props = Readonly<{ exam_id: number,information:SessionQuestionItemType }>
+type Props = Readonly<{ question_id: number,information:SessionQuestionItemType }>
 
-export default function QuestionPoolDropdown({ exam_id ,information}: Props) {
+export default function QuestionPoolDropdown({ question_id ,information}: Props) {
     const [openViewModal, setOpenViewModal] = useState(false)
     const [openDeleteModal, setOpenDeleteModal] = useState(false)
 
-    function deleteExamSessionModal() {
+    function handleDeleteModal() {
         setOpenDeleteModal(true)
     }
 
@@ -55,7 +54,7 @@ export default function QuestionPoolDropdown({ exam_id ,information}: Props) {
                         Delete Question
                     </span>
                 </div>,
-                onClick:deleteExamSessionModal
+                onClick:handleDeleteModal
                 // onClick:()=>alert('I was clicked')
             },
 
@@ -67,7 +66,7 @@ export default function QuestionPoolDropdown({ exam_id ,information}: Props) {
         {/* <ViewDetails */}
         <QuestionInformation information={information} open={openViewModal} setOpen={setOpenViewModal} />
             {/* <EditSesionModal exam_id={exam_id} open={openEditModal} close={setOpenEditModal} /> */}
-            <DeleteExamSessionModal session_id={exam_id} open={openDeleteModal} close={setOpenDeleteModal} />
+            <RemoveQuestionModal question_id={question_id} open={openDeleteModal} close={setOpenDeleteModal} />
         </AppDropdownDialog>
     )
 }

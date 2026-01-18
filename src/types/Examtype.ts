@@ -41,7 +41,7 @@ export type LeaderboardRankingType = {
 
 
 export type AvailableExamType = {
-  id: number,
+  id: string,
   title: string,
   description: string,
   open_duration_hours: number,
@@ -107,7 +107,7 @@ export type QuestionPoolType= {
 
 
 export type ExamSessionType = {
-  id: number,
+  id: string,
   title: string,
   stage: string,
   question_count: number,
@@ -227,7 +227,7 @@ export type SessionQuestionItemType = {
 
 
 export type UpdatedSessionQuestionType = {
-  id: number,
+  id: string,
   title: string,
   stage: string,
   description: string,
