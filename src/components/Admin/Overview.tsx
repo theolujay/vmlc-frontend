@@ -64,13 +64,21 @@ const tabs: TabType[] = [
 
 
 
+import { useEffect, useState } from 'react'
+
 export function OverviewTabs() {
     const { authState } = useAuth()
+    const [mounted, setMounted] = useState(false);
+
+    useEffect(() => {
+        setMounted(true);
+    }, []);
+
     const userTabs = getTabsForRole(authState?.user?.role!)
 
     return (
         <AdminLayout>
-            <TabWrapper tabListClassName='flex overflow-y-auto border-b  border-gray-300 gap-2 bg-white px-6' tabs={userTabs} />
+            {mounted && <TabWrapper tabListClassName='flex overflow-y-auto border-b  border-gray-300 gap-2 bg-white px-6' tabs={userTabs} />}
         </AdminLayout>
     )
 }

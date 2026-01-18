@@ -155,11 +155,15 @@ function NumberGrid({ showNav, numberOfQuestions, current, onSelect, answers, qu
     );
 }
 
+import MathRenderer from "./MathRenderer";
+
 function EachQuestion({ question, index, total }: { question: string, index: number, total: number }) {
     return (
         <div className="flex m-6 flex-col flex-1 gap-5 p-6">
             <h4 className="text-sm font-bold text-[#3E4095]">QUESTION {index + 1} OF {total}</h4>
-            <h2 className="text-2xl font-semibold mt-3">{question}</h2>
+            <div className="text-2xl font-semibold mt-3">
+                <MathRenderer content={question} />
+            </div>
         </div>
     );
 }
@@ -177,18 +181,23 @@ function Options({ question, selected, onSelect }: { question: any, selected: st
             {Object.entries(optionMap).map(([key, value]) => (
                 <label
                     key={key}
-                    className={`flex items-center p-3 gap-2 border bg-white rounded-md cursor-pointer transition
-            ${selected === key ? "border-[#3E4095]" : "border-none hover:bg-gray-100"}`}
+                    className={`flex items-center p-3 gap-2 border bg-white rounded-md cursor-pointer transition group
+            ${selected === key ? "border-[#3E4095] ring-1 ring-[#3E4095]" : "border-gray-200 hover:bg-gray-50"}`}
                 >
-                    <input
-                        type="radio"
-                        name={`question-${question.id}`}
-                        value={key}
-                        checked={selected === key}
-                        onChange={() => onSelect(question.id, key)}
-                        className=""
-                    />
-                    <span className="text-gray-800">{value}</span>
+                    <div className="flex items-center h-full">
+                         <input
+                            type="radio"
+                            name={`question-${question.id}`}
+                            value={key}
+                            checked={selected === key}
+                            onChange={() => onSelect(question.id, key)}
+                            className="mr-3 w-4 h-4 text-[#3E4095] focus:ring-[#3E4095]"
+                        />
+                    </div>
+                   
+                    <span className="text-gray-800 flex-1">
+                        <MathRenderer content={value as string} inline />
+                    </span>
                 </label>
             ))}
         </div>

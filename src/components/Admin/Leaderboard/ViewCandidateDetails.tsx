@@ -11,6 +11,7 @@ import { CandidateNameIcon, EndTimeIcon, PositionIcon, StartTimeIcon } from './L
 import { useAuth } from '@/contexts/AuthProvider'
 import { ReactNode } from 'react'
 import Link from 'next/link'
+import MathRenderer from '@/components/Exam/MathRenderer'
 
 
 
@@ -133,13 +134,22 @@ function QuestionsTable({ questions }: { questions: SubmissionItem[] }) {
                     key: 'data.text', header: 'Question', render: (_, row) => {
                         const options = getOptionAsArray(row)
                         
-                        return <div className="flex text-start flex-col justify-start items-start gap-1">
-                            <span>{row.question_text}</span>
-                            <div className="flex gap-3 w-full"  >
+                        return <div className="flex text-start flex-col justify-start items-start gap-1 min-w-[300px]">
+                            <div className="font-medium text-gray-900">
+                                <MathRenderer content={row.question_text} />
+                            </div>
+                            <div className="flex flex-wrap gap-x-4 gap-y-1 w-full mt-1"  >
                                 {
-                                    options.map((val, index) => <div key={`option-${index + 1}`} className={clsx("option flex gap-1")}>
-                                        <input id={val.optionKey} type="radio" readOnly checked={val.optionKey.endsWith(row.selected_option.toLowerCase())} />
-                                        <label className={clsx(row.is_correct && val.optionKey.endsWith(row.correct_answer.toLowerCase()) && 'text-[#099137]', !row.is_correct && val.optionKey.endsWith(row.selected_option.toLowerCase()) && 'text-[#CB1A14]', !row.is_correct && val.optionKey.endsWith(row.correct_answer.toLowerCase()) && 'text-[#1c61d8]')} htmlFor={val.optionKey}>{val.option}</label>
+                                    options.map((val, index) => <div key={`option-${index + 1}`} className={clsx("option flex gap-2 items-center")}>
+                                        <input id={val.optionKey} type="radio" disabled checked={val.optionKey.endsWith(row.selected_option.toLowerCase())} className="w-3 h-3 text-[#3E4095]" />
+                                        <label className={clsx(
+                                            'text-xs',
+                                            row.is_correct && val.optionKey.endsWith(row.correct_answer.toLowerCase()) && 'text-[#099137] font-bold', 
+                                            !row.is_correct && val.optionKey.endsWith(row.selected_option.toLowerCase()) && 'text-[#CB1A14] font-bold', 
+                                            !row.is_correct && val.optionKey.endsWith(row.correct_answer.toLowerCase()) && 'text-[#1c61d8] font-bold'
+                                        )} htmlFor={val.optionKey}>
+                                            <MathRenderer content={val.option} inline />
+                                        </label>
                                     </div>
                                     )
                                 }

@@ -19,7 +19,7 @@ export default function useDeleteExamSession(onSuccessCallback: () => void) {
     })
 
 
-    function onSubmit(session_id: number) {
+    function onSubmit(session_id: string) {
         mutate(session_id)
     }
     return { onSubmit, isPending }

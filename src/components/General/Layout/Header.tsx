@@ -8,14 +8,19 @@ import { useAuth } from '@/contexts/AuthProvider'
 import useGetCurrentUser from '@/hooks/useGetCurrentUser'
 import { getUserInitials } from '@/utils/capitalizeWords'
 import Link from 'next/link'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 export default function Header() {
-    
+    const [mounted, setMounted] = useState(false);
+    useEffect(() => {
+        setMounted(true);
+    }, []);
 
     const currentUser=useGetCurrentUser()
     
-    const userName = [currentUser?.profile.user?.first_name, currentUser?.profile?.user?.last_name].join(' ')
+    const userName = currentUser?.profile.user?.first_name 
+        ? [currentUser?.profile.user?.first_name, currentUser?.profile?.user?.last_name].join(' ')
+        : '';
 
     const {authState}=useAuth()
    
@@ -38,11 +43,11 @@ export default function Header() {
                     </span>
                     <div className="flex gap-3 items-center">
                         <div className="flex flex-col">
-                            <span className="font-medium">{userName}</span>
-                            <span className="text-xs text-gray-500">{authState?.user?.role}</span>
+                            <span className="font-medium">{mounted ? userName : ''}</span>
+                            <span className="text-xs text-gray-500">{mounted ? authState?.user?.role : ''}</span>
                         </div>
                         <div className="bg-[#CCEEFB] flex items-center justify-center w-[44px] h-[44px] rounded-full">
-                            <span className="font-bold text-lg">{userInitials}</span>
+                            <span className="font-bold text-lg">{mounted ? userInitials : ''}</span>
                         </div>
                         <AppDropdown/>
                     </div>
@@ -72,12 +77,12 @@ export default function Header() {
                         <div className="flex gap-3">
 
                         <div className="bg-[#CCEEFB] flex items-center justify-center w-[44px] h-[44px] rounded-full">
-                            <span className="font-bold text-lg">{userInitials}</span>
+                            <span className="font-bold text-lg">{mounted ? userInitials : ''}</span>
                             
                         </div>
                         <div className="flex flex-col">
-                            <span className="font-medium">{userName}</span>
-                            <span className="text-xs text-gray-500">{authState?.user?.role}</span>
+                            <span className="font-medium">{mounted ? userName : ''}</span>
+                            <span className="text-xs text-gray-500">{mounted ? authState?.user?.role : ''}</span>
                         </div>
                         </div>
                         <AppDropdown/>

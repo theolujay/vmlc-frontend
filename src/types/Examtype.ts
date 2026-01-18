@@ -41,7 +41,7 @@ export type LeaderboardRankingType = {
 
 
 export type AvailableExamType = {
-  id: number,
+  id: string,
   title: string,
   description: string,
   open_duration_hours: number,
@@ -107,7 +107,7 @@ export type QuestionPoolType= {
 
 
 export type ExamSessionType = {
-  id: number,
+  id: string,
   title: string,
   stage: string,
   question_count: number,
@@ -138,7 +138,7 @@ export type CandidateInfoType = {
   name: string,
   email: string,
   phone: string,
-  school: string,
+  school_name: string,
   role: string,
   is_verified: boolean,
   date_joined: Date,
@@ -227,7 +227,7 @@ export type SessionQuestionItemType = {
 
 
 export type UpdatedSessionQuestionType = {
-  id: number,
+  id: string,
   title: string,
   stage: string,
   description: string,
@@ -272,7 +272,7 @@ type QuestionPoolDataType = {
 // type MetaType = {
 //   total_count: number,
 //   hard_questions_count: number,
-//   medium_questions_count: number,
+//   moderate_questions_count: number,
 //   easy_questions_count: number
 // }
 

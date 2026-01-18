@@ -25,7 +25,7 @@ const defaultValues: ValueType = {
   scheduled_exam_time: '',
   open_duration_hours: ''
 }
-export default function useUploadSession(exam_id: number,onSuccessCallback:()=>void) {
+export default function useUploadSession(exam_id: string,onSuccessCallback:()=>void) {
   const form = useForm({
     resolver: zodResolver(uploadExamSchema),
     defaultValues,
