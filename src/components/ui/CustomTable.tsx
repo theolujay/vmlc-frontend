@@ -1,12 +1,13 @@
 
 
 import React from "react";
-
+import clsx from "clsx";
 
 type ColumnType<T> = {
   key: keyof T | string;
   header: string;
   render?: (value: any, row: T, index: number) => React.ReactNode;
+  align?: 'left' | 'center' | 'right';
 };
 
 type CustomTableProps<T> = {
@@ -15,6 +16,7 @@ type CustomTableProps<T> = {
   emptyLabel?: string;
   emptyDesc?: React.ReactNode;
   footer?: React.ReactNode;
+  minWidth?: string;
 };
 
 
@@ -24,16 +26,23 @@ export default function CustomTable<T>({
   emptyLabel = "No records found",
   emptyDesc = "There are currently no entries to display.",
   footer,
+  minWidth = "100%",
 }: Readonly<CustomTableProps<T>>) {
   return (
     <div className="flex flex-col">
-      <div className="overflow-x-auto w-full">
+      <div className="overflow-x-auto w-full custom-scrollbar">
 
-      <table className=" min-w-full border-collapse">
+      <table className="border-collapse" style={{ minWidth, width: '100%' }}>
         <thead>
           <tr className="border-b border-[#E4E7EC] bg-[#E4E7EC]">
             {columns.map((col, i) => (
-              <th key={i} className="py-3 text-left px-3">
+              <th 
+                key={i} 
+                className={clsx(
+                  "py-3 px-3 font-semibold text-gray-700",
+                  !col.align || col.align === 'left' ? "text-left" : col.align === 'center' ? "text-center" : "text-right"
+                )}
+              >
                 {col.header}
               </th>
             ))}
@@ -65,7 +74,13 @@ export default function CustomTable<T>({
                       : (row as any)[col.key as keyof T];
 
                   return (
-                    <td key={ci} className="py-2 px-3 text-center">
+                    <td 
+                      key={ci} 
+                      className={clsx(
+                        "py-4 px-3 text-gray-600",
+                        !col.align || col.align === 'left' ? "text-left" : col.align === 'center' ? "text-center" : "text-right"
+                      )}
+                    >
                       {col.render ? col.render(value, row, index) : value}
                     </td>
                   );

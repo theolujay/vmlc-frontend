@@ -75,7 +75,7 @@ export function RegisteredIcon(props:Readonly< React.SVGProps<SVGSVGElement>>) {
 }
 
 
-export function PendingIcon(props: Readonly<React.SVGProps<SVGSVGElement>>) {
+export function PreRegisteredIcon(props: Readonly<React.SVGProps<SVGSVGElement>>) {
     return <svg {...props} width="18" height="20" viewBox="0 0 18 20" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path d="M9.25 1.875V3.95833M9.25 15V18.3333M4.04167 10H1.125M16.9583 10H15.7083M14.6309 15.3809L14.0417 14.7917M14.8035 4.51316L13.625 5.69167M3.35131 15.8987L5.70833 13.5417M3.5239 4.34057L5.29167 6.10833" stroke="#667185" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
     </svg>

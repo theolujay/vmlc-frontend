@@ -72,6 +72,7 @@ export type RequestUserType = {
     first_name: string;
     last_name: string;
     phone: string;
+    state: string;
     date_joined: Date;
 }
 
@@ -101,6 +102,7 @@ export type AuthState = {
 export type ActivityHistoryUserType = {
     user: RequestUserType,
     school_name: string | null,
+    current_class: string | null,
     role: string,
     status:string,
     is_user_verified: boolean
