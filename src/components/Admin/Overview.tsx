@@ -7,7 +7,6 @@ import { AnnouncementIcon, ExamSystemIcon, LeaderboardIcon, OverviewIcon, Suppor
 import AdminLayout from './AdminLayout'
 import Announcement from './Announcement/Announcement'
 import ExamSectionWrapper from './ExamSystem/ExamSectionWrapper'
-import LeaderBoardSection from './Leaderboard/LeaderBoardSection'
 import OverviewSectionWrapper from './OverviewSection/OverviewSectionWrapper'
 import StaffMgtWrapper from './UserManagement/StaffMgtWrapper'
 import LeaderBoardWrapper from './Leaderboard/LeaderBoardWrapper'
@@ -19,6 +18,8 @@ import SupportSectionWrapper from './Support/SupportSectionWrapper'
 function getTabsForRole(role: string): TabType[] {
     switch (role) {
         case 'volunteer':
+            return tabs.slice(0, 3);
+
         case 'moderator':
             return [...tabs.slice(0, 3), tabs[5]];
 
@@ -80,7 +81,7 @@ export function OverviewTabs() {
         setMounted(true);
     }, []);
 
-    const userTabs = getTabsForRole(authState?.user?.role!)
+    const userTabs = getTabsForRole(authState?.user?.role ?? '')
 
     return (
         <AdminLayout>

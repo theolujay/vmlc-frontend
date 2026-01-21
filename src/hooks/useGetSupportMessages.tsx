@@ -28,5 +28,5 @@ export default function useGetSupportMessages(conversationId: string | null) {
         setMessages((prev) => [...prev, message]);
     };
 
-    return { messages, loading, error, addMessage };
+    return { messages, loading, error, addMessage, setMessages };
 }

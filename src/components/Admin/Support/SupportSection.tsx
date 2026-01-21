@@ -149,6 +149,7 @@ function ConversationListCard({
                                 const query = new URLSearchParams(searchParams.toString());
                                 query.set('view', 'conversation-details');
                                 query.set('id', row.id);
+                                query.set('user_name', row.user.name);
                                 return `${pathName}?${query.toString()}`;
                               })();
                              return (
