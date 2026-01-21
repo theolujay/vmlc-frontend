@@ -131,6 +131,7 @@ export type UserProfileType = {
   is_user_verified: boolean,
   id_card: string | null,
   verification_document: string | null,
+  verification_document_type: string | null,
   created_at: Date,
   updated_at: Date
 }

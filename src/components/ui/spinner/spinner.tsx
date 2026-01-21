@@ -1,13 +1,13 @@
 "use client"
 import React from "react";
 
-export default function Spinner({ size = 20, color = "black" }) {
+export default function Spinner({ size = 20, color = "black", className="" }) {
   const lines = Array(8).fill(null);
   const eachLineAngle = 360 / lines.length;
 
   return (
     <div
-      className="spinner"
+      className={`spinner ${className}`}
       style={
         {
           "--size": `${size}px`,

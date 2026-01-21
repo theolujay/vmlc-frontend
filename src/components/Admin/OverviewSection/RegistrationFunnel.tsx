@@ -48,7 +48,7 @@ export default function RegistrationFunnel({ preRegistered: propPreRegistered, r
         <div className="flex flex-col gap-2 p-4 rounded-xl border border-gray-100 bg-gray-50/50">
           <div className="flex items-center gap-2">
             <div className="w-2 h-2 rounded-full bg-gray-400"></div>
-            <span className="text-xs font-bold text-gray-500 uppercase tracking-wider">Pending Registrations</span>
+            <span className="text-xs font-bold text-gray-500 uppercase tracking-wider">Pre-registered users</span>
           </div>
           <span className="text-3xl font-bold text-gray-900">{preRegistered.toLocaleString()}</span>
         </div>
@@ -56,7 +56,7 @@ export default function RegistrationFunnel({ preRegistered: propPreRegistered, r
         <div className="flex flex-col gap-2 p-4 rounded-xl border border-[#0F973D]/10 bg-[#0F973D]/5">
           <div className="flex items-center gap-2">
             <div className="w-2 h-2 rounded-full bg-[#0F973D]"></div>
-            <span className="text-xs font-bold text-[#0F973D] uppercase tracking-wider">Completed Registrations</span>
+            <span className="text-xs font-bold text-[#0F973D] uppercase tracking-wider">Converted to full registration</span>
           </div>
           <span className="text-3xl font-bold text-gray-900">{registered.toLocaleString()}</span>
         </div>
@@ -76,7 +76,7 @@ export default function RegistrationFunnel({ preRegistered: propPreRegistered, r
         <div className="flex justify-between items-center mt-1">
           <p className="text-[11px] text-gray-500 italic">
             {preRegistered > 0 
-              ? `${(preRegistered - registered).toLocaleString()} users dropped off during the registration process.`
+              ? `${(preRegistered - registered).toLocaleString()} users pre-registered but did not complete registration.`
               : 'No registration data available yet.'}
           </p>
         </div>

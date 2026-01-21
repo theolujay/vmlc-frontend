@@ -7,11 +7,15 @@ import useListUserMgt from '@/hooks/useListUserMgt'
 import { MgtItem, MgtItemType, OverviewType, StatOverviewType } from '@/types/UserMgtType'
 import { formatDate } from '@/utils/formatFileSize'
 import { getUserName } from '@/utils/generalUtils'
+import { getUserInitials } from '@/utils/capitalizeWords'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import { ReactNode } from 'react'
+import Image from 'next/image'
 import AdminHeader from '../AdminHeader'
 import { FilterIcon, SortIcon } from '../AdminIcons'
 import { DoughnutChart } from '../Charts/ProgressRing'
+import ProfileModal from '@/components/Modals/ProfileModal'
+import { useState } from 'react'
 
 export default function UserManagement() {
     const pathName = usePathname();
@@ -19,10 +23,10 @@ export default function UserManagement() {
     const router = useRouter()
     
     const { data } = useListUserMgt()
+    const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
+    const [profileOpen, setProfileOpen] = useState(false);
     
     // const { data: testData } = useGetStatOverview()
-
-
 
     const overview = data?.stats_overview;
 
@@ -33,7 +37,10 @@ export default function UserManagement() {
         router.push(route)
     }
 
-
+    const handleViewProfile = (id: string) => {
+        setSelectedUserId(id);
+        setProfileOpen(true);
+    };
 
     return (
         <div className='flex flex-col gap-1 '>
@@ -41,9 +48,17 @@ export default function UserManagement() {
             <div className="flex flex-col gap-3 mt-3 w-[96%] mx-auto">
 
                 <UserSummaryCard overview={overview} />
-                <UserHistoryTable candidates={data?.results as (MgtItem | MgtItemType)[]?? []} />
+                <UserHistoryTable candidates={data?.results as (MgtItem | MgtItemType)[]?? []} onViewProfile={handleViewProfile} />
             </div>
 
+            {selectedUserId && (
+                <ProfileModal 
+                    id={selectedUserId} 
+                    open={profileOpen} 
+                    close={setProfileOpen} 
+                    isOwnProfile={false}
+                />
+            )}
         </div>
     )
 }
@@ -158,7 +173,7 @@ function UserCard({ header, stat }: Readonly<{ header: ReactNode, stat: Overview
 
 
 
-function UserHistoryTable({ candidates }: { candidates: (MgtItem | MgtItemType)[] }) {
+function UserHistoryTable({ candidates, onViewProfile }: { candidates: (MgtItem | MgtItemType)[], onViewProfile: (id: string) => void }) {
 
 
     // const pathName = usePathname();
@@ -185,7 +200,27 @@ console.log(candidates,'candidates in user history table')
                     header: 'Name',
                     render: (_, row) => {
                         const user = 'user' in row && row.user ? row.user : (row as MgtItemType);
-                        return <div className="flex  items-center gap-1">{getUserName(user.first_name || '', user.last_name || '')}</div>
+                        const userName = getUserName(user.first_name || '', user.last_name || '');
+                        const userInitials = getUserInitials(userName);
+                        const profilePicture = 'user' in row && row.user ? row.user.profile_picture : (row as MgtItemType).profile_picture;
+
+                        return (
+                            <div className="flex items-center gap-2">
+                                <div className="w-[35px] h-[35px] rounded-full relative overflow-hidden bg-[#CCEEFB] flex items-center justify-center shrink-0">
+                                    {profilePicture ? (
+                                        <Image 
+                                            src={profilePicture} 
+                                            alt={userName} 
+                                            fill 
+                                            className="object-cover"
+                                        />
+                                    ) : (
+                                        <span className="font-semibold text-xs">{userInitials}</span>
+                                    )}
+                                </div>
+                                <span>{userName}</span>
+                            </div>
+                        );
                 },},
                 {
                     key: 'email',
@@ -217,6 +252,22 @@ console.log(candidates,'candidates in user history table')
                     key: 'status',
                     header: 'Status',
                     render: (_, row) => <div className="flex capitalize items-center gap-1">{'status' in row ? row.status : 'N/A'}</div>
+                },
+                {
+                    key: 'Action',
+                    header: 'Detail',
+                    align: 'right',
+                    render: (_, row) => {
+                        const id = 'user' in row && row.user ? row.user.id : (row as MgtItemType).id;
+                        return (
+                            <button 
+                                onClick={() => onViewProfile(id)}
+                                className="text-[#3E4095] font-bold hover:underline px-3 text-sm cursor-pointer"
+                            >
+                                View
+                            </button>
+                        );
+                    },
                 },
             ]}
             data={candidates}

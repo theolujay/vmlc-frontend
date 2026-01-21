@@ -122,4 +122,30 @@ export class UserMgtService {
             throw error;
         }
     }
+
+    static async getOwnAccountDetails(): Promise<StaffDetailsType> {
+        try {
+            const response = await client.get(UserMgtUrls.ACCOUNT_MGT);
+            return response.data;
+        } catch (error) {
+            console.error(error, 'Error fetching own account details')
+            throw error;
+        }
+    }
+
+    static async updateOwnProfile(payload: any) {
+        try {
+            const headers: Record<string, string> = {};
+            if (payload instanceof FormData) {
+                // Axios will set the correct Content-Type for FormData automatically
+            } else {
+                headers['Content-Type'] = 'application/json';
+            }
+            const response = await client.patch(UserMgtUrls.ACCOUNT_MGT, payload, { headers });
+            return response.data;
+        } catch (error) {
+            console.error(error, 'Error updating profile');
+            throw error;
+        }
+    }
 }
