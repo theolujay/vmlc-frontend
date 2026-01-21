@@ -28,8 +28,8 @@ function PreRegisteredCandidatesTable({
     <ResponsiveContainer className="flex gap-4 py-3 px-0 flex-col mx-auto">
       <div className="flex justify-between px-3">
         <div className="flex gap-1 flex-col">
-          <h2 className="font-bold">Pre-registered Candidates</h2>
-          <p>List of pre-registered candidates on the portal</p>
+          <h2 className="font-bold text-lg sm:text-xl">Pre-registered Candidates</h2>
+          <p className="text-sm text-gray-600">List of users interested in becoming candidates</p>
         </div>
         <div className="flex justify-between items-center gap-2">
           <div className="flex ">
