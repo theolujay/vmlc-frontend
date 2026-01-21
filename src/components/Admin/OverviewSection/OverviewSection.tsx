@@ -139,7 +139,7 @@ function ActivityHistoryCard({
       <div className="flex flex-col sm:flex-row sm:justify-between gap-3 sm:gap-0 px-1 sm:px-3">
         <div className="flex gap-1 flex-col">
           <h2 className="font-bold text-lg sm:text-xl">Registered Candidates</h2>
-          <p className="text-sm text-gray-600">Sorted by recent joins</p>
+          <p className="text-sm text-gray-600">List of users fully registered as candidates</p>
         </div>
         <div className="flex flex-col sm:flex-row gap-2 sm:items-center">
           <div className="flex w-full sm:w-auto">
