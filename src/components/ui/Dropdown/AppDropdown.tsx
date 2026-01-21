@@ -1,5 +1,7 @@
 import { LogOutIcon, ProfileIcon } from "@/components/General/GettingStarted/GettingStartedAssets";
 import LogOutModal from "@/components/Modals/LogoutModal";
+import ProfileModal from "@/components/Modals/ProfileModal";
+import useGetCurrentUser from "@/hooks/useGetCurrentUser";
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
 import { useState } from "react";
 import { CaretDropdown } from "../SvgAsset/GeneralAsset";
@@ -9,13 +11,15 @@ import { CaretDropdown } from "../SvgAsset/GeneralAsset";
 
 const AppDropdown = () => {
 const [open,setOpen]=useState(false)
+const [profileOpen, setProfileOpen] = useState(false)
+const currentUser = useGetCurrentUser()
 	
 
 	return (
 		<DropdownMenu.Root>
 			<DropdownMenu.Trigger asChild>
 				<button
-					className="inline-flex size-[20px] items-center justify-center    outline-none  "
+					className="inline-flex size-[20px] items-center justify-center    outline-none cursor-pointer "
 					aria-label="Customise options"
 				>
 					<CaretDropdown/>
@@ -27,7 +31,7 @@ const [open,setOpen]=useState(false)
 					className="min-w-[220px] rounded-lg bg-white p-[10px] shadow-[0px_10px_38px_-10px_rgba(22,_23,_24,_0.35),_0px_10px_20px_-15px_rgba(22,_23,_24,_0.2)] will-change-[opacity,transform] data-[side=bottom]:animate-slideUpAndFade data-[side=left]:animate-slideRightAndFade data-[side=right]:animate-slideLeftAndFade data-[side=top]:animate-slideDownAndFade"
 					sideOffset={5}
 				>
-                    <DropdownMenu.Item className="group relative flex cursor-pointer  h-[25px]  items-center   leading-none  outline-none  ">
+                    <DropdownMenu.Item onClick={() => setProfileOpen(true)} className="group relative flex cursor-pointer  h-[25px]  items-center   leading-none  outline-none  ">
 						<div className=" pr-5  ">
 							<ProfileIcon/>
 						</div>
@@ -52,6 +56,14 @@ const [open,setOpen]=useState(false)
 				</DropdownMenu.Content>
 			</DropdownMenu.Portal>
 			<LogOutModal open={open} close={setOpen} />
+			{currentUser?.profile?.user?.id && (
+				<ProfileModal 
+					id={currentUser.profile.user.id} 
+					open={profileOpen} 
+					close={setProfileOpen} 
+					isOwnProfile={true}
+				/>
+			)}
 		</DropdownMenu.Root>
 	);
 };
