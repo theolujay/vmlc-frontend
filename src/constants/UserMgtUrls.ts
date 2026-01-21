@@ -1,5 +1,6 @@
 export const UserMgtUrls = {
-    getUserList: (query: string) => `/user/list/?${query}`,
+    getUserList: (query?: string) => query ? `/user/list/?${query}` : `/user/list/`,
+    getPreRegisteredCandidateList: (query: string) => `/user/list/?profile=pre_reg_candidate&${query}`,
     // getUserList:`/staff/`,
     inviteStaffMember: `/staff/invite/`,
     STATISTICS_OVERVIEW: `/stats/overview/`,

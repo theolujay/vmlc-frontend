@@ -1,15 +1,36 @@
 import { UserMgtUrls } from "@/constants/UserMgtUrls";
-import { HandleVerificationStatusPayloadType, InviteStaffMemberPayloadType, StaffDetailsType, UserMgtType } from "@/types/UserMgtType";
+import { HandleVerificationStatusPayloadType, InviteStaffMemberPayloadType, PreRegisteredCandidateType, StaffDetailsType, UserMgtType } from "@/types/UserMgtType";
 import client from "@/utils/axios";
 
 export class UserMgtService {
-    static async getUserList(page: number, filters: Record<string, string>): Promise<UserMgtType> {
+    static async getUserList(page?: number, filters?: Record<string, string>): Promise<UserMgtType> {
+        try {
+            const params: Record<string, string> = {};
+            if (page) params.page = page.toString();
+            if (filters) {
+                Object.entries(filters).forEach(([key, value]) => {
+                    if (value !== undefined && value !== '') {
+                        params[key] = value;
+                    }
+                });
+            }
+            const queryParams = new URLSearchParams(params).toString();
+            const response = await client.get(UserMgtUrls.getUserList(queryParams));
+            return response.data;
+        } catch (error) {
+            console.error(error, 'Error getting list')
+            throw error;
+        }
+    }
+
+
+    static async getPreRegisteredCandidateList(page: number, filters: Record<string, string>): Promise<PreRegisteredCandidateType> {
         try {
             const queryParams = new URLSearchParams({
                 page: page.toString(),
-                ...Object.fromEntries(Object.entries(filters).filter(([_, value]) => value !== undefined && value !== ''))
+                ...Object.fromEntries(Object.entries(filters).filter(([, value]) => value !== undefined && value !== ''))
             })
-            const response = await client.get(UserMgtUrls.getUserList(queryParams.toString()));
+            const response = await client.get(UserMgtUrls.getUserList(`profile=pre_reg_candidate&${queryParams.toString()}`));
             return response.data;
         } catch (error) {
             console.error(error, 'Error getting list')
