@@ -99,7 +99,6 @@ export default function OverviewSection() {
           examsChange={statOverview?.exams?.active_change} 
         />
         <RegistrationTrends />
-        <QuickActionsCard />
         
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
           <RegistrationFunnel 
@@ -111,6 +110,8 @@ export default function OverviewSection() {
             subtitle="Distribution of candidates by state"
           />
         </div>
+        
+        <QuickActionsCard />
 
         <div className="flex justify-end mt-4">
           <Button onClick={() => setShowPreRegistered(!showPreRegistered)} className="inline-flex gap-2 border px-2 items-center text-sm">
