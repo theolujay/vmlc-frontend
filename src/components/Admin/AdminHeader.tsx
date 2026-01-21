@@ -1,6 +1,6 @@
 "use client"
 import useGetBreadCrumbs from "@/hooks/useGetBreadCrumbs";
-import Button, { ExportButton } from "../ui/Button";
+import { ExportButton } from "../ui/Button";
 import { GreaterThanIcon, HomeIcon } from "../General/GettingStarted/GettingStartedAssets";
 import Link from "next/link";
 import { capitalizeWord } from "@/utils/capitalizeWords";
