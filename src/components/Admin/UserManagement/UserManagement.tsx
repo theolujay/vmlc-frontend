@@ -2,18 +2,13 @@
 import { AddIcon } from '@/components/General/GettingStarted/GettingStartedAssets'
 import Button from '@/components/ui/Button'
 import CustomTable from '@/components/ui/CustomTable'
-import TablePagination from '@/components/ui/Pagination/TablePagination'
 import ResponsiveContainer from '@/components/ui/ResponsiveContainer'
-import Spinner from '@/components/ui/spinner/spinner'
-import { useDebouncedSearch } from '@/hooks/useDebouncedSearch'
 import useListUserMgt from '@/hooks/useListUserMgt'
-import usePagination from '@/hooks/usePagination'
-import { MgtItem, OverviewType, StatOverviewType } from '@/types/UserMgtType'
+import { MgtItem, MgtItemType, OverviewType, StatOverviewType } from '@/types/UserMgtType'
 import { formatDate } from '@/utils/formatFileSize'
 import { getUserName } from '@/utils/generalUtils'
-import Link from 'next/link'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
-import { Dispatch, ReactNode, SetStateAction, useState } from 'react'
+import { ReactNode } from 'react'
 import AdminHeader from '../AdminHeader'
 import { FilterIcon, SortIcon } from '../AdminIcons'
 import { DoughnutChart } from '../Charts/ProgressRing'
@@ -22,13 +17,8 @@ export default function UserManagement() {
     const pathName = usePathname();
     const searchParams = useSearchParams()
     const router = useRouter()
-     const { page, setPage } = usePagination()
     
-    const [filters, setFilters] = useState<Record<string, string>>({
-        search: ''
-    })
-
-    const { data } = useListUserMgt(page,filters)
+    const { data } = useListUserMgt()
     
     // const { data: testData } = useGetStatOverview()
 
@@ -51,7 +41,7 @@ export default function UserManagement() {
             <div className="flex flex-col gap-3 mt-3 w-[96%] mx-auto">
 
                 <UserSummaryCard overview={overview} />
-                <UserHistoryTable page_count={data?.pagination.total_pages??0} currentPage={page} onPageChange={setPage} handleSearch={setFilters} candidates={data?.results as MgtItem[]?? []} />
+                <UserHistoryTable candidates={data?.results as (MgtItem | MgtItemType)[]?? []} />
             </div>
 
         </div>
@@ -74,11 +64,18 @@ function UserSummaryCard({ overview }: { overview?: StatOverviewType }) {
 
 
 
+
+
+
+
+
+
 // const chartData = [
 //     { value: 30, color: "#0088cc" }, // blue
 //     { value: 12, color: "#f4a300" }, // orange
 //     { value: 4, color: "#e04c4c" },  // red
 // ];
+
 
 
 
@@ -161,14 +158,11 @@ function UserCard({ header, stat }: Readonly<{ header: ReactNode, stat: Overview
 
 
 
-function UserHistoryTable({ candidates, handleSearch, onPageChange, currentPage, page_count, }: { candidates: MgtItem[], handleSearch: Dispatch<SetStateAction<{}>> , onPageChange: Dispatch<SetStateAction<number>>, currentPage: number, page_count: number }) {
+function UserHistoryTable({ candidates }: { candidates: (MgtItem | MgtItemType)[] }) {
 
 
-    const pathName = usePathname();
-    const searchParams = useSearchParams();
-
-    const { searchInput, setSearchInput } = useDebouncedSearch(handleSearch);
-   
+    // const pathName = usePathname();
+    // const searchParams = useSearchParams();
 
 //  const { page, setPage } = usePagination()
 console.log(candidates,'candidates in user history table')
@@ -179,10 +173,6 @@ console.log(candidates,'candidates in user history table')
                 <p>List of candidate and staff users on the portal</p>
             </div>
             <div className="flex justify-between items-center gap-2">
-                <div className="flex ">
-                    <input value={searchInput}
-                        onChange={(e) => setSearchInput(e.target.value)} type="text" placeholder='Search by candidate, staff name or ID' className='border h-10 px-2 py-1 rounded-md border-[#E4E7EC] outline-none' />
-                </div>
                 <button className='inline-flex items-center gap-2 border rounded-md h-10 px-2 py-1 border-[#E4E7EC] cursor-pointer '   ><span><SortIcon /></span><span className='text-[#344054]'>Sort</span></button>
                 <button className='inline-flex items-center gap-2 border rounded-md h-10 px-2 py-1 border-[#E4E7EC] cursor-pointer ' ><span><FilterIcon /></span><span className='text-[#344054]'>Filter</span></button>
             </div>
@@ -194,38 +184,43 @@ console.log(candidates,'candidates in user history table')
                     key: 'Name',
                     header: 'Name',
                     render: (_, row) => {
-                        console.log(row)
-                        return <div className="flex  items-center gap-1">{getUserName(row.user.first_name, row.user.last_name)}</div>
+                        const user = 'user' in row && row.user ? row.user : (row as MgtItemType);
+                        return <div className="flex  items-center gap-1">{getUserName(user.first_name || '', user.last_name || '')}</div>
                 },},
                 {
                     key: 'email',
                     header: 'Email Address',
-                    render: (_, row) => <div className="flex items-center gap-1">{row.user.email}</div>
+                    render: (_, row) => {
+                        const email = 'user' in row && row.user ? row.user.email : (row as MgtItemType).email;
+                        return <div className="flex items-center gap-1">{email}</div>
+                    }
                 },
                 {
                     key: 'role',
                     header: 'Role',
-                    render: (_, row) => <div className="flex capitalize items-center gap-1">{row.role}</div>
+                    render: (_, row) => <div className="flex capitalize items-center gap-1">{'role' in row ? row.role : 'N/A'}</div>
                 },
                 {
                     key: 'profile_type',
                     header: 'Profile',
-                    render: (_, row) => <div className="flex  capitalize items-center gap-1">{row.profile_type}</div>
+                    render: (_, row) => <div className="flex  capitalize items-center gap-1">{'profile_type' in row ? row.profile_type : 'N/A'}</div>
                 },
                 {
                     key: 'application',
                     header: 'Joined',
-                    render: (_, row) => <div className="flex  items-center gap-1">{formatDate(row.user.date_joined)}</div>
+                    render: (_, row) => {
+                        const dateJoined = 'user' in row && row.user ? row.user.date_joined : (row as MgtItemType).date_joined;
+                        return <div className="flex  items-center gap-1">{dateJoined ? formatDate(dateJoined) : 'N/A'}</div>
+                    }
                 },
                 {
                     key: 'status',
                     header: 'Status',
-                    render: (_, row) => <div className="flex capitalize items-center gap-1">{row.status}</div>
+                    render: (_, row) => <div className="flex capitalize items-center gap-1">{'status' in row ? row.status : 'N/A'}</div>
                 },
             ]}
             data={candidates}
-            
-         footer={<TablePagination currentPage={currentPage} pageCount={page_count} onPageChange={onPageChange} />} />
+        />
     
     </ResponsiveContainer>
 }

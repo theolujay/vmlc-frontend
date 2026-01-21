@@ -5,7 +5,7 @@ import { useDebouncedSearch } from '@/hooks/useDebouncedSearch';
 import useListUserMgt from '@/hooks/useListUserMgt';
 import usePagination from '@/hooks/usePagination';
 import { ActivityHistoryUserType } from '@/types/auth';
-import { MgtItem } from '@/types/UserMgtType';
+import { PreRegisteredCandidate } from '@/types/UserMgtType';
 import { formatDate } from '@/utils/formatFileSize';
 import { getUserName } from '@/utils/generalUtils';
 import Link from 'next/link';
@@ -28,6 +28,8 @@ import {
 } from '../AdminIcons';
 import SendBulkMessageModal from '@/components/Modals/SendBulkMessageModal';
 import { useAuth } from '@/contexts/AuthProvider';
+import useListPreRegisteredCandidates from '@/hooks/useListPreRegisteredCandidates';
+import PreRegisteredCandidatesTable from './PreRegisteredTable';
 
 function shouldShowHeaderButtons(role: string): boolean {
   switch (role) {
@@ -50,12 +52,16 @@ export default function OverviewSection() {
   const { authState } = useAuth();
   const { page, setPage } = usePagination();
   const [open, setOpen] = useState(false);
+  const [showPreRegistered, setShowPreRegistered] = useState(false)
   const [filters, setFilters] = useState<Record<string, string>>({
     search: '',
     profile: 'candidate',
   });
 
   const { data } = useListUserMgt(page, filters);
+  const { data: preRegisteredData } = useListPreRegisteredCandidates(page, filters)
+
+  const showBroadcast = shouldShowHeaderButtons(authState?.user?.role ?? '');
 
   const showBroadcast = shouldShowHeaderButtons(authState?.user?.role ?? '');
 
@@ -84,13 +90,28 @@ export default function OverviewSection() {
           registeredStudents={data?.stats_overview?.candidates?.registered ?? 0}
         />
         <QuickActionsCard />
-        <ActivityHistoryCard
-          handleSearch={setFilters}
-          page_count={data?.pagination.total_pages ?? 0}
-          currentPage={page}
-          onPageChange={setPage}
-          data={(data?.results as unknown as MgtItem[]) ?? []}
-        />
+        <div className="flex justify-end">
+          <Button onClick={() => setShowPreRegistered(!showPreRegistered)} className="inline-flex gap-2 border px-2 items-center text-sm">
+            <span>{showPreRegistered ? "Show Registered" : "Show Pre-registered"}</span>
+          </Button>
+        </div>
+        {showPreRegistered ? (
+          <PreRegisteredCandidatesTable
+            page_count={preRegisteredData?.pagination.total_pages ?? 0}
+            currentPage={page}
+            onPageChange={setPage}
+            handleSearch={setFilters}
+            candidates={preRegisteredData?.results as PreRegisteredCandidate[] ?? []}
+          />
+        ) : (
+          <ActivityHistoryCard
+            handleSearch={setFilters}
+            page_count={data?.pagination.total_pages ?? 0}
+            currentPage={page}
+            onPageChange={setPage}
+            data={(data?.results as ActivityHistoryUserType[]) ?? []}
+          />
+        )}
       </div>
       <SendBulkMessageModal open={open} close={setOpen} />
     </div>
@@ -106,7 +127,7 @@ function ActivityHistoryCard({
 }: Readonly<{
   data: ActivityHistoryUserType[];
   // data: MgtItem[],
-  handleSearch: Dispatch<SetStateAction<{}>>;
+  handleSearch: Dispatch<SetStateAction<Record<string, string>>>;
   onPageChange: Dispatch<SetStateAction<number>>;
   currentPage: number;
   page_count: number;
@@ -119,7 +140,7 @@ function ActivityHistoryCard({
     <ResponsiveContainer className="flex gap-4 py-3 px-0 flex-col w-full">
       <div className="flex flex-col sm:flex-row sm:justify-between gap-3 sm:gap-0 px-1 sm:px-3">
         <div className="flex gap-1 flex-col">
-          <h2 className="font-bold text-lg sm:text-xl">Candidate List</h2>
+          <h2 className="font-bold text-lg sm:text-xl">Registered Candidates</h2>
           <p className="text-sm text-gray-600">Sorted by recent joins</p>
         </div>
         <div className="flex flex-col sm:flex-row gap-2 sm:items-center">
@@ -152,16 +173,16 @@ function ActivityHistoryCard({
         data={data}
         minWidth="1100px"
         columns={[
-          {
-            key: 'S/N',
-            header: 'S/N',
-            align: 'center',
-            render: (_, __, index) => (
-              <div className="py-2">
-                {index + 1}
-              </div>
-            ),
-          },
+          // {
+          //   key: 'S/N',
+          //   header: 'S/N',
+          //   align: 'center',
+          //   render: (_, __, index) => (
+          //     <div className="py-2">
+          //       {index + 1}
+          //     </div>
+          //   ),
+          // },
           {
             key: 'Name',
             header: 'Name',
