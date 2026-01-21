@@ -63,8 +63,6 @@ export default function OverviewSection() {
 
   const showBroadcast = shouldShowHeaderButtons(authState?.user?.role ?? '');
 
-  const showBroadcast = shouldShowHeaderButtons(authState?.user?.role ?? '');
-
   return (
     <div className="flex flex-col gap-1">
       <AdminHeader
