@@ -19,17 +19,21 @@ import {
   AngleIcon,
   BroadcastIcon,
   FilterIcon,
-  InactiveIcon,
   ManageQuestionIcon,
   PreRegisteredIcon,
   RegisteredIcon,
   SortIcon,
   ViewLeaderBoardIcon,
+  ExamSystemIcon
 } from '../AdminIcons';
 import SendBulkMessageModal from '@/components/Modals/SendBulkMessageModal';
 import { useAuth } from '@/contexts/AuthProvider';
 import useListPreRegisteredCandidates from '@/hooks/useListPreRegisteredCandidates';
 import PreRegisteredCandidatesTable from './PreRegisteredTable';
+import useGetStatOverview from '@/hooks/useGetStatOverview';
+import RegistrationFunnel from './RegistrationFunnel';
+import RegistrationTrends from './RegistrationTrends';
+import GeographicsSection from './GeographicsSection';
 
 function shouldShowHeaderButtons(role: string): boolean {
   switch (role) {
@@ -59,9 +63,12 @@ export default function OverviewSection() {
   });
 
   const { data } = useListUserMgt(page, filters);
+  const { data: statOverview } = useGetStatOverview();
   const { data: preRegisteredData } = useListPreRegisteredCandidates(page, filters)
 
   const showBroadcast = shouldShowHeaderButtons(authState?.user?.role ?? '');
+
+  const totalExams = statOverview?.exams?.total ?? ((statOverview?.exams?.upcoming ?? 0) + (statOverview?.exams?.active ?? 0));
 
   return (
     <div className="flex flex-col gap-1">
@@ -82,13 +89,30 @@ export default function OverviewSection() {
       />
       <div className="flex flex-col gap-3 sm:gap-4 mt-3 w-full sm:w-[96%] px-2 sm:px-0 sm:mx-auto">
         <OverviewSummaryCard
-          active={data?.stats_overview?.candidates?.active ?? 0}
-          inactive={data?.stats_overview?.candidates?.inactive ?? 0}
-          preRegisteredStudents={data?.stats_overview?.candidates?.pre_registered ?? 0}
-          registeredStudents={data?.stats_overview?.candidates?.registered ?? 0}
+          active={statOverview?.candidates?.active ?? 0}
+          activeChange={statOverview?.candidates?.active_change}
+          preRegisteredStudents={statOverview?.candidates?.pre_registered ?? 0}
+          preRegisteredChange={statOverview?.candidates?.pre_registered_change}
+          registeredStudents={statOverview?.candidates?.registered ?? 0}
+          registeredChange={statOverview?.candidates?.registered_change}
+          exams={totalExams}
+          examsChange={statOverview?.exams?.active_change} 
         />
+        <RegistrationTrends />
         <QuickActionsCard />
-        <div className="flex justify-end">
+        
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+          <RegistrationFunnel 
+            funnel={statOverview?.funnel?.candidate}
+          />
+          <GeographicsSection 
+            data={statOverview?.geographics?.candidate}
+            title="Candidate Geographics"
+            subtitle="Distribution of candidates by state"
+          />
+        </div>
+
+        <div className="flex justify-end mt-4">
           <Button onClick={() => setShowPreRegistered(!showPreRegistered)} className="inline-flex gap-2 border px-2 items-center text-sm">
             <span>{showPreRegistered ? "Show Registered" : "Show Pre-registered"}</span>
           </Button>
@@ -303,37 +327,45 @@ function OverviewSummaryCard({
   registeredStudents,
   preRegisteredStudents,
   active,
-  inactive,
+  exams,
+  registeredChange,
+  preRegisteredChange,
+  activeChange,
+  examsChange,
 }: {
   registeredStudents: number;
   preRegisteredStudents: number;
   active: number;
-  inactive: number;
+  exams: number;
+  registeredChange?: string;
+  preRegisteredChange?: string;
+  activeChange?: string;
+  examsChange?: string;
 }) {
   const stats = [
     {
       icon: <RegisteredIcon />,
       label: 'REGISTERED CANDIDATES',
       value: registeredStudents,
-      // change: '0%'
+      change: registeredChange
     },
     {
       icon: <PreRegisteredIcon />,
       label: 'PRE-REGISTERED CANDIDATES',
       value: preRegisteredStudents,
-      // change: '0%'
+      change: preRegisteredChange
     },
     {
       icon: <ActiveIcon />,
-      label: 'ACTIVE CANDIDATES',
+      label: 'ACTIVE CANDIDATES (7D)',
       value: active,
-      // change: '0%'
+      change: activeChange
     },
     {
-      icon: <InactiveIcon />,
-      label: 'INACTIVE CANDIDATES',
-      value: inactive,
-      // change: '0%'
+      icon: <ExamSystemIcon />, 
+      label: 'UPCOMING/ACTIVE EXAMS',
+      value: exams,
+      change: examsChange
     }
   ];
 
@@ -348,9 +380,13 @@ function OverviewSummaryCard({
             </div>
             <div className="flex gap-3 items-center">
               <span className="font-bold text-xl sm:text-2xl">{stat.value}</span>
-              {/* <div className="flex">
-                <span className="text-xs text-[#0F973D]">{stat.change}</span>
-              </div> */}
+              {stat.change && (
+                <div className="flex">
+                  <span className={`text-xs ${stat.change.startsWith('-') ? 'text-red-500' : 'text-[#0F973D]'}`}>
+                    {stat.change}
+                  </span>
+                </div>
+              )}
             </div>
           </div>
         ))}

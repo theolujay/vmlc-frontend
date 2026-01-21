@@ -1,5 +1,5 @@
 import { UserMgtUrls } from "@/constants/UserMgtUrls";
-import { HandleVerificationStatusPayloadType, InviteStaffMemberPayloadType, PreRegisteredCandidateType, StaffDetailsType, UserMgtType } from "@/types/UserMgtType";
+import { HandleVerificationStatusPayloadType, InviteStaffMemberPayloadType, PreRegisteredCandidateType, RegistrationTrendType, StaffDetailsType, UserMgtType } from "@/types/UserMgtType";
 import client from "@/utils/axios";
 
 export class UserMgtService {
@@ -47,6 +47,44 @@ export class UserMgtService {
         } catch (error) {
             console.error(error, 'what is error')
             throw error;
+        }
+    }
+
+    static async getRegistrationTrends(days: number): Promise<RegistrationTrendType> {
+        try {
+            const response = await client.get(UserMgtUrls.REGISTRATION_TRENDS(days));
+            return response.data;
+        } catch (error) {
+            console.error(error, 'Error getting registration trends');
+            // Mock data for prototype since backend might not be ready
+            const mockData = Array.from({ length: days }, (_, i) => {
+                const d = new Date();
+                d.setDate(d.getDate() - (days - 1 - i));
+                return {
+                    day: d.toISOString(),
+                    count: Math.floor(Math.random() * 50) + 5
+                };
+            });
+
+            return {
+                daily: {
+                    total_users: mockData,
+                    candidates: mockData.map(d => ({ ...d, count: Math.floor(d.count * 0.8) })),
+                    staff: mockData.map(d => ({ ...d, count: Math.floor(d.count * 0.2) })),
+                    pre_registrations: mockData.map(d => ({ ...d, count: Math.floor(d.count * 1.5) })),
+                },
+                weekly: {
+                    total_users: [],
+                    candidates: [],
+                    staff: [],
+                    pre_registrations: [],
+                },
+                funnel: {
+                    pre_registrations: 1000,
+                    completed_registrations: 800,
+                    conversion_percentage: 80
+                }
+            };
         }
     }
 

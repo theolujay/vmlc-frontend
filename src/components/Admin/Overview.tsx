@@ -3,7 +3,7 @@ import { useAuth } from '@/contexts/AuthProvider'
 import withAuthentication from '@/hocs/withAuthentication'
 import {  TabType } from '@/types/TabType'
 import TabWrapper from '../ui/Tabs/TabWrapper'
-import { AnnouncementIcon, ExamSystemIcon, LeaderboardIcon, OverviewIcon, UserManagementIcon } from './AdminIcons'
+import { AnnouncementIcon, ExamSystemIcon, LeaderboardIcon, OverviewIcon, SupportIcon, UserManagementIcon } from './AdminIcons'
 import AdminLayout from './AdminLayout'
 import Announcement from './Announcement/Announcement'
 import ExamSectionWrapper from './ExamSystem/ExamSectionWrapper'
@@ -11,6 +11,7 @@ import LeaderBoardSection from './Leaderboard/LeaderBoardSection'
 import OverviewSectionWrapper from './OverviewSection/OverviewSectionWrapper'
 import StaffMgtWrapper from './UserManagement/StaffMgtWrapper'
 import LeaderBoardWrapper from './Leaderboard/LeaderBoardWrapper'
+import SupportSectionWrapper from './Support/SupportSectionWrapper'
 
 
 
@@ -19,7 +20,7 @@ function getTabsForRole(role: string): TabType[] {
     switch (role) {
         case 'volunteer':
         case 'moderator':
-            return tabs.slice(0, 3);
+            return [...tabs.slice(0, 3), tabs[5]];
 
         case 'admin':
         case 'manager':
@@ -59,6 +60,11 @@ const tabs: TabType[] = [
         value: 'Announcement',
         label: <AnnouncementLabel />,
         content: <Announcement />
+    },
+    {
+        value: 'Support',
+        label: <SupportLabel />,
+        content: <SupportSectionWrapper />
     }
 ]
 
@@ -109,4 +115,8 @@ function UserManagementLabel() {
 
 function AnnouncementLabel() {
     return <div className='flex gap-1 items-center'><span><AnnouncementIcon /></span><span>Announcement</span></div>
+}
+
+function SupportLabel() {
+    return <div className='flex gap-1 items-center'><span><SupportIcon /></span><span>Support</span></div>
 }
