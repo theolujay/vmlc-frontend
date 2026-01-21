@@ -1,41 +1,51 @@
 export interface SupportConversationType {
-    id: string;
-    user: {
-        id: string;
-        name: string;
-        avatar?: string;
-    };
+    id: number;
+    user_name: string;
+    email: string;
+    phone?: string;
+    organization?: string;
+    support_type: string;
+    status: string;
     last_message: {
-        content: string;
-        timestamp: string;
-        is_read: boolean;
+        text: string;
+        created_at: string;
+        sender_profile: string;
     };
     unread_count: number;
+    created_at: string;
+    updated_at: string;
+    messages?: SupportMessageType[];
 }
 
 export interface SupportConversationListResponse {
     results: SupportConversationType[];
-    count: number;
-    next: string | null;
-    previous: string | null;
+    pagination: {
+        count: number;
+        page: number;
+        page_size: number;
+        total_pages: number;
+        has_next: boolean;
+        has_previous: boolean;
+        next: string | null;
+        previous: string | null;
+    }
 }
 
 export interface SupportMessageType {
-    id: string;
-    conversation: string;
-    sender: {
-        id: string;
-        name: string;
-        email: string;
+    id: string | number;
+    text: string;
+    created_at: string;
+    sender_profile: 'user' | 'staff';
+    sender?: {
+        id?: string | number;
+        name?: string;
+        email?: string;
         avatar?: string;
     };
-    content: string;
-    timestamp: string;
-    is_read: boolean;
-    is_staff: boolean;
+    is_read?: boolean;
 }
 
 export interface SendMessagePayload {
-    content: string;
+    text: string;
     conversation_id: string;
 }
