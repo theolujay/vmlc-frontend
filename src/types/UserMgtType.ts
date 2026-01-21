@@ -1,6 +1,6 @@
 import { FieldValues, UseFormReturn } from "react-hook-form";
 import { RequestUserType } from "./auth";
-import { PaginatedType } from "./LeaderBoardType";
+// import { PaginatedType } from "./LeaderBoardType";
 import { PaginationType } from "./Examtype";
 
 
@@ -123,4 +123,34 @@ export type RejectionStatusPayloadType = {
   rejection_reason: string
 }
 
+
+
 export type HandleVerificationStatusPayloadType = VerificationStatusPayloadType | RejectionStatusPayloadType;
+
+
+
+
+
+export type PreRegisteredCandidate = {
+
+  full_name: string;
+
+  email: string;
+
+  phone: string;
+
+  created_at: string;
+
+}
+
+
+
+export type PreRegisteredCandidateType = {
+
+  pagination: PaginationType;
+
+  stats_overview: null;
+
+  results: PreRegisteredCandidate[];
+
+}

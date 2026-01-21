@@ -16,7 +16,7 @@ export class CandidateMgtService {
         try {
             const queryParams=new URLSearchParams({
                 page:page.toString(),
-                ...Object.fromEntries(Object.entries(filters).filter(([_,value])=>value!==undefined && value!==''))
+                ...Object.fromEntries(Object.entries(filters).filter(([,value])=>value!==undefined && value!==''))
             })
              const response = await client.get(candidateUrls.LIST_CANDIDATES(queryParams.toString()));
              return response.data;
@@ -64,7 +64,7 @@ export class CandidateMgtService {
         try {
             const queryParams = new URLSearchParams({
                 page: page.toString(),
-                ...Object.fromEntries(Object.entries(filters).filter(([_, value]) => value !== undefined && value !== ''))
+                ...Object.fromEntries(Object.entries(filters).filter(([, value]) => value !== undefined && value !== ''))
             });
             const response = await client.get(candidateUrls.get_leaderboard(queryParams.toString()));
             return response.data;
