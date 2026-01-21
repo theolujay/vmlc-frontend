@@ -35,7 +35,7 @@ export default function RegistrationFunnel({ preRegistered: propPreRegistered, r
     <ResponsiveContainer className="flex w-full gap-3 sm:gap-4 p-4 sm:p-6 flex-col mx-auto">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="flex flex-col gap-1">
-          <h2 className="text-lg sm:text-xl font-bold">Registration Funnel</h2>
+          <h2 className="text-lg sm:text-xl font-bold">Pre-registration Funnel</h2>
           <p className="text-sm text-gray-600">Overview of candidate conversion from pre-registration to full registration</p>
         </div>
         <div className="bg-[#3E4095]/5 px-4 py-3 rounded-xl border border-[#3E4095]/10 flex flex-col items-end">
@@ -48,7 +48,7 @@ export default function RegistrationFunnel({ preRegistered: propPreRegistered, r
         <div className="flex flex-col gap-2 p-4 rounded-xl border border-gray-100 bg-gray-50/50">
           <div className="flex items-center gap-2">
             <div className="w-2 h-2 rounded-full bg-gray-400"></div>
-            <span className="text-xs font-bold text-gray-500 uppercase tracking-wider">Overall registrations</span>
+            <span className="text-xs font-bold text-gray-500 uppercase tracking-wider">Pending Registrations</span>
           </div>
           <span className="text-3xl font-bold text-gray-900">{preRegistered.toLocaleString()}</span>
         </div>
