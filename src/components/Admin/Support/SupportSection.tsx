@@ -33,7 +33,7 @@ export default function SupportSection() {
                 ) : (
                     <ConversationListCard
                         data={data?.results ?? []}
-                        page_count={Math.ceil((data?.count ?? 0) / 10)}
+                        page_count={data?.pagination.total_pages ?? 0}
                         currentPage={page}
                         onPageChange={setPage}
                         handleSearch={setFilters}
@@ -104,18 +104,30 @@ function ConversationListCard({
                         render: (_, row) => (
                             <div className="flex items-center gap-2">
                                 <div className="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center text-xs font-bold text-gray-700">
-                                    {row.user.name.charAt(0).toUpperCase()}
+                                    {row.user_name.charAt(0).toUpperCase()}
                                 </div>
-                                <span className="font-medium text-gray-900">{row.user.name}</span>
+                                <div className="flex flex-col">
+                                    <span className="font-medium text-gray-900">{row.user_name}</span>
+                                    <span className="text-xs text-gray-500">{row.email}</span>
+                                </div>
                             </div>
+                        ),
+                    },
+                    {
+                        key: 'support_type',
+                        header: 'Type',
+                        render: (_, row) => (
+                            <span className="capitalize text-sm text-gray-600 bg-gray-100 px-2 py-1 rounded">
+                                {row.support_type.replace('_', ' ')}
+                            </span>
                         ),
                     },
                     {
                         key: 'last_message',
                         header: 'Last Message',
                         render: (_, row) => (
-                            <div className="max-w-[300px] truncate text-gray-600" title={row.last_message.content}>
-                                {row.last_message.content}
+                            <div className="max-w-[300px] truncate text-gray-600" title={row.last_message.text}>
+                                {row.last_message.text}
                             </div>
                         ),
                     },
@@ -124,7 +136,7 @@ function ConversationListCard({
                         header: 'Time',
                         render: (_, row) => (
                             <div className="text-gray-500 text-sm">
-                                {formatDate(new Date(row.last_message.timestamp))}
+                                {formatDate(new Date(row.last_message.created_at))}
                             </div>
                         ),
                     },
@@ -148,7 +160,8 @@ function ConversationListCard({
                               const href = (() => {
                                 const query = new URLSearchParams(searchParams.toString());
                                 query.set('view', 'conversation-details');
-                                query.set('id', row.id);
+                                query.set('id', row.id.toString());
+                                query.set('user_name', row.user_name);
                                 return `${pathName}?${query.toString()}`;
                               })();
                              return (

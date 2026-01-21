@@ -1,5 +1,5 @@
 import { SupportUrls } from "@/constants/supportUrls";
-import { SendMessagePayload, SupportConversationListResponse, SupportMessageType } from "@/types/SupportType";
+import { SendMessagePayload, SupportConversationListResponse, SupportConversationType, SupportMessageType } from "@/types/SupportType";
 import client from "@/utils/axios";
 
 export class SupportService {
@@ -26,16 +26,36 @@ export class SupportService {
     static async getMessages(conversationId: string): Promise<SupportMessageType[]> {
         try {
             const response = await client.get(SupportUrls.getMessages(conversationId));
-            return response.data;
+            // Handle both array response and wrapped response (e.g., { results: [] })
+            if (Array.isArray(response.data)) {
+                return response.data;
+            }
+            if (response.data && Array.isArray(response.data.results)) {
+                return response.data.results;
+            }
+            if (response.data && Array.isArray(response.data.messages)) {
+                return response.data.messages;
+            }
+            return [];
         } catch (error) {
             console.error(error, 'Error getting messages');
             throw error;
         }
     }
 
+    static async getConversationDetail(conversationId: string): Promise<SupportConversationType> {
+        try {
+            const response = await client.get(SupportUrls.getMessages(conversationId));
+            return response.data;
+        } catch (error) {
+            console.error(error, 'Error getting conversation detail');
+            throw error;
+        }
+    }
+
     static async sendMessage(payload: SendMessagePayload): Promise<SupportMessageType> {
         try {
-            const response = await client.post(SupportUrls.sendMessage(payload.conversation_id), { content: payload.content });
+            const response = await client.post(SupportUrls.sendMessage(payload.conversation_id), { text: payload.text });
             return response.data;
         } catch (error) {
             console.error(error, 'Error sending message');
