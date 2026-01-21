@@ -8,6 +8,7 @@ import { useAuth } from '@/contexts/AuthProvider'
 import useGetCurrentUser from '@/hooks/useGetCurrentUser'
 import { getUserInitials } from '@/utils/capitalizeWords'
 import Link from 'next/link'
+import Image from 'next/image'
 import { useEffect, useState } from 'react'
 
 export default function Header() {
@@ -46,8 +47,17 @@ export default function Header() {
                             <span className="font-medium">{mounted ? userName : ''}</span>
                             <span className="text-xs text-gray-500">{mounted ? authState?.user?.role : ''}</span>
                         </div>
-                        <div className="bg-[#CCEEFB] flex items-center justify-center w-[44px] h-[44px] rounded-full">
-                            <span className="font-bold text-lg">{mounted ? userInitials : ''}</span>
+                        <div className="bg-[#CCEEFB] flex items-center justify-center w-[44px] h-[44px] rounded-full relative overflow-hidden">
+                            {mounted && currentUser?.profile?.user?.profile_picture ? (
+                                <Image
+                                    src={currentUser.profile.user.profile_picture}
+                                    alt="Profile"
+                                    fill
+                                    className="object-cover"
+                                />
+                            ) : (
+                                <span className="font-bold text-lg">{mounted ? userInitials : ''}</span>
+                            )}
                         </div>
                         <AppDropdown/>
                     </div>
@@ -76,8 +86,17 @@ export default function Header() {
                     <div className="flex items-center justify-between gap-3">
                         <div className="flex gap-3">
 
-                        <div className="bg-[#CCEEFB] flex items-center justify-center w-[44px] h-[44px] rounded-full">
-                            <span className="font-bold text-lg">{mounted ? userInitials : ''}</span>
+                        <div className="bg-[#CCEEFB] flex items-center justify-center w-[44px] h-[44px] rounded-full relative overflow-hidden">
+                            {mounted && currentUser?.profile?.user?.profile_picture ? (
+                                <Image
+                                    src={currentUser.profile.user.profile_picture}
+                                    alt="Profile"
+                                    fill
+                                    className="object-cover"
+                                />
+                            ) : (
+                                <span className="font-bold text-lg">{mounted ? userInitials : ''}</span>
+                            )}
                             
                         </div>
                         <div className="flex flex-col">

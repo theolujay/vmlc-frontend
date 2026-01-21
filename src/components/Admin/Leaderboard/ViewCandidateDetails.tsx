@@ -4,6 +4,7 @@ import useGetLeaderBoardCandidateDetail from '@/hooks/useGetLeaderBoardCandidate
 import { SubmissionItem } from '@/types/LeaderBoardType'
 import { formatTimeToString } from '@/utils/formatFileSize'
 import { getOptionAsArray, getOrdinal } from '@/utils/generalUtils'
+import { getUserInitials } from '@/utils/capitalizeWords'
 import clsx from 'clsx'
 import AdminHeader from '../AdminHeader'
 import { CandidateIcon, SortIcon } from '../AdminIcons'
@@ -11,6 +12,7 @@ import { CandidateNameIcon, EndTimeIcon, PositionIcon, StartTimeIcon } from './L
 import { useAuth } from '@/contexts/AuthProvider'
 import { ReactNode } from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 import MathRenderer from '@/components/Exam/MathRenderer'
 
 
@@ -50,7 +52,13 @@ export default function ViewCandidateDetails({ candidate_id, level, stage }: { c
                 // <button className="inline-flex gap-2 border px-2   cursor-pointer py-2 font-bold uppercase rounded-[8px] transition-colors duration-200 items-center text-sm"><span><CandidateIcon /></span><span>View Candidate Profile</span></button>
                 } />
             <div className="flex flex-col gap-3 mt-3 w-[96%] mx-auto">
-                <CandidateInfoCard endTime={data?.candidate_performance.participated_at as Date} startTime={data?.exam_details.scheduled_date as Date} position={data?.candidate_performance.rank ?? 0} userName={data?.candidate_performance.candidate.full_name ?? ''} />
+                <CandidateInfoCard 
+                    endTime={data?.candidate_performance.participated_at as Date} 
+                    startTime={data?.exam_details.scheduled_date as Date} 
+                    position={data?.candidate_performance.rank ?? 0} 
+                    userName={data?.candidate_performance.candidate.full_name ?? ''}
+                    profilePicture={data?.candidate_performance.candidate.profile_picture ?? null}
+                />
                 <QuestionsTable questions={data?.candidate_performance.candidate.submissions ?? []} />
             </div>
         </div>
@@ -59,13 +67,27 @@ export default function ViewCandidateDetails({ candidate_id, level, stage }: { c
 
 
 
-function CandidateInfoCard({ userName, position, startTime,endTime }: { userName: string, position: number, startTime: Date,endTime:Date }) {
+function CandidateInfoCard({ userName, position, startTime,endTime, profilePicture }: { userName: string, position: number, startTime: Date,endTime:Date, profilePicture: string | null }) {
+    
+    const userInitials = getUserInitials(userName);
 
     return <ResponsiveContainer className='flex gap-2 flex-col'>
         <h2 className='font-semibold text-lg'>Candidate Info</h2>
         <div className="flex justify-between">
             <div className="flex gap-2">
-                <span><CandidateNameIcon /></span>
+                {/* <span><CandidateNameIcon /></span> */}
+                <div className="w-[45px] h-[45px] rounded-full relative overflow-hidden bg-[#CCEEFB] flex items-center justify-center shrink-0">
+                    {profilePicture ? (
+                        <Image 
+                            src={profilePicture} 
+                            alt={userName} 
+                            fill 
+                            className="object-cover"
+                        />
+                    ) : (
+                         <span className="font-semibold text-[#3E4095]">{userInitials}</span>
+                    )}
+                </div>
                 <div className="flex flex-col">
                     <span className='text-sm text-[#667185]'>NAME OF CANDIDATE</span>
                     <p>{userName}</p>

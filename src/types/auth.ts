@@ -73,6 +73,7 @@ export type RequestUserType = {
     last_name: string;
     phone: string;
     state: string;
+    profile_picture: string | null;
     date_joined: Date;
 }
 

@@ -66,6 +66,7 @@ type EachCandidate = {
     id: string
     school_name: string
     full_name: string
+    profile_picture: string | null
 }
 
 
@@ -110,6 +111,7 @@ export type ViewCandidateDetailType = {
             id: string,
             school_name: string,
             full_name: string,
+            profile_picture: string | null,
             submissions: SubmissionItem[]
         },
         percentage: number,

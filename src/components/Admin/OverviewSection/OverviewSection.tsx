@@ -8,8 +8,9 @@ import { ActivityHistoryUserType } from '@/types/auth';
 import { PreRegisteredCandidate } from '@/types/UserMgtType';
 import { formatDate } from '@/utils/formatFileSize';
 import { getUserName } from '@/utils/generalUtils';
+import { getUserInitials } from '@/utils/capitalizeWords';
 import Link from 'next/link';
-import { usePathname, useSearchParams } from 'next/navigation';
+import Image from 'next/image';
 import { Dispatch, SetStateAction, useState } from 'react';
 import Button from '../../ui/Button';
 import ResponsiveContainer from '../../ui/ResponsiveContainer';
@@ -27,6 +28,7 @@ import {
   ExamSystemIcon
 } from '../AdminIcons';
 import SendBulkMessageModal from '@/components/Modals/SendBulkMessageModal';
+import ProfileModal from '@/components/Modals/ProfileModal';
 import { useAuth } from '@/contexts/AuthProvider';
 import useListPreRegisteredCandidates from '@/hooks/useListPreRegisteredCandidates';
 import PreRegisteredCandidatesTable from './PreRegisteredTable';
@@ -57,6 +59,8 @@ export default function OverviewSection() {
   const { page, setPage } = usePagination();
   const [open, setOpen] = useState(false);
   const [showPreRegistered, setShowPreRegistered] = useState(false)
+  const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
+  const [profileOpen, setProfileOpen] = useState(false);
   const [filters, setFilters] = useState<Record<string, string>>({
     search: '',
     profile: 'candidate',
@@ -69,6 +73,11 @@ export default function OverviewSection() {
   const showBroadcast = shouldShowHeaderButtons(authState?.user?.role ?? '');
 
   const totalExams = statOverview?.exams?.total ?? ((statOverview?.exams?.upcoming ?? 0) + (statOverview?.exams?.active ?? 0));
+
+  const handleViewProfile = (id: string) => {
+    setSelectedUserId(id);
+    setProfileOpen(true);
+  };
 
   return (
     <div className="flex flex-col gap-1">
@@ -133,10 +142,19 @@ export default function OverviewSection() {
             currentPage={page}
             onPageChange={setPage}
             data={(data?.results as ActivityHistoryUserType[]) ?? []}
+            onViewProfile={handleViewProfile}
           />
         )}
       </div>
       <SendBulkMessageModal open={open} close={setOpen} />
+      {selectedUserId && (
+        <ProfileModal 
+          id={selectedUserId} 
+          open={profileOpen} 
+          close={setProfileOpen} 
+          isOwnProfile={false}
+        />
+      )}
     </div>
   );
 }
@@ -147,6 +165,7 @@ function ActivityHistoryCard({
   currentPage,
   page_count,
   handleSearch,
+  onViewProfile,
 }: Readonly<{
   data: ActivityHistoryUserType[];
   // data: MgtItem[],
@@ -154,9 +173,8 @@ function ActivityHistoryCard({
   onPageChange: Dispatch<SetStateAction<number>>;
   currentPage: number;
   page_count: number;
+  onViewProfile: (id: string) => void;
 }>) {
-  const pathName = usePathname();
-  const searchParams = useSearchParams();
   const { searchInput, setSearchInput } = useDebouncedSearch(handleSearch);
 
   return (
@@ -214,7 +232,25 @@ function ActivityHistoryCard({
                 row.user.first_name,
                 row.user.last_name
               );
-              return <div className="font-medium text-gray-900">{userName}</div>;
+              const userInitials = getUserInitials(userName);
+              
+              return (
+                <div className="flex items-center gap-2">
+                  <div className="w-[35px] h-[35px] rounded-full relative overflow-hidden bg-[#CCEEFB] flex items-center justify-center shrink-0">
+                    {row.user.profile_picture ? (
+                      <Image 
+                        src={row.user.profile_picture} 
+                        alt={userName} 
+                        fill 
+                        className="object-cover"
+                      />
+                    ) : (
+                      <span className="font-semibold text-xs">{userInitials}</span>
+                    )}
+                  </div>
+                  <div className="font-medium text-gray-900">{userName}</div>
+                </div>
+              );
             },
           },
           {
@@ -246,16 +282,13 @@ function ActivityHistoryCard({
             header: 'Detail',
             align: 'right',
             render: (_, row) => {
-              const href = (() => {
-                const query = new URLSearchParams(searchParams.toString());
-                query.set('view', 'view-details');
-                query.set('id', row.user.id);
-                return `${pathName}?${query.toString()}`;
-              })();
               return (
-                <Link href={href} className="text-[#3E4095] font-bold hover:underline px-3 text-sm">
+                <button 
+                  onClick={() => onViewProfile(row.user.id)}
+                  className="text-[#3E4095] font-bold hover:underline px-3 text-sm cursor-pointer"
+                >
                   View
-                </Link>
+                </button>
               );
             },
           },

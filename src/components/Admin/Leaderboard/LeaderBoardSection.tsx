@@ -7,6 +7,7 @@ import usePagination from "@/hooks/usePagination";
 import { CandidateType } from "@/types/LeaderBoardType";
 import { getUserInitials } from "@/utils/capitalizeWords";
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname, useSearchParams } from "next/navigation";
 import { ReactNode, useState } from "react";
 import { LeagueIcon, ScreeningIcon } from "../../General/GeneralIcon";
@@ -129,8 +130,17 @@ function ScoreComponent({ stage, level }: Readonly<{ stage: string; level: numbe
             key: 'Name', header: 'Name', render: (_, row) => {
               const userInitials = getUserInitials(row.candidate.full_name)
               return <div className="flex  items-center gap-2">
-                <div className="bg-[#CCEEFB] flex items-center justify-center w-[35px] h-[35px] rounded-full">
-                  <span className="font-semibold ">{userInitials}</span>
+                <div className="bg-[#CCEEFB] flex items-center justify-center w-[35px] h-[35px] rounded-full relative overflow-hidden">
+                  {row.candidate.profile_picture ? (
+                    <Image
+                      src={row.candidate.profile_picture}
+                      alt={row.candidate.full_name}
+                      fill
+                      className="object-cover"
+                    />
+                  ) : (
+                    <span className="font-semibold ">{userInitials}</span>
+                  )}
                 </div>
                 <span>{row.candidate.full_name}</span></div>
             }
@@ -228,7 +238,12 @@ export function Podium({ users, stage, level }: Readonly<{ users: CandidateType[
 
 
             return <div key={`shape-index-${index + 1}`} className="flex justify-between gap-3 items-center flex-col">
-              <div className="flex  flex-col">
+              <div className="flex  flex-col items-center">
+                 {val.candidate.profile_picture && (
+                  <div className="w-[60px] h-[60px] rounded-full relative overflow-hidden mb-2 border-2 border-[#3E4095]">
+                      <Image src={val.candidate.profile_picture} alt={val.candidate.full_name} fill className="object-cover" />
+                  </div>
+               )}
                 {/* <p className="font-[400] text-2xl">{val.candidate.full_name}</p> */}
                 <Link href={href} className="font-[400] hover:text-[#3e4095] hover:underline text-2xl">{val.candidate.full_name}</Link>
                 <span className="">{val.candidate.school_name}</span>

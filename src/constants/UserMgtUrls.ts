@@ -5,6 +5,7 @@ export const UserMgtUrls = {
     inviteStaffMember: `/staff/invite/`,
     STATISTICS_OVERVIEW: `/stats/overview/`,
     REGISTRATION_TRENDS: (days: number) => `/stats/registration-trends/?days=${days}`,
+    ACCOUNT_MGT: `/account-management/`,
     ACCOUNT_DETAILS: (user_id: string) => `/account-management/${user_id}/`,
     HANDLE_VERIFICATION_STATUS: (user_id: string) => `/user/verification/action/${user_id}/`
 }
