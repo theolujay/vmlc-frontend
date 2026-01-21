@@ -25,34 +25,36 @@ function PreRegisteredCandidatesTable({
   const { searchInput, setSearchInput } = useDebouncedSearch(handleSearch);
 
   return (
-    <ResponsiveContainer className="flex gap-4 py-3 px-0 flex-col mx-auto">
-      <div className="flex justify-between px-3">
+    <ResponsiveContainer className="flex gap-4 py-3 px-0 flex-col w-full">
+      <div className="flex flex-col sm:flex-row sm:justify-between gap-3 sm:gap-0 px-1 sm:px-3">
         <div className="flex gap-1 flex-col">
           <h2 className="font-bold text-lg sm:text-xl">Pre-registered Candidates</h2>
           <p className="text-sm text-gray-600">List of users interested in becoming candidates</p>
         </div>
-        <div className="flex justify-between items-center gap-2">
-          <div className="flex ">
+        <div className="flex flex-col sm:flex-row gap-2 sm:items-center">
+          <div className="flex w-full sm:w-auto">
             <input
-              type="text"
               value={searchInput}
               onChange={(e) => setSearchInput(e.target.value)}
-              placeholder="Search by candidate name or email"
-              className="border h-10 px-2 py-1 rounded-md border-[#E4E7EC] outline-none"
+              type="text"
+              placeholder="Search"
+              className="border h-10 px-3 py-1 rounded-md border-[#E4E7EC] outline-none w-full sm:w-auto text-sm"
             />
           </div>
-          <button className="inline-flex items-center gap-2 border rounded-md h-10 px-2 py-1 border-[#E4E7EC] cursor-pointer ">
-            <span>
-              <SortIcon />
-            </span>
-            <span className="text-[#344054]">Sort</span>
-          </button>
-          <button className="inline-flex items-center gap-2 border rounded-md h-10 px-2 py-1 border-[#E4E7EC] cursor-pointer ">
-            <span>
-              <FilterIcon />
-            </span>
-            <span className="text-[#344054]">Filter</span>
-          </button>
+          <div className="flex gap-2">
+            <button className="inline-flex items-center justify-center gap-2 border h-10 rounded-md px-3 py-1 border-[#E4E7EC] cursor-pointer flex-1 sm:flex-none">
+              <span>
+                <SortIcon />
+              </span>
+              <span className="text-[#344054] text-sm">Sort</span>
+            </button>
+            <button className="inline-flex items-center justify-center gap-2 border h-10 rounded-md px-3 py-1 border-[#E4E7EC] cursor-pointer flex-1 sm:flex-none">
+              <span>
+                <FilterIcon />
+              </span>
+              <span className="text-[#344054] text-sm">Filter</span>
+            </button>
+          </div>
         </div>
       </div>
 
@@ -62,36 +64,35 @@ function PreRegisteredCandidatesTable({
             key: "fullName",
             header: "Full Name",
             render: (_, row) => (
-              <div className="flex items-center gap-1">{row.full_name}</div>
+              <div className="font-medium text-gray-900">{row.full_name}</div>
             ),
           },
           {
             key: "email",
             header: "Email Address",
             render: (_, row) => (
-              <div className="flex items-center gap-1">{row.email}</div>
+              <div>{row.email}</div>
             ),
           },
           {
             key: "phone",
             header: "Phone",
             render: (_, row) => (
-              <div className="flex capitalize items-center gap-1">
-                {row.phone}
-              </div>
+              <div>{row.phone}</div>
             ),
           },
           {
             key: "date",
             header: "Date",
             render: (_, row) => (
-              <div className="flex items-center gap-1"> 
+              <div> 
                 {formatDate(new Date(row.created_at))}
               </div>
             ),
           },
         ]}
         data={candidates}
+        minWidth="1000px"
         footer={
           <TablePagination
             currentPage={currentPage}

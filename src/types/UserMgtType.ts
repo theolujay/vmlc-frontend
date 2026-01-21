@@ -35,34 +35,63 @@ export type AddStaffMemberFormProps<T extends FieldValues> = {
 
 
 export type StatOverviewType = {
-  candidates: OverviewType,
-  staff: OverviewType
-}
+  candidates: OverviewType;
+  staff: OverviewType;
+  exams: ExamOverviewType;
+  funnel: {
+    overall: FunnelData;
+    candidate: FunnelData;
+    volunteer: FunnelData;
+  };
+  geographics: {
+    overall: GeographicData[];
+    candidate: GeographicData[];
+    volunteer: GeographicData[];
+  };
+};
 
-export type UserMgtType = {
-  pagination: PaginationType,
-  // stats_overview: {
-  //   candidates: OverviewType,
-  //   staff: OverviewType
-  // },
-  stats_overview: StatOverviewType,
-  results: MgtItem[]|MgtItemType[]
-}
+export type FunnelData = {
+  pre_registrations: number;
+  completed_registrations: number;
+  conversion_percentage: number;
+};
 
+export type GeographicData = {
+  state: string;
+  count: number;
+};
 
-
-
+export type ExamOverviewType = {
+  total: number;
+  active: number;
+  ongoing: number;
+  upcoming: number;
+  concluded: number;
+  drafts: number;
+  upcoming_change?: string;
+  active_change?: string;
+};
 
 export type OverviewType = {
-  registered: number,
-  active: number,
-  inactive: number,
-  pre_registered: number,
-  deactivated: number
-}
+  registered: number;
+  active: number;
+  inactive: number;
+  pre_registered: number;
+  deactivated: number;
+  both_entities?: number;
+  registered_change?: string;
+  active_change?: string;
+  pre_registered_change?: string;
+};
 
 
 
+
+export type UserMgtType = {
+  pagination: PaginationType;
+  stats_overview: StatOverviewType;
+  results: MgtItem[] | MgtItemType[];
+};
 
 export type MgtItem = {
   user: RequestUserType & { is_email_verified: boolean, },
@@ -154,3 +183,30 @@ export type PreRegisteredCandidateType = {
   results: PreRegisteredCandidate[];
 
 }
+
+export type RegistrationTrendData = {
+  date?: string;
+  day?: string;
+  week?: string;
+  count: number;
+};
+
+export type RegistrationTrendType = {
+  daily: {
+    total_users: RegistrationTrendData[];
+    candidates: RegistrationTrendData[];
+    staff: RegistrationTrendData[];
+    pre_registrations: RegistrationTrendData[];
+  };
+  weekly: {
+    total_users: RegistrationTrendData[];
+    candidates: RegistrationTrendData[];
+    staff: RegistrationTrendData[];
+    pre_registrations: RegistrationTrendData[];
+  };
+  funnel: {
+    pre_registrations: number;
+    completed_registrations: number;
+    conversion_percentage: number;
+  };
+};
