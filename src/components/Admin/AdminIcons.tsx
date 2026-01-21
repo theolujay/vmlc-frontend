@@ -1,5 +1,13 @@
 import React from "react"
 
+export function SupportIcon(props: Readonly<React.SVGProps<SVGSVGElement>>) {
+    return <svg {...props} className={`stroke-current ${props.className}`} width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M17 14V5C17 3.34315 15.6569 2 14 2H6C4.34315 2 3 3.34315 3 5V18L7 14H14C15.6569 14 17 12.6569 17 11Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+        <path d="M7 7H13M7 10H10" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+
+}
+
 export function OverviewIcon(props: Readonly<React.SVGProps<SVGSVGElement>>) {
     return <svg {...props}  className={`stroke-current ${props.className}`}  width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path d="M17.6753 13.2421C17.1452 14.4959 16.316 15.6006 15.2602 16.4599C14.2045 17.3191 12.9543 17.9066 11.619 18.1711C10.2838 18.4356 8.90403 18.3689 7.60046 17.977C6.2969 17.585 5.1092 16.8797 4.14119 15.9227C3.17319 14.9657 2.45435 13.7861 2.04754 12.4871C1.64072 11.1881 1.55831 9.8092 1.80751 8.47099C2.0567 7.13278 2.62992 5.87599 3.47705 4.81049C4.32417 3.74499 5.41941 2.90323 6.66701 2.3588M17.6993 6.81144C18.0329 7.61682 18.2376 8.46827 18.307 9.3345C18.3242 9.5485 18.3328 9.6555 18.2903 9.75188C18.2548 9.8324 18.1844 9.90859 18.107 9.9504C18.0143 10.0005 17.8986 10.0005 17.667 10.0005H10.667C10.4337 10.0005 10.317 10.0005 10.2278 9.95505C10.1494 9.9151 10.0857 9.85136 10.0458 9.77296C10.0003 9.68383 10.0003 9.56715 10.0003 9.3338V2.3338C10.0003 2.10224 10.0003 1.98646 10.0504 1.89378C10.0922 1.81636 10.1684 1.74604 10.2489 1.71054C10.3453 1.66805 10.4523 1.67663 10.6663 1.69378C11.5325 1.76323 12.384 1.96787 13.1894 2.30147C14.2004 2.72026 15.1191 3.33409 15.8929 4.10791C16.6667 4.88173 17.2805 5.80039 17.6993 6.81144Z" stroke="currentColor" strokeWidth="1.66667" strokeLinecap="round" strokeLinejoin="round" />
