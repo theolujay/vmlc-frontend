@@ -48,7 +48,7 @@ export default function RegistrationFunnel({ preRegistered: propPreRegistered, r
         <div className="flex flex-col gap-2 p-4 rounded-xl border border-gray-100 bg-gray-50/50">
           <div className="flex items-center gap-2">
             <div className="w-2 h-2 rounded-full bg-gray-400"></div>
-            <span className="text-xs font-bold text-gray-500 uppercase tracking-wider">Pre-registered users</span>
+            <span className="text-xs font-bold text-gray-500 uppercase tracking-wider">Recorded interests</span>
           </div>
           <span className="text-3xl font-bold text-gray-900">{preRegistered.toLocaleString()}</span>
         </div>
