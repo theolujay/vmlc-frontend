@@ -27,7 +27,6 @@ export default function Header() {
     const {authState}=useAuth()
    
     const userInitials=getUserInitials(userName)
-    const [menuOpen, setMenuOpen] = useState(false)
     const { 
         notifications, 
         unreadCount, 
@@ -45,24 +44,26 @@ export default function Header() {
             <div className="flex mx-auto justify-between w-full py-4">
                 {/* Logo */}
                 <Link href="/">
-                    <Logo />
+                    <div className="md:w-auto">
+                        <Logo className="w-full h-auto"/>
+                    </div>
                 </Link>
 
                 {/* Desktop Nav */}
-                <nav className="hidden md:flex justify-between  items-center gap-6">
+                <nav className="flex justify-between items-center gap-2 md:gap-6">
                     <button
                         onClick={() => setShowNotifications(!showNotifications)}
-                        className="relative p-2 text-gray-400 hover:text-gray-600 transition-colors bg-gray-50 rounded-full cursor-pointer"
+                        className="relative p-1 text-gray-400 hover:text-gray-600 transition-colors bg-gray-50 rounded-full min-w-[4px] cursor-pointer"
                     >
                         <NotificationIcon />
                         {unreadCount > 0 && (
-                            <span className="absolute top-0 right-0 bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full border-2 border-white min-w-[20px] flex items-center justify-center">
+                            <span className="absolute top-0.5 right-0.5 bg-red-500 text-white text-[8px] font-bold px-1 py-0 rounded-full border border-white min-w-[16px] h-4 flex items-center justify-center">
                             {unreadCount > 99 ? '99+' : unreadCount}
                             </span>
                         )}
                     </button>
                     <div className="flex gap-3 items-center">
-                        <div className="flex flex-col">
+                        <div className="hidden md:flex flex-col">
                             <span className="font-medium">{mounted ? userName : ''}</span>
                             <span className="text-xs text-gray-500">{mounted ? authState?.user?.role : ''}</span>
                         </div>
@@ -81,19 +82,6 @@ export default function Header() {
                         <AppDropdown/>
                     </div>
                 </nav>
-
-                {/* Mobile Menu Button */}
-                <button
-                    className="md:hidden flex items-center justify-center w-10 h-10 border rounded-md"
-                    onClick={() => setMenuOpen(!menuOpen)}
-                >
-                    {/* hamburger icon */}
-                    <div className="space-y-1">
-                        <span className="block w-6 h-0.5 bg-gray-700"></span>
-                        <span className="block w-6 h-0.5 bg-gray-700"></span>
-                        <span className="block w-6 h-0.5 bg-gray-700"></span>
-                    </div>
-                </button>
             </div>
 
             {/* Notification Modal (Shared) */}
@@ -110,52 +98,6 @@ export default function Header() {
                         onToggleInApp={toggleInAppNotifications}
                     />
                 </>
-            )}
-
-            {/* Mobile Dropdown */}
-            {menuOpen && (
-                <div className="absolute top-16 left-0 w-full bg-white border-t shadow-md p-4 flex flex-col gap-4 md:hidden">
-                    <button 
-                        onClick={() => {
-                            setShowNotifications(true);
-                            setMenuOpen(false);
-                        }}
-                        className="flex items-center gap-2 w-full text-left cursor-pointer"
-                    >
-                        <div className="relative">
-                            <NotificationIcon />
-                            {unreadCount > 0 && (
-                                <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full border-2 border-white min-w-[20px] flex items-center justify-center">
-                                {unreadCount > 99 ? '99+' : unreadCount}
-                                </span>
-                            )}
-                        </div>
-                        <span>Notifications</span>
-                    </button>
-                    <div className="flex items-center justify-between gap-3">
-                        <div className="flex gap-3">
-
-                        <div className="bg-[#CCEEFB] flex items-center justify-center w-[44px] h-[44px] rounded-full relative overflow-hidden">
-                            {mounted && currentUser?.profile?.user?.profile_picture ? (
-                                <Image
-                                    src={currentUser.profile.user.profile_picture}
-                                    alt="Profile"
-                                    fill
-                                    className="object-cover"
-                                />
-                            ) : (
-                                <span className="font-bold text-lg">{mounted ? userInitials : ''}</span>
-                            )}
-                            
-                        </div>
-                        <div className="flex flex-col">
-                            <span className="font-medium">{mounted ? userName : ''}</span>
-                            <span className="text-xs text-gray-500">{mounted ? authState?.user?.role : ''}</span>
-                        </div>
-                        </div>
-                        <AppDropdown/>
-                    </div>
-                </div>
             )}
         </header>
     )
