@@ -1,4 +1,5 @@
 import AuthProvider from "@/contexts/AuthProvider";
+import { NotificationProvider } from "@/contexts/NotificationProvider";
 import QueryProvider from "@/contexts/QueryProviders";
 import type { Metadata } from "next";
 import { Suspense } from "react";
@@ -36,12 +37,14 @@ export default function RootLayout({
       >
         <AppErrorBoundary>
           <AuthProvider>
-            <QueryProvider>
-              <Suspense fallback={<div className="grid w-full h-screen place-content-center"><Spinner/></div>}>
-                {children}
-              </Suspense>
-              <ToastContainer/>
-            </QueryProvider>
+            <NotificationProvider>
+              <QueryProvider>
+                <Suspense fallback={<div className="grid w-full h-screen place-content-center"><Spinner/></div>}>
+                  {children}
+                </Suspense>
+                <ToastContainer/>
+              </QueryProvider>
+            </NotificationProvider>
           </AuthProvider>
         </AppErrorBoundary>
 
