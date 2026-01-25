@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 import { Notification } from '../../../types/notificationType';
 import { NotificationIcon } from '@/components/ui/SvgAsset/GeneralAsset';
+import Spinner from '@/components/ui/spinner/spinner';
 
 // Inline Icons to replace lucide-react and avoid dependency issues
+// ... existing icons ...
 const CheckCheck = ({ className }: { className?: string }) => (
   <svg className={className} width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
     <path d="M18 6 7 17l-5-5" />
@@ -56,6 +58,7 @@ interface NotificationModalProps {
   onClearAll: () => void;
   inAppEnabled: boolean;
   onToggleInApp: () => void;
+  isLoading?: boolean;
 }
 
 const NotificationModal: React.FC<NotificationModalProps> = ({
@@ -64,7 +67,8 @@ const NotificationModal: React.FC<NotificationModalProps> = ({
   onMarkSingleRead,
   onClearAll,
   inAppEnabled,
-  onToggleInApp
+  onToggleInApp,
+  isLoading = false
 }) => {
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
@@ -144,8 +148,12 @@ const NotificationModal: React.FC<NotificationModalProps> = ({
       </div>
 
       {/* Content */}
-      <div className="min-h-[400px]">
-        {notifications.length === 0 ? (
+      <div className="min-h-[400px] flex flex-col">
+        {isLoading ? (
+          <div className="flex-1 flex items-center justify-center">
+            <Spinner size={40} color="#3E4095" />
+          </div>
+        ) : notifications.length === 0 ? (
           <div className="flex flex-col items-center justify-center h-[400px] text-gray-400 gap-4">
             <div className="w-24 h-24 bg-[#3E4095]/5 rounded-3xl flex items-center justify-center relative">
               <NotificationIcon className="w-10 h-10 text-[#3E4095]" />
@@ -181,7 +189,7 @@ const NotificationModal: React.FC<NotificationModalProps> = ({
       </div>
 
       {/* Pagination */}
-      {notifications.length > 0 && (
+      {!isLoading && notifications.length > 0 && (
         <div className="p-6 border-t border-gray-50 flex items-center justify-between">
           <button 
             disabled={currentPage === 1}
