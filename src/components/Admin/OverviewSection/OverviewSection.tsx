@@ -4,7 +4,7 @@ import TablePagination from '@/components/ui/Pagination/TablePagination';
 import { useDebouncedSearch } from '@/hooks/useDebouncedSearch';
 import useListUserMgt from '@/hooks/useListUserMgt';
 import usePagination from '@/hooks/usePagination';
-import { ActivityHistoryUserType } from '@/types/auth';
+import { RegisteredCandidatesType } from '@/types/auth';
 import { PreRegisteredCandidate } from '@/types/UserMgtType';
 import { formatDate } from '@/utils/formatFileSize';
 import { getUserName } from '@/utils/generalUtils';
@@ -136,12 +136,12 @@ export default function OverviewSection() {
             candidates={preRegisteredData?.results as PreRegisteredCandidate[] ?? []}
           />
         ) : (
-          <ActivityHistoryCard
+          <RegisteredCandidatesTable
             handleSearch={setFilters}
             page_count={data?.pagination.total_pages ?? 0}
             currentPage={page}
             onPageChange={setPage}
-            data={(data?.results as ActivityHistoryUserType[]) ?? []}
+            data={(data?.results as RegisteredCandidatesType[]) ?? []}
             onViewProfile={handleViewProfile}
           />
         )}
@@ -159,7 +159,7 @@ export default function OverviewSection() {
   );
 }
 
-function ActivityHistoryCard({
+function RegisteredCandidatesTable({
   data,
   onPageChange,
   currentPage,
@@ -167,7 +167,7 @@ function ActivityHistoryCard({
   handleSearch,
   onViewProfile,
 }: Readonly<{
-  data: ActivityHistoryUserType[];
+  data: RegisteredCandidatesType[];
   // data: MgtItem[],
   handleSearch: Dispatch<SetStateAction<Record<string, string>>>;
   onPageChange: Dispatch<SetStateAction<number>>;
