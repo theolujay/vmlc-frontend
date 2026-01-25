@@ -51,13 +51,13 @@ const PrimaryAction: React.FC<PrimaryActionProps> = ({ exam, candidateName }) =>
         <section className="bg-white p-8 rounded-[24px] border border-[#E4E7EC] shadow-sm text-center">
         <div className="max-w-md mx-auto">
           <span className="bg-[#F0F2F5] text-[#475367] px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide">
-            Status Update
+            Exam Status
           </span>
           <h2 className="text-2xl font-bold text-slate-800 mt-3">
-            Waiting for Next Challenge
+            Awaiting Challenge...
           </h2>
           <p className="text-[#667185] mt-2 text-sm leading-relaxed">
-            {candidateName}, we are currently processing results or preparing the next stage. Check your performance snapshot for current status.
+            We are preparing for you, {candidateName}. You&apos;ll be duly notified.
           </p>
         </div>
       </section>
@@ -68,7 +68,7 @@ const PrimaryAction: React.FC<PrimaryActionProps> = ({ exam, candidateName }) =>
     <section className="bg-white p-8 rounded-[24px] border border-[#E4E7EC] shadow-sm text-center font-sans">
       <div className="max-w-md mx-auto">
         <span className="bg-[#EBEBF5] text-[#3E4095] px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide">
-          {isFinals ? 'On-site Finals' : 'Next Exam'}
+          {isFinals ? 'On-site Finals' : 'Upcoming Exam'}
         </span>
         <h2 className="text-2xl font-bold text-slate-800 mt-3">
           {exam.title}

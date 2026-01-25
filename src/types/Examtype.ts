@@ -25,9 +25,10 @@ type recentScoreType = {
 export type DashboardType = {
   candidate_info: CandidateInfoType,
   exam_stats: ExamStatType,
-  leaderboard_ranking: LeaderboardRankingType,
+  leaderboard_ranking: LeaderboardRankingType | null,
   recent_scores: recentScoreType[],
-  available_exams: AvailableExamType[]
+  available_exams: AvailableExamType[],
+  concluded_exams: ConcludedExamType[]
 }
 
 
@@ -51,7 +52,20 @@ export type AvailableExamType = {
   level:number,
   scheduled_date:Date
   stage: string,
-  stage_display:string
+  stage_display:string,
+  participation: string
+}
+
+export type ConcludedExamType = {
+  id: string,
+  title: string,
+  description: string,
+  concluded_at: string,
+  question_count: number,
+  participation: string,
+  stage: string,
+  level: number,
+  stage_display: string
 }
 
 
@@ -135,13 +149,9 @@ export type ExamStatType = {
 
 
 export type CandidateInfoType = {
-  name: string,
-  email: string,
-  phone: string,
-  school_name: string,
+  first_name: string,
+  last_name: string,
   role: string,
-  date_joined: Date,
-  profile_photo: string
 }
 
 export type CreateExamSessionType = {

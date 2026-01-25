@@ -24,33 +24,45 @@ const PerformanceSnapshot: React.FC<PerformanceSnapshotProps> = ({
 
   const stageConfig = {
     SCREENING: {
-      title: "Screening Phase",
-      metricLabel: "Qualification Target",
-      successLabel: "Promotion Ready",
-      successSub: "You are currently in the league promotion zone.",
-      failLabel: "Below Cut-off",
-      failSub: "Boost your score to secure a League spot.",
+      title: "Screening Stage",
+      metricLabel: "Screening Cut-off Score",
+
+      successLabel: "Screening Passed",
+      successSub: "You are eligible to proceed to the League stage once it begins.",
+
+      failLabel: "Screening Not Passed",
+      failSub: "Your score did not meet the required cut-off for progression.",
+
       accent: "#01ACEA"
     },
+
     LEAGUE: {
-      title: `League Stage • Week ${currentWeek}/6`,
-      metricLabel: "Finalist Cut-off",
-      successLabel: "Finals Contender",
-      successSub: "Maintaining this rank secures your Finalist spot.",
-      failLabel: "At Risk",
-      failSub: "Consistent high scores needed to stay in.",
+      title: `League Stage • Week ${currentWeek} of 6`,
+      metricLabel: "Finalist Qualification Cut-off",
+
+      successLabel: "Within Qualification Range",
+      successSub: "Maintaining this position keeps you eligible for the Final stage.",
+
+      failLabel: "Outside Qualification Range",
+      failSub: "Improved performance is required in upcoming weeks to qualify.",
+
       accent: "#3E4095"
     },
+
     FINAL: {
-      title: "The Grand Finale",
-      metricLabel: "Top Finalists",
-      successLabel: "Elite Finalist",
-      successSub: "You are cleared for the in-person examination.",
-      failLabel: "Review Required",
-      failSub: "Check with coordinators regarding your final status.",
+      title: "Final Stage",
+      metricLabel: "Finalist Status",
+
+      successLabel: "Finalist Confirmed",
+      successSub: "You are cleared to participate in the in-person final examination.",
+
+      failLabel: "Final Status Pending",
+      failSub: "Your participation requires further review by the organizers.",
+
       accent: "#099137"
     }
   };
+
 
   const currentContent = stageConfig[stage] || stageConfig.SCREENING;
 

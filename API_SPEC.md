@@ -254,10 +254,204 @@ Extends the user data with profile-specific fields for the "Registered Candidate
 - `status`: string
 - `is_user_verified`: boolean
 
+--- 
+
+# Candidate Portal API Specification
+
+This section details the API endpoints and data structures used by the candidate's exam portal.
+
+## 1. Candidate Dashboard
+Fetches a comprehensive overview of the candidate's status, available exams, and performance history.
+
+- **Endpoint:** `/dashboard/candidate/` (Based on `candidateUrls.candidate_exams_dashboard`)
+- **Method:** `GET`
+- **Hook:** `useGetExamPortal`
+
+### Response Structure (`DashboardType`)
+```json
+{
+  "candidate_info": {
+    "name": "John Doe",
+    "email": "john@example.com",
+    "phone": "08012345678",
+    "school_name": "Example High School",
+    "role": "candidate",
+    "date_joined": "2023-10-27T10:00:00Z",
+    "profile_photo": "url_to_photo"
+  },
+  "exam_stats": {
+    "total_exams_taken": 5,
+    "available_exams_count": 1,
+    "average_score": 72.5,
+    "highest_score": 85,
+    "lowest_score": 60,
+    "latest_score": 78
+  },
+  "leaderboard_ranking": {
+    "position": 15,
+    "total_candidates": 1250
+  },
+  "recent_scores": [
+    {
+      "exam": "League Week 1",
+      "score": 82,
+      "date": "2023-11-05T14:00:00Z",
+      "exam_stage": "League"
+    }
+  ],
+  "available_exams": [
+    {
+      "id": "uuid",
+      "title": "League Week 2",
+      "description": "Mathematics league competition",
+      "open_duration_hours": 2,
+      "countdown_minutes": 60,
+      "question_count": 30,
+      "level": 2,
+      "scheduled_date": "2023-11-12T10:00:00Z",
+      "stage": "league",
+      "stage_display": "League Stage"
+    }
+  ]
+}
+```
+
 ---
 
-## 6. Notifications with WebSockets
-Real-time notifications for users.
+## 2. Exam Management
+
+### 2.1 Take Exam (Fetch Questions)
+Fetches questions and metadata for a specific exam when a candidate starts it.
+
+- **Endpoint:** `/exams/{exam_id}/take-exam/`
+- **Method:** `GET`
+- **Hook:** `useCandidateTakeExam`
+
+#### Response Structure
+```json
+{
+  "id": "uuid",
+  "title": "League Week 2",
+  "countdown_minutes": 60,
+  "questions": [
+    {
+      "id": 101,
+      "text": "What is 2 + 2?",
+      "option_a": "3",
+      "option_b": "4",
+      "option_c": "5",
+      "option_d": "6"
+    }
+  ]
+}
+```
+
+### 2.2 Submit Exam Answers
+Submits the candidate's answers for grading.
+
+- **Endpoint:** `/exams/{exam_id}/submit-exam-answers/`
+- **Method:** `POST`
+- **Hook:** `useSubmitAnswers` (Usually used within the exam component)
+- **Payload (`CandidateSubmitAnswerType`):**
+```json
+{
+  "answers": [
+    {
+      "question_id": 101,
+      "selected_option": "option_b"
+    }
+  ]
+}
+```
+
+---
+
+## 3. Leaderboard
+
+### 3.1 List Leaderboards/Rankings
+Fetches the available leaderboards or the ranking for a specific exam.
+
+- **Endpoint:** `/leaderboard/`
+- **Method:** `GET`
+- **Hook:** `useGetLeaderBoard`
+- **Query Parameters:**
+  - `page`: number
+  - `stage`: string (optional)
+  - `level`: number (optional)
+
+#### Response Structure (If listing available leaderboards)
+```json
+{
+  "snapshot_id": 1,
+  "published_at": "2023-11-10T10:00:00Z",
+  "available_leaderboards": [
+    {
+      "stage": "screening",
+      "level": 1,
+      "stage_display": "Screening Phase",
+      "exam_title": "General Screening",
+      "total_candidates": 2000,
+      "average_score": 65.4
+    }
+  ]
+}
+```
+
+#### Response Structure (If fetching specific rankings - `RankedLeaderBoardType`)
+```json
+{
+  "exam_details": {
+    "id": "uuid",
+    "title": "League Week 1",
+    "stage": "league",
+    "level": 1,
+    "total_candidates": 150,
+    "average_score": 70.2
+  },
+  "top_three": [
+    { "rank": 1, "candidate": { "full_name": "Alice", ... }, "score": 98, "percentage": 98 }
+  ],
+  "remaining_candidates": [...],
+  "pagination": { ... }
+}
+```
+
+### 3.2 Candidate Leaderboard Detail
+Fetches detailed performance of a specific candidate in a specific exam stage/level.
+
+- **Endpoint:** `/leaderboard/{stage}/{level}/candidate/{candidate_id}/`
+- **Method:** `GET`
+- **Hook:** `useGetLeaderBoardCandidateDetail`
+
+#### Response Structure (`ViewCandidateDetailType`)
+```json
+{
+  "exam_details": { ... },
+  "candidate_performance": {
+    "rank": 5,
+    "score": 85,
+    "percentage": 85,
+    "participated_at": "2023-11-05T14:30:00Z",
+    "candidate": {
+      "id": "uuid",
+      "full_name": "John Doe",
+      "submissions": [
+        {
+          "question_text": "What is 2+2?",
+          "selected_option": "option_b",
+          "correct_answer": "option_b",
+          "is_correct": true
+        }
+      ]
+    }
+  }
+}
+```
+
+---
+
+## 4. Notifications with WebSockets
+Real-time notifications for both Admin and Candidates.
 
 - **Endpoint:** `ws://<host>/v1/ws/notifications/` (wss:// for production)
 - **Method:** `WebSocket`
