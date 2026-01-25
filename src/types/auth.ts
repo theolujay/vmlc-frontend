@@ -100,7 +100,7 @@ export type AuthState = {
 
 
 
-export type ActivityHistoryUserType = {
+export type RegisteredCandidatesType = {
     user: RequestUserType,
     school_name: string | null,
     current_class: string | null,
