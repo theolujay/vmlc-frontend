@@ -13,6 +13,7 @@ interface NotificationContextType {
   isConnected: boolean;
   inAppNotificationsEnabled: boolean;
   toggleInAppNotifications: () => void;
+  isLoading: boolean;
 }
 
 const NotificationContext = createContext<NotificationContextType | undefined>(undefined);
@@ -20,16 +21,39 @@ const NotificationContext = createContext<NotificationContextType | undefined>(u
 export function NotificationProvider({ children }: { children: React.ReactNode }) {
   const { authState } = useAuth();
   const [notifications, setNotifications] = useState<Notification[]>([]);
+  const [unreadCount, setUnreadCount] = useState(0);
   const [isConnected, setIsConnected] = useState(false);
   const [inAppNotificationsEnabled, setInAppNotificationsEnabled] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
   const serviceRef = useRef<NotificationService | null>(null);
 
   useEffect(() => {
+    const fetchHistory = async () => {
+      setIsLoading(true);
+      try {
+        const history = await NotificationService.getNotificationHistory();
+        setNotifications(history.results);
+        setUnreadCount(history.stats.unread_count);
+      } catch (error) {
+        console.error("Failed to fetch notification history:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
     if (authState?.isAuthenticated && authState.token) {
+        fetchHistory();
         // Initialize service
         serviceRef.current = new NotificationService(
             (newNotification) => {
-                setNotifications(prev => [newNotification, ...prev]);
+                setNotifications(prev => {
+                    // Avoid duplicates if history fetch and WS message overlap
+                    if (prev.find(n => n.id === newNotification.id)) {
+                        return prev;
+                    }
+                    return [newNotification, ...prev];
+                });
+                setUnreadCount(prev => prev + 1);
             },
             (error) => {
                 console.error("Notification Service Error:", error);
@@ -42,6 +66,7 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
         serviceRef.current?.disconnect();
         serviceRef.current = null;
         setNotifications([]);
+        setUnreadCount(0);
         setIsConnected(false);
     }
 
@@ -50,26 +75,45 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
     };
   }, [authState?.isAuthenticated, authState?.token]);
 
-  const markAsRead = (id: number) => {
-    setNotifications(prev => prev.map(n => n.id === id ? { ...n, read: true } : n));
-    serviceRef.current?.markAsRead(id);
+  const markAsRead = async (id: number) => {
+    // Optimistic update
+    setNotifications(prev => {
+        const notification = prev.find(n => n.id === id);
+        if (notification && !notification.read) {
+            setUnreadCount(count => Math.max(0, count - 1));
+        }
+        return prev.map(n => n.id === id ? { ...n, read: true } : n);
+    });
+    
+    try {
+        await NotificationService.markAsRead(id);
+    } catch (error) {
+        console.error("Failed to mark notification as read:", error);
+        // Revert unread count if needed, but usually we just leave it for better UX
+        // or re-fetch history if critical.
+    }
   };
 
-  const markAllAsRead = () => {
-    const unreadIds = notifications.filter(n => !n.read).map(n => n.id);
+  const markAllAsRead = async () => {
+    // Optimistic update
     setNotifications(prev => prev.map(n => ({ ...n, read: true })));
-    unreadIds.forEach(id => serviceRef.current?.markAsRead(id));
+    setUnreadCount(0);
+    
+    try {
+        await NotificationService.markAllAsRead();
+    } catch (error) {
+        console.error("Failed to mark all notifications as read:", error);
+    }
   };
   
   const clearAll = () => {
       setNotifications([]);
+      setUnreadCount(0);
   }
 
   const toggleInAppNotifications = () => {
       setInAppNotificationsEnabled(prev => !prev);
   }
-
-  const unreadCount = notifications.filter(n => !n.read).length;
 
   return (
     <NotificationContext.Provider value={{ 
@@ -80,7 +124,8 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
         clearAll, 
         isConnected,
         inAppNotificationsEnabled,
-        toggleInAppNotifications
+        toggleInAppNotifications,
+        isLoading
     }}>
       {children}
     </NotificationContext.Provider>
