@@ -1,5 +1,7 @@
-import { Notification, ServerMessage, ClientMessage } from '../types/notificationType';
+import { Notification, ServerMessage, ClientMessage, NotificationHistoryResponse } from '../types/notificationType';
 import { socketUrl } from '../constants/socketUrl';
+import client from '@/utils/axios';
+import { notificationUrls } from '@/constants/notificationUrls';
 
 export class NotificationService {
   private ws: WebSocket | null = null;
@@ -8,6 +10,21 @@ export class NotificationService {
   private onConnect: () => void;
   private onDisconnect: () => void;
   private reconnectTimeout: NodeJS.Timeout | null = null;
+
+  static async getNotificationHistory(params?: { status?: string, page?: number }): Promise<NotificationHistoryResponse> {
+    const response = await client.get(notificationUrls.history, { params });
+    return response.data;
+  }
+
+  static async markAsRead(id: number) {
+    const response = await client.patch(notificationUrls.markAsRead(id));
+    return response.data;
+  }
+
+  static async markAllAsRead() {
+    const response = await client.patch(notificationUrls.markAllAsRead);
+    return response.data;
+  }
 
   constructor(
     onNotificationReceived: (notification: Notification) => void,

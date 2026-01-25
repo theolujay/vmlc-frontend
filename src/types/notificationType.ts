@@ -7,6 +7,25 @@ export interface Notification {
   created_at: string;
 }
 
+export interface NotificationHistoryResponse {
+  stats: {
+    total_count: number;
+    unread_count: number;
+    read_count: number;
+  };
+  results: Notification[];
+  pagination: {
+    count: number;
+    page: number;
+    page_size: number;
+    total_pages: number;
+    has_next: boolean;
+    has_previous: boolean;
+    next: string | null;
+    previous: string | null;
+  };
+}
+
 export type WSMessageType = 'notification_activity' | 'error' | 'mark_as_read';
 
 export interface ServerMessage {

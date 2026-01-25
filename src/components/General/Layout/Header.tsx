@@ -34,7 +34,8 @@ export default function Header() {
         markAllAsRead, 
         clearAll, 
         inAppNotificationsEnabled, 
-        toggleInAppNotifications 
+        toggleInAppNotifications,
+        isLoading
     } = useNotifications();
     const [showNotifications, setShowNotifications] = useState(false);
 
@@ -58,7 +59,7 @@ export default function Header() {
                         <NotificationIcon />
                         {unreadCount > 0 && (
                             <span className="absolute top-0.5 right-0.5 bg-red-500 text-white text-[8px] font-bold px-1 py-0 rounded-full border border-white min-w-[16px] h-4 flex items-center justify-center">
-                            {unreadCount > 99 ? '99+' : unreadCount}
+                            {unreadCount > 5 ? '5+' : unreadCount}
                             </span>
                         )}
                     </button>
@@ -96,6 +97,7 @@ export default function Header() {
                         onClearAll={clearAll}
                         inAppEnabled={inAppNotificationsEnabled}
                         onToggleInApp={toggleInAppNotifications}
+                        isLoading={isLoading}
                     />
                 </>
             )}
