@@ -64,9 +64,9 @@ function ExamPortal() {
   return (
     <PageLayout>
       <div className="relative space-y-6 max-w-6xl mx-auto w-full animate-in fade-in slide-in-from-bottom-2 duration-700 pb-10 font-sans">
-        
+        <br></br>
         <div className="mb-8 border-b border-[#E4E7EC] pb-6">
-          <h1 className="text-3xl font-bold text-[#101828]">Hello, {candidateName}</h1>
+          <h1 className="text-3xl font-bold text-[#101828]">Welcome</h1>
           <p className="text-[#667185] mt-1 text-base">You&apos;re now in the exam portal. Wishing you success ahead!</p>
         </div>
 

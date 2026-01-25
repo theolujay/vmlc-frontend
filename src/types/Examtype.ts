@@ -151,6 +151,7 @@ export type ExamStatType = {
 export type CandidateInfoType = {
   first_name: string,
   last_name: string,
+  role: string,
 }
 
 export type CreateExamSessionType = {
