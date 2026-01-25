@@ -261,7 +261,7 @@ function RegisteredCandidatesTable({
           {
             key: 'school_name',
             header: 'School',
-            render: (_, row) => <div className="max-w-[250px] truncate" title={row.school_name || ''}>{row.school_name}</div>
+            render: (_, row) => <div title={row.school_name || ''}>{row.school_name}</div>
           },
           {
             key: 'state',
