@@ -8,12 +8,6 @@ import InfoBoard from './DashboardParts/InfoBoard';
 import PrimaryAction from './DashboardParts/PrimaryAction';
 import PerformanceSnapshot from './DashboardParts/PerformanceSnapshot';
 import ExamHistory from './DashboardParts/ExamHistory';
-import { 
-  DUMMY_AVAILABLE_EXAM, 
-  DUMMY_CANDIDATE_NAME, 
-  DUMMY_LEADERBOARD_RANKING, 
-  DUMMY_RECENT_SCORES 
-} from './DashboardParts/dummyData';
 import SupportChat from './DashboardParts/SupportChat';
 
 function ExamPortal() {
@@ -25,28 +19,20 @@ function ExamPortal() {
     return (
       <PageLayout>
         <div className="flex items-center justify-center h-full min-h-[50vh]">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#3E4095]"></div>
         </div>
       </PageLayout>
     );
   }
 
-  // Use API data or fallback to dummy data
-  const candidateName = data?.candidate_info?.name || DUMMY_CANDIDATE_NAME;
+  // Use API data
+  const candidateName = data?.candidate_info ? `${data.candidate_info.first_name} ${data.candidate_info.last_name}` : "Candidate";
   
-  const availableExams = (data?.available_exams && data.available_exams.length > 0) 
-    ? data.available_exams 
-    : [DUMMY_AVAILABLE_EXAM];
+  const availableExams = data?.available_exams || [];
+  const recentScores = data?.recent_scores || [];
+  const leaderboardRanking = data?.leaderboard_ranking;
 
-  const recentScores = (data?.recent_scores && data.recent_scores.length > 0)
-    ? data.recent_scores
-    : DUMMY_RECENT_SCORES;
-
-  const leaderboardRanking = data?.leaderboard_ranking?.total_candidates 
-    ? data.leaderboard_ranking 
-    : DUMMY_LEADERBOARD_RANKING;
-
-  // Derive state from (potentially dummy) data
+  // Derive state from data
   let currentStage: 'SCREENING' | 'LEAGUE' | 'FINAL' = 'SCREENING';
   
   if (availableExams.length > 0) {
@@ -72,8 +58,8 @@ function ExamPortal() {
     exam_stage: score.exam_stage
   }));
 
-  const rank = leaderboardRanking.position;
-  const totalCandidates = leaderboardRanking.total_candidates;
+  const rank = leaderboardRanking?.position || 0;
+  const totalCandidates = leaderboardRanking?.total_candidates || 0;
 
   return (
     <PageLayout>
