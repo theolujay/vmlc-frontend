@@ -1,9 +1,9 @@
-import { ActivityHistoryUserType, RequestUserType } from "./auth"
+import { RegisteredCandidatesType, RequestUserType } from "./auth"
 import { PaginationType } from "./Examtype"
 
 
 export type CandidateListType = {
-    results: ActivityHistoryUserType[],
+    results: RegisteredCandidatesType[],
     pagination: PaginationType
 }
 

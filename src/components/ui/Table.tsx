@@ -1,11 +1,11 @@
-import { ActivityHistoryUserType } from '@/types/auth'
+import { RegisteredCandidatesType } from '@/types/auth'
 import { formatDate } from '@/utils/formatFileSize'
 import Link from 'next/link'
 import { usePathname, useSearchParams } from 'next/navigation'
 import React from 'react'
 import { TableIcon } from '../General/GeneralIcon'
 
-export default function Table({ columns, data, label, desc, footer }: Readonly<{ columns: string[], data: ActivityHistoryUserType[], label?: string, desc?: React.ReactNode, footer?: React.ReactNode }>) {
+export default function Table({ columns, data, label, desc, footer }: Readonly<{ columns: string[], data: RegisteredCandidatesType[], label?: string, desc?: React.ReactNode, footer?: React.ReactNode }>) {
    console.log(data,'table data')
     return (
         <div className="flex flex-col">
