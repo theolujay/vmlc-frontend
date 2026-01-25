@@ -24,6 +24,9 @@ type ProfileFormData = {
   phone: string
   state: string
   occupation: string
+  school_name: string
+  school_type: string
+  current_class: string
   profile_picture?: FileList
 }
 
@@ -58,7 +61,10 @@ export default function ProfileModal({
         last_name: accountData.profile.user.last_name,
         phone: accountData.profile.user.phone,
         state: accountData.profile.user.state,
-        occupation: accountData.profile.occupation,
+        occupation: accountData.profile.occupation || '',
+        school_name: accountData.profile.school_name || '',
+        school_type: accountData.profile.school_type || '',
+        current_class: accountData.profile.current_class || '',
       })
     }
   }, [accountData, reset])
@@ -78,7 +84,13 @@ export default function ProfileModal({
     formData.append('user[state]', data.state)
     
     // Add profile fields
-    formData.append('profile[occupation]', data.occupation)
+    if (isCandidate) {
+      formData.append('profile[school_name]', data.school_name)
+      formData.append('profile[school_type]', data.school_type)
+      formData.append('profile[current_class]', data.current_class)
+    } else {
+      formData.append('profile[occupation]', data.occupation)
+    }
     
     // Add profile picture if selected
     if (data.profile_picture?.[0]) {
@@ -191,7 +203,15 @@ export default function ProfileModal({
                                     <EditInfoItem label="Last Name" name="last_name" register={register} disabled={!!user?.last_name} />
                                     <EditInfoItem label="Phone Number" name="phone" register={register} disabled={false} />
                                     <EditInfoItem label="State" name="state" register={register} disabled={!!user?.state} />
-                                    <EditInfoItem label="Occupation" name="occupation" register={register} disabled={false} />
+                                    {isCandidate ? (
+                                        <>
+                                            <EditInfoItem label="School Name" name="school_name" register={register} disabled={!!profile?.school_name} />
+                                            <EditInfoItem label="School Type" name="school_type" register={register} disabled={!!profile?.school_type} />
+                                            <EditInfoItem label="Current Class" name="current_class" register={register} disabled={!!profile?.current_class} />
+                                        </>
+                                    ) : (
+                                        <EditInfoItem label="Occupation" name="occupation" register={register} disabled={!!profile?.occupation} />
+                                    )}
                                     <div className="space-y-1">
                                         <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Email Address</p>
                                         <p className="text-sm font-bold text-gray-400">{user?.email}</p>
@@ -204,7 +224,15 @@ export default function ProfileModal({
                                     <InfoItem label="Phone Number" value={user?.phone || 'Not Provided'} />
                                     <InfoItem label="Location / State" value={user?.state || 'Not Specified'} />
                                     <InfoItem label="Date Joined" value={user?.date_joined ? formatDate(user.date_joined) : 'N/A'} />
-                                    <InfoItem label="Occupation" value={profile.occupation || 'Not Specified'} />
+                                    {isCandidate ? (
+                                        <>
+                                            <InfoItem label="School Name" value={profile.school_name || 'Not Specified'} />
+                                            <InfoItem label="School Type" value={profile.school_type || 'Not Specified'} />
+                                            <InfoItem label="Current Class" value={profile.current_class || 'Not Specified'} />
+                                        </>
+                                    ) : (
+                                        <InfoItem label="Occupation" value={profile.occupation || 'Not Specified'} />
+                                    )}
                                 </>
                             )}
                         </div>
@@ -234,11 +262,11 @@ export default function ProfileModal({
                     
                     <div className="relative rounded-3xl p-1 bg-gradient-to-tr from-[#3E4095] to-[#01ACEA] shadow-xl shadow-[#3E4095]/20 group">
                         <div className="bg-white rounded-[22px] p-8 h-full flex flex-col items-center justify-center gap-6 relative overflow-hidden">
-                            <div className="absolute top-0 right-0 p-4">
+                            {/* <div className="absolute top-0 right-0 p-4">
                                 <span className={`px-2 py-1 rounded-lg text-[8px] font-black uppercase tracking-tighter ${profile.is_user_verified ? 'bg-green-50 text-green-600' : 'bg-amber-50 text-amber-600'}`}>
                                     {profile.is_user_verified ? 'Verified' : 'Pending'}
                                 </span>
-                            </div>
+                            </div> */}
                             
                             <div className="relative">
                                 <div className="w-32 h-32 rounded-3xl bg-gray-50 border-4 border-white shadow-lg overflow-hidden flex items-center justify-center text-[#3E4095] text-4xl font-black relative">

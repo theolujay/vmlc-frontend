@@ -123,7 +123,10 @@ export type StaffUserType = RequestUserType & {
 
 export type UserProfileType = {
   user: StaffUserType
-  occupation: string,
+  occupation: string | null,
+  school_name?: string | null,
+  school_type?: string | null,
+  current_class?: string | null,
   face_id: string | null,
   role: string,
   profile_type: string,

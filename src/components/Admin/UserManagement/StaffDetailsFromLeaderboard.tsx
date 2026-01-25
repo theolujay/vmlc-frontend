@@ -50,7 +50,7 @@ export default withAuthentication(ViewStaffDetailsFromLeaderboard)
 
 
 function ProfileComponent(
-    { userName, status, email, dateJoined, occupation, role, userType, phone, document, facial ,user_id}: {user_id:string, phone: string, userType: string, userName: string, email: string, status: string, dateJoined: Date, occupation: string, document: string[], role: string, facial: string | null }
+    { userName, status, email, dateJoined, occupation, role, userType, phone, document, facial, user_id, school_name, school_type, current_class }: { user_id: string, phone: string, userType: string, userName: string, email: string, status: string, dateJoined: Date, occupation: string | null, document: string[], role: string, facial: string | null, school_name?: string | null, school_type?: string | null, current_class?: string | null }
 ) {
 
     console.log(document, document.length, 'document in profile component')
@@ -63,7 +63,7 @@ function ProfileComponent(
 
             <div className="flex flex-col gap-1">
                 <span className='text-sm'>VERIFICATION STATUS</span>
-                <button onClick={()=>setOpenApproval(true)} className="flex cursor-pointer justify-between max-w-[30vw] items-center ">
+                <button onClick={() => setOpenApproval(true)} className="flex cursor-pointer justify-between max-w-[30vw] items-center ">
                     <span className='bg-[#FEF6E7] rounded-full w-fit px-2 py-1 text-[#865503]'>{status}</span>
                     <span><ViewArrow /></span>
                 </button>
@@ -83,16 +83,52 @@ function ProfileComponent(
                         <span className='text-sm items-start text-[#475367]'>PHONE NUMBER</span>
                         <span className=' w-fit '>{phone}</span>
                     </div>
-                    <div className="flex-col text-sm  gap-1 flex">
-                        <span className='text-[#475367] text-sm'>OCCUPATION</span>
-                        <span className='text-base'>{occupation}</span>
-                    </div>
+                    {userType === 'candidate' ? (
+                        <>
+                            <div className="flex-col text-sm  gap-1 flex">
+                                <span className='text-[#475367] text-sm'>SCHOOL NAME</span>
+                                <span className='text-base'>{school_name || 'N/A'}</span>
+                            </div>
+                        </>
+                    ) : (
+                        <div className="flex-col text-sm  gap-1 flex">
+                            <span className='text-[#475367] text-sm'>OCCUPATION</span>
+                            <span className='text-base'>{occupation || 'N/A'}</span>
+                        </div>
+                    )}
                 </div>
                 <div className="flex flex-col  gap-8 ">
                     <div className="flex-col gap-1 flex">
                         <span className='text-[#475367] text-sm'>ROLE</span>
                         <span className='bg-[#FFF1F3] rounded-full w-fit px-2 py-1 text-[#C01048]'>{role}</span>
                     </div>
+                    {userType === 'candidate' ? (
+                        <>
+                            <div className="flex-col text-sm  gap-1 flex">
+                                <span className='text-[#475367] text-sm'>SCHOOL TYPE</span>
+                                <span className='text-base'>{school_type || 'N/A'}</span>
+                            </div>
+                            <div className="flex-col text-sm  gap-1 flex">
+                                <span className='text-[#475367] text-sm'>CURRENT CLASS</span>
+                                <span className='text-base'>{current_class || 'N/A'}</span>
+                            </div>
+                        </>
+                    ) : (
+                        <>
+                            <div className="flex-col gap-1 flex">
+                                <span className='text-[#475367] text-sm'>EMAIL</span>
+                                <span>{email}</span>
+                            </div>
+                            <div className="flex-col gap-1 flex">
+                                <span className='text-[#475367] text-sm'>DATE JOINED</span>
+                                <span>{formatDate(dateJoined)}</span>
+                            </div>
+                        </>
+                    )}
+                </div>
+            </div>
+            {userType === 'candidate' && (
+                <div className="grid grid-cols-1 md:grid-cols-2 mt-8">
                     <div className="flex-col gap-1 flex">
                         <span className='text-[#475367] text-sm'>EMAIL</span>
                         <span>{email}</span>
@@ -102,7 +138,7 @@ function ProfileComponent(
                         <span>{formatDate(dateJoined)}</span>
                     </div>
                 </div>
-            </div>
+            )}
         </div>
         <div className='flex gap-3 mb-3 border-b border-[#E4E7EC] flex-col p-8'>
             <span className='text-[#475367] text-sm'>DOCUMENTS</span>
@@ -179,7 +215,22 @@ function ViewDetailsTabSection({ detailsData }: { detailsData: UserProfileType }
         {
             label: <ProfileLabel />,
             value: 'Profile',
-            content: <ProfileComponent user_id={detailsData.user.id} facial={detailsData.face_id} document={documents} userType={detailsData.profile_type} phone={detailsData.user.phone} status={detailsData.is_user_verified ? 'Approved' : 'Pending'} occupation={detailsData.occupation} role={detailsData.role} dateJoined={detailsData.user.date_joined} userName={userName} email={detailsData.user.email} />
+            content: <ProfileComponent
+                user_id={detailsData.user.id}
+                facial={detailsData.face_id}
+                document={documents}
+                userType={detailsData.profile_type}
+                phone={detailsData.user.phone}
+                status={detailsData.is_user_verified ? 'Approved' : 'Pending'}
+                occupation={detailsData.occupation}
+                role={detailsData.role}
+                dateJoined={detailsData.user.date_joined}
+                userName={userName}
+                email={detailsData.user.email}
+                school_name={detailsData.school_name}
+                school_type={detailsData.school_type}
+                current_class={detailsData.current_class}
+            />
         },
         {
             label: <ActionsLabel />,
@@ -195,6 +246,7 @@ function ViewDetailsTabSection({ detailsData }: { detailsData: UserProfileType }
 
     )
 }
+
 
 
 function ProfileLabel() {
