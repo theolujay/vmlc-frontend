@@ -96,6 +96,7 @@ function ExamPortal() {
             stage={currentStage}
             currentWeek={leagueWeek}
             qualificationThreshold={20}
+            hasTakenExam={recentScores.some(s => s.exam_stage.toUpperCase().includes(currentStage))}
           />
 
           {/* EXAM HISTORY */}

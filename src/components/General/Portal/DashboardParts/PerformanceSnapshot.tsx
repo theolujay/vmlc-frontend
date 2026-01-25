@@ -11,6 +11,7 @@ interface PerformanceSnapshotProps {
   stage: ExamStage;
   currentWeek?: number; // Only for League stage (1-6)
   qualificationThreshold?: number;
+  hasTakenExam?: boolean;
 }
 
 const PerformanceSnapshot: React.FC<PerformanceSnapshotProps> = ({ 
@@ -18,14 +19,18 @@ const PerformanceSnapshot: React.FC<PerformanceSnapshotProps> = ({
   totalCandidates, 
   stage,
   currentWeek = 1,
-  qualificationThreshold = 20 
+  qualificationThreshold = 20,
+  hasTakenExam = false
 }) => {
-  const isQualified = rank <= qualificationThreshold;
+  const isQualified = rank <= qualificationThreshold && rank > 0;
 
   const stageConfig = {
     SCREENING: {
       title: "Screening Stage",
       metricLabel: "Screening Cut-off Score",
+
+      pendingLabel: "Screening Upcoming",
+      pendingSub: "The screening examination hasn't yet commenced. Please await updates.",
 
       successLabel: "Screening Passed",
       successSub: "You are eligible to proceed to the League stage once it begins.",
@@ -40,6 +45,9 @@ const PerformanceSnapshot: React.FC<PerformanceSnapshotProps> = ({
       title: `League Stage • Week ${currentWeek} of 6`,
       metricLabel: "Finalist Qualification Cut-off",
 
+      pendingLabel: "Week Assessment Pending",
+      pendingSub: `The assessment for Week ${currentWeek} has not started yet. Prepare well!`,
+
       successLabel: "Within Qualification Range",
       successSub: "Maintaining this position keeps you eligible for the Final stage.",
 
@@ -52,6 +60,9 @@ const PerformanceSnapshot: React.FC<PerformanceSnapshotProps> = ({
     FINAL: {
       title: "Final Stage",
       metricLabel: "Finalist Status",
+
+      pendingLabel: "Finals Upcoming",
+      pendingSub: "The final examination schedule and details will be shared soon.",
 
       successLabel: "Finalist Confirmed",
       successSub: "You are cleared to participate in the in-person final examination.",
@@ -96,7 +107,7 @@ const PerformanceSnapshot: React.FC<PerformanceSnapshotProps> = ({
              <div className="flex flex-col gap-1">
                 <span className="text-[#475367] text-xs font-bold uppercase">Current Rank</span>
                 <span className="font-bold text-[#101828] text-3xl">
-                    {rank} <span className="text-base font-normal text-[#667185]">/ {totalCandidates}</span>
+                    {hasTakenExam && rank > 0 ? rank : '-'} <span className="text-base font-normal text-[#667185]">/ {totalCandidates}</span>
                 </span>
             </div>
             <div className="flex flex-col gap-1 text-right">
@@ -109,12 +120,16 @@ const PerformanceSnapshot: React.FC<PerformanceSnapshotProps> = ({
 
         {/* Status Banner */}
          <div className={`p-4 rounded-xl border flex items-center gap-3 mt-2 transition-all duration-300 ${
-            isQualified ? 'bg-[#] border-[#01ACEA]/50' : 'bg-[#FBEAE9] border-[#CB1A14]/20'
+            !hasTakenExam ? 'bg-gray-50 border-gray-200' : isQualified ? 'bg-[#CCEEFB]/30 border-[#01ACEA]/50' : 'bg-[#FBEAE9] border-[#CB1A14]/20'
         }`}>
           <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${
-              isQualified ? 'bg-[#01ACEA]' : 'bg-[#CB1A14]'
+              !hasTakenExam ? 'bg-gray-400' : isQualified ? 'bg-[#01ACEA]' : 'bg-[#CB1A14]'
           }`}>
-            {isQualified ? (
+            {!hasTakenExam ? (
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+            ) : isQualified ? (
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
                 </svg>
@@ -126,12 +141,12 @@ const PerformanceSnapshot: React.FC<PerformanceSnapshotProps> = ({
           </div>
           <div>
             <p className={`text-xs font-bold uppercase tracking-wider ${
-                 isQualified ? 'text-[#018ABB]' : 'text-[#CB1A14]'
+                 !hasTakenExam ? 'text-gray-500' : isQualified ? 'text-[#018ABB]' : 'text-[#CB1A14]'
             }`}>
-                {isQualified ? currentContent.successLabel : currentContent.failLabel}
+                {!hasTakenExam ? currentContent.pendingLabel : isQualified ? currentContent.successLabel : currentContent.failLabel}
             </p>
             <p className="text-[11px] text-[#475367] leading-tight mt-0.5">
-                {isQualified ? currentContent.successSub : currentContent.failSub}
+                {!hasTakenExam ? currentContent.pendingSub : isQualified ? currentContent.successSub : currentContent.failSub}
             </p>
           </div>
         </div>
