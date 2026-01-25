@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { AvailableExamType } from '@/types/Examtype';
+import { useRouter } from 'next/navigation';
 
 interface PrimaryActionProps {
   exam: AvailableExamType | null;
@@ -9,6 +10,7 @@ interface PrimaryActionProps {
 const PrimaryAction: React.FC<PrimaryActionProps> = ({ exam, candidateName }) => {
   const [timeLeft, setTimeLeft] = useState<string>('');
   const [canStart, setCanStart] = useState(false);
+  const router = useRouter();
 
   useEffect(() => {
     if (!exam || !exam.scheduled_date) return;
@@ -43,6 +45,12 @@ const PrimaryAction: React.FC<PrimaryActionProps> = ({ exam, candidateName }) =>
 
     return () => clearInterval(timer);
   }, [exam]);
+
+  const handleStartExam = () => {
+    if (exam && canStart && !isFinals) {
+      router.push(`/exam-portal/${exam.id}/exam`);
+    }
+  };
 
   const isFinals = exam?.stage?.toLowerCase() === 'final';
 
@@ -96,6 +104,7 @@ const PrimaryAction: React.FC<PrimaryActionProps> = ({ exam, candidateName }) =>
           
           <button 
             disabled={!canStart || isFinals}
+            onClick={handleStartExam}
             className={`w-full py-4 rounded-xl font-bold transition-all uppercase tracking-wider ${
               canStart && !isFinals
                 ? 'bg-[#3E4095] text-white hover:bg-[#4A4DA8] shadow-lg transform hover:scale-[1.02]' 

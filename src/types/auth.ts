@@ -1,3 +1,4 @@
+import { UserProfileType } from "./UserMgtType";
 export type RegisterRequest = {
     user: {
         email: string,
@@ -45,21 +46,8 @@ export type SetNewPasswordType = {
 export type AuthLoginResponse = {
     refresh: string;
     access: string;
-    profile: {
-        // user: {
-        //     id: string;
-        //     email: string;
-        //     first_name: string;
-        //     last_name: string;
-        //     phone: string;
-        //     date_joined: Date;
-        // },
-        user: RequestUserType,
-        school_name: string;
-        role: string;
-    }
+    profile: UserProfileType;
 }
-
 
 type User = RequestUserType & {
     role: string,
@@ -75,7 +63,10 @@ export type RequestUserType = {
     state: string;
     profile_picture: string | null;
     date_joined: Date;
+    is_email_verified?: boolean;
+    is_active?: boolean;
 }
+
 
 
 
@@ -91,6 +82,7 @@ export type AuthState = {
     refreshToken: string | null;
     isAuthenticated: boolean;
     user: User | null;
+    profile: UserProfileType | null;
     // user: { [x: string]: any } | null;
     userType: string | null;
 }

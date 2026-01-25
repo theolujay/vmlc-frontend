@@ -1,7 +1,7 @@
 "use client"
-import React, { useState, useEffect } from "react"
+import React, { useState, useEffect, useMemo } from "react"
 import AppDialog from "@/components/ui/Modals/AppDialog"
-import useGetAccountDetails, { useGetOwnAccountDetails } from "@/hooks/useGetAccountDetails"
+import useGetAccountDetails from "@/hooks/useGetAccountDetails"
 import useGetCandidateDetails from "@/hooks/useGetCandidateDetails"
 import useUpdateProfile from "@/hooks/useUpdateProfile"
 import Spinner from "@/components/ui/spinner/spinner"
@@ -15,6 +15,7 @@ import CustomTable from "@/components/ui/CustomTable"
 import EmptySession from "@/components/Admin/EmptySession"
 import { ExamTakenType, RecordsType } from "@/types/CandidateType"
 import { useForm, UseFormRegister } from "react-hook-form"
+import { useAuth } from "@/contexts/AuthProvider"
 
 type TabType = 'Profile' | 'Activities' | 'Scores' | 'Actions'
 
@@ -39,18 +40,24 @@ export default function ProfileModal({
   const [activeTab, setActiveTab] = useState<TabType>('Profile')
   const [isEditing, setIsEditing] = useState(false)
   
+  const { authState } = useAuth()
   const { data: otherAccountData, isPending: otherAccountPending } = useGetAccountDetails(id, !isOwnProfile && !!id)
-  const { data: ownAccountData, isPending: ownAccountPending } = useGetOwnAccountDetails(isOwnProfile)
 
-  const accountData = isOwnProfile ? ownAccountData : otherAccountData
-  const accountPending = isOwnProfile ? ownAccountPending : otherAccountPending
+  const accountData = useMemo(() => {
+    if (isOwnProfile) {
+      return authState?.profile ? { profile: authState.profile } : null
+    }
+    return otherAccountData
+  }, [isOwnProfile, authState?.profile, otherAccountData])
+
+  const accountPending = !isOwnProfile && otherAccountPending
 
   const isCandidate = accountData?.profile?.profile_type === 'candidate'
   
-  const { data: candidateData, isPending: candidatePending } = useGetCandidateDetails(id, !!isCandidate && !!id)
+  const { data: candidateData, isPending: candidatePending } = useGetCandidateDetails(id, !isOwnProfile && !!isCandidate && !!id)
   const { mutate: updateProfile, isPending: updatePending } = useUpdateProfile()
 
-  const isPending = accountPending || (isCandidate && candidatePending)
+  const isPending = accountPending || (!isOwnProfile && isCandidate && candidatePending)
 
   const { register, handleSubmit, reset } = useForm<ProfileFormData>()
 
@@ -72,6 +79,7 @@ export default function ProfileModal({
   function handleClose() {
     close(false)
     setIsEditing(false)
+    setActiveTab('Profile')
   }
 
   const onSave = (data: ProfileFormData) => {
@@ -110,11 +118,13 @@ export default function ProfileModal({
     { id: 'Profile', label: 'Profile', icon: <i className="fas fa-user-circle"></i> },
   ]
 
-  if (isCandidate) {
-    tabs.push({ id: 'Activities', label: 'Activities', icon: <ActivitiesIcon /> })
-    tabs.push({ id: 'Scores', label: 'Scores', icon: <ScoresIcon /> })
-  } else {
-    tabs.push({ id: 'Actions', label: 'Actions', icon: <ActionsIcon /> })
+  if (!isOwnProfile) {
+    if (isCandidate) {
+      tabs.push({ id: 'Activities', label: 'Activities', icon: <ActivitiesIcon /> })
+      tabs.push({ id: 'Scores', label: 'Scores', icon: <ScoresIcon /> })
+    } else {
+      tabs.push({ id: 'Actions', label: 'Actions', icon: <ActionsIcon /> })
+    }
   }
 
   return (
@@ -139,22 +149,24 @@ export default function ProfileModal({
              </div>
           </div>
           <div className="flex items-center gap-4">
-            <div className="hidden md:flex bg-gray-50 p-1 rounded-xl border border-gray-100">
-                {tabs.map((tab) => (
-                    <button
-                        key={tab.id}
-                        onClick={() => setActiveTab(tab.id)}
-                        className={`flex items-center gap-2 px-4 py-2 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all ${
-                            activeTab === tab.id 
-                            ? 'bg-white text-[#3E4095] shadow-sm ring-1 ring-black/5' 
-                            : 'text-gray-400 hover:text-gray-600'
-                        }`}
-                    >
-                        {tab.icon}
-                        <span>{tab.label}</span>
-                    </button>
-                ))}
-            </div>
+            {tabs.length > 1 && (
+              <div className="hidden md:flex bg-gray-50 p-1 rounded-xl border border-gray-100">
+                  {tabs.map((tab) => (
+                      <button
+                          key={tab.id}
+                          onClick={() => setActiveTab(tab.id)}
+                          className={`flex items-center gap-2 px-4 py-2 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all ${
+                              activeTab === tab.id 
+                              ? 'bg-white text-[#3E4095] shadow-sm ring-1 ring-black/5' 
+                              : 'text-gray-400 hover:text-gray-600'
+                          }`}
+                      >
+                          {tab.icon}
+                          <span>{tab.label}</span>
+                      </button>
+                  ))}
+              </div>
+            )}
             <button onClick={handleClose} className="w-10 h-10 flex items-center justify-center rounded-xl bg-gray-50 text-gray-400 hover:text-gray-600 transition-colors cursor-pointer">
                 <i className="fas fa-times"></i>
             </button>
@@ -298,19 +310,19 @@ export default function ProfileModal({
                 </div>
               )}
 
-              {activeTab === 'Activities' && isCandidate && (
+              {activeTab === 'Activities' && isCandidate && !isOwnProfile && (
                 <div className="max-w-5xl mx-auto animate-in fade-in slide-in-from-bottom-2 duration-300">
                    <ActivityComponent results={candidateData?.records?.performance?.exams_taken ?? []} />
                 </div>
               )}
 
-              {activeTab === 'Scores' && isCandidate && (
+              {activeTab === 'Scores' && isCandidate && !isOwnProfile && (
                 <div className="max-w-5xl mx-auto animate-in fade-in slide-in-from-bottom-2 duration-300">
                    <ScoreComponent scoresData={candidateData?.records as RecordsType} />
                 </div>
               )}
 
-              {activeTab === 'Actions' && !isCandidate && (
+              {activeTab === 'Actions' && !isCandidate && !isOwnProfile && (
                 <div className="max-w-5xl mx-auto animate-in fade-in slide-in-from-bottom-2 duration-300">
                    <ActionsComponent />
                 </div>
@@ -320,20 +332,22 @@ export default function ProfileModal({
         </div>
 
         {/* Mobile Tab Navigation */}
-        <div className="md:hidden grid grid-cols-4 border-t border-gray-200 bg-white">
-            {tabs.map((tab) => (
-                <button
-                    key={tab.id}
-                    onClick={() => setActiveTab(tab.id)}
-                    className={`flex flex-col items-center justify-center py-4 gap-1 transition-all ${
-                        activeTab === tab.id ? 'text-[#3E4095] bg-[#3E4095]/5' : 'text-gray-400'
-                    }`}
-                >
-                    <span className="text-lg">{tab.icon}</span>
-                    <span className="text-[8px] font-black uppercase tracking-tighter">{tab.label}</span>
-                </button>
-            ))}
-        </div>
+        {tabs.length > 1 && (
+          <div className="md:hidden grid grid-cols-4 border-t border-gray-200 bg-white">
+              {tabs.map((tab) => (
+                  <button
+                      key={tab.id}
+                      onClick={() => setActiveTab(tab.id)}
+                      className={`flex flex-col items-center justify-center py-4 gap-1 transition-all ${
+                          activeTab === tab.id ? 'text-[#3E4095] bg-[#3E4095]/5' : 'text-gray-400'
+                      }`}
+                  >
+                      <span className="text-lg">{tab.icon}</span>
+                      <span className="text-[8px] font-black uppercase tracking-tighter">{tab.label}</span>
+                  </button>
+              ))}
+          </div>
+        )}
       </div>
 
       <style jsx global>{`
