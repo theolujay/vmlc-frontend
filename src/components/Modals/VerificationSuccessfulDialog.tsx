@@ -9,8 +9,8 @@ export default function VerificationSuccessfulDialog({ open, close }: Readonly<{
   const router=useRouter()
 
 
-  function navigateToStartPage(){
-    router.push('/get-started')
+  function navigateToDashboard(){
+    router.push('/exam-portal')
   }
 
   function handleClose() {
@@ -24,7 +24,7 @@ export default function VerificationSuccessfulDialog({ open, close }: Readonly<{
           <VerifiedSuccessIcon />
         </div>
         <h2 className='font-bold text-xl'>Verification uploaded Successfully</h2>
-        <p>Your verification has been successfully uploaded! While you wait for the {`admin's`} approval, feel free to visit the tour guide page</p>
+        <p>Your verification has been successfully uploaded! While you wait for the {`admin's`} approval, feel free to visit your dashboard</p>
         <div className="flex gap-2 mt-4 w-full">
           <button
             onClick={handleClose}
@@ -33,11 +33,11 @@ export default function VerificationSuccessfulDialog({ open, close }: Readonly<{
             Close
           </button>
           <button
-          onClick={navigateToStartPage}
+          onClick={navigateToDashboard}
             // onClick={capture}
             className="px-4 py-2 rounded-lg uppercase cursor-pointer flex-1 bg-[#3E4095] font-semibold text-white"
           >
-            Go To Your Tour Guide Page
+            Go To Your Dashboard
           </button>
         </div>
 
