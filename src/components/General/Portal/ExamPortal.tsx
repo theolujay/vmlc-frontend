@@ -14,10 +14,12 @@ import {
   DUMMY_LEADERBOARD_RANKING, 
   DUMMY_RECENT_SCORES 
 } from './DashboardParts/dummyData';
+import SupportChat from './DashboardParts/SupportChat';
 
 function ExamPortal() {
   const { isPending, data } = useGetExamPortal();
   const [infoMessage, setInfoMessage] = useState<string | undefined>("Welcome to Verboheit Mathematics League Competition. Please check your stage progress and upcoming exams below.");
+  const [isSupportOpen, setIsSupportOpen] = useState(false);
 
   if (isPending) {
     return (
@@ -75,10 +77,10 @@ function ExamPortal() {
 
   return (
     <PageLayout>
-      <div className="space-y-6 max-w-6xl mx-auto w-full animate-in fade-in slide-in-from-bottom-2 duration-700 pb-10 font-sans">
+      <div className="relative space-y-6 max-w-6xl mx-auto w-full animate-in fade-in slide-in-from-bottom-2 duration-700 pb-10 font-sans">
         
         <div className="mb-8 border-b border-[#E4E7EC] pb-6">
-          <h1 className="text-3xl font-bold text-[#101828]">Welcome {candidateName}! 👋</h1>
+          <h1 className="text-3xl font-bold text-[#101828]">Hello, {candidateName}</h1>
           <p className="text-[#667185] mt-1 text-base">You&apos;re now in the exam portal. Wishing you success ahead!</p>
         </div>
 
@@ -113,9 +115,40 @@ function ExamPortal() {
           {/* EXAM HISTORY */}
           <ExamHistory history={history} />
         </div>
+
+        {/* PERSISTENT ACTIONS - SUPPORT CHAT */}
+        <div className="fixed bottom-4 right-4 z-50 flex flex-col items-end gap-4">
+            {isSupportOpen && (
+                <div className="w-[350px] h-[500px] bg-white rounded-[24px] shadow-2xl border border-[#E4E7EC] flex flex-col overflow-hidden animate-in slide-in-from-bottom-5 duration-300">
+                    <SupportChat 
+                        currentStage={currentStage} 
+                        candidateName={candidateName}
+                        onClose={() => setIsSupportOpen(false)} 
+                    />
+                </div>
+            )}
+            <button 
+                onClick={() => setIsSupportOpen(!isSupportOpen)}
+                className={`flex items-center gap-2 px-6 py-3.5 rounded-full shadow-lg transition-all transform hover:scale-105 active:scale-95 ${
+                    isSupportOpen ? 'bg-[#4A4DA8] text-gray-300' : 'bg-[#3E4095] text-white'
+                }`}
+            >
+                {isSupportOpen ? (
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                    </svg>
+                ) : (
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
+                    </svg>
+                )}
+                <span className="font-bold text-sm tracking-wide">Help?</span>
+            </button>
+        </div>
       </div>
     </PageLayout>
   );
 }
+
 
 export default withAuthentication(ExamPortal);
