@@ -11,6 +11,7 @@ import Image from 'next/image'
 import { useEffect, useState } from 'react'
 import { useNotifications } from '@/contexts/NotificationProvider'
 import NotificationModal from '@/components/Admin/Announcement/NotificationModal'
+import ProfileModal from '@/components/Modals/ProfileModal'
 
 export default function Header() {
     const [mounted, setMounted] = useState(false);
@@ -38,6 +39,7 @@ export default function Header() {
         isLoading
     } = useNotifications();
     const [showNotifications, setShowNotifications] = useState(false);
+    const [profileOpen, setProfileOpen] = useState(false);
 
     
     return (
@@ -68,7 +70,10 @@ export default function Header() {
                             <span className="font-medium">{mounted ? userName : ''}</span>
                             <span className="text-xs text-gray-500">{mounted ? authState?.user?.role : ''}</span>
                         </div>
-                        <div className="bg-[#CCEEFB] flex items-center justify-center w-[44px] h-[44px] rounded-full relative overflow-hidden">
+                        <button 
+                            onClick={() => setProfileOpen(true)}
+                            className="bg-[#CCEEFB] flex items-center justify-center w-[44px] h-[44px] rounded-full relative overflow-hidden cursor-pointer outline-none hover:ring-2 hover:ring-[#CCEEFB] transition-all"
+                        >
                             {mounted && currentUser?.profile?.user?.profile_picture ? (
                                 <Image
                                     src={currentUser.profile.user.profile_picture}
@@ -79,7 +84,7 @@ export default function Header() {
                             ) : (
                                 <span className="font-bold text-lg">{mounted ? userInitials : ''}</span>
                             )}
-                        </div>
+                        </button>
                         <AppDropdown/>
                     </div>
                 </nav>
@@ -100,6 +105,15 @@ export default function Header() {
                         isLoading={isLoading}
                     />
                 </>
+            )}
+
+            {currentUser?.profile?.user?.id && (
+                <ProfileModal 
+                    id={currentUser.profile.user.id} 
+                    open={profileOpen} 
+                    close={setProfileOpen} 
+                    isOwnProfile={true}
+                />
             )}
         </header>
     )
