@@ -140,7 +140,6 @@ export type CandidateInfoType = {
   phone: string,
   school_name: string,
   role: string,
-  is_verified: boolean,
   date_joined: Date,
   profile_photo: string
 }

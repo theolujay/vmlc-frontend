@@ -1,7 +1,7 @@
 import ResponsiveContainer from '@/components/ui/ResponsiveContainer'
 import { AccountCreationIcon, EmailVerificationIcon, LockedIcon } from '@/components/ui/SvgAsset/GeneralAsset';
 import React, { useState } from 'react'
-import { ApprovalIcon, ExamsIcon, VerificationIcon } from './GettingStartedAssets';
+import { ExamsIcon } from './GettingStartedAssets';
 import clsx from 'clsx';
 import { useAuth } from '@/contexts/AuthProvider';
 import { useRouter } from 'next/navigation';
@@ -21,17 +21,13 @@ export default function InfoBoard() {
 
 
   function handleOpenEmailVerification() {
-    onSubmit({ email: authState?.user?.email! })
+    onSubmit({ email: authState!.user!.email! })
     setOpenEmail(true)
   }
 
 
   const { onSubmit } = useSendOtp();
 
-
-  function handleVerification() {
-    router.push('/get-started/verification')
-  }
 
   function handleOverview() {
     if (authState?.userType == 'candidate') {
@@ -42,24 +38,12 @@ export default function InfoBoard() {
     }
   }
 
-  let allProvided: boolean = false;
-  if (data) {
-    allProvided = ['face_id', 'verification_document', 'id_card'].every(key => !!data[key]);
-  }
-
-
-
-
-
-
   const stepsCompleted = [
     true, // account creation always done
-    allProvided,
     data?.user.is_email_verified,
-    data?.is_user_verified ?? false,
     false, // exams not yet participated
   ].filter(Boolean).length;
-  const totalSteps = 5;
+  const totalSteps = 3;
   const completionPercentage = Math.round((stepsCompleted / totalSteps) * 100);
 
 
@@ -70,7 +54,7 @@ export default function InfoBoard() {
         <div className="flex-col gap-0.5">
           <p className='text-[28px] font-[700]'>Welcome, {authState?.user?.first_name}</p>
 
-          <p className="text-[14px]">{`You're`} only three steps away from becoming a verified candidate! {`Here's`} what we need from you.</p>
+          <p className="text-[14px]">{`You're`} only two steps away from becoming a candidate! {`Here's`} what we need from you.</p>
         </div>
         <div className='flex justify-between gap-2'> <span> <CircularProgress progress={completionPercentage} />{" "}</span><span className='text-[#01ACEA]'>{completionPercentage}% completed</span></div>
       </div>
@@ -79,9 +63,7 @@ export default function InfoBoard() {
         {/* <button onClick={handleOpenEmailVerification} className="cta p-2 rounded-lg inline-flex justify-between border text-[#475367] gap-1 items-center  border-[#E4E7EC]"><span>Verify Email</span></button> */}
         <InfoItem isApproved buttons={<button className="cta font-bold text-[#099137]  border-[#E7F6EC] border   bg-[#E7F6EC] p-2 rounded-lg">Completed</button>} icon={<AccountCreationIcon />} label='Initiate Account Creation' desc='Register a candidate account with your basic information.' />
         <InfoItem isApproved={data?.user?.is_email_verified} buttons={data?.user?.is_email_verified ? <button className="cta font-bold text-[#099137]  border-[#E7F6EC] border   bg-[#E7F6EC] p-2 rounded-lg">Email Verified</button> : <button onClick={handleOpenEmailVerification} className="cta p-2 rounded-lg inline-flex justify-between border text-[#475367] gap-1 items-center  border-[#E4E7EC]"><span>Verify Email</span></button>} icon={<EmailVerificationIcon />} label='Email Verification' desc='Verify your registered email address.' />
-        <InfoItem isApproved={allProvided} buttons={allProvided ? <button className="cta font-bold text-[#099137]  border-[#E7F6EC] border   bg-[#E7F6EC] p-2 rounded-lg">Completed</button> : <button onClick={handleVerification} className="cta cursor-pointer p-2 rounded-lg border text-[#475367] border-[#E4E7EC]">Setup Verification Details</button>} icon={<VerificationIcon />} label='Provide Verification Information' desc='Please share additional details about your identity to help us verify who you are.' />
-        <InfoItem isApproved={data?.is_user_verified ?? false} buttons={data?.is_user_verified ?? false ? <button className="cta font-bold text-[#099137] border-[#E7F6EC] border bg-[#E7F6EC] p-2 rounded-lg">Approved</button> : <button className="cta p-2 rounded-lg inline-flex justify-between border text-[#475367] gap-1 items-center bg-[#E4E7EC] border-[#E4E7EC]"><span><LockedIcon /></span><span>Await Approval</span></button>} icon={<ApprovalIcon />} label='Await Admin Approval' desc='Please wait for admin approval after submitting your verification.' />
-        <InfoItem buttons={[<button onClick={handleOverview} disabled={!data?.is_active} key='button-one' className={clsx("cta p-2 rounded-lg inline-flex justify-between gap-1 border items-center ", data?.is_user_verified ?? false ? ' cursor-pointer ' : 'text-[#475367] bg-[#E4E7EC]  border-[#E4E7EC]')}>{data?.is_user_verified ? null : <span><LockedIcon /></span>}<span>Go to Overview</span></button>, <button key='button-two' className="cta p-2 rounded-lg inline-flex justify-between border text-[#475367] gap-1 items-center bg-[#E4E7EC] border-[#E4E7EC]"><span><LockedIcon /></span><span>Await Exams</span></button>]} icon={<ExamsIcon />} label='Participate in Exams' desc='Participate in exams on due date once verification is complete.' />
+        <InfoItem buttons={[<button onClick={handleOverview} disabled={!data?.is_active} key='button-one' className={clsx("cta p-2 rounded-lg inline-flex justify-between gap-1 border items-center ", data?.is_active ? ' cursor-pointer ' : 'text-[#475367] bg-[#E4E7EC]  border-[#E4E7EC]')}><span>Go to Overview</span></button>, <button key='button-two' className="cta p-2 rounded-lg inline-flex justify-between border text-[#475367] gap-1 items-center bg-[#E4E7EC] border-[#E4E7EC]"><span><LockedIcon /></span><span>Await Exams</span></button>]} icon={<ExamsIcon />} label='Participate in Exams' desc='Participate in exams on due date.' />
       </div>
       <EmailVerificationModal currentUserEmail={authState?.user?.email} open={openEmail} close={setOpenEmail} />
     </ResponsiveContainer>

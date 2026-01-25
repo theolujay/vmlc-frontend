@@ -1,0 +1,312 @@
+# Overview Section API Specification
+
+This document details the API endpoints and data structures expected by the `OverviewSection` and its sub-components in the Admin Dashboard.
+
+## 1. Statistics Overview
+Fetches summary statistics for candidates, staff, and exams.
+
+- **Endpoint:** `/statistics/overview/` (Based on `UserMgtUrls.STATISTICS_OVERVIEW`)
+- **Method:** `GET`
+- **Hook:** `useGetStatOverview`
+
+### Response Structure (`StatOverviewType`)
+```json
+{
+  "candidates": {
+    "registered": 1250,
+    "active": 850,
+    "inactive": 300,
+    "pre_registered": 2100,
+    "deactivated": 10,
+    "registered_change": "+12%",
+    "active_change": "+5%",
+    "pre_registered_change": "+18%"
+  },
+  "staff": {
+    "registered": 45,
+    "active": 40,
+    "inactive": 5,
+    "pre_registered": 0,
+    "deactivated": 0
+  },
+  "exams": {
+    "upcoming": 5,
+    "active": 2,
+    "completed": 10,
+    "active_change": "+1"
+  }
+}
+```
+
+---
+
+## 2. Registered Candidates List
+Fetches a paginated list of fully registered candidates.
+
+- **Endpoint:** `/users/` (Filtered by `profile=candidate`)
+- **Method:** `GET`
+- **Hook:** `useListUserMgt`
+- **Query Parameters:**
+  - `page`: number (default: 1)
+  - `search`: string (optional)
+  - `profile`: string (hardcoded to `candidate` in this context)
+
+### Response Structure (`UserMgtType`)
+```json
+{
+  "pagination": {
+    "total_pages": 15,
+    "current_page": 1,
+    "page_size": 10,
+    "total_items": 145
+  },
+  "results": [
+    {
+      "user": {
+        "id": "uuid",
+        "first_name": "John",
+        "last_name": "Doe",
+        "email": "john@example.com",
+        "phone": "08012345678",
+        "state": "Lagos",
+        "date_joined": "2023-10-27T10:00:00Z"
+      },
+      "school_name": "Example High School",
+      "current_class": "SS3",
+      "role": "candidate",
+      "status": "active",
+      "is_user_verified": true
+    }
+  ]
+}
+```
+
+---
+
+## 3. Pre-Registered Candidates List
+Fetches a paginated list of users who have expressed interest but haven't completed full registration.
+
+- **Endpoint:** `/users/` (Filtered by `profile=pre_reg_candidate`)
+- **Method:** `GET`
+- **Hook:** `useListPreRegisteredCandidates`
+- **Query Parameters:**
+  - `page`: number (default: 1)
+  - `search`: string (optional)
+  - `profile`: `pre_reg_candidate` (Hardcoded in service)
+
+### Response Structure (`PreRegisteredCandidateType`)
+```json
+{
+  "pagination": {
+    "total_pages": 5,
+    "current_page": 1,
+    "page_size": 10,
+    "total_items": 48
+  },
+  "results": [
+    {
+      "full_name": "Jane Smith",
+      "email": "jane@example.com",
+      "phone": "08123456789",
+      "created_at": "2023-10-26T14:30:00Z"
+    }
+  ]
+}
+```
+
+---
+
+## 4. Registration Trends
+Fetches registration data over a specific period for charting.
+
+- **Endpoint:** `/statistics/registration-trends/?days={days}`
+- **Method:** `GET`
+- **Hook:** `useGetRegistrationTrends`
+- **Query Parameters:**
+  - `days`: number (usually 7 or 30)
+
+### Response Structure (`RegistrationTrendType`)
+```json
+{
+  "daily": {
+    "candidates": [
+      { "day": "2023-10-21T00:00:00Z", "count": 12 },
+      { "day": "2023-10-22T00:00:00Z", "count": 15 }
+    ],
+    "total_users": [...],
+    "staff": [...],
+    "pre_registrations": [...]
+  },
+  "weekly": {
+    "candidates": [...],
+    "total_users": [...],
+    "staff": [...],
+    "pre_registrations": [...]
+  },
+  "funnel": {
+    "pre_registrations": 1000,
+    "completed_registrations": 800,
+    "conversion_percentage": 80
+  }
+}
+```
+
+---
+
+## 5. Support Conversations
+Endpoints for managing support inquiries and communication between users and staff.
+
+### 5.1 List Support Conversations
+Fetches a paginated list of ongoing support inquiries for the staff dashboard.
+
+- **Endpoint:** `/support/conversations/` (Based on `SupportUrls.getConversations`)
+- **Method:** `GET`
+- **Hook:** `useListConversations`
+- **Query Parameters:**
+  - `page`: number (optional)
+  - `search`: string (optional)
+
+#### Response Structure (`SupportConversationListResponse`)
+```json
+{
+  "count": 100,
+  "next": "url",
+  "previous": null,
+  "results": [
+    {
+      "id": "uuid",
+      "user": {
+        "id": "uuid",
+        "name": "John Doe",
+        "avatar": "url (optional)"
+      },
+      "last_message": {
+        "content": "I need help with...",
+        "timestamp": "2024-03-20T10:00:00Z",
+        "is_read": false
+      },
+      "unread_count": 2
+    }
+  ]
+}
+```
+
+### 5.2 Get Conversation Messages
+Fetches the full message history for a specific conversation.
+
+- **Endpoint:** `/support/conversations/{id}/messages/` (Based on `SupportUrls.getMessages`)
+- **Method:** `GET`
+- **Hook:** `useGetSupportMessages`
+
+#### Response Structure (`SupportMessageType[]`)
+```json
+[
+  {
+    "id": "uuid",
+    "conversation": "uuid",
+    "sender": {
+      "id": "uuid",
+      "name": "John Doe",
+      "email": "john@example.com",
+      "avatar": "url (optional)"
+    },
+    "content": "Hello, I have a question.",
+    "timestamp": "2024-03-20T10:00:00Z",
+    "is_read": true,
+    "is_staff": false
+  }
+]
+```
+
+### 5.3 Send Support Message
+Sends a reply to an existing support conversation.
+
+- **Endpoint:** `/support/conversations/{id}/messages/` (Based on `SupportUrls.sendMessage`)
+- **Method:** `POST`
+- **Hook:** `useSendSupportMessage`
+- **Payload:**
+```json
+{
+  "content": "Sure, how can I help you today?"
+}
+```
+
+---
+
+## Data Models Summary
+
+### RequestUserType
+| Field | Type | Description |
+| :--- | :--- | :--- |
+| `id` | string (UUID) | Unique identifier |
+| `first_name` | string | User's first name |
+| `last_name` | string | User's last name |
+| `email` | string | Email address |
+| `phone` | string | Phone number |
+| `state` | string | State of residence |
+| `date_joined` | string (ISO Date) | Timestamp of registration |
+
+### ActivityHistoryUserType
+Extends the user data with profile-specific fields for the "Registered Candidates" table.
+- `user`: `RequestUserType`
+- `school_name`: string | null
+- `current_class`: string | null
+- `status`: string
+- `is_user_verified`: boolean
+
+---
+
+## 6. Notifications with WebSockets
+Real-time notifications for users.
+
+- **Endpoint:** `ws://<host>/v1/ws/notifications/` (wss:// for production)
+- **Method:** `WebSocket`
+- **Service:** `NotificationService`
+- **Context:** `NotificationProvider`
+
+### Connection
+To connect, append authentication details as query parameters:
+`ws://<host>/v1/ws/notifications/?api_key=<your_api_key>&token=<access_token>`
+
+- `api_key`: Your API key.
+- `token`: Valid JWT access token.
+
+### Server-to-Client Messages
+When a notification is received, the server sends a JSON object.
+
+#### Notification Activity
+```json
+{
+  "type": "notification_activity",
+  "message": {
+    "id": 123,
+    "subject": "New Exam Available",
+    "message": "The final stage exam is now open. Good luck!",
+    "read": false,
+    "created_at": "2025-09-21T12:00:00.123456Z"
+  }
+}
+```
+
+#### Error Message
+```json
+{
+  "type": "error",
+  "message": "Error description string"
+}
+```
+
+### Client-to-Server Messages
+Clients can send actions to the server.
+
+#### Mark as Read
+Marks a specific notification as read.
+
+```json
+{
+  "action": "mark_as_read",
+  "data": {
+    "notification_id": 123
+  }
+}
+```

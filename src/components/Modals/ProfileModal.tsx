@@ -7,7 +7,7 @@ import useUpdateProfile from "@/hooks/useUpdateProfile"
 import Spinner from "@/components/ui/spinner/spinner"
 import { getUserName } from "@/utils/generalUtils"
 import { formatDate } from "@/utils/formatFileSize"
-import { AverageIcon, LeaderBoardSummaryIcon, ScreeningSummaryIcon, SubmittedDocumentIcon, ViewArrow } from "@/components/General/GeneralIcon"
+import { AverageIcon, LeaderBoardSummaryIcon, SubmittedDocumentIcon, ViewArrow } from "@/components/General/GeneralIcon"
 import { ActivitiesIcon, ScoresIcon, ActionsIcon } from "@/components/Admin/AdminIcons"
 import Link from "next/link"
 import Image from "next/image"
@@ -262,12 +262,6 @@ export default function ProfileModal({
                     
                     <div className="relative rounded-3xl p-1 bg-gradient-to-tr from-[#3E4095] to-[#01ACEA] shadow-xl shadow-[#3E4095]/20 group">
                         <div className="bg-white rounded-[22px] p-8 h-full flex flex-col items-center justify-center gap-6 relative overflow-hidden">
-                            {/* <div className="absolute top-0 right-0 p-4">
-                                <span className={`px-2 py-1 rounded-lg text-[8px] font-black uppercase tracking-tighter ${profile.is_user_verified ? 'bg-green-50 text-green-600' : 'bg-amber-50 text-amber-600'}`}>
-                                    {profile.is_user_verified ? 'Verified' : 'Pending'}
-                                </span>
-                            </div> */}
-                            
                             <div className="relative">
                                 <div className="w-32 h-32 rounded-3xl bg-gray-50 border-4 border-white shadow-lg overflow-hidden flex items-center justify-center text-[#3E4095] text-4xl font-black relative">
                                     {user?.profile_picture ? (
@@ -519,20 +513,7 @@ function ScoreComponent({ scoresData }: { scoresData: RecordsType }) {
                 </div>
             </div>
 
-            <div className="bg-[#E6F7FD] rounded-3xl p-8 flex items-center justify-between">
-                <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 bg-white rounded-2xl flex items-center justify-center text-[#01ACEA] shadow-sm">
-                        <ScreeningSummaryIcon />
-                    </div>
-                    <div>
-                        <h4 className="text-xs font-black text-gray-800 uppercase tracking-widest">Screening Status</h4>
-                        <p className="text-[10px] text-gray-500 font-medium">Verified through official biometric evaluation</p>
-                    </div>
-                </div>
-                <div className="text-right">
-                    <p className="text-2xl font-black text-[#01ACEA]">Verified</p>
-                </div>
-            </div>
+
 
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 <StatMiniCard label="Exams Taken" value={stats.total_exams_taken} />

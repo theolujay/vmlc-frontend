@@ -81,10 +81,6 @@ function Details({ userName, email, dateJoined, school_name, role, status }: { s
             </div>
             <div className="flex flex-col gap-2">
                 <div className="flex-col gap-1 flex">
-                    <span className='text-[#475367] text-sm'>VERIFICATION</span>
-                    <span className='bg-[#FFF1F3] rounded-full w-fit px-2 py-1 text-[#C01048]'>{role}</span>
-                </div>
-                <div className="flex-col gap-1 flex">
                     <span className='text-[#475367] text-sm'>EMAIL</span>
                     <span>{email}</span>
                 </div>
