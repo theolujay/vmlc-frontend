@@ -76,7 +76,7 @@ const PrimaryAction: React.FC<PrimaryActionProps> = ({ exam, candidateName }) =>
     <section className="bg-white p-8 rounded-[24px] border border-[#E4E7EC] shadow-sm text-center font-sans">
       <div className="max-w-md mx-auto">
         <span className="bg-[#EBEBF5] text-[#3E4095] px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide">
-          {isFinals ? 'On-site Finals' : 'Upcoming Exam'}
+          {isFinals ? 'On-site Finals' : 'Next Exam'}
         </span>
         <h2 className="text-2xl font-bold text-slate-800 mt-3">
           {exam.title}
