@@ -194,3 +194,9 @@ export type RegistrationTrendType = {
     conversion_percentage: number;
   };
 };
+
+export type HandleVerificationStatusPayloadType = {
+  is_approved?: boolean;
+  is_rejected?: boolean;
+  rejection_reason?: string;
+};
