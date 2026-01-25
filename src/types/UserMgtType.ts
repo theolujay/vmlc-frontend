@@ -100,8 +100,7 @@ export type MgtItem = {
   role: string,
   status: string,
   profile_type: string,
-  occupation: string | null,
-  is_user_verified: boolean
+  occupation: string | null
 }
 
 export type MgtItemType = {
@@ -123,13 +122,13 @@ export type StaffUserType = RequestUserType & {
 
 export type UserProfileType = {
   user: StaffUserType
-  occupation: string,
-  face_id: string | null,
+  occupation: string | null,
+  school_name?: string | null,
+  school_type?: string | null,
+  current_class?: string | null,
   role: string,
   profile_type: string,
   is_active: boolean,
-  is_user_verified: boolean,
-  id_card: string | null,
   verification_document: string | null,
   verification_document_type: string | null,
   created_at: Date,
@@ -140,22 +139,6 @@ export type StaffDetailsType = {
   profile: UserProfileType
 
 }
-
-
-export type VerificationStatusPayloadType = {
- is_approved: boolean
-}
-
-
-
-export type RejectionStatusPayloadType = {
-  is_rejected: boolean,
-  rejection_reason: string
-}
-
-
-
-export type HandleVerificationStatusPayloadType = VerificationStatusPayloadType | RejectionStatusPayloadType;
 
 
 

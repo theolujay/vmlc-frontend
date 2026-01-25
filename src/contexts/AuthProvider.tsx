@@ -43,7 +43,16 @@ const reducer = (state: AuthState, action: Actions) => {
                 school_name: payload.profile.school_name
             }
             const returnUrl = sessionStorage.getItem("returnURL");
-            const homePath = isStudent || isStaff ? returnUrl || '/get-started' : '/login';
+            
+            let homePath = '/login';
+            if (returnUrl) {
+                homePath = returnUrl;
+            } else if (isStudent) {
+                homePath = '/exam-portal';
+            } else if (isStaff) {
+                homePath = '/admin/overview';
+            }
+
             return {
                 token: payload.access,
                 refreshToken: payload.refresh,

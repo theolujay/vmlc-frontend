@@ -16,7 +16,7 @@ import TourGuide from './TourGuide'
 
   return (
     <PageLayout>
-      <Hero userType={authState?.userType!} />
+      <Hero userType={authState!.userType!} />
       <div className="grid gap-3 grid-cols-1 md:grid-cols-3">
         <InfoBoard/>
         <div className="flex gap-3 flex-col">

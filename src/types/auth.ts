@@ -105,8 +105,7 @@ export type RegisteredCandidatesType = {
     school_name: string | null,
     current_class: string | null,
     role: string,
-    status:string,
-    is_user_verified: boolean
+    status:string
 }
 
 
