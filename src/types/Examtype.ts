@@ -281,7 +281,7 @@ type QuestionType = {
   previous: string | null,
   // meta: MetaType,
   // results: QuestionItemType[],
-  results:SessionQuestionItemType
+  results:SessionQuestionItemType[]
   question_pool_data: QuestionPoolDataType
 }
 type QuestionPoolDataType = {
