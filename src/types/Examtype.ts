@@ -17,21 +17,34 @@ export type QuestionProps = {
 
 type recentScoreType = {
   exam: string,
+  exam_title?: string,
   score: number,
   date: Date,
   exam_stage: string
 }
 
+export type StageProgressType = {
+  current_stage: string;
+  current_level: number;
+  has_taken_exam: boolean;
+  qualification_threshold_score: number;
+};
+
 export type DashboardType = {
   candidate_info: CandidateInfoType,
   exam_stats: ExamStatType,
-  leaderboard_ranking: LeaderboardRankingType,
+  stage_progress: StageProgressType,
+  league_leaderboard_ranking: LeaderboardRankingType | null,
+  screening_standings_ranking: LeaderboardRankingType | null,
   recent_scores: recentScoreType[],
-  available_exams: AvailableExamType[]
+  available_exams: AvailableExamType[],
+  concluded_exams: ConcludedExamType[],
+  next_exam: AvailableExamType | null
 }
 
 
 export type LeaderboardRankingType = {
+  current_rank: number,
   position: number,
   total_candidates: number
 }
@@ -51,7 +64,20 @@ export type AvailableExamType = {
   level:number,
   scheduled_date:Date
   stage: string,
-  stage_display:string
+  stage_display:string,
+  participation: string
+}
+
+export type ConcludedExamType = {
+  id: string,
+  title: string,
+  description: string,
+  concluded_at: string,
+  question_count: number,
+  participation: string,
+  stage: string,
+  level: number,
+  stage_display: string
 }
 
 
@@ -135,14 +161,9 @@ export type ExamStatType = {
 
 
 export type CandidateInfoType = {
-  name: string,
-  email: string,
-  phone: string,
-  school_name: string,
+  first_name: string,
+  last_name: string,
   role: string,
-  is_verified: boolean,
-  date_joined: Date,
-  profile_photo: string
 }
 
 export type CreateExamSessionType = {

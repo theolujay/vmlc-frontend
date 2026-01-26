@@ -20,12 +20,10 @@ export type CandidateType = {
     user: RequestUserType,
     school_name: string,
     status: string,
-    face_id: string | null,
     role: string,
     is_active: boolean,
-    is_verified: boolean,
-    id_card: string | null,
     verification_document: string | null,
+    verification_document_type: string | null,
     created_at: Date,
     updated_at: Date,
     records: RecordsType

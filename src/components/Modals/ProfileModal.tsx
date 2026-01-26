@@ -1,13 +1,13 @@
 "use client"
-import React, { useState, useEffect } from "react"
+import React, { useState, useEffect, useMemo } from "react"
 import AppDialog from "@/components/ui/Modals/AppDialog"
-import useGetAccountDetails, { useGetOwnAccountDetails } from "@/hooks/useGetAccountDetails"
+import useGetAccountDetails from "@/hooks/useGetAccountDetails"
 import useGetCandidateDetails from "@/hooks/useGetCandidateDetails"
 import useUpdateProfile from "@/hooks/useUpdateProfile"
 import Spinner from "@/components/ui/spinner/spinner"
 import { getUserName } from "@/utils/generalUtils"
 import { formatDate } from "@/utils/formatFileSize"
-import { AverageIcon, LeaderBoardSummaryIcon, ScreeningSummaryIcon, SubmittedDocumentIcon, ViewArrow } from "@/components/General/GeneralIcon"
+import { AverageIcon, LeaderBoardSummaryIcon, SubmittedDocumentIcon, ViewArrow } from "@/components/General/GeneralIcon"
 import { ActivitiesIcon, ScoresIcon, ActionsIcon } from "@/components/Admin/AdminIcons"
 import Link from "next/link"
 import Image from "next/image"
@@ -15,6 +15,7 @@ import CustomTable from "@/components/ui/CustomTable"
 import EmptySession from "@/components/Admin/EmptySession"
 import { ExamTakenType, RecordsType } from "@/types/CandidateType"
 import { useForm, UseFormRegister } from "react-hook-form"
+import { useAuth } from "@/contexts/AuthProvider"
 
 type TabType = 'Profile' | 'Activities' | 'Scores' | 'Actions'
 
@@ -24,8 +25,15 @@ type ProfileFormData = {
   phone: string
   state: string
   occupation: string
+  school_name: string
+  school_type: string
+  current_class: string
   profile_picture?: FileList
 }
+
+const STATES = ['Lagos', 'Abuja', 'Ogun', 'Rivers']
+const SCHOOL_TYPES = ['public', 'private']
+const CURRENT_CLASSES = ['SS1', 'SS2', 'SS3']
 
 export default function ProfileModal({
   id,
@@ -36,18 +44,24 @@ export default function ProfileModal({
   const [activeTab, setActiveTab] = useState<TabType>('Profile')
   const [isEditing, setIsEditing] = useState(false)
   
+  const { authState } = useAuth()
   const { data: otherAccountData, isPending: otherAccountPending } = useGetAccountDetails(id, !isOwnProfile && !!id)
-  const { data: ownAccountData, isPending: ownAccountPending } = useGetOwnAccountDetails(isOwnProfile)
 
-  const accountData = isOwnProfile ? ownAccountData : otherAccountData
-  const accountPending = isOwnProfile ? ownAccountPending : otherAccountPending
+  const accountData = useMemo(() => {
+    if (isOwnProfile) {
+      return authState?.profile ? { profile: authState.profile } : null
+    }
+    return otherAccountData
+  }, [isOwnProfile, authState?.profile, otherAccountData])
+
+  const accountPending = !isOwnProfile && otherAccountPending
 
   const isCandidate = accountData?.profile?.profile_type === 'candidate'
   
-  const { data: candidateData, isPending: candidatePending } = useGetCandidateDetails(id, !!isCandidate && !!id)
+  const { data: candidateData, isPending: candidatePending } = useGetCandidateDetails(id, !isOwnProfile && !!isCandidate && !!id)
   const { mutate: updateProfile, isPending: updatePending } = useUpdateProfile()
 
-  const isPending = accountPending || (isCandidate && candidatePending)
+  const isPending = accountPending || (!isOwnProfile && isCandidate && candidatePending)
 
   const { register, handleSubmit, reset } = useForm<ProfileFormData>()
 
@@ -58,7 +72,10 @@ export default function ProfileModal({
         last_name: accountData.profile.user.last_name,
         phone: accountData.profile.user.phone,
         state: accountData.profile.user.state,
-        occupation: accountData.profile.occupation,
+        occupation: accountData.profile.occupation || '',
+        school_name: accountData.profile.school_name || '',
+        school_type: accountData.profile.school_type || '',
+        current_class: accountData.profile.current_class || '',
       })
     }
   }, [accountData, reset])
@@ -66,6 +83,7 @@ export default function ProfileModal({
   function handleClose() {
     close(false)
     setIsEditing(false)
+    setActiveTab('Profile')
   }
 
   const onSave = (data: ProfileFormData) => {
@@ -78,7 +96,13 @@ export default function ProfileModal({
     formData.append('user[state]', data.state)
     
     // Add profile fields
-    formData.append('profile[occupation]', data.occupation)
+    if (isCandidate) {
+      formData.append('profile[school_name]', data.school_name)
+      formData.append('profile[school_type]', data.school_type)
+      formData.append('profile[current_class]', data.current_class)
+    } else {
+      formData.append('profile[occupation]', data.occupation)
+    }
     
     // Add profile picture if selected
     if (data.profile_picture?.[0]) {
@@ -98,11 +122,13 @@ export default function ProfileModal({
     { id: 'Profile', label: 'Profile', icon: <i className="fas fa-user-circle"></i> },
   ]
 
-  if (isCandidate) {
-    tabs.push({ id: 'Activities', label: 'Activities', icon: <ActivitiesIcon /> })
-    tabs.push({ id: 'Scores', label: 'Scores', icon: <ScoresIcon /> })
-  } else {
-    tabs.push({ id: 'Actions', label: 'Actions', icon: <ActionsIcon /> })
+  if (!isOwnProfile) {
+    if (isCandidate) {
+      tabs.push({ id: 'Activities', label: 'Activities', icon: <ActivitiesIcon /> })
+      tabs.push({ id: 'Scores', label: 'Scores', icon: <ScoresIcon /> })
+    } else {
+      tabs.push({ id: 'Actions', label: 'Actions', icon: <ActionsIcon /> })
+    }
   }
 
   return (
@@ -127,22 +153,24 @@ export default function ProfileModal({
              </div>
           </div>
           <div className="flex items-center gap-4">
-            <div className="hidden md:flex bg-gray-50 p-1 rounded-xl border border-gray-100">
-                {tabs.map((tab) => (
-                    <button
-                        key={tab.id}
-                        onClick={() => setActiveTab(tab.id)}
-                        className={`flex items-center gap-2 px-4 py-2 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all ${
-                            activeTab === tab.id 
-                            ? 'bg-white text-[#3E4095] shadow-sm ring-1 ring-black/5' 
-                            : 'text-gray-400 hover:text-gray-600'
-                        }`}
-                    >
-                        {tab.icon}
-                        <span>{tab.label}</span>
-                    </button>
-                ))}
-            </div>
+            {tabs.length > 1 && (
+              <div className="hidden md:flex bg-gray-50 p-1 rounded-xl border border-gray-100">
+                  {tabs.map((tab) => (
+                      <button
+                          key={tab.id}
+                          onClick={() => setActiveTab(tab.id)}
+                          className={`flex items-center gap-2 px-4 py-2 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all ${
+                              activeTab === tab.id 
+                              ? 'bg-white text-[#3E4095] shadow-sm ring-1 ring-black/5' 
+                              : 'text-gray-400 hover:text-gray-600'
+                          }`}
+                      >
+                          {tab.icon}
+                          <span>{tab.label}</span>
+                      </button>
+                  ))}
+              </div>
+            )}
             <button onClick={handleClose} className="w-10 h-10 flex items-center justify-center rounded-xl bg-gray-50 text-gray-400 hover:text-gray-600 transition-colors cursor-pointer">
                 <i className="fas fa-times"></i>
             </button>
@@ -190,8 +218,34 @@ export default function ProfileModal({
                                     <EditInfoItem label="First Name" name="first_name" register={register} disabled={!!user?.first_name} />
                                     <EditInfoItem label="Last Name" name="last_name" register={register} disabled={!!user?.last_name} />
                                     <EditInfoItem label="Phone Number" name="phone" register={register} disabled={false} />
-                                    <EditInfoItem label="State" name="state" register={register} disabled={!!user?.state} />
-                                    <EditInfoItem label="Occupation" name="occupation" register={register} disabled={false} />
+                                    <EditInfoItem 
+                                        label="State" 
+                                        name="state" 
+                                        register={register} 
+                                        disabled={!!user?.state} 
+                                        options={isCandidate ? STATES : undefined}
+                                    />
+                                    {isCandidate ? (
+                                        <>
+                                            <EditInfoItem label="School Name" name="school_name" register={register} disabled={!!profile?.school_name} />
+                                            <EditInfoItem 
+                                                label="School Type" 
+                                                name="school_type" 
+                                                register={register} 
+                                                disabled={!!profile?.school_type} 
+                                                options={SCHOOL_TYPES}
+                                            />
+                                            <EditInfoItem 
+                                                label="Current Class" 
+                                                name="current_class" 
+                                                register={register} 
+                                                disabled={!!profile?.current_class} 
+                                                options={CURRENT_CLASSES}
+                                            />
+                                        </>
+                                    ) : (
+                                        <EditInfoItem label="Occupation" name="occupation" register={register} disabled={!!profile?.occupation} />
+                                    )}
                                     <div className="space-y-1">
                                         <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Email Address</p>
                                         <p className="text-sm font-bold text-gray-400">{user?.email}</p>
@@ -204,7 +258,15 @@ export default function ProfileModal({
                                     <InfoItem label="Phone Number" value={user?.phone || 'Not Provided'} />
                                     <InfoItem label="Location / State" value={user?.state || 'Not Specified'} />
                                     <InfoItem label="Date Joined" value={user?.date_joined ? formatDate(user.date_joined) : 'N/A'} />
-                                    <InfoItem label="Occupation" value={profile.occupation || 'Not Specified'} />
+                                    {isCandidate ? (
+                                        <>
+                                            <InfoItem label="School Name" value={profile.school_name || 'Not Specified'} />
+                                            <InfoItem label="School Type" value={profile.school_type || 'Not Specified'} />
+                                            <InfoItem label="Current Class" value={profile.current_class || 'Not Specified'} />
+                                        </>
+                                    ) : (
+                                        <InfoItem label="Occupation" value={profile.occupation || 'Not Specified'} />
+                                    )}
                                 </>
                             )}
                         </div>
@@ -234,12 +296,6 @@ export default function ProfileModal({
                     
                     <div className="relative rounded-3xl p-1 bg-gradient-to-tr from-[#3E4095] to-[#01ACEA] shadow-xl shadow-[#3E4095]/20 group">
                         <div className="bg-white rounded-[22px] p-8 h-full flex flex-col items-center justify-center gap-6 relative overflow-hidden">
-                            <div className="absolute top-0 right-0 p-4">
-                                <span className={`px-2 py-1 rounded-lg text-[8px] font-black uppercase tracking-tighter ${profile.is_user_verified ? 'bg-green-50 text-green-600' : 'bg-amber-50 text-amber-600'}`}>
-                                    {profile.is_user_verified ? 'Verified' : 'Pending'}
-                                </span>
-                            </div>
-                            
                             <div className="relative">
                                 <div className="w-32 h-32 rounded-3xl bg-gray-50 border-4 border-white shadow-lg overflow-hidden flex items-center justify-center text-[#3E4095] text-4xl font-black relative">
                                     {user?.profile_picture ? (
@@ -276,19 +332,19 @@ export default function ProfileModal({
                 </div>
               )}
 
-              {activeTab === 'Activities' && isCandidate && (
+              {activeTab === 'Activities' && isCandidate && !isOwnProfile && (
                 <div className="max-w-5xl mx-auto animate-in fade-in slide-in-from-bottom-2 duration-300">
                    <ActivityComponent results={candidateData?.records?.performance?.exams_taken ?? []} />
                 </div>
               )}
 
-              {activeTab === 'Scores' && isCandidate && (
+              {activeTab === 'Scores' && isCandidate && !isOwnProfile && (
                 <div className="max-w-5xl mx-auto animate-in fade-in slide-in-from-bottom-2 duration-300">
                    <ScoreComponent scoresData={candidateData?.records as RecordsType} />
                 </div>
               )}
 
-              {activeTab === 'Actions' && !isCandidate && (
+              {activeTab === 'Actions' && !isCandidate && !isOwnProfile && (
                 <div className="max-w-5xl mx-auto animate-in fade-in slide-in-from-bottom-2 duration-300">
                    <ActionsComponent />
                 </div>
@@ -298,20 +354,22 @@ export default function ProfileModal({
         </div>
 
         {/* Mobile Tab Navigation */}
-        <div className="md:hidden grid grid-cols-4 border-t border-gray-200 bg-white">
-            {tabs.map((tab) => (
-                <button
-                    key={tab.id}
-                    onClick={() => setActiveTab(tab.id)}
-                    className={`flex flex-col items-center justify-center py-4 gap-1 transition-all ${
-                        activeTab === tab.id ? 'text-[#3E4095] bg-[#3E4095]/5' : 'text-gray-400'
-                    }`}
-                >
-                    <span className="text-lg">{tab.icon}</span>
-                    <span className="text-[8px] font-black uppercase tracking-tighter">{tab.label}</span>
-                </button>
-            ))}
-        </div>
+        {tabs.length > 1 && (
+          <div className="md:hidden grid grid-cols-4 border-t border-gray-200 bg-white">
+              {tabs.map((tab) => (
+                  <button
+                      key={tab.id}
+                      onClick={() => setActiveTab(tab.id)}
+                      className={`flex flex-col items-center justify-center py-4 gap-1 transition-all ${
+                          activeTab === tab.id ? 'text-[#3E4095] bg-[#3E4095]/5' : 'text-gray-400'
+                      }`}
+                  >
+                      <span className="text-lg">{tab.icon}</span>
+                      <span className="text-[8px] font-black uppercase tracking-tighter">{tab.label}</span>
+                  </button>
+              ))}
+          </div>
+        )}
       </div>
 
       <style jsx global>{`
@@ -342,15 +400,28 @@ function InfoItem({ label, value }: { label: string, value: string }) {
   )
 }
 
-function EditInfoItem({ label, name, register, disabled = false }: { label: string, name: keyof ProfileFormData, register: UseFormRegister<ProfileFormData>, disabled?: boolean }) {
+function EditInfoItem({ label, name, register, disabled = false, options }: { label: string, name: keyof ProfileFormData, register: UseFormRegister<ProfileFormData>, disabled?: boolean, options?: string[] }) {
   return (
     <div className="space-y-1.5">
       <label className="text-[10px] font-black text-[#3E4095] uppercase tracking-widest">{label}</label>
-      <input 
-        {...register(name)}
-        disabled={disabled}
-        className={`w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2.5 text-sm font-bold text-gray-800 focus:ring-2 focus:ring-[#3E4095]/10 focus:border-[#3E4095] outline-none transition-all ${disabled ? 'opacity-50 cursor-not-allowed bg-gray-100 text-gray-500' : ''}`}
-      />
+      {options ? (
+        <select 
+          {...register(name)}
+          disabled={disabled}
+          className={`w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2.5 text-sm font-bold text-gray-800 focus:ring-2 focus:ring-[#3E4095]/10 focus:border-[#3E4095] outline-none transition-all ${disabled ? 'opacity-50 cursor-not-allowed bg-gray-100 text-gray-500' : ''}`}
+        >
+          <option value="">Select {label}</option>
+          {options.map((option) => (
+            <option key={option} value={option}>{option}</option>
+          ))}
+        </select>
+      ) : (
+        <input 
+          {...register(name)}
+          disabled={disabled}
+          className={`w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2.5 text-sm font-bold text-gray-800 focus:ring-2 focus:ring-[#3E4095]/10 focus:border-[#3E4095] outline-none transition-all ${disabled ? 'opacity-50 cursor-not-allowed bg-gray-100 text-gray-500' : ''}`}
+        />
+      )}
     </div>
   )
 }
@@ -491,20 +562,7 @@ function ScoreComponent({ scoresData }: { scoresData: RecordsType }) {
                 </div>
             </div>
 
-            <div className="bg-[#E6F7FD] rounded-3xl p-8 flex items-center justify-between">
-                <div className="flex items-center gap-4">
-                    <div className="w-12 h-12 bg-white rounded-2xl flex items-center justify-center text-[#01ACEA] shadow-sm">
-                        <ScreeningSummaryIcon />
-                    </div>
-                    <div>
-                        <h4 className="text-xs font-black text-gray-800 uppercase tracking-widest">Screening Status</h4>
-                        <p className="text-[10px] text-gray-500 font-medium">Verified through official biometric evaluation</p>
-                    </div>
-                </div>
-                <div className="text-right">
-                    <p className="text-2xl font-black text-[#01ACEA]">Verified</p>
-                </div>
-            </div>
+
 
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                 <StatMiniCard label="Exams Taken" value={stats.total_exams_taken} />

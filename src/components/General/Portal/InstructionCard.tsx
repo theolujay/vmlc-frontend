@@ -30,7 +30,7 @@ export default function InstructionCard() {
              <ol className="list-decimal list-inside space-y-1 pl-5">
                 <li>Ensure you are in a quiet environment with no distractions.</li>
                 <li>Make sure your internet connection is stable.</li>
-                <li>Have a valid ID ready for verification purposes.</li>   
+
                 <li>Close all other applications and tabs on your device.</li>
                 <li>Ensure your webcam and microphone are functioning properly.</li>
              </ol>
@@ -40,7 +40,7 @@ export default function InstructionCard() {
              <ol className="list-decimal list-inside space-y-1 pl-5">
                 <li>Ensure you are in a quiet environment with no distractions.</li>
                 <li>Make sure your internet connection is stable.</li>
-                <li>Have a valid ID ready for verification purposes.</li>   
+
                 <li>Close all other applications and tabs on your device.</li>
                 <li>Ensure your webcam and microphone are functioning properly.</li>
              </ol>

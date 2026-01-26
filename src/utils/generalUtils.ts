@@ -1,4 +1,4 @@
-import { SessionQuestionItemType } from "@/types/Examtype";
+// import { SessionQuestionItemType } from "@/types/Examtype";
 
 export function getUserName(firstName: string, lastName: string): string {
     return [firstName, lastName].join(' ')
@@ -60,7 +60,7 @@ export function getUserName(firstName: string, lastName: string): string {
 // }
 
 
-export function getOptionAsArray<T extends Record<string, any>>(
+export function getOptionAsArray<T extends Record<string, unknown>>(
   data: T
 ): Array<{ option: string; optionKey: string }> {
   const optionsArray: Array<{ option: string; optionKey: string }> = [];
@@ -70,7 +70,7 @@ export function getOptionAsArray<T extends Record<string, any>>(
       const value = data[key];
 
       optionsArray.push({
-        option: value,
+        option: value as string,
         optionKey: key,
       });
     }

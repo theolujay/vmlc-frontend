@@ -1,8 +1,7 @@
 
 
 "use client"
-import { AverageIcon, GotoSummaryIcon, LeaderBoardSummaryIcon, ScreeningSummaryIcon, SubmittedDocumentIcon, ViewArrow } from '@/components/General/GeneralIcon'
-import ApprovalStatusModal from '@/components/Modals/ApprovalStatusModal'
+import { AverageIcon, GotoSummaryIcon, LeaderBoardSummaryIcon, ScreeningSummaryIcon } from '@/components/General/GeneralIcon'
 import Button from '@/components/ui/Button'
 import CustomTable from '@/components/ui/CustomTable'
 import ResponsiveContainer from '@/components/ui/ResponsiveContainer'
@@ -15,8 +14,6 @@ import { ExamTakenType } from '@/types/CandidateType'
 import { UserProfileType } from '@/types/UserMgtType'
 import { formatDate } from '@/utils/formatFileSize'
 import { getUserName } from '@/utils/generalUtils'
-import Link from 'next/link'
-import { useState } from 'react'
 import AdminHeader from '../AdminHeader'
 import { ActionsIcon } from '../AdminIcons'
 import EmptySession from '../EmptySession'
@@ -50,24 +47,15 @@ export default withAuthentication(ViewStaffDetailsFromLeaderboard)
 
 
 function ProfileComponent(
-    { userName, status, email, dateJoined, occupation, role, userType, phone, document, facial ,user_id}: {user_id:string, phone: string, userType: string, userName: string, email: string, status: string, dateJoined: Date, occupation: string, document: string[], role: string, facial: string | null }
+    { userName, email, dateJoined, occupation, role, userType, phone, school_name, school_type, current_class }: { user_id: string, phone: string, userType: string, userName: string, email: string, dateJoined: Date, occupation: string | null, role: string, school_name?: string | null, school_type?: string | null, current_class?: string | null }
 ) {
 
-    console.log(document, document.length, 'document in profile component')
     // const userInitials = getUserInitials(userName)
 
-    const [openApproval, setOpenApproval] = useState(false)
     return <div className='flex gap-3 flex-col p-8'>
 
         <div className='flex gap-3 mb-3 border-b border-[#E4E7EC] flex-col p-8'>
 
-            <div className="flex flex-col gap-1">
-                <span className='text-sm'>VERIFICATION STATUS</span>
-                <button onClick={()=>setOpenApproval(true)} className="flex cursor-pointer justify-between max-w-[30vw] items-center ">
-                    <span className='bg-[#FEF6E7] rounded-full w-fit px-2 py-1 text-[#865503]'>{status}</span>
-                    <span><ViewArrow /></span>
-                </button>
-            </div>
             <div className="flex flex-col gap-1">
                 <span className='text-sm'>NAME</span>
                 <span className='font-bold text-2xl'>{userName}</span>
@@ -83,16 +71,52 @@ function ProfileComponent(
                         <span className='text-sm items-start text-[#475367]'>PHONE NUMBER</span>
                         <span className=' w-fit '>{phone}</span>
                     </div>
-                    <div className="flex-col text-sm  gap-1 flex">
-                        <span className='text-[#475367] text-sm'>OCCUPATION</span>
-                        <span className='text-base'>{occupation}</span>
-                    </div>
+                    {userType === 'candidate' ? (
+                        <>
+                            <div className="flex-col text-sm  gap-1 flex">
+                                <span className='text-[#475367] text-sm'>SCHOOL NAME</span>
+                                <span className='text-base'>{school_name || 'N/A'}</span>
+                            </div>
+                        </>
+                    ) : (
+                        <div className="flex-col text-sm  gap-1 flex">
+                            <span className='text-[#475367] text-sm'>OCCUPATION</span>
+                            <span className='text-base'>{occupation || 'N/A'}</span>
+                        </div>
+                    )}
                 </div>
                 <div className="flex flex-col  gap-8 ">
                     <div className="flex-col gap-1 flex">
                         <span className='text-[#475367] text-sm'>ROLE</span>
                         <span className='bg-[#FFF1F3] rounded-full w-fit px-2 py-1 text-[#C01048]'>{role}</span>
                     </div>
+                    {userType === 'candidate' ? (
+                        <>
+                            <div className="flex-col text-sm  gap-1 flex">
+                                <span className='text-[#475367] text-sm'>SCHOOL TYPE</span>
+                                <span className='text-base'>{school_type || 'N/A'}</span>
+                            </div>
+                            <div className="flex-col text-sm  gap-1 flex">
+                                <span className='text-[#475367] text-sm'>CURRENT CLASS</span>
+                                <span className='text-base'>{current_class || 'N/A'}</span>
+                            </div>
+                        </>
+                    ) : (
+                        <>
+                            <div className="flex-col gap-1 flex">
+                                <span className='text-[#475367] text-sm'>EMAIL</span>
+                                <span>{email}</span>
+                            </div>
+                            <div className="flex-col gap-1 flex">
+                                <span className='text-[#475367] text-sm'>DATE JOINED</span>
+                                <span>{formatDate(dateJoined)}</span>
+                            </div>
+                        </>
+                    )}
+                </div>
+            </div>
+            {userType === 'candidate' && (
+                <div className="grid grid-cols-1 md:grid-cols-2 mt-8">
                     <div className="flex-col gap-1 flex">
                         <span className='text-[#475367] text-sm'>EMAIL</span>
                         <span>{email}</span>
@@ -102,57 +126,8 @@ function ProfileComponent(
                         <span>{formatDate(dateJoined)}</span>
                     </div>
                 </div>
-            </div>
+            )}
         </div>
-        <div className='flex gap-3 mb-3 border-b border-[#E4E7EC] flex-col p-8'>
-            <span className='text-[#475367] text-sm'>DOCUMENTS</span>
-
-
-            {
-                document && document.length > 0 ?
-                    <div className="flex w-full gap-3 overflow-x-auto">
-                        {document.map((doc, index) => (
-                            <div key={index} className="flex gap-2 items-center">
-                                <span className="document-icon"><SubmittedDocumentIcon /></span>
-                                <div className="flex flex-col">
-                                    <span className='max-w-[15vw] whitespace-nowrap overflow-clip'>{doc}</span>
-                                    {/* <span className='text-sm'>200kb</span> */}
-                                </div>
-                                <div className="flex items-center gap-1">
-                                    <Link target='_blank' href={doc} className='text-[#3E4095] '>View</Link>
-                                    <span><ViewArrow /></span>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                    : <span>No document uploaded</span>
-            }
-        </div>
-
-        <div className='flex gap-3 mb-3 border-b border-[#E4E7EC] flex-col p-8'>
-            <span className='text-[#475367] text-sm'>FACIAL CAPTURE</span>
-
-
-            {
-                facial ?
-                    <div className="flex w-full gap-3 overflow-x-auto">
-
-                        <div className="flex gap-2 items-center">
-                            <span className="document-icon"><img className='rounded-full w-20 h-20' alt='User face id' src={facial} /></span>
-
-
-
-                            <div className="flex items-center gap-1">
-                                <span className='text-[#3E4095] '>View</span>
-                                <span><ViewArrow /></span>
-                            </div>
-                        </div>
-
-                    </div>
-                    : <span>No picture uploaded</span>
-            }
-        </div>
-        <ApprovalStatusModal user_id={user_id} open={openApproval} close={setOpenApproval} />
     </div>
 
 }
@@ -163,15 +138,6 @@ function ViewDetailsTabSection({ detailsData }: { detailsData: UserProfileType }
     console.log(detailsData, 'details data in view details tab section')
 
     const userName = getUserName(detailsData.user.first_name, detailsData.user.last_name)
-    // const documents=[detailsData?.verification_document??'',detailsData?.face_id??'']
-    let documents: string[] = []
-
-    if (detailsData.verification_document) {
-        documents.push(detailsData.verification_document)
-    }
-    if (detailsData.face_id) {
-        documents.push(detailsData.face_id)
-    }
 
 
 
@@ -179,7 +145,19 @@ function ViewDetailsTabSection({ detailsData }: { detailsData: UserProfileType }
         {
             label: <ProfileLabel />,
             value: 'Profile',
-            content: <ProfileComponent user_id={detailsData.user.id} facial={detailsData.face_id} document={documents} userType={detailsData.profile_type} phone={detailsData.user.phone} status={detailsData.is_user_verified ? 'Approved' : 'Pending'} occupation={detailsData.occupation} role={detailsData.role} dateJoined={detailsData.user.date_joined} userName={userName} email={detailsData.user.email} />
+            content: <ProfileComponent
+                user_id={detailsData.user.id}
+                userType={detailsData.profile_type}
+                phone={detailsData.user.phone}
+                occupation={detailsData.occupation}
+                role={detailsData.role}
+                dateJoined={detailsData.user.date_joined}
+                userName={userName}
+                email={detailsData.user.email}
+                school_name={detailsData.school_name}
+                school_type={detailsData.school_type}
+                current_class={detailsData.current_class}
+            />
         },
         {
             label: <ActionsLabel />,
@@ -195,6 +173,7 @@ function ViewDetailsTabSection({ detailsData }: { detailsData: UserProfileType }
 
     )
 }
+
 
 
 function ProfileLabel() {

@@ -1,5 +1,6 @@
 "use client"
 import { AuthLoginResponse, AuthState } from '@/types/auth';
+import { UserProfileType } from '@/types/UserMgtType';
 import React, { createContext, Dispatch, useContext, useEffect, useReducer } from 'react';
 
 type Actions =
@@ -10,13 +11,18 @@ type Actions =
     | {
         type: "logout";
     }
+    | {
+        type: "updateProfile";
+        payload: UserProfileType;
+    }
 
 const INIT_SESSION = 'loginSuccess';
 const DESTROY_SESSION = 'logout';
+const UPDATE_PROFILE = 'updateProfile';
 const studentRoles = new Set(['screening', 'league', 'final', 'winner']);
 const staffRoles = new Set(['volunteer', 'moderator', 'admin', 'manager', 'superadmin', 'sponsor']);
 
-const reducer = (state: AuthState, action: Actions) => {
+const reducer = (state: AuthState, action: Actions): AuthState => {
     switch (action.type) {
         case INIT_SESSION: {
             sessionStorage.removeItem("returnURL"); 
@@ -29,27 +35,36 @@ const reducer = (state: AuthState, action: Actions) => {
                     refreshToken: null,
                     isAuthenticated: false,
                     userType: null,
-                    user: null
+                    user: null,
+                    profile: null
                 }
             }
             
-            // client.defaults.headers.common["Authorization"] = `Bearer ${payload.access}`
-
             const isStudent = studentRoles.has(payload?.profile?.role ?? '');
             const isStaff = staffRoles.has(payload?.profile?.role ?? '')
             const user = {
                 ...payload.profile.user,
                 role: payload.profile.role,
-                school_name: payload.profile.school_name
+                school_name: payload.profile.school_name || ''
             }
             const returnUrl = sessionStorage.getItem("returnURL");
-            const homePath = isStudent || isStaff ? returnUrl || '/get-started' : '/login';
+            
+            let homePath = '/login';
+            if (returnUrl) {
+                homePath = returnUrl;
+            } else if (isStudent) {
+                homePath = '/exam-portal';
+            } else if (isStaff) {
+                homePath = '/admin/overview';
+            }
+
             return {
                 token: payload.access,
                 refreshToken: payload.refresh,
                 userType: isStudent ? 'candidate' : 'staff',
                 homePath,
                 user,
+                profile: payload.profile,
                 isAuthenticated: true
             }
         }
@@ -63,8 +78,30 @@ const reducer = (state: AuthState, action: Actions) => {
                 refreshToken: null,
                 isAuthenticated: false,
                 user: null,
-                userType: null
+                userType: null,
+                profile: null
+            }
+        }
 
+        case UPDATE_PROFILE: {
+            const storedSession = localStorage.getItem('session');
+            if (storedSession) {
+                const session = JSON.parse(storedSession);
+                session.profile = action.payload;
+                localStorage.setItem('session', JSON.stringify(session));
+            }
+            
+            const isStudent = studentRoles.has(action.payload.role ?? '');
+            
+            return {
+                ...state,
+                profile: action.payload,
+                userType: isStudent ? 'candidate' : 'staff',
+                user: {
+                    ...action.payload.user,
+                    role: action.payload.role,
+                    school_name: action.payload.school_name || ''
+                }
             }
         }
 
@@ -88,7 +125,8 @@ export default function AuthProvider({ children }: Readonly<{ children: React.Re
         refreshToken: null,
         isAuthenticated: false,
         userType: null,
-        user: null
+        user: null,
+        profile: null
     });
 
 
@@ -99,7 +137,6 @@ export default function AuthProvider({ children }: Readonly<{ children: React.Re
       try {
         const parsedSession: AuthLoginResponse = JSON.parse(storedSession);
         if (parsedSession?.access) {
-        //   client.defaults.headers.common["Authorization"] = `Bearer ${parsedSession.access}`;
           dispatch({ type: INIT_SESSION, payload: parsedSession });
         }
       } catch (error) {

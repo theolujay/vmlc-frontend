@@ -17,7 +17,7 @@ export default function useUploadVerification() {
             //     ariaLabel:'Verification successful'
             // })
             toast.success('Verification documents uploaded successfully')
-            router.push('/get-started')
+            router.push('/exam-portal')
         },
         onError:(error:AxiosError<any>)=>{
             
