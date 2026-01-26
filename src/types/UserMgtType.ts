@@ -132,7 +132,8 @@ export type UserProfileType = {
   verification_document: string | null,
   verification_document_type: string | null,
   created_at: Date,
-  updated_at: Date
+  updated_at: Date,
+  is_setup_complete: boolean,
 }
 
 export type StaffDetailsType = {

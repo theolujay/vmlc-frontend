@@ -13,16 +13,22 @@ import { getOrdinal, getUserName } from '@/utils/generalUtils'
 import { useState } from 'react'
 
 export default function LeaderBoard() {
+    const { authState } = useAuth();
+    const userRole = authState?.user?.role?.toLowerCase();
+    const isScreening = userRole === 'screening';
+
     return (
         <ResponsiveContainer className='gap-3 px-0'>
-            <h2 className='font-bold p-2 border-b border-[#E4E7EC] text-xl'>Results/Leaderboard</h2>
-            <Board />
+            <h2 className='font-bold p-2 border-b border-[#E4E7EC] text-xl'>
+                {isScreening ? 'Screening Standings' : 'League Leaderboard'}
+            </h2>
+            <Board userRole={userRole} />
         </ResponsiveContainer>
     )
 }
 
 
-function Board() {
+function Board({ userRole }: { userRole?: string }) {
     const { isPending, data } = useGetLeaderBoard()
 
     
@@ -35,6 +41,10 @@ function Board() {
     if ('available_leaderboards' in data) {
 
         leaderBoardItems = data.available_leaderboards.toReversed();
+
+        if (userRole === 'screening') {
+            leaderBoardItems = leaderBoardItems.filter(item => item.stage.toUpperCase() === 'SCREENING');
+        }
     }
 
 
@@ -58,6 +68,7 @@ function Board() {
 function ScreeningTab({ stage, level }: { stage: string; level: number }) {
     const { page,setPage} = usePagination();
     const [filters] = useState({ stage, level });
+    const { authState } = useAuth();
     const { data } = useGetLeaderBoard(page, filters);
 
     
@@ -99,15 +110,14 @@ function ScreeningTab({ stage, level }: { stage: string; level: number }) {
     }else{
         allCandidates=[...data.remaining_candidates];
     }
-    const {authState}=useAuth()
-    const userName=getUserName(authState?.user?.first_name!,authState?.user?.last_name!);
+    const userName=getUserName(authState?.user?.first_name ?? '', authState?.user?.last_name ?? '');
     const user=allCandidates.find((item)=>item.candidate.full_name===userName);
 
 
     return (
         <div className="flex flex-col">
             {user&&
-            <InfoDesk examtype={data.exam_details.stage} rank={user?.rank!} score={user?.score??0} />
+            <InfoDesk examtype={data.exam_details.stage} rank={user!.rank!} score={user?.score??0} />
             }
             <CustomTable columns={[
                 { key: 'position', header: 'Position', render: (_, row) => <div className="flex items-center gap-1">{row.rank}</div> },
@@ -145,7 +155,7 @@ function InfoDesk({score, rank,examtype}:{score:number,rank:number,examtype:stri
         <div className="flex text-white flex-col gap-1 bg-[#00455E] p-2">
             <p className="text-xl">Congratulations!</p>
             <p className="text-sm">
-                Congratulations on scoring {score}% on the {examtype} exam! You've secured the
+                Congratulations on scoring {score}% on the {examtype} exam! You&apos;ve secured the
               {' '}  {userRank.toLowerCase()} spot on the leaderboard, which qualifies you for the next stage of
                 the league exams. Keep up the great work, and best of luck moving
                 forward!

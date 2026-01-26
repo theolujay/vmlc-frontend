@@ -11,7 +11,7 @@ import { getUserName } from '@/utils/generalUtils';
 import { getUserInitials } from '@/utils/capitalizeWords';
 import Link from 'next/link';
 import Image from 'next/image';
-import { Dispatch, SetStateAction, useState } from 'react';
+import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import Button from '../../ui/Button';
 import ResponsiveContainer from '../../ui/ResponsiveContainer';
 import AdminHeader from '../AdminHeader';
@@ -36,6 +36,8 @@ import useGetStatOverview from '@/hooks/useGetStatOverview';
 import RegistrationFunnel from './RegistrationFunnel';
 import RegistrationTrends from './RegistrationTrends';
 import GeographicsSection from './GeographicsSection';
+import InfoBoard from '../../General/Portal/DashboardParts/InfoBoard';
+import useGetCurrentUser from '@/hooks/useGetCurrentUser';
 
 function shouldShowHeaderButtons(role: string): boolean {
   switch (role) {
@@ -56,15 +58,25 @@ function shouldShowHeaderButtons(role: string): boolean {
 
 export default function OverviewSection() {
   const { authState } = useAuth();
+  const user = useGetCurrentUser();
   const { page, setPage } = usePagination();
   const [open, setOpen] = useState(false);
   const [showPreRegistered, setShowPreRegistered] = useState(false)
   const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
   const [profileOpen, setProfileOpen] = useState(false);
+  const [isOwnProfileOpen, setIsOwnProfileOpen] = useState(false);
+  const [infoMessage, setInfoMessage] = useState<string | undefined>(undefined);
+  
   const [filters, setFilters] = useState<Record<string, string>>({
     search: '',
     profile: 'candidate',
   });
+
+  useEffect(() => {
+    if (user && user.profile && user.profile.is_setup_complete === false) {
+      setInfoMessage("Your profile is incomplete. Please update your profile to ensure you don't miss any important updates.");
+    }
+  }, [user]);
 
   const { data } = useListUserMgt(page, filters);
   const { data: statOverview } = useGetStatOverview();
@@ -97,6 +109,14 @@ export default function OverviewSection() {
         }
       />
       <div className="flex flex-col gap-3 sm:gap-4 mt-3 w-full sm:w-[96%] px-2 sm:px-0 sm:mx-auto">
+        {infoMessage && (
+          <InfoBoard 
+            message={infoMessage}
+            onDismiss={() => setInfoMessage(undefined)}
+            actionLabel="Update Profile"
+            onAction={() => setIsOwnProfileOpen(true)}
+          />
+        )}
         <OverviewSummaryCard
           active={statOverview?.candidates?.active ?? 0}
           activeChange={statOverview?.candidates?.active_change}
@@ -153,6 +173,14 @@ export default function OverviewSection() {
           open={profileOpen} 
           close={setProfileOpen} 
           isOwnProfile={false}
+        />
+      )}
+      {user && (
+        <ProfileModal 
+          id={user.profile.user.id}
+          open={isOwnProfileOpen}
+          close={setIsOwnProfileOpen}
+          isOwnProfile={true}
         />
       )}
     </div>

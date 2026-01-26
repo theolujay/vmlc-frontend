@@ -1,19 +1,29 @@
 "use client"
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import PageLayout from '../Layout/PageLayout';
 import withAuthentication from '@/hocs/withAuthentication';
 import useGetExamPortal from '@/hooks/useGetExamPortal';
+import useGetCurrentUser from '@/hooks/useGetCurrentUser';
 import StageProgress, { CompetitionStage } from './DashboardParts/StageProgress';
 import InfoBoard from './DashboardParts/InfoBoard';
 import PrimaryAction from './DashboardParts/PrimaryAction';
 import PerformanceSnapshot from './DashboardParts/PerformanceSnapshot';
 import ExamHistory from './DashboardParts/ExamHistory';
 import SupportChat from './DashboardParts/SupportChat';
+import ProfileModal from '@/components/Modals/ProfileModal';
 
 function ExamPortal() {
   const { isPending, data } = useGetExamPortal();
-  const [infoMessage, setInfoMessage] = useState<string | undefined>("Welcome to Verboheit Mathematics League Competition. Please check your stage progress and upcoming exams below.");
+  const user = useGetCurrentUser();
+  const [infoMessage, setInfoMessage] = useState<string | undefined>("Stay sharp! The competition is about to begin.");
   const [isSupportOpen, setIsSupportOpen] = useState(false);
+  const [isProfileOpen, setIsProfileOpen] = useState(false);
+
+  useEffect(() => {
+    if (user && user.profile && user.profile.is_setup_complete === false) {
+      setInfoMessage("Your profile is incomplete. Please update your profile to ensure you don't miss any important updates.");
+    }
+  }, [user]);
 
   if (isPending) {
     return (
@@ -25,30 +35,32 @@ function ExamPortal() {
     );
   }
 
-  // Use API data
-  const candidateName = data?.candidate_info ? `${data.candidate_info.first_name} ${data.candidate_info.last_name}` : "Candidate";
+  // Use login response or API data
+  const candidateName = user?.profile?.user 
+    ? `${user.profile.user.first_name} ${user.profile.user.last_name}` 
+    : data?.candidate_info 
+      ? `${data.candidate_info.first_name} ${data.candidate_info.last_name}` 
+      : "Candidate";
   
-  const availableExams = data?.available_exams || [];
   const recentScores = data?.recent_scores || [];
-  const leaderboardRanking = data?.leaderboard_ranking;
+  const leagueRanking = data?.league_leaderboard_ranking;
+  const screeningRanking = data?.screening_standings_ranking;
+  const stageProgress = data?.stage_progress;
 
-  // Derive state from data
-  let currentStage: 'SCREENING' | 'LEAGUE' | 'FINAL' = 'SCREENING';
+  const determineStage = (stage: string): 'SCREENING' | 'LEAGUE' | 'FINAL' | null => {
+    if (!stage) return null;
+    const normalizedStage = stage.toUpperCase();
+    if (normalizedStage.includes('LEAGUE')) return 'LEAGUE';
+    if (normalizedStage.includes('FINAL')) return 'FINAL';
+    if (normalizedStage.includes('SCREENING')) return 'SCREENING';
+    return null;
+  };
+
+  // Derive current stage from data
+  const currentStage: 'SCREENING' | 'LEAGUE' | 'FINAL' = determineStage(stageProgress?.current_stage || '') || 'SCREENING';
   
-  if (availableExams.length > 0) {
-      const examStage = availableExams[0].stage.toUpperCase();
-      if (examStage.includes('LEAGUE')) currentStage = 'LEAGUE';
-      else if (examStage.includes('FINAL')) currentStage = 'FINAL';
-      else currentStage = 'SCREENING';
-  } else if (recentScores.length > 0) {
-      const lastExam = recentScores[0]; 
-      const lastStage = lastExam.exam_stage.toUpperCase();
-      if (lastStage.includes('LEAGUE')) currentStage = 'LEAGUE';
-      else if (lastStage.includes('FINAL')) currentStage = 'FINAL';
-  }
-
-  const currentExam = availableExams.length > 0 ? availableExams[0] : null;
-  const leagueWeek = currentExam?.level || 1; 
+  const currentExam = data?.next_exam || null;
+  const leagueWeek = stageProgress?.current_level || currentExam?.level || 1; 
 
   // Map history
   const history = recentScores.map(score => ({
@@ -57,9 +69,6 @@ function ExamPortal() {
     date: score.date,
     exam_stage: score.exam_stage
   }));
-
-  const rank = leaderboardRanking?.position || 0;
-  const totalCandidates = leaderboardRanking?.total_candidates || 0;
 
   return (
     <PageLayout>
@@ -80,6 +89,8 @@ function ExamPortal() {
         <InfoBoard 
           message={infoMessage} 
           onDismiss={() => setInfoMessage(undefined)} 
+          actionLabel={user?.profile?.is_setup_complete === false ? "Update Profile" : undefined}
+          onAction={() => setIsProfileOpen(true)}
         />
 
         {/* PRIMARY ACTION */}
@@ -91,12 +102,12 @@ function ExamPortal() {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {/* PERFORMANCE SNAPSHOT */}
           <PerformanceSnapshot 
-            rank={rank} 
-            totalCandidates={totalCandidates} 
+            leagueRanking={leagueRanking}
+            screeningRanking={screeningRanking}
             stage={currentStage}
             currentWeek={leagueWeek}
-            qualificationThreshold={20}
-            hasTakenExam={recentScores.some(s => s.exam_stage.toUpperCase().includes(currentStage))}
+            qualificationThreshold={stageProgress?.qualification_threshold_score}
+            hasTakenExam={stageProgress?.has_taken_exam || false}
           />
 
           {/* EXAM HISTORY */}
@@ -133,6 +144,15 @@ function ExamPortal() {
             </button>
         </div>
       </div>
+      
+      {user && (
+        <ProfileModal 
+          id={user.profile.user.id}
+          open={isProfileOpen}
+          close={setIsProfileOpen}
+          isOwnProfile={true}
+        />
+      )}
     </PageLayout>
   );
 }

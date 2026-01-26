@@ -2,12 +2,13 @@ import React from 'react';
 import Link from 'next/link';
 import { CandidatePerformanceIcon } from '@/components/General/GeneralIcon';
 import { GotoIcon } from '@/components/General/GettingStarted/GettingStartedAssets';
+import { LeaderboardRankingType } from '@/types/Examtype';
 
 type ExamStage = 'SCREENING' | 'LEAGUE' | 'FINAL';
 
 interface PerformanceSnapshotProps {
-  rank: number;
-  totalCandidates: number;
+  leagueRanking?: LeaderboardRankingType | null;
+  screeningRanking?: LeaderboardRankingType | null;
   stage: ExamStage;
   currentWeek?: number; // Only for League stage (1-6)
   qualificationThreshold?: number;
@@ -15,19 +16,23 @@ interface PerformanceSnapshotProps {
 }
 
 const PerformanceSnapshot: React.FC<PerformanceSnapshotProps> = ({ 
-  rank, 
-  totalCandidates, 
+  leagueRanking, 
+  screeningRanking, 
   stage,
   currentWeek = 1,
-  qualificationThreshold = 20,
+  qualificationThreshold,
   hasTakenExam = false
 }) => {
-  const isQualified = rank <= qualificationThreshold && rank > 0;
+  const activeRanking = stage === 'SCREENING' ? screeningRanking : leagueRanking;
+  const rank = activeRanking?.position || 0;
+  const totalCandidates = activeRanking?.total_candidates || 0;
+
+  const isQualified = qualificationThreshold ? rank <= qualificationThreshold && rank > 0 : false;
 
   const stageConfig = {
     SCREENING: {
-      title: "Screening Stage",
-      metricLabel: "Screening Cut-off Score",
+      title: "Screening Performance",
+      metricLabel: "Screening Cut-off Range",
 
       pendingLabel: "Screening Upcoming",
       pendingSub: "The screening examination hasn't yet commenced. Please await updates.",
@@ -42,7 +47,7 @@ const PerformanceSnapshot: React.FC<PerformanceSnapshotProps> = ({
     },
 
     LEAGUE: {
-      title: `League Stage • Week ${currentWeek} of 6`,
+      title: `League Performance • Week ${currentWeek} of 6`,
       metricLabel: "Finalist Qualification Cut-off",
 
       pendingLabel: "Week Assessment Pending",
@@ -114,7 +119,7 @@ const PerformanceSnapshot: React.FC<PerformanceSnapshotProps> = ({
                 <span className="text-[#475367] text-xs font-bold uppercase">
                     {currentContent.metricLabel}
                 </span>
-                <span className="font-bold text-[#101828] text-3xl">Top {qualificationThreshold}</span>
+                <span className="font-bold text-[#101828] text-3xl">{qualificationThreshold ? `Top ${qualificationThreshold}` : '-'}</span>
             </div>
         </div>
 
@@ -154,7 +159,7 @@ const PerformanceSnapshot: React.FC<PerformanceSnapshotProps> = ({
 
       {/* Footer Link */}
       <Link href="/exam-portal/leaderboard" className="mt-6 pt-4 border-t border-slate-100 text-sm font-bold text-[#3E4095] hover:opacity-80 flex items-center justify-between transition-all">
-        <span>Leaderboard</span>
+        <span>{stage === 'SCREENING' ? 'Standings' : 'Leaderboard'}</span>
         <GotoIcon />
       </Link>
     </section>

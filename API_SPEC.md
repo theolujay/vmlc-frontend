@@ -231,6 +231,40 @@ Sends a reply to an existing support conversation.
 }
 ```
 
+### 5.4 Account Management
+Endpoints for managing the authenticated user's profile and viewing other accounts.
+
+#### 5.4.1 Get Own Account Details
+Fetches the profile and user data for the currently authenticated session.
+
+- **Endpoint:** `/account-management/` (Based on `UserMgtUrls.ACCOUNT_MGT`)
+- **Method:** `GET`
+- **Hook:** `useGetOwnAccountDetails` (Note: Can also be derived from `authState` in `AuthProvider`)
+
+#### 5.4.2 Update Own Profile
+Updates profile information for the authenticated user. Supports `multipart/form-data` for profile picture uploads.
+
+- **Endpoint:** `/account-management/`
+- **Method:** `PATCH`
+- **Hook:** `useUpdateProfile`
+- **Payload (`FormData`):**
+  - `user[first_name]`: string
+  - `user[last_name]`: string
+  - `user[phone]`: string
+  - `user[state]`: string
+  - `user[profile_picture]`: File (optional)
+  - `profile[school_name]`: string (Candidates only)
+  - `profile[school_type]`: string (Candidates only)
+  - `profile[current_class]`: string (Candidates only)
+  - `profile[occupation]`: string (Staff only)
+
+#### 5.4.3 Get Specific Account Details
+Fetches details for a specific user (used by staff to view candidate profiles).
+
+- **Endpoint:** `/account-management/{user_id}/`
+- **Method:** `GET`
+- **Hook:** `useGetAccountDetails`
+
 ---
 
 ## Data Models Summary
@@ -269,50 +303,98 @@ Fetches a comprehensive overview of the candidate's status, available exams, and
 
 ### Response Structure (`DashboardType`)
 ```json
-{
-  "candidate_info": {
-    "name": "John Doe",
-    "email": "john@example.com",
-    "phone": "08012345678",
-    "school_name": "Example High School",
-    "role": "candidate",
-    "date_joined": "2023-10-27T10:00:00Z",
-    "profile_photo": "url_to_photo"
+<!-- 
+NOTES FOR BACKEND:
+The structure below is optimized for the ExamPortal.tsx component.
+1. `candidate_info` now has `first_name` and `last_name` to match component usage.
+2. A new `stage_progress` object provides an authoritative source for the candidate's current state,
+   which simplifies frontend logic significantly.
+3. `exam_stats` has been removed as it was unused by the component.
+4. `available_exams` (array) has been replaced by `next_exam` (object | null) to be more explicit
+   about the primary action for the candidate.
+-->{  "candidate_info": {    "first_name": "John",    "last_name": "Doe"  },  "exam_stats": {    "total_exams_taken": 5,    "available_exams_count": 1,    "average_score": 82.45,
+    "highest_score": 95.0,
+    "lowest_score": 68.0,
+    "latest_score": 88.0,
+    "latest_score_info": {
+      "score": 88.0,
+      "exam_title": "League Mathematics 1",
+      "date": "2026-01-20T14:30:00Z"
+    }
   },
-  "exam_stats": {
-    "total_exams_taken": 5,
-    "available_exams_count": 1,
-    "average_score": 72.5,
-    "highest_score": 85,
-    "lowest_score": 60,
-    "latest_score": 78
+  "stage_progress": {
+    "current_stage": "league",
+    "current_level": 2,
+    "has_taken_exam": false,
+    "qualification_threshold_score": 70
   },
-  "leaderboard_ranking": {
-    "position": 15,
-    "total_candidates": 1250
+  "screening_standings_ranking": {
+      "current_rank": 5,
+      "position": 5,
+      "total_candidates": 200
+  },
+  "league_leaderboard_ranking": {
+    "current_rank": 12,
+    "position": 12,
+    "total_candidates": 150
   },
   "recent_scores": [
     {
-      "exam": "League Week 1",
-      "score": 82,
-      "date": "2023-11-05T14:00:00Z",
-      "exam_stage": "League"
+      "exam": "League Mathematics 1",
+      "exam_title": "League Mathematics 1",
+      "score": 88.0,
+      "date": "2026-01-20T14:30:00Z",
+      "exam_stage": "league"
+    },
+    {
+      "exam": "League Science 1",
+      "exam_title": "League Science 1",
+      "score": 75.0,
+      "date": "2026-01-15T10:00:00Z",
+      "exam_stage": "league"
     }
   ],
   "available_exams": [
     {
-      "id": "uuid",
-      "title": "League Week 2",
-      "description": "Mathematics league competition",
-      "open_duration_hours": 2,
-      "countdown_minutes": 60,
-      "question_count": 30,
-      "level": 2,
-      "scheduled_date": "2023-11-12T10:00:00Z",
+      "id": "e4b3c2a1-1234-5678-90ab-cdef12345678",
+      "title": "League Physics 2",
       "stage": "league",
-      "stage_display": "League Stage"
+      "level": 2,
+      "stage_display": "league_2",
+      "description": "Mid-term physics assessment.",
+      "open_duration_hours": 24,
+      "scheduled_date": "2026-01-27T09:00:00Z",
+      "countdown_minutes": 60,
+      "question_count": 40,
+      "participation": "not_done"
     }
-  ]
+  ],
+  "concluded_exams": [
+    {
+      "id": "a1b2c3d4-5678-90ab-cdef-1234567890ab",
+      "title": "League English 1",
+      "stage": "league",
+      "level": 1,
+      "stage_display": "league_1",
+      "description": "Foundational English exam.",
+      "concluded_at": "2026-01-10T18:00:00Z",
+      "question_count": 50,
+      "participation": "done"
+    }
+  ],
+  "next_exam": {
+    "id": "e4b3c2a1-1234-5678-90ab-cdef12345678",
+    "title": "League Physics 2",
+    "stage": "league",
+    "level": 2,
+    "stage_display": "league_2",
+    "description": "Mid-term physics assessment.",
+    "open_duration_hours": 24,
+    "scheduled_date": "2026-01-27T09:00:00Z",
+    "countdown_minutes": 60,
+    "question_count": 40,
+    "participation": "not_done"
+  }
 }
 ```
 

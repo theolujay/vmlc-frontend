@@ -31,6 +31,10 @@ type ProfileFormData = {
   profile_picture?: FileList
 }
 
+const STATES = ['Lagos', 'Abuja', 'Ogun', 'Rivers']
+const SCHOOL_TYPES = ['public', 'private']
+const CURRENT_CLASSES = ['SS1', 'SS2', 'SS3']
+
 export default function ProfileModal({
   id,
   open,
@@ -214,12 +218,30 @@ export default function ProfileModal({
                                     <EditInfoItem label="First Name" name="first_name" register={register} disabled={!!user?.first_name} />
                                     <EditInfoItem label="Last Name" name="last_name" register={register} disabled={!!user?.last_name} />
                                     <EditInfoItem label="Phone Number" name="phone" register={register} disabled={false} />
-                                    <EditInfoItem label="State" name="state" register={register} disabled={!!user?.state} />
+                                    <EditInfoItem 
+                                        label="State" 
+                                        name="state" 
+                                        register={register} 
+                                        disabled={!!user?.state} 
+                                        options={isCandidate ? STATES : undefined}
+                                    />
                                     {isCandidate ? (
                                         <>
                                             <EditInfoItem label="School Name" name="school_name" register={register} disabled={!!profile?.school_name} />
-                                            <EditInfoItem label="School Type" name="school_type" register={register} disabled={!!profile?.school_type} />
-                                            <EditInfoItem label="Current Class" name="current_class" register={register} disabled={!!profile?.current_class} />
+                                            <EditInfoItem 
+                                                label="School Type" 
+                                                name="school_type" 
+                                                register={register} 
+                                                disabled={!!profile?.school_type} 
+                                                options={SCHOOL_TYPES}
+                                            />
+                                            <EditInfoItem 
+                                                label="Current Class" 
+                                                name="current_class" 
+                                                register={register} 
+                                                disabled={!!profile?.current_class} 
+                                                options={CURRENT_CLASSES}
+                                            />
                                         </>
                                     ) : (
                                         <EditInfoItem label="Occupation" name="occupation" register={register} disabled={!!profile?.occupation} />
@@ -378,15 +400,28 @@ function InfoItem({ label, value }: { label: string, value: string }) {
   )
 }
 
-function EditInfoItem({ label, name, register, disabled = false }: { label: string, name: keyof ProfileFormData, register: UseFormRegister<ProfileFormData>, disabled?: boolean }) {
+function EditInfoItem({ label, name, register, disabled = false, options }: { label: string, name: keyof ProfileFormData, register: UseFormRegister<ProfileFormData>, disabled?: boolean, options?: string[] }) {
   return (
     <div className="space-y-1.5">
       <label className="text-[10px] font-black text-[#3E4095] uppercase tracking-widest">{label}</label>
-      <input 
-        {...register(name)}
-        disabled={disabled}
-        className={`w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2.5 text-sm font-bold text-gray-800 focus:ring-2 focus:ring-[#3E4095]/10 focus:border-[#3E4095] outline-none transition-all ${disabled ? 'opacity-50 cursor-not-allowed bg-gray-100 text-gray-500' : ''}`}
-      />
+      {options ? (
+        <select 
+          {...register(name)}
+          disabled={disabled}
+          className={`w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2.5 text-sm font-bold text-gray-800 focus:ring-2 focus:ring-[#3E4095]/10 focus:border-[#3E4095] outline-none transition-all ${disabled ? 'opacity-50 cursor-not-allowed bg-gray-100 text-gray-500' : ''}`}
+        >
+          <option value="">Select {label}</option>
+          {options.map((option) => (
+            <option key={option} value={option}>{option}</option>
+          ))}
+        </select>
+      ) : (
+        <input 
+          {...register(name)}
+          disabled={disabled}
+          className={`w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2.5 text-sm font-bold text-gray-800 focus:ring-2 focus:ring-[#3E4095]/10 focus:border-[#3E4095] outline-none transition-all ${disabled ? 'opacity-50 cursor-not-allowed bg-gray-100 text-gray-500' : ''}`}
+        />
+      )}
     </div>
   )
 }

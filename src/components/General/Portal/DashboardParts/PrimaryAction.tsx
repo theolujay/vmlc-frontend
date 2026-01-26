@@ -47,12 +47,13 @@ const PrimaryAction: React.FC<PrimaryActionProps> = ({ exam, candidateName }) =>
   }, [exam]);
 
   const handleStartExam = () => {
-    if (exam && canStart && !isFinals) {
+    if (exam && canStart && !isFinals && exam.participation !== 'done') {
       router.push(`/exam-portal/${exam.id}/exam`);
     }
   };
 
   const isFinals = exam?.stage?.toLowerCase() === 'final';
+  const hasParticipated = exam?.participation === 'done';
 
   if (!exam) {
      return (
@@ -88,7 +89,14 @@ const PrimaryAction: React.FC<PrimaryActionProps> = ({ exam, candidateName }) =>
         </p>
         
         <div className="mt-8 space-y-4">
-          {!canStart ? (
+          {hasParticipated ? (
+             <div className="p-4 bg-emerald-50 rounded-xl border border-emerald-200">
+              <p className="text-xs font-bold text-emerald-600 uppercase">Status</p>
+              <p className="text-lg font-bold text-emerald-800 mt-1">
+                Exam Completed
+              </p>
+            </div>
+          ) : !canStart ? (
             <div className="p-4 bg-[#] rounded-xl border border-[#3E4095]">
               <p className="text-xs font-bold text-[#475367] uppercase">Countdown</p>
               <p className="text-lg font-bold text-[#3E4095] mt-1">Opens in: {timeLeft}</p>
@@ -103,23 +111,28 @@ const PrimaryAction: React.FC<PrimaryActionProps> = ({ exam, candidateName }) =>
           )}
           
           <button 
-            disabled={!canStart || isFinals}
+            disabled={!canStart || isFinals || hasParticipated}
             onClick={handleStartExam}
             className={`w-full py-4 rounded-xl font-bold transition-all uppercase tracking-wider ${
-              canStart && !isFinals
+              canStart && !isFinals && !hasParticipated
                 ? 'bg-[#3E4095] text-white hover:bg-[#4A4DA8] shadow-lg transform hover:scale-[1.02]' 
                 : 'bg-[#F0F2F5] text-[#98A2B3] cursor-not-allowed'
             }`}
           >
             {isFinals 
                ? 'View Venue Logistics' 
-               : canStart ? `START ${exam.stage_display || 'EXAM'}` : `START ${exam.stage_display || 'EXAM'}`}
+               : hasParticipated ? 'SUBMITTED' : canStart ? `START ${exam.stage_display || 'EXAM'}` : `START ${exam.stage_display || 'EXAM'}`}
           </button>
           
-          {!canStart && (
+          {!canStart && !hasParticipated && (
              <p className="text-xs text-[#98A2B3] italic font-medium">
                 {isFinals ? 'Venue details will be fully accessible when the window opens.' : 'The start button enables when it\'s exam time.'}
              </p>
+          )}
+          {hasParticipated && (
+            <p className="text-xs text-emerald-600 italic font-medium">
+                You have successfully completed this examination.
+            </p>
           )}
         </div>
       </div>
