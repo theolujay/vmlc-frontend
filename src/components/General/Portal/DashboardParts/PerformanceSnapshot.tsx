@@ -26,7 +26,7 @@ const PerformanceSnapshot: React.FC<PerformanceSnapshotProps> = ({
 
   const stageConfig = {
     SCREENING: {
-      title: "Screening Stage",
+      title: "Screening Performance",
       metricLabel: "Screening Cut-off Score",
 
       pendingLabel: "Screening Upcoming",
@@ -42,7 +42,7 @@ const PerformanceSnapshot: React.FC<PerformanceSnapshotProps> = ({
     },
 
     LEAGUE: {
-      title: `League Stage • Week ${currentWeek} of 6`,
+      title: `League Performance • Week ${currentWeek} of 6`,
       metricLabel: "Finalist Qualification Cut-off",
 
       pendingLabel: "Week Assessment Pending",
@@ -154,7 +154,7 @@ const PerformanceSnapshot: React.FC<PerformanceSnapshotProps> = ({
 
       {/* Footer Link */}
       <Link href="/exam-portal/leaderboard" className="mt-6 pt-4 border-t border-slate-100 text-sm font-bold text-[#3E4095] hover:opacity-80 flex items-center justify-between transition-all">
-        <span>Leaderboard</span>
+        <span>{stage === 'SCREENING' ? 'Standings' : 'Leaderboard'}</span>
         <GotoIcon />
       </Link>
     </section>

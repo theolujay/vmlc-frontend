@@ -231,6 +231,40 @@ Sends a reply to an existing support conversation.
 }
 ```
 
+### 5.4 Account Management
+Endpoints for managing the authenticated user's profile and viewing other accounts.
+
+#### 5.4.1 Get Own Account Details
+Fetches the profile and user data for the currently authenticated session.
+
+- **Endpoint:** `/account-management/` (Based on `UserMgtUrls.ACCOUNT_MGT`)
+- **Method:** `GET`
+- **Hook:** `useGetOwnAccountDetails` (Note: Can also be derived from `authState` in `AuthProvider`)
+
+#### 5.4.2 Update Own Profile
+Updates profile information for the authenticated user. Supports `multipart/form-data` for profile picture uploads.
+
+- **Endpoint:** `/account-management/`
+- **Method:** `PATCH`
+- **Hook:** `useUpdateProfile`
+- **Payload (`FormData`):**
+  - `user[first_name]`: string
+  - `user[last_name]`: string
+  - `user[phone]`: string
+  - `user[state]`: string
+  - `user[profile_picture]`: File (optional)
+  - `profile[school_name]`: string (Candidates only)
+  - `profile[school_type]`: string (Candidates only)
+  - `profile[current_class]`: string (Candidates only)
+  - `profile[occupation]`: string (Staff only)
+
+#### 5.4.3 Get Specific Account Details
+Fetches details for a specific user (used by staff to view candidate profiles).
+
+- **Endpoint:** `/account-management/{user_id}/`
+- **Method:** `GET`
+- **Hook:** `useGetAccountDetails`
+
 ---
 
 ## Data Models Summary

@@ -32,19 +32,35 @@ function ExamPortal() {
   const recentScores = data?.recent_scores || [];
   const leaderboardRanking = data?.leaderboard_ranking;
 
-  // Derive state from data
+  const determineStage = (stage: string): 'SCREENING' | 'LEAGUE' | 'FINAL' | null => {
+    const normalizedStage = stage.toUpperCase();
+    switch (true) {
+      case normalizedStage.includes('LEAGUE'):
+        return 'LEAGUE';
+      case normalizedStage.includes('FINAL'):
+        return 'FINAL';
+      case normalizedStage.includes('SCREENING'):
+        return 'SCREENING';
+      default:
+        return null;
+    }
+  };
+
+  // Derive current stage from data
   let currentStage: 'SCREENING' | 'LEAGUE' | 'FINAL' = 'SCREENING';
   
-  if (availableExams.length > 0) {
-      const examStage = availableExams[0].stage.toUpperCase();
-      if (examStage.includes('LEAGUE')) currentStage = 'LEAGUE';
-      else if (examStage.includes('FINAL')) currentStage = 'FINAL';
-      else currentStage = 'SCREENING';
-  } else if (recentScores.length > 0) {
-      const lastExam = recentScores[0]; 
-      const lastStage = lastExam.exam_stage.toUpperCase();
-      if (lastStage.includes('LEAGUE')) currentStage = 'LEAGUE';
-      else if (lastStage.includes('FINAL')) currentStage = 'FINAL';
+  const userRole = data?.candidate_info?.role || '';
+  currentStage = determineStage(userRole) || currentStage;
+
+  if (!determineStage(userRole) && availableExams.length > 0) {
+    const examStage = availableExams[0].stage;
+    currentStage = determineStage(examStage) || 'SCREENING';
+  }
+
+  if (!determineStage(userRole) && !determineStage(availableExams[0]?.stage || '') && recentScores.length > 0) {
+    const lastExam = recentScores[0];
+    const lastStage = lastExam.exam_stage;
+    currentStage = determineStage(lastStage) || currentStage;
   }
 
   const currentExam = availableExams.length > 0 ? availableExams[0] : null;
