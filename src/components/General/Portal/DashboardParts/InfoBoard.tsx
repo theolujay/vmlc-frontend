@@ -3,9 +3,11 @@ import React from 'react';
 interface InfoBoardProps {
   message?: string;
   onDismiss: () => void;
+  actionLabel?: string;
+  onAction?: () => void;
 }
 
-const InfoBoard: React.FC<InfoBoardProps> = ({ message, onDismiss }) => {
+const InfoBoard: React.FC<InfoBoardProps> = ({ message, onDismiss, actionLabel, onAction }) => {
   if (!message) return null;
 
   return (
@@ -18,6 +20,14 @@ const InfoBoard: React.FC<InfoBoardProps> = ({ message, onDismiss }) => {
       <div className="flex-1">
         <h3 className="text-[#099137] font-bold text-sm">Important Update</h3>
         <p className="text-[#475367] text-sm mt-0.5">{message}</p>
+        {actionLabel && onAction && (
+          <button 
+            onClick={onAction}
+            className="mt-3 text-xs font-bold text-white bg-[#099137] px-4 py-2 rounded-lg hover:bg-[#077a2d] transition-colors"
+          >
+            {actionLabel}
+          </button>
+        )}
       </div>
       <button 
         onClick={onDismiss}

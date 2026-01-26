@@ -17,22 +17,34 @@ export type QuestionProps = {
 
 type recentScoreType = {
   exam: string,
+  exam_title?: string,
   score: number,
   date: Date,
   exam_stage: string
 }
 
+export type StageProgressType = {
+  current_stage: string;
+  current_level: number;
+  has_taken_exam: boolean;
+  qualification_threshold_score: number;
+};
+
 export type DashboardType = {
   candidate_info: CandidateInfoType,
   exam_stats: ExamStatType,
-  leaderboard_ranking: LeaderboardRankingType | null,
+  stage_progress: StageProgressType,
+  league_leaderboard_ranking: LeaderboardRankingType | null,
+  screening_standings_ranking: LeaderboardRankingType | null,
   recent_scores: recentScoreType[],
   available_exams: AvailableExamType[],
-  concluded_exams: ConcludedExamType[]
+  concluded_exams: ConcludedExamType[],
+  next_exam: AvailableExamType | null
 }
 
 
 export type LeaderboardRankingType = {
+  current_rank: number,
   position: number,
   total_candidates: number
 }
