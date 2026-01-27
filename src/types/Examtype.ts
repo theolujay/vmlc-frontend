@@ -15,7 +15,7 @@ export type QuestionProps = {
 
 
 
-type recentScoreType = {
+type RecentResultType = {
   exam: string,
   exam_title?: string,
   score: number,
@@ -36,7 +36,7 @@ export type DashboardType = {
   stage_progress: StageProgressType,
   league_leaderboard_ranking: LeaderboardRankingType | null,
   screening_standings_ranking: LeaderboardRankingType | null,
-  recent_scores: recentScoreType[],
+  recent_results: RecentResultType[],
   available_exams: AvailableExamType[],
   concluded_exams: ConcludedExamType[],
   next_exam: AvailableExamType | null

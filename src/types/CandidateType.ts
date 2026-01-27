@@ -69,7 +69,7 @@ export type StatsType = {
 //     },
 //     exam_stats: ExamStatType,
 //     leaderboard_ranking: number | null,
-//     recent_scores: RecentScoreType[] | null,
+//     recent_results: RecentResultType[] | null,
 //     available_exams: string[] | null
 // }
 
@@ -87,7 +87,7 @@ export type ExamTakenType = {
     submission: submissionItemType[]
 }
 
-export type RecentScoreType = {
+export type RecentResultType = {
     exam_title: string,
     score: number,
     date: Date,
