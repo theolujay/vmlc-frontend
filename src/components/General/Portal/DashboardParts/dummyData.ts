@@ -21,7 +21,7 @@ export const DUMMY_AVAILABLE_EXAM: AvailableExamType = {
   participation: "not_done"
 };
 
-export const DUMMY_RECENT_SCORES = [
+export const DUMMY_RECENT_RESULTS = [
   {
     exam: "Screening Exam",
     score: 85,

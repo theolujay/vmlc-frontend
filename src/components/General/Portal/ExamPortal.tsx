@@ -42,7 +42,7 @@ function ExamPortal() {
       ? `${data.candidate_info.first_name} ${data.candidate_info.last_name}` 
       : "Candidate";
   
-  const recentScores = data?.recent_scores || [];
+  const recentResults = data?.recent_results || [];
   const leagueRanking = data?.league_leaderboard_ranking;
   const screeningRanking = data?.screening_standings_ranking;
   const stageProgress = data?.stage_progress;
@@ -63,7 +63,7 @@ function ExamPortal() {
   const leagueWeek = stageProgress?.current_level || currentExam?.level || 1; 
 
   // Map history
-  const history = recentScores.map(score => ({
+  const history = recentResults.map(score => ({
     exam: score.exam,
     score: score.score,
     date: score.date,

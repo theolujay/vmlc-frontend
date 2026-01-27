@@ -338,7 +338,7 @@ The structure below is optimized for the ExamPortal.tsx component.
     "position": 12,
     "total_candidates": 150
   },
-  "recent_scores": [
+  "recent_results": [
     {
       "exam": "League Mathematics 1",
       "exam_title": "League Mathematics 1",
