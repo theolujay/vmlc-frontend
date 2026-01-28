@@ -324,7 +324,7 @@ The structure below is optimized for the ExamPortal.tsx component.
   },
   "stage_progress": {
     "current_stage": "league",
-    "current_level": 2,
+    "current_round": 2,
     "has_taken_exam": false,
     "qualification_threshold_score": 70
   },
@@ -359,7 +359,7 @@ The structure below is optimized for the ExamPortal.tsx component.
       "id": "e4b3c2a1-1234-5678-90ab-cdef12345678",
       "title": "League Physics 2",
       "stage": "league",
-      "level": 2,
+      "round": 2,
       "stage_display": "league_2",
       "description": "Mid-term physics assessment.",
       "open_duration_hours": 24,
@@ -374,7 +374,7 @@ The structure below is optimized for the ExamPortal.tsx component.
       "id": "a1b2c3d4-5678-90ab-cdef-1234567890ab",
       "title": "League English 1",
       "stage": "league",
-      "level": 1,
+      "round": 1,
       "stage_display": "league_1",
       "description": "Foundational English exam.",
       "concluded_at": "2026-01-10T18:00:00Z",
@@ -386,7 +386,7 @@ The structure below is optimized for the ExamPortal.tsx component.
     "id": "e4b3c2a1-1234-5678-90ab-cdef12345678",
     "title": "League Physics 2",
     "stage": "league",
-    "level": 2,
+    "round": 2,
     "stage_display": "league_2",
     "description": "Mid-term physics assessment.",
     "open_duration_hours": 24,
@@ -459,7 +459,7 @@ Fetches the available leaderboards or the ranking for a specific exam.
 - **Query Parameters:**
   - `page`: number
   - `stage`: string (optional)
-  - `level`: number (optional)
+  - `round`: number (optional)
 
 #### Response Structure (If listing available leaderboards)
 ```json
@@ -469,7 +469,7 @@ Fetches the available leaderboards or the ranking for a specific exam.
   "available_leaderboards": [
     {
       "stage": "screening",
-      "level": 1,
+      "round": 1,
       "stage_display": "Screening Phase",
       "exam_title": "General Screening",
       "total_candidates": 2000,
@@ -486,7 +486,7 @@ Fetches the available leaderboards or the ranking for a specific exam.
     "id": "uuid",
     "title": "League Week 1",
     "stage": "league",
-    "level": 1,
+    "round": 1,
     "total_candidates": 150,
     "average_score": 70.2
   },
@@ -499,9 +499,9 @@ Fetches the available leaderboards or the ranking for a specific exam.
 ```
 
 ### 3.2 Candidate Leaderboard Detail
-Fetches detailed performance of a specific candidate in a specific exam stage/level.
+Fetches detailed performance of a specific candidate in a specific exam stage/round.
 
-- **Endpoint:** `/leaderboard/{stage}/{level}/candidate/{candidate_id}/`
+- **Endpoint:** `/leaderboard/{stage}/{round}/candidate/{candidate_id}/`
 - **Method:** `GET`
 - **Hook:** `useGetLeaderBoardCandidateDetail`
 

@@ -24,12 +24,12 @@ export default function UploadExamSessionModal({ open, close, exam_id }: Readonl
                             <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-4">
                                
                                 <div className="flex flex-col">
-                                    <label htmlFor="exam" className='mb-1'>LEVEL <span className="text-red-500">*</span></label>
-                                    <input {...form.register('level')} required type="number" className='border no-spinner outline-0 p-2 border-[#D0D5DD] rounded-lg' />
+                                    <label htmlFor="exam" className='mb-1'>round <span className="text-red-500">*</span></label>
+                                    <input {...form.register('round')} required type="number" className='border no-spinner outline-0 p-2 border-[#D0D5DD] rounded-lg' />
                                 </div>
-                                {form.formState.errors.level && (
+                                {form.formState.errors.round && (
                                     <p className="text-sm text-red-500 mt-1">
-                                        {form.formState.errors.level.message as string}
+                                        {form.formState.errors.round.message as string}
                                     </p>
                                 )}
                                 <div className="flex flex-col">

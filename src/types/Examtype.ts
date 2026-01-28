@@ -25,7 +25,7 @@ type RecentResultType = {
 
 export type StageProgressType = {
   current_stage: string;
-  current_level: number;
+  current_round: number;
   has_taken_exam: boolean;
   qualification_threshold_score: number;
 };
@@ -61,7 +61,7 @@ export type AvailableExamType = {
   // exam_date: Date,
   countdown_minutes: number,
   question_count: number,
-  level:number,
+  round:number,
   scheduled_date:Date
   stage: string,
   stage_display:string,
@@ -76,7 +76,7 @@ export type ConcludedExamType = {
   question_count: number,
   participation: string,
   stage: string,
-  level: number,
+  round: number,
   stage_display: string
 }
 

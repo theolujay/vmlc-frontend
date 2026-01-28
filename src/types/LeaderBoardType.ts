@@ -14,7 +14,7 @@ export type LeaderCandidateType = {
 
 export type LeaderItemType = {
     stage: string,
-    level: number,
+    round: number,
     stage_display: string,
     exam_title: string,
     total_candidates: number,
@@ -44,7 +44,7 @@ type ExamDetailsType = {
     id: string,
     title: string,
     stage: string,
-    level: number,
+    round: number,
     scheduled_date: Date,
     concluded_at: Date,
     total_questions: number,
@@ -80,7 +80,7 @@ type CandidateExamDetailType = {
     id: string,
     title: string,
     stage: string,
-    level: number,
+    round: number,
     scheduled_date: Date,
     concluded_at: Date,
     total_questions: number,
