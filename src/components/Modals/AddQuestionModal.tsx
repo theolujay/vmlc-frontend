@@ -14,7 +14,7 @@ export default function AddQuestionModal({
 }: Readonly<{ open: boolean; close: (close: boolean) => void }>) {
   const { onSubmit, isPending, form } = useCreateQuestion(() => {
     setHasChanges(false);
-    handleClose();
+    handleClose(true);
   });
 
   const initialFormData: QuestionData = useMemo(() => ({
@@ -47,8 +47,9 @@ export default function AddQuestionModal({
     setHasChanges(isChanged);
   }, [formData, correctOptionId, initialFormData]);
 
-  const handleClose = useCallback(() => {
-    if (hasChanges && !showCloseConfirm) {
+  const handleClose = useCallback((arg?: boolean | React.MouseEvent | unknown) => {
+    const force = arg === true;
+    if (!force && hasChanges && !showCloseConfirm) {
       setShowCloseConfirm(true);
       return;
     }
