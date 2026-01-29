@@ -15,7 +15,7 @@ export type QuestionProps = {
 
 
 
-type recentScoreType = {
+type RecentResultType = {
   exam: string,
   exam_title?: string,
   score: number,
@@ -25,7 +25,7 @@ type recentScoreType = {
 
 export type StageProgressType = {
   current_stage: string;
-  current_level: number;
+  current_round: number;
   has_taken_exam: boolean;
   qualification_threshold_score: number;
 };
@@ -36,7 +36,7 @@ export type DashboardType = {
   stage_progress: StageProgressType,
   league_leaderboard_ranking: LeaderboardRankingType | null,
   screening_standings_ranking: LeaderboardRankingType | null,
-  recent_scores: recentScoreType[],
+  recent_results: RecentResultType[],
   available_exams: AvailableExamType[],
   concluded_exams: ConcludedExamType[],
   next_exam: AvailableExamType | null
@@ -61,7 +61,7 @@ export type AvailableExamType = {
   // exam_date: Date,
   countdown_minutes: number,
   question_count: number,
-  level:number,
+  round:number,
   scheduled_date:Date
   stage: string,
   stage_display:string,
@@ -76,7 +76,7 @@ export type ConcludedExamType = {
   question_count: number,
   participation: string,
   stage: string,
-  level: number,
+  round: number,
   stage_display: string
 }
 
@@ -281,7 +281,7 @@ type QuestionType = {
   previous: string | null,
   // meta: MetaType,
   // results: QuestionItemType[],
-  results:SessionQuestionItemType
+  results:SessionQuestionItemType[]
   question_pool_data: QuestionPoolDataType
 }
 type QuestionPoolDataType = {

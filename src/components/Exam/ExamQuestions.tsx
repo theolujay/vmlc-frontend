@@ -17,7 +17,18 @@ export default function Questions({ data, isPending, answers, setAnswers, handle
             <Spinner />
         </div>
     );
-    const questions = data.questions;
+
+    const questions = Array.isArray(data.questions) ? data.questions : (data?.questions?.results || []);
+
+    if (questions.length === 0) {
+        return (
+            <div className="w-full grid place-content-center p-20 text-center col-span-6">
+                <h2 className="text-2xl font-bold text-gray-800">No Questions Found</h2>
+                <p className="text-gray-600 mt-2">There are no questions assigned to this exam session yet.</p>
+            </div>
+        );
+    }
+
     const currentQuestion = questions[currentQuestionIndex];
     const handleNext = () => {
         if (currentQuestionIndex < questions.length - 1) {
