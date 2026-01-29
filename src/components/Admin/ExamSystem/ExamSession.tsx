@@ -1,3 +1,4 @@
+"use client";
 import UploadExamSessionModal from '@/components/Modals/UploadExamSessionModal'
 import Spinner from '@/components/ui/spinner/spinner'
 import usePagination from '@/hooks/usePagination'

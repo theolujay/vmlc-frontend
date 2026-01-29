@@ -1,3 +1,4 @@
+"use client";
 import AppDialog from '@/components/ui/Modals/AppDialog'
 import usePublishLeaderboard from '@/hooks/usePublishLeaderboard'
 import clsx from 'clsx'
