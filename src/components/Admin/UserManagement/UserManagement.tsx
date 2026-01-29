@@ -322,9 +322,9 @@ function UserHistoryTable({
                             className="border rounded px-2 py-1.5 text-sm outline-none"
                           >
                             <option value="">All Classes</option>
-                            <option value="SSS1">SSS 1</option>
-                            <option value="SSS2">SSS 2</option>
-                            <option value="SSS3">SSS 3</option>
+                            <option value="SS1">SS1</option>
+                            <option value="SS2">SS2</option>
+                            <option value="SS3">SS3</option>
                           </select>
                         </div>
                         <div className="flex flex-col gap-1">

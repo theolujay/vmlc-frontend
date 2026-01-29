@@ -306,12 +306,9 @@ function RegisteredCandidatesTable({
                         className="border rounded px-2 py-1.5 text-sm outline-none"
                       >
                         <option value="">All Classes</option>
-                        <option value="JSS1">JSS 1</option>
-                        <option value="JSS2">JSS 2</option>
-                        <option value="JSS3">JSS 3</option>
-                        <option value="SSS1">SSS 1</option>
-                        <option value="SSS2">SSS 2</option>
-                        <option value="SSS3">SSS 3</option>
+                        <option value="SS1">SS 1</option>
+                        <option value="SS2">SS 2</option>
+                        <option value="SS3">SS 3</option>
                       </select>
                     </div>
                     <div className="flex flex-col gap-1">
