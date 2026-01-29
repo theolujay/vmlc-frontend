@@ -1,3 +1,4 @@
+"use client";
 import { useState, Dispatch, SetStateAction } from "react";
 import QuestionInformation from "@/components/Drawer/QuestionInformation";
 import RemoveQuestionModal from "@/components/Modals/RemoveQuestionModal";

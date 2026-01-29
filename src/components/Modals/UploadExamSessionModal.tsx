@@ -1,3 +1,5 @@
+'use client';
+
 import AppDialog from '@/components/ui/Modals/AppDialog'
 import ResponsiveContainer from '@/components/ui/ResponsiveContainer'
 import useUploadSession from '@/hooks/useUploadSession';

@@ -1,10 +1,16 @@
+"use client";
+import React, { useState } from 'react';
+import dynamic from 'next/dynamic';
+
 import { DeleteIcon } from '@/components/General/GeneralIcon';
 import { AddIcon, EditIcon } from '@/components/General/GettingStarted/GettingStartedAssets';
-import AddQuestionModal from '@/components/Modals/AddQuestionModal';
 import DeleteExamSessionModal from '@/components/Modals/DeleteExamSessionModal';
 import EditSessionModal from '@/components/Modals/EditSession';
 import AppDropdownDialog from '@/components/ui/Dropdown/AppDropdownDialog';
-import { useState } from 'react';
+
+const AddQuestionModal = dynamic(() => import('@/components/Modals/AddQuestionModal'), {
+  ssr: false,
+});
 
 
 

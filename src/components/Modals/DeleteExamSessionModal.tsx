@@ -1,3 +1,4 @@
+"use client";
 import AppDialog from '@/components/ui/Modals/AppDialog'
 import useDeleteExamSession from '@/hooks/useDeleteExamSession'
 import clsx from 'clsx'

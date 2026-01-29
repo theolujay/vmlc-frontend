@@ -1,3 +1,5 @@
+'use client';
+
 import React from "react"
 import clsx from "clsx"
 import AppDialog from "@/components/ui/Modals/AppDialog"
@@ -9,7 +11,7 @@ import {
   DropResult,
 } from "@hello-pangea/dnd"
 
-export default function AddQuestionModal({
+export default function UploadQuestionModal({
   open,
   close,
 }: Readonly<{ open: boolean; close: (close: boolean) => void }>) {

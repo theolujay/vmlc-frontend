@@ -1,3 +1,4 @@
+"use client";
 import React from 'react'
 import AppDialog from '../ui/Modals/AppDialog'
 import { FormProvider } from 'react-hook-form'
