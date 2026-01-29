@@ -1,3 +1,4 @@
+"use client";
 import { SessionQuestionItemType } from "@/types/Examtype"
 import { formatDate, getAppropriateColor } from "@/utils/formatFileSize"
 import { getOptionAsArray } from "@/utils/generalUtils"

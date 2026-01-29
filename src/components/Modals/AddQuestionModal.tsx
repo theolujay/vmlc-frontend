@@ -1,4 +1,6 @@
-import React, { useState } from "react"
+'use client';
+
+import React, { useState, useEffect, useCallback, useMemo } from "react"
 import AppDialog from "@/components/ui/Modals/AppDialog"
 import useCreateQuestion from "@/hooks/useCreateQuestion"
 import MathInput from "./ui/MathInput"
@@ -10,14 +12,12 @@ export default function AddQuestionModal({
   open,
   close,
 }: Readonly<{ open: boolean; close: (close: boolean) => void }>) {
-  function handleClose() {
-    close(!open)
-  }
+  const { onSubmit, isPending, form } = useCreateQuestion(() => {
+    setHasChanges(false);
+    handleClose();
+  });
 
-  const { onSubmit, isPending, form } = useCreateQuestion(handleClose)
-
-  // Local state for the rich UI
-  const [formData, setFormData] = useState<QuestionData>({
+  const initialFormData: QuestionData = useMemo(() => ({
     questionText: '',
     options: [
       { id: '1', label: 'Option A', text: '', type: 'wrong' },
@@ -26,12 +26,44 @@ export default function AddQuestionModal({
       { id: '4', label: 'Option D', text: '', type: 'wrong' },
     ],
     difficulty: Difficulty.EASY,
-  });
+  }), []);
 
+  // Local state for the rich UI
+  const [formData, setFormData] = useState<QuestionData>(initialFormData);
   const [correctOptionId, setCorrectOptionId] = useState<string>('');
   const [isImporting, setIsImporting] = useState(false);
   const [showImportView, setShowImportView] = useState(false);
   const [bulkText, setBulkText] = useState('');
+  const [hasChanges, setHasChanges] = useState(false);
+  const [showCloseConfirm, setShowCloseConfirm] = useState(false);
+
+  // Track changes to prompt confirmation on close
+  useEffect(() => {
+    const isChanged = 
+      formData.questionText !== initialFormData.questionText ||
+      formData.options.some((opt, idx) => opt.text !== initialFormData.options[idx].text) ||
+      formData.difficulty !== initialFormData.difficulty ||
+      correctOptionId !== '';
+    setHasChanges(isChanged);
+  }, [formData, correctOptionId, initialFormData]);
+
+  const handleClose = useCallback(() => {
+    if (hasChanges && !showCloseConfirm) {
+      setShowCloseConfirm(true);
+      return;
+    }
+    close(false);
+    // Reset local state after a delay to allow for closing animation
+    setTimeout(() => {
+      setFormData(initialFormData);
+      setCorrectOptionId('');
+      setBulkText('');
+      setHasChanges(false);
+      setShowCloseConfirm(false);
+      form.reset();
+    }, 300);
+  }, [hasChanges, showCloseConfirm, close, form, initialFormData]);
+
 
   // Sync correct answer selection
   const handleSetCorrectOption = (id: string) => {
@@ -55,31 +87,26 @@ export default function AddQuestionModal({
     try {
       const parsed = await parseBulkQuestion(bulkText);
       
-      // Validate we have at least 4 options
       if (!parsed.options || parsed.options.length < 4) {
         throw new Error(
           `Import requires exactly 4 options. Found ${parsed.options?.length || 0}.`
         );
       }
       
-      // Ensure all options have the required structure
       const normalizedOptions = parsed.options.slice(0, 4).map((opt, idx) => ({
         id: String(idx + 1),
-        label: `Option ${String.fromCharCode(65 + idx)}`, // A, B, C, D
+        label: `Option ${String.fromCharCode(65 + idx)}`,
         text: opt.text || '',
         type: opt.type || 'wrong'
       }));
       
-      setFormData(prev => ({
-        ...prev,
-        questionText: parsed.questionText || prev.questionText,
+      setFormData({
+        questionText: parsed.questionText || '',
         options: normalizedOptions,
-        difficulty: parsed.difficulty || prev.difficulty
-      }));
+        difficulty: (parsed.difficulty as Difficulty) || Difficulty.EASY
+      });
       
-      // Reset correct option selection since we have new options
       setCorrectOptionId('');
-      
       setShowImportView(false);
       setBulkText('');
     } catch (error) {
@@ -93,7 +120,6 @@ export default function AddQuestionModal({
   };
 
   const handleSubmit = () => {
-    // Map local state to the hook's expected format
     const payload = {
       text: formData.questionText,
       option_a: formData.options[0]?.text || '',
@@ -104,9 +130,6 @@ export default function AddQuestionModal({
       difficulty: formData.difficulty.toLowerCase(),
     };
     
-    // Validate manually or let the hook handle it? 
-    // The hook uses react-hook-form's handleSubmit which validates against schema.
-    // So we should set values in the form and then submit.
     form.setValue("text", payload.text);
     form.setValue("option_a", payload.option_a);
     form.setValue("option_b", payload.option_b);
@@ -120,28 +143,70 @@ export default function AddQuestionModal({
 
   return (
     <AppDialog open={open} className="!max-w-6xl !w-auto !p-0 bg-transparent shadow-none">
-      <div className="flex flex-col bg-[#F7F9FC] w-[90vw] md:w-[80vw] lg:w-[70vw] xl:w-[60vw] h-[85vh] rounded-2xl overflow-hidden shadow-2xl relative font-sans">
+      <div className="flex flex-col bg-[#F7F9FC] w-[95vw] md:w-[85vw] lg:w-[80vw] xl:w-[70vw] h-[90vh] rounded-3xl overflow-hidden shadow-2xl relative font-sans border border-white/20">
         
+        {/* Close Confirmation Overlay */}
+        {showCloseConfirm && (
+          <div className="absolute inset-0 z-[100] flex items-center justify-center bg-gray-900/60 backdrop-blur-md animate-in fade-in duration-200">
+            <div className="bg-white p-8 rounded-3xl shadow-2xl max-w-sm w-full mx-4 text-center animate-in zoom-in-95 duration-200">
+              <div className="w-16 h-16 bg-amber-50 text-amber-500 rounded-2xl flex items-center justify-center mx-auto mb-6">
+                <i className="fas fa-exclamation-triangle text-2xl"></i>
+              </div>
+              <h3 className="text-xl font-bold text-gray-800 mb-2">Unsaved Changes</h3>
+              <p className="text-sm text-gray-500 mb-8 leading-relaxed">You have unsaved work. Are you sure you want to discard these changes?</p>
+              <div className="flex flex-col space-y-3">
+                <button 
+                  onClick={() => setShowCloseConfirm(false)}
+                  className="w-full py-4 bg-[#3E4095] text-white rounded-xl font-bold text-xs uppercase tracking-widest hover:bg-[#2d2f6e] transition-all"
+                >
+                  Continue Editing
+                </button>
+                <button 
+                  onClick={() => {
+                    setHasChanges(false);
+                    setShowCloseConfirm(false);
+                    close(false);
+                  }}
+                  className="w-full py-4 bg-gray-50 text-gray-400 rounded-xl font-bold text-xs uppercase tracking-widest hover:bg-gray-100 transition-all"
+                >
+                  Discard Changes
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Header */}
-        <div className="px-8 py-6 border-b border-gray-200 flex justify-between items-center bg-white sticky top-0 z-30">
-          <div>
-            <h1 className="text-2xl font-bold text-gray-800 tracking-tight">Add New Question</h1>
-            <p className="text-xs text-gray-400 font-medium">Create beautiful math questions with AI assistance</p>
+        <div className="px-10 py-8 border-b border-gray-100 flex justify-between items-center bg-white sticky top-0 z-30 shadow-sm">
+          <div className="flex items-center space-x-4">
+            <div className="w-12 h-12 bg-[#3E4095]/5 rounded-2xl flex items-center justify-center text-[#3E4095]">
+                <i className="fas fa-plus-circle text-xl"></i>
+            </div>
+            <div>
+              <h1 className="text-2xl font-black text-gray-800 tracking-tight">Add New Question</h1>
+              {/* <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest mt-1 flex items-center">
+                <span className="w-1.5 h-1.5 rounded-full bg-green-400 mr-2 animate-pulse"></span>
+                Visual Editor Ready
+              </p> */}
+            </div>
           </div>
           <div className="flex space-x-3">
              <button 
               onClick={() => setShowImportView(!showImportView)}
-              className={`flex items-center space-x-2 px-4 py-2 rounded-xl text-xs font-bold transition-all uppercase ${
+              className={`flex items-center space-x-3 px-6 py-3 rounded-2xl text-[10px] font-black tracking-widest transition-all uppercase shadow-sm ${
                 showImportView 
-                ? 'bg-gray-800 text-white' 
-                : 'bg-[#3E4095]/10 text-[#3E4095] hover:bg-[#3E4095]/20'
+                ? 'bg-gray-800 text-white hover:bg-gray-900' 
+                : 'bg-white border border-gray-100 text-[#3E4095] hover:bg-gray-50'
               }`}
             >
-              <i className={`fas ${showImportView ? 'fa-edit' : 'fa-file-import'}`}></i>
-              <span>{showImportView ? 'SWITCH TO EDITOR' : 'BULK IMPORT'}</span>
+              <i className={`fas ${showImportView ? 'fa-keyboard' : 'fa-wand-magic-sparkles'}`}></i>
+              <span>{showImportView ? 'BACK TO DEFAULT' : 'AI IMPORT'}</span>
             </button>
-            <button onClick={handleClose} className="w-10 h-10 flex items-center justify-center rounded-xl bg-gray-50 text-gray-400 hover:text-gray-600 transition-colors">
-              <i className="fas fa-times"></i>
+            <button 
+              onClick={handleClose} 
+              className="w-12 h-12 flex items-center justify-center rounded-2xl bg-gray-50 text-gray-400 hover:text-red-500 hover:bg-red-50 transition-all"
+            >
+              <i className="fas fa-times text-lg"></i>
             </button>
           </div>
         </div>
@@ -149,52 +214,63 @@ export default function AddQuestionModal({
         {/* Main Content Area */}
         <div className="flex-1 overflow-y-auto relative custom-scrollbar bg-[#F7F9FC]">
           
-          {/* Bulk Import View Overlay */}
+          {/* AI Smart Import View */}
           {showImportView && (
-            <div className="p-8 bg-white h-full animate-in slide-in-from-top-4 duration-300">
-              <div className="max-w-3xl mx-auto space-y-6">
-                <div className="text-center space-y-2">
-                  <div className="inline-flex items-center justify-center w-12 h-12 rounded-2xl bg-[#3E4095]/10 text-[#3E4095] mb-2">
-                    <i className="fas fa-wand-magic-sparkles text-xl"></i>
+            <div className="p-12 bg-white h-full animate-in slide-in-from-right-4 duration-300">
+              <div className="max-w-3xl mx-auto space-y-10">
+                <div className="space-y-4">
+                  <div className="inline-flex items-center justify-center px-4 py-2 rounded-full bg-[#3E4095]/10 text-[#3E4095] text-[10px] font-black tracking-widest">
+                    <i className="fas fa-robot mr-2"></i> Powered by VMLC engine
                   </div>
-                  <h2 className="text-lg font-bold text-gray-800">AI Import</h2>
-                  <p className="text-sm text-gray-500">
-                    Paste your question and its options from any source (PDF, Word, text) and we&apos;ll automatically format the math and structure the fields.
-                  </p>
+                  <h2 className="text-3xl font-black text-gray-800 leading-tight">Import from text</h2>
+                  {/* <p className="text-gray-500 leading-relaxed">
+                    Paste a question with its options and automatically identify the question text, extract options, and format mathematical expressions LaTeX.
+                  </p> */}
                 </div>
                 
-                <textarea
-                  value={bulkText}
-                  onChange={(e) => setBulkText(e.target.value)}
-                  placeholder="Paste question and options here... e.g. What is the derivative of f(x) = x^2? A) 2x B) x C) 2 D) 0"
-                  className="w-full h-64 p-6 text-sm bg-gray-50 border border-gray-200 rounded-2xl focus:ring-2 focus:ring-[#3E4095]/20 focus:border-[#3E4095] outline-none transition-all font-mono leading-relaxed text-black"
-                />
+                <div className="relative group">
+                    <textarea
+                    value={bulkText}
+                    onChange={(e) => setBulkText(e.target.value)}
+                    placeholder="Paste your question and options here... 
+Example:
+If f(x) = sin(x), find f'(pi/2)
+A) 0
+B) 1
+C) -1
+D) 1/2"
+                    className="w-full h-80 p-8 text-base bg-gray-50 border border-gray-100 rounded-[2rem] focus:ring-4 focus:ring-[#3E4095]/10 focus:border-[#3E4095] outline-none transition-all font-mono leading-relaxed text-black shadow-inner"
+                    />
+                    <div className="absolute top-6 right-6 opacity-0 group-focus-within:opacity-100 transition-opacity">
+                         <span className="px-3 py-1 bg-[#3E4095] text-white text-[10px] font-bold rounded-full shadow-lg">AI PROCESSING...</span>
+                    </div>
+                </div>
 
-                <div className="flex space-x-4">
+                <div className="flex space-x-6">
                   <button 
                     onClick={() => setShowImportView(false)}
-                    className="flex-1 py-4 text-xs font-bold text-gray-500 uppercase tracking-widest hover:bg-gray-50 rounded-xl transition-all cursor-pointer"
+                    className="px-10 py-5 text-[10px] font-black text-gray-400 uppercase tracking-widest hover:text-gray-600 transition-all cursor-pointer"
                   >
                     Cancel
                   </button>
                   <button 
                     onClick={handleBulkImport}
                     disabled={isImporting || !bulkText.trim()}
-                    className={`flex-[2] py-4 rounded-xl text-xs font-bold uppercase tracking-widest shadow-lg transition-all flex items-center justify-center cursor-pointer ${
+                    className={`flex-1 py-5 rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-xl shadow-[#3E4095]/20 transition-all flex items-center justify-center cursor-pointer ${
                       isImporting 
                         ? 'bg-[#3E4095]/50 text-white cursor-wait' 
-                        : 'bg-[#3E4095] hover:bg-[#2d2f6e] text-white hover:-translate-y-0.5 active:translate-y-0'
+                        : 'bg-[#3E4095] hover:bg-[#2d2f6e] text-white hover:-translate-y-1 active:translate-y-0'
                     }`}
                   >
                     {isImporting ? (
                       <>
                         <i className="fas fa-circle-notch animate-spin mr-3 text-lg"></i>
-                        Analyzing & Formatting...
+                        Processing with AI...
                       </>
                     ) : (
                       <>
-                        <i className="fas fa-bolt mr-2"></i>
-                        Import
+                        <i className="fas fa-bolt mr-2 text-amber-300"></i>
+                        Process and Import
                       </>
                     )}
                   </button>
@@ -205,54 +281,79 @@ export default function AddQuestionModal({
 
           {/* Standard Editor View */}
           {!showImportView && (
-            <div className="p-8 space-y-10 max-w-5xl mx-auto">
+            <div className="p-10 pb-32 space-y-16 max-w-6xl mx-auto">
               
               {/* Question Section */}
-              <section>
-                <div className="flex items-center space-x-3 mb-4">
-                  <div className="w-8 h-8 flex items-center justify-center rounded-lg bg-[#3E4095] text-white font-bold text-xs">1</div>
-                  <h3 className="text-sm font-bold text-gray-700 uppercase tracking-wide">Question Body</h3>
+              <section className="space-y-6">
+                <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-4">
+                        <div className="w-10 h-10 flex items-center justify-center rounded-2xl bg-[#3E4095] text-white font-black shadow-lg shadow-[#3E4095]/20">1</div>
+                        <div>
+                            <h3 className="text-base font-black text-gray-800 tracking-tight">Question</h3>
+                            <p className="text-[10px] text-gray-400 font-bold tracking-widest">Format math problem</p>
+                        </div>
+                    </div>
+                    {form.formState.errors.text && (
+                        <span className="text-[10px] bg-red-50 text-red-500 px-3 py-1 rounded-full font-bold border border-red-100 animate-bounce">
+                            {form.formState.errors.text.message}
+                        </span>
+                    )}
                 </div>
-                <MathInput
-                  label="What's the problem?"
-                  isRequired
-                  value={formData.questionText}
-                  onChange={(val) => setFormData(prev => ({ ...prev, questionText: val }))}
-                  placeholder="Enter question text. Use AI Auto-Fix to format messy math."
-                />
+                <div className="bg-white p-2 rounded-[2.5rem] shadow-sm border border-gray-100">
+                    <MathInput
+                    label=""
+                    isRequired
+                    value={formData.questionText}
+                    onChange={(val) => setFormData(prev => ({ ...prev, questionText: val }))}
+                    placeholder="Describe here. Use Editor for complex equations, copy-paste the LaTeX here and continue."
+                    minHeight="h-40"
+                    />
+                </div>
               </section>
 
               {/* Options Section */}
-              <section>
-                <div className="flex items-center space-x-3 mb-6">
-                  <div className="w-8 h-8 flex items-center justify-center rounded-lg bg-[#3E4095] text-white font-bold text-xs">2</div>
-                  <h3 className="text-sm font-bold text-gray-700 uppercase tracking-wide">Answer Options</h3>
-                </div>
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                  {formData.options.map((option) => (
-                    <div key={option.id} className={`relative p-5 rounded-2xl border transition-all group ${correctOptionId === option.id ? 'bg-[#3E4095]/5 border-[#3E4095]/30 ring-2 ring-[#3E4095]/20' : 'bg-white border-gray-100 hover:shadow-xl hover:border-[#3E4095]/20'}`}>
-                      <div className="flex items-center justify-between mb-4">
-                        <span className="text-[10px] font-black text-[#3E4095] bg-[#3E4095]/10 px-2 py-1 rounded">{option.label}</span>
-                        <div className="flex items-center space-x-2">
-                            <label className="text-[10px] font-bold text-gray-400 uppercase cursor-pointer flex items-center space-x-2">
-                                <input 
-                                    type="radio" 
-                                    name="correctOption"
-                                    checked={correctOptionId === option.id}
-                                    onChange={() => handleSetCorrectOption(option.id)}
-                                    className="w-4 h-4 text-[#3E4095] focus:ring-[#3E4095] border-gray-300"
-                                />
-                                <span className={correctOptionId === option.id ? 'text-[#3E4095]' : ''}>Correct Answer</span>
-                            </label>
+              <section className="space-y-8">
+                <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-4">
+                        <div className="w-10 h-10 flex items-center justify-center rounded-2xl bg-[#3E4095] text-white font-black shadow-lg shadow-[#3E4095]/20">2</div>
+                        <div>
+                            <h3 className="text-base font-black text-gray-800 tracking-tight">Answers</h3>
+                            {/* <p className="text-[10px] text-gray-400 font-bold tracking-widest">Select the correct solution</p> */}
                         </div>
+                    </div>
+                    {form.formState.errors.correct_answer && (
+                        <span className="text-[10px] bg-red-50 text-red-500 px-3 py-1 rounded-full font-bold border border-red-100">
+                            Please select a correct answer
+                        </span>
+                    )}
+                </div>
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                  {formData.options.map((option) => (
+                    <div key={option.id} className={`relative p-8 rounded-[2.5rem] border-2 transition-all group ${correctOptionId === option.id ? 'bg-[#3E4095]/5 border-[#3E4095]/30 ring-4 ring-[#3E4095]/5 shadow-xl' : 'bg-white border-gray-50 hover:border-gray-200 hover:shadow-lg'}`}>
+                      <div className="flex items-center justify-between mb-6">
+                        <div className="flex items-center space-x-3">
+                            <span className="w-8 h-8 flex items-center justify-center text-xs font-black text-[#3E4095] bg-[#3E4095]/10 rounded-xl">{option.label.split(' ')[1]}</span>
+                            <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Option</span>
+                        </div>
+                        <button 
+                            onClick={() => handleSetCorrectOption(option.id)}
+                            className={`flex items-center space-x-2 px-4 py-2 rounded-xl text-[9px] font-black uppercase tracking-widest transition-all ${
+                                correctOptionId === option.id 
+                                ? 'bg-[#3E4095] text-white shadow-lg' 
+                                : 'bg-gray-50 text-gray-400 hover:text-[#3E4095] hover:bg-white'
+                            }`}
+                        >
+                            <i className={`fas ${correctOptionId === option.id ? 'fa-check-circle' : 'fa-circle'}`}></i>
+                            <span>{correctOptionId === option.id ? 'CORRECT ANSWER' : 'MARK AS CORRECT'}</span>
+                        </button>
                       </div>
                       <MathInput
                         label=""
                         isRequired
                         value={option.text}
                         onChange={(val) => handleUpdateOption(option.id, 'text', val)}
-                        placeholder="Enter option content"
-                        minHeight="h-20"
+                        placeholder="Option text or equation"
+                        minHeight="h-24"
                       />
                     </div>
                   ))}
@@ -260,22 +361,22 @@ export default function AddQuestionModal({
               </section>
 
               {/* Metadata Section */}
-              <section className="pt-6 border-t border-gray-200">
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between space-y-4 sm:space-y-0">
-                  <div className="space-y-1">
-                    <h3 className="text-sm font-bold text-gray-700 uppercase tracking-wide">Target Difficulty</h3>
-                    <p className="text-[10px] text-gray-400">Help students find the right challenge level</p>
+              <section className="pt-10 border-t border-gray-100">
+                <div className="flex flex-col md:flex-row md:items-center justify-between p-8 bg-white rounded-[2rem] border border-gray-100 shadow-sm space-y-6 md:space-y-0">
+                  <div className="space-y-2">
+                    <h3 className="text-sm font-black text-gray-800 uppercase tracking-widest">Question Difficulty</h3>
+                    {/* <p className="text-[10px] text-gray-400 font-medium leading-relaxed">Categorize this question for personalized student assessments</p> */}
                   </div>
-                  <div className="flex space-x-2">
+                  <div className="flex justify-between p-1.5 bg-gray-50 rounded-2xl border border-gray-100">
                     {DIFFICULTY_OPTIONS.map(diff => (
                       <button
                         key={diff}
                         type="button"
                         onClick={() => setFormData(prev => ({ ...prev, difficulty: diff as Difficulty }))}
-                        className={`px-6 py-2 rounded-xl text-xs font-bold transition-all uppercase ${
+                        className={`px-8 py-3 rounded-xl text-[10px] font-black tracking-widest transition-all uppercase ${
                           formData.difficulty === diff 
-                          ? 'bg-[#3E4095] text-white shadow-lg shadow-[#3E4095]/20' 
-                          : 'bg-white border border-gray-200 text-gray-400 hover:border-[#3E4095]/50 hover:text-[#3E4095]'
+                          ? 'text-white bg-[#3E4095] shadow-md ring-1 ring-gray-100' 
+                          : 'text-gray-400 hover:text-gray-600'
                         }`}
                       >
                         {diff}
@@ -290,46 +391,75 @@ export default function AddQuestionModal({
 
         {/* Footer Actions */}
         {!showImportView && (
-          <div className="px-8 py-6 bg-[#F7F9FC]/90 border-t border-gray-200 flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-4 sticky bottom-0 z-30 backdrop-blur-sm">
-            <button onClick={handleClose} className="px-8 py-3 bg-white border border-gray-200 text-gray-500 rounded-xl font-bold uppercase text-[10px] tracking-widest hover:bg-gray-50 transition-all cursor-pointer">
-              Cancel
+          <div className="px-10 py-8 bg-white/80 border-t border-gray-100 flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-6 sticky bottom-0 z-30 backdrop-blur-xl">
+            <button 
+                onClick={handleClose} 
+                className="px-10 py-4 bg-gray-50 text-gray-400 rounded-2xl font-black uppercase text-[10px] tracking-widest hover:bg-gray-100 hover:text-gray-600 transition-all cursor-pointer"
+            >
+              Discard Changes
             </button>
             <div className="flex-1"></div>
-            <button 
-              onClick={handleSubmit}
-              disabled={isPending || !formData.questionText || !correctOptionId}
-              className={`px-12 py-3 rounded-xl font-bold uppercase text-[10px] tracking-widest shadow-xl transition-all flex items-center justify-center cursor-pointer ${
-                isPending || !formData.questionText || !correctOptionId
-                  ? 'bg-[#3E4095]/50 cursor-not-allowed text-white' 
-                  : 'bg-[#3E4095] hover:bg-[#2d2f6e] text-white hover:-translate-y-0.5 active:translate-y-0'
-              }`}
-            >
-              {isPending ? (
-                <>
-                  <i className="fas fa-circle-notch animate-spin mr-3"></i>
-                  Saving...
-                </>
-              ) : (
-                'Add Question'
-              )}
-            </button>
+            <div className="flex items-center space-x-4">
+                <button 
+                    onClick={() => {
+                        setFormData(initialFormData);
+                        setCorrectOptionId('');
+                        form.reset();
+                    }}
+                    className="px-6 py-4 text-gray-400 hover:text-red-500 text-[10px] font-black uppercase tracking-widest transition-colors"
+                >
+                    Clear All
+                </button>
+                <div className="flex flex-col items-end">
+                  {!correctOptionId && formData.questionText && (
+                    <span className="text-[9px] font-bold text-amber-500 uppercase tracking-widest animate-pulse mb-1">
+                      Mark an option as correct
+                    </span>
+                  )}
+                  <button 
+                  onClick={handleSubmit}
+                  disabled={isPending || !formData.questionText || !correctOptionId}
+                  className={`px-16 py-4 rounded-2xl font-black uppercase text-[10px] tracking-widest shadow-2xl transition-all flex items-center justify-center cursor-pointer ${
+                      isPending || !formData.questionText || !correctOptionId
+                      ? 'bg-[#3E4095]/30 cursor-not-allowed text-white' 
+                      : 'bg-[#3E4095] hover:bg-[#2d2f6e] text-white hover:-translate-y-1 hover:shadow-[#3E4095]/30 active:translate-y-0'
+                  }`}
+                  >
+                  {isPending ? (
+                      <>
+                      <i className="fas fa-circle-notch animate-spin mr-3 text-lg"></i>
+                      Publishing...
+                      </>
+                  ) : (
+                      <>
+                      <i className="fas fa-paper-plane mr-2"></i>
+                      Add Question
+                      </>
+                  )}
+                  </button>
+                </div>
+            </div>
           </div>
         )}
       </div>
 
       <style jsx global>{`
         .custom-scrollbar::-webkit-scrollbar {
-          width: 6px;
+          width: 8px;
         }
         .custom-scrollbar::-webkit-scrollbar-track {
           background: transparent;
         }
         .custom-scrollbar::-webkit-scrollbar-thumb {
           background: #e2e8f0;
-          border-radius: 10px;
+          border-radius: 20px;
+          border: 2px solid transparent;
+          background-clip: content-box;
         }
         .custom-scrollbar::-webkit-scrollbar-thumb:hover {
           background: #cbd5e1;
+          border: 2px solid transparent;
+          background-clip: content-box;
         }
         .no-scrollbar::-webkit-scrollbar {
           display: none;
@@ -342,4 +472,5 @@ export default function AddQuestionModal({
     </AppDialog>
   )
 }
+
 

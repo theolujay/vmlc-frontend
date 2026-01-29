@@ -1,3 +1,4 @@
+"use client";
 import QuestionInformation from '@/components/Drawer/QuestionInformation';
 import { DeleteIcon } from '@/components/General/GeneralIcon';
 import { AddIcon, EyeIcon } from '@/components/General/GettingStarted/GettingStartedAssets';

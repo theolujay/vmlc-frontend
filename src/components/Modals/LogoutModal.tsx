@@ -1,3 +1,4 @@
+"use client";
 import clsx from 'clsx'
 import AppDialog from '@/components/ui/Modals/AppDialog'
 import { LogoutIcon } from '../Admin/AdminIcons'

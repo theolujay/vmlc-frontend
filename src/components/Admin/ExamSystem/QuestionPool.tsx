@@ -3,14 +3,18 @@ import useListQuestions from '@/hooks/useListQuestions'
 import usePagination from '@/hooks/usePagination'
 import { useSearchParams } from 'next/navigation'
 import { useEffect, useMemo, useState } from 'react'
+import dynamic from 'next/dynamic'
 import { AddIcon } from '../../General/GettingStarted/GettingStartedAssets'
-import AddQuestionModal from '../../Modals/AddQuestionModal'
 import Button from '../../ui/Button'
 import ResponsiveContainer from '../../ui/ResponsiveContainer'
 import AdminHeader from '../AdminHeader'
 import EmptySession from '../EmptySession'
 import QuestionPoolTable from './QuestionPoolTable'
 import SummaryCard from './SummaryCard'
+
+const AddQuestionModal = dynamic(() => import('../../Modals/AddQuestionModal'), {
+  ssr: false,
+});
 
 
 export default function QuestionPool() {

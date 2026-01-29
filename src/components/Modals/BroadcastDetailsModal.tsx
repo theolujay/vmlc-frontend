@@ -1,3 +1,4 @@
+"use client";
 import AppDialog from '@/components/ui/Modals/AppDialog';
 import ResponsiveContainer from '@/components/ui/ResponsiveContainer';
 import useGetBroadcastDetail from '@/hooks/useGetBroadcastDetail';
