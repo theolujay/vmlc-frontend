@@ -8,7 +8,7 @@ import z from 'zod'
 const uploadExamSchema = z.object({
 
 
-  level: z.string(),
+  round: z.string(),
   scheduled_date: z.string(),
   countdown_minutes: z.string(),
   //   start_time: z.date(),
@@ -19,7 +19,7 @@ const uploadExamSchema = z.object({
 type ValueType = z.infer<typeof uploadExamSchema>;
 
 const defaultValues: ValueType = {
-  level: '',
+  round: '',
   scheduled_date: '',
   countdown_minutes: '',
   scheduled_exam_time: '',
@@ -50,7 +50,7 @@ export default function useUploadSession(exam_id: string,onSuccessCallback:()=>v
     const payload = {
       scheduled_date: new Date(`${value.scheduled_date}T${value.scheduled_exam_time}`).toISOString(),
       open_duration_hours: Number(value.open_duration_hours),
-      level: Number(value.level),
+      round: Number(value.round),
       countdown_minutes: Number(value.countdown_minutes)
     }
 

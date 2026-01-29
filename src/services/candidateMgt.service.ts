@@ -78,9 +78,9 @@ export class CandidateMgtService {
 
 
 
-    static async getLeaderBoardCandidateDetail(stage: string, level: string, candidate_id: string): Promise<ViewCandidateDetailType> {
+    static async getLeaderBoardCandidateDetail(stage: string, round: string, candidate_id: string): Promise<ViewCandidateDetailType> {
         try {
-            const response = await client.get(candidateUrls.GET_LEADERBOARD_CANDIDATE_DETAIL(stage, level, candidate_id));
+            const response = await client.get(candidateUrls.GET_LEADERBOARD_CANDIDATE_DETAIL(stage, round, candidate_id));
             return response.data;
         } catch (error) {
             console.error(error)

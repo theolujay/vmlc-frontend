@@ -37,13 +37,13 @@ function viewCandidateDetailsByType(role: string,id:string): ReactNode {
 
 
 
-export default function ViewCandidateDetails({ candidate_id, level, stage }: { candidate_id: string, level: string, stage: string }) {
+export default function ViewCandidateDetails({ candidate_id, round, stage }: { candidate_id: string, round: string, stage: string }) {
 
 
        const { authState } = useAuth()
         // const userTabs = getTabsForRole(authState?.user?.role!)
-        const userButton=viewCandidateDetailsByType(authState?.user?.role!,candidate_id);
-    const { data } = useGetLeaderBoardCandidateDetail(stage, level, candidate_id);
+        const userButton=viewCandidateDetailsByType(authState!.user!.role!,candidate_id);
+    const { data } = useGetLeaderBoardCandidateDetail(stage, round, candidate_id);
     // kf
     return (
         <div className='flex flex-col gap-1 '>

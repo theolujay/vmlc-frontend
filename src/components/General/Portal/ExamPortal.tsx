@@ -60,7 +60,7 @@ function ExamPortal() {
   const currentStage: 'SCREENING' | 'LEAGUE' | 'FINAL' = determineStage(stageProgress?.current_stage || '') || 'SCREENING';
   
   const currentExam = data?.next_exam || null;
-  const leagueWeek = stageProgress?.current_level || currentExam?.level || 1; 
+  const leagueWeek = stageProgress?.current_round || currentExam?.round || 1; 
 
   // Map history
   const history = recentResults.map(score => ({

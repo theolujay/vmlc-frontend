@@ -53,7 +53,7 @@ function Board({ userRole }: { userRole?: string }) {
     const leaderBoardTab = leaderBoardItems?.map((val) => ({
         label: <ScreeningLabel label={val.stage} />,
         value: val.stage_display,
-        content: <ScreeningTab stage={val.stage} level={val.level} />
+        content: <ScreeningTab stage={val.stage} round={val.round} />
         
     }));
    
@@ -65,9 +65,9 @@ function Board({ userRole }: { userRole?: string }) {
 
 
 
-function ScreeningTab({ stage, level }: { stage: string; level: number }) {
+function ScreeningTab({ stage, round }: { stage: string; round: number }) {
     const { page,setPage} = usePagination();
-    const [filters] = useState({ stage, level });
+    const [filters] = useState({ stage, round });
     const { authState } = useAuth();
     const { data } = useGetLeaderBoard(page, filters);
 

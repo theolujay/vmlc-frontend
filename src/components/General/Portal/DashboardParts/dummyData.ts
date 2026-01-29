@@ -14,7 +14,7 @@ export const DUMMY_AVAILABLE_EXAM: AvailableExamType = {
   open_duration_hours: 24,
   countdown_minutes: 60,
   question_count: 20,
-  level: 3,
+  round: 3,
   scheduled_date: new Date(Date.now() + 300), // Tomorrow
   stage: "League",
   stage_display: "League Week 3",

@@ -53,7 +53,7 @@ export default function LeaderBoardSection() {
   const leaderBoardTab = leaderBoardItems?.map((val) => ({
     label: <ScreeningLabel label={val.stage_display} />,
     value: val.stage_display,
-    content: <ScoreComponent stage={val.stage} level={val.level} />
+    content: <ScoreComponent stage={val.stage} round={val.round} />
   }));
 
   return (
@@ -83,9 +83,9 @@ export function ScreeningLabel({ label }: { label: string }) {
 
 
 
-function ScoreComponent({ stage, level }: Readonly<{ stage: string; level: number }>) {
+function ScoreComponent({ stage, round }: Readonly<{ stage: string; round: number }>) {
   const { page, setPage } = usePagination();
-  const [filters] = useState({ stage, level });
+  const [filters] = useState({ stage, round });
   const { data } = useGetLeaderBoard(page, filters);
 
 
@@ -123,7 +123,7 @@ function ScoreComponent({ stage, level }: Readonly<{ stage: string; level: numbe
 
     return (
       <div className="flex gap-2 flex-col">
-        <Podium stage={stage} level={level} users={data.top_three} />
+        <Podium stage={stage} round={round} users={data.top_three} />
         <CustomTable columns={[
           { key: 'position', header: 'Position', render: (_, row) => <div className="flex items-center gap-1">{row.rank}</div> },
           {
@@ -159,7 +159,7 @@ function ScoreComponent({ stage, level }: Readonly<{ stage: string; level: numbe
 
               const query = new URLSearchParams(searchParams.toString());
               query.set("view", "view-candidate");
-              query.set('level', level.toString())
+              query.set('round', round.toString())
               query.set('stage', stage)
               query.set("id", row.candidate.id);
               const href = `${pathName}?${query.toString()}`;
@@ -210,7 +210,7 @@ const shapeByRank: Record<number, React.ComponentType> = {
 
 
 
-export function Podium({ users, stage, level }: Readonly<{ users: CandidateType[], stage: string, level: number }>) {
+export function Podium({ users, stage, round }: Readonly<{ users: CandidateType[], stage: string, round: number }>) {
   const order = [2, 1, 3];
   const arranged = [...users].sort(
     (a, b) => order.indexOf(a.rank) - order.indexOf(b.rank)
@@ -230,7 +230,7 @@ export function Podium({ users, stage, level }: Readonly<{ users: CandidateType[
 
             const query = new URLSearchParams(searchParams.toString());
             query.set("view", "view-candidate");
-            query.set('level', level.toString())
+            query.set('round', round.toString())
             query.set('stage', stage)
             query.set("id", val.candidate.id);
             const href = `${pathName}?${query.toString()}`;

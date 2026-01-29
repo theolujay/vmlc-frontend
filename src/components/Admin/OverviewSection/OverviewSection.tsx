@@ -38,6 +38,8 @@ import RegistrationTrends from './RegistrationTrends';
 import GeographicsSection from './GeographicsSection';
 import InfoBoard from '../../General/Portal/DashboardParts/InfoBoard';
 import useGetCurrentUser from '@/hooks/useGetCurrentUser';
+import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
+import clsx from 'clsx';
 
 function shouldShowHeaderButtons(role: string): boolean {
   switch (role) {
@@ -142,11 +144,6 @@ export default function OverviewSection() {
         
         <QuickActionsCard />
 
-        <div className="flex justify-end mt-4">
-          <Button onClick={() => setShowPreRegistered(!showPreRegistered)} className="inline-flex gap-2 border px-2 items-center text-sm">
-            <span>{showPreRegistered ? "Show Registered" : "Show Pre-registered"}</span>
-          </Button>
-        </div>
         {showPreRegistered ? (
           <PreRegisteredCandidatesTable
             page_count={preRegisteredData?.pagination.total_pages ?? 0}
@@ -154,6 +151,9 @@ export default function OverviewSection() {
             onPageChange={setPage}
             handleSearch={setFilters}
             candidates={preRegisteredData?.results as PreRegisteredCandidate[] ?? []}
+            setFilters={setFilters}
+            showPreRegistered={showPreRegistered}
+            setShowPreRegistered={setShowPreRegistered}
           />
         ) : (
           <RegisteredCandidatesTable
@@ -163,6 +163,11 @@ export default function OverviewSection() {
             onPageChange={setPage}
             data={(data?.results as RegisteredCandidatesType[]) ?? []}
             onViewProfile={handleViewProfile}
+            filters={filters}
+            setFilters={setFilters}
+            showPreRegistered={showPreRegistered}
+            setShowPreRegistered={setShowPreRegistered}
+            setPage={setPage}
           />
         )}
       </div>
@@ -194,24 +199,46 @@ function RegisteredCandidatesTable({
   page_count,
   handleSearch,
   onViewProfile,
+  filters,
+  setFilters,
+  showPreRegistered,
+  setShowPreRegistered,
+  setPage,
 }: Readonly<{
   data: RegisteredCandidatesType[];
-  // data: MgtItem[],
   handleSearch: Dispatch<SetStateAction<Record<string, string>>>;
   onPageChange: Dispatch<SetStateAction<number>>;
   currentPage: number;
   page_count: number;
   onViewProfile: (id: string) => void;
+  filters: Record<string, string>;
+  setFilters: Dispatch<SetStateAction<Record<string, string>>>;
+  showPreRegistered: boolean;
+  setShowPreRegistered: Dispatch<SetStateAction<boolean>>;
+  setPage: Dispatch<SetStateAction<number>>;
 }>) {
   const { searchInput, setSearchInput } = useDebouncedSearch(handleSearch);
 
+  const handleSort = (sortKey: string) => {
+    setFilters(prev => ({ ...prev, ordering: sortKey }));
+  };
+
+  const handleFilterChange = (key: string, value: string) => {
+    setFilters(prev => ({ ...prev, [key]: value }));
+    onPageChange(1);
+  };
+
   return (
-    <ResponsiveContainer className="flex gap-4 py-3 px-0 flex-col w-full">
+    <ResponsiveContainer className="flex gap-4 py-3 px-0 flex-col w-full mt-6">
       <div className="flex flex-col sm:flex-row sm:justify-between gap-3 sm:gap-0 px-1 sm:px-3">
-        <div className="flex gap-1 flex-col">
-          <h2 className="font-bold text-lg sm:text-xl">Registered Candidates</h2>
-          <p className="text-sm text-gray-600">List of users fully registered as candidates</p>
+        <div className="flex gap-3 items-center">
+          <div className="flex flex-col gap-1">
+            <h2 className="font-bold text-lg sm:text-xl">Registered Candidates</h2>
+            {/* <p className="text-sm text-gray-600">List of users fully registered as candidates</p> */}
+          </div>
+          
         </div>
+
         <div className="flex flex-col sm:flex-row gap-2 sm:items-center">
           <div className="flex w-full sm:w-auto">
             <input
@@ -223,18 +250,121 @@ function RegisteredCandidatesTable({
             />
           </div>
           <div className="flex gap-2">
-            <button className="inline-flex items-center justify-center gap-2 border h-10 rounded-md px-3 py-1 border-[#E4E7EC] cursor-pointer flex-1 sm:flex-none">
-              <span>
-                <SortIcon />
-              </span>
-              <span className="text-[#344054] text-sm">Sort</span>
-            </button>
-            <button className="inline-flex items-center justify-center gap-2 border h-10 rounded-md px-3 py-1 border-[#E4E7EC] cursor-pointer flex-1 sm:flex-none">
-              <span>
-                <FilterIcon />
-              </span>
-              <span className="text-[#344054] text-sm">Filter</span>
-            </button>
+            <DropdownMenu.Root>
+              <DropdownMenu.Trigger asChild>
+                <button className="inline-flex items-center justify-center gap-2 border h-10 rounded-md px-3 py-1 border-[#E4E7EC] cursor-pointer flex-1 sm:flex-none">
+                  <span>
+                    <SortIcon />
+                  </span>
+                  <span className="text-[#344054] text-sm">Sort</span>
+                </button>
+              </DropdownMenu.Trigger>
+              <DropdownMenu.Portal>
+                <DropdownMenu.Content className="z-50 min-w-[150px] bg-white rounded-md p-1 shadow-lg border border-[#E4E7EC]" sideOffset={5}>
+                  <DropdownMenu.Label className="px-2 py-1.5 text-xs font-semibold text-gray-500 uppercase">Sort By</DropdownMenu.Label>
+                  <DropdownMenu.Item onClick={() => handleSort('first_name')} className="px-2 py-2 text-sm text-gray-700 outline-none cursor-pointer hover:bg-gray-100 rounded">First Name (A-Z)</DropdownMenu.Item>
+                  <DropdownMenu.Item onClick={() => handleSort('-first_name')} className="px-2 py-2 text-sm text-gray-700 outline-none cursor-pointer hover:bg-gray-100 rounded">First Name (Z-A)</DropdownMenu.Item>
+                  <DropdownMenu.Item onClick={() => handleSort('last_name')} className="px-2 py-2 text-sm text-gray-700 outline-none cursor-pointer hover:bg-gray-100 rounded">Last Name (A-Z)</DropdownMenu.Item>
+                  <DropdownMenu.Item onClick={() => handleSort('-last_name')} className="px-2 py-2 text-sm text-gray-700 outline-none cursor-pointer hover:bg-gray-100 rounded">Last Name (Z-A)</DropdownMenu.Item>
+                  <DropdownMenu.Item onClick={() => handleSort('-date_joined')} className="px-2 py-2 text-sm text-gray-700 outline-none cursor-pointer hover:bg-gray-100 rounded">Newest First</DropdownMenu.Item>
+                  <DropdownMenu.Item onClick={() => handleSort('date_joined')} className="px-2 py-2 text-sm text-gray-700 outline-none cursor-pointer hover:bg-gray-100 rounded">Oldest First</DropdownMenu.Item>
+                </DropdownMenu.Content>
+              </DropdownMenu.Portal>
+            </DropdownMenu.Root>
+
+            <DropdownMenu.Root>
+              <DropdownMenu.Trigger asChild>
+                <button className="inline-flex items-center justify-center gap-2 border h-10 rounded-md px-3 py-1 border-[#E4E7EC] cursor-pointer flex-1 sm:flex-none">
+                  <span>
+                    <FilterIcon />
+                  </span>
+                  <span className="text-[#344054] text-sm">Filter</span>
+                </button>
+              </DropdownMenu.Trigger>
+              <DropdownMenu.Portal>
+                <DropdownMenu.Content className="z-50 min-w-[200px] bg-white rounded-md p-3 shadow-lg border border-[#E4E7EC]" sideOffset={5}>
+                  <div className="flex flex-col gap-3">
+                    <div className="flex flex-col gap-1">
+                      <label className="text-xs font-semibold text-gray-500 uppercase">Role</label>
+                      <select 
+                        value={filters.role || ''} 
+                        onChange={(e) => handleFilterChange('role', e.target.value)}
+                        className="border rounded px-2 py-1.5 text-sm outline-none"
+                      >
+                        <option value="">All Roles</option>
+                        <option value="screening">Screening</option>
+                        <option value="league">League</option>
+                        <option value="final">Final</option>
+                      </select>
+                    </div>
+
+                    <div className="flex flex-col gap-1">
+                      <label className="text-xs font-semibold text-gray-500 uppercase">Class</label>
+                      <select 
+                        value={filters.current_class || ''} 
+                        onChange={(e) => handleFilterChange('current_class', e.target.value)}
+                        className="border rounded px-2 py-1.5 text-sm outline-none"
+                      >
+                        <option value="">All Classes</option>
+                        <option value="JSS1">JSS 1</option>
+                        <option value="JSS2">JSS 2</option>
+                        <option value="JSS3">JSS 3</option>
+                        <option value="SSS1">SSS 1</option>
+                        <option value="SSS2">SSS 2</option>
+                        <option value="SSS3">SSS 3</option>
+                      </select>
+                    </div>
+                    <div className="flex flex-col gap-1">
+                      <label className="text-xs font-semibold text-gray-500 uppercase">School Type</label>
+                      <select 
+                        value={filters.school_type || ''} 
+                        onChange={(e) => handleFilterChange('school_type', e.target.value)}
+                        className="border rounded px-2 py-1.5 text-sm outline-none"
+                      >
+                        <option value="">All Types</option>
+                        <option value="primary">Primary</option>
+                        <option value="secondary">Secondary</option>
+                        <option value="tertiary">Tertiary</option>
+                      </select>
+                    </div>
+                    
+                    <button 
+                      onClick={() => {
+                        setFilters({ profile: 'candidate' });
+                        onPageChange(1);
+                      }}
+                      className="mt-2 text-xs text-red-600 font-semibold hover:underline"
+                    >
+                      Clear Filters
+                    </button>
+                  </div>
+                </DropdownMenu.Content>
+              </DropdownMenu.Portal>
+            </DropdownMenu.Root>
+            <div className="flex bg-[#F2F4F7] p-1 rounded-lg ml-4">
+              <button 
+                  onClick={() => {
+                    setShowPreRegistered(false);
+                    setFilters({ profile: 'candidate' });
+                    setPage(1);
+                  }}
+                  className={clsx("px-4 py-1.5 text-xs font-medium rounded-md transition-all", 
+                      !showPreRegistered ? "bg-white shadow-sm text-[#344054]" : "text-[#667085] hover:text-[#344054]")}
+              >
+                  Registered
+              </button>
+              <button 
+                  onClick={() => {
+                    setShowPreRegistered(true);
+                    setFilters({ profile: 'pre_reg_candidate' });
+                    setPage(1);
+                  }}
+                  className={clsx("px-4 py-1.5 text-xs font-medium rounded-md transition-all", 
+                      showPreRegistered ? "bg-white shadow-sm text-[#344054]" : "text-[#667085] hover:text-[#344054]")}
+              >
+                  Pre-registered
+              </button>
+            </div>
           </div>
         </div>
       </div>
