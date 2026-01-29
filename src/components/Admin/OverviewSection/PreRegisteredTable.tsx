@@ -43,32 +43,7 @@ function PreRegisteredCandidatesTable({
         <div className="flex gap-3 items-center">
           <div className="flex flex-col gap-1">
             <h2 className="font-bold text-lg sm:text-xl">Pre-registered Candidates</h2>
-            <p className="text-sm text-gray-600">List of users interested in becoming candidates</p>
-          </div>
-          
-          <div className="flex bg-[#F2F4F7] p-1 rounded-lg ml-4">
-            <button 
-                onClick={() => {
-                  setShowPreRegistered(false);
-                  setFilters({ profile: 'candidate' });
-                  onPageChange(1);
-                }}
-                className={clsx("px-4 py-1.5 text-xs font-medium rounded-md transition-all", 
-                    !showPreRegistered ? "bg-white shadow-sm text-[#344054]" : "text-[#667085] hover:text-[#344054]")}
-            >
-                Registered
-            </button>
-            <button 
-                onClick={() => {
-                  setShowPreRegistered(true);
-                  setFilters({ profile: 'pre_reg_candidate' });
-                  onPageChange(1);
-                }}
-                className={clsx("px-4 py-1.5 text-xs font-medium rounded-md transition-all", 
-                    showPreRegistered ? "bg-white shadow-sm text-[#344054]" : "text-[#667085] hover:text-[#344054]")}
-            >
-                Pre-registered
-            </button>
+            {/* <p className="text-sm text-gray-600">List of users interested in becoming candidates</p> */}
           </div>
         </div>
 
@@ -127,6 +102,30 @@ function PreRegisteredCandidatesTable({
                 </DropdownMenu.Content>
               </DropdownMenu.Portal>
             </DropdownMenu.Root>
+            <div className="flex bg-[#F2F4F7] p-1 rounded-lg ml-4">
+              <button 
+                  onClick={() => {
+                    setShowPreRegistered(false);
+                    setFilters({ profile: 'candidate' });
+                    onPageChange(1);
+                  }}
+                  className={clsx("px-4 py-1.5 text-xs font-medium rounded-md transition-all", 
+                      !showPreRegistered ? "bg-white shadow-sm text-[#344054]" : "text-[#667085] hover:text-[#344054]")}
+              >
+                  Registered
+              </button>
+              <button 
+                  onClick={() => {
+                    setShowPreRegistered(true);
+                    setFilters({ profile: 'pre_reg_candidate' });
+                    onPageChange(1);
+                  }}
+                  className={clsx("px-4 py-1.5 text-xs font-medium rounded-md transition-all", 
+                      showPreRegistered ? "bg-white shadow-sm text-[#344054]" : "text-[#667085] hover:text-[#344054]")}
+              >
+                  Pre-registered
+              </button>
+            </div>
           </div>
         </div>
       </div>
