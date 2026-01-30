@@ -1,14 +1,17 @@
 "use client"
 import { useExamContext } from "@/contexts/ExamNavigationProvider"
+import { formatExamTitle } from "@/utils/generalUtils"
 import { useRouter } from "next/navigation"
 import { useEffect, useRef, useState } from "react"
 
 export default function HeaderTimer({
   timer,
   onTimeUp,
+  title
 }: {
   timer: number
   onTimeUp?: () => Promise<void> | void
+  title?: string
 }) {
   const router = useRouter()
   const { showNav, setShowNav } = useExamContext()
@@ -56,7 +59,7 @@ export default function HeaderTimer({
 
   return (
     <div className='flex bg-white justify-between px-6 items-center'>
-      <h2 className='text-[1.75rem] font-normal'>Screening Exam</h2>
+      <h2 className='text-[1.75rem] font-normal'>{formatExamTitle(title) || 'Exam'}</h2>
 
       <div className='flex flex-col'>
         <span className='text-sm text-[#667185]'>Time Remaining</span>

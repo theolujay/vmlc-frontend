@@ -10,9 +10,7 @@ import useBulkAddQuestionsToSession from '@/hooks/useBulkAddQuestionsToSession'
 import { SelectItem } from '@/types/Index'
 import MultiSelectDropdown from '../ui/MultiSelect'
 import Spinner from '../ui/spinner/spinner'
-
-
-
+import { formatExamTitle } from '@/utils/generalUtils';
 
 export default function AddToExamSessionModal({
     open,
@@ -30,7 +28,7 @@ export default function AddToExamSessionModal({
     const { onSubmit, isPending } = useBulkAddQuestionsToSession(handleClose)
     const selectedSessionIds = selected.map((val) => val.id)
     const payload = { question_ids: selectedQuestionIds, exam_ids: selectedSessionIds };
-    const sessionItems: SelectItem[] = data?.results.map((val) => ({ id: val.id, label: val.title })) ?? [];
+    const sessionItems: SelectItem[] = data?.results.map((val) => ({ id: val.id, label: formatExamTitle(val.title) })) ?? [];
 
     return (
         <AppDialog open={open}>

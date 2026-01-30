@@ -9,6 +9,7 @@ import clsx from 'clsx'
 import Link from 'next/link'
 import { useState } from 'react'
 import { ExamCardGoTo } from '../GeneralIcon'
+import { formatExamTitle } from '@/utils/generalUtils'
 
 export default function ExamBoard() {
     const { data, isPending } = useGetExamPortal()
@@ -68,7 +69,7 @@ function ExamCard({ details }: { details: AvailableExamType }) {
         </div>
         <div className="flex flex-col z-10 bg-[#F0F2F5] rounded-2xl p-2">
             <div className="flex  flex-col gap-1 rounded-lg">
-                <span className='text-[0.875rem] uppercase'>{details.title}</span>
+                <span className='text-[0.875rem] uppercase'>{formatExamTitle(details.title)}</span>
                 <div className="flex bg-[#F9FAFB] text-sm p-2 rounded-lg flex-col">
                     <div className={clsx('flex  justify-between ', examNotWritten && 'text-[#04802E]')}>
                         <span>START TIME</span>

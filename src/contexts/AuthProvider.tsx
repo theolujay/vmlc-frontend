@@ -28,7 +28,7 @@ const reducer = (state: AuthState, action: Actions): AuthState => {
             sessionStorage.removeItem("returnURL"); 
             const payload = action.payload
             localStorage.setItem('session', JSON.stringify(payload));
-            if (!payload) {
+            if (!payload || !payload.profile) {
                 return {
                     homePath: '',
                     token: null,

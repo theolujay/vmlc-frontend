@@ -57,7 +57,7 @@ const formattedAnswers = {
   }
 
   return (
-    <ExamLayout onTimeUp={handleSubmit} timer={data?.countdown_minutes}>
+    <ExamLayout onTimeUp={handleSubmit} timer={data?.countdown_minutes} title={data?.title}>
       <Questions submitPending={submitPending} handleSubmit={handleSubmit} answers={answers} setAnswers={setAnswers} isPending={isPending} data={data} />
     </ExamLayout>
   )

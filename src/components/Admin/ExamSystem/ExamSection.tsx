@@ -18,6 +18,7 @@ import useGetValidDate, { useSortedExams } from '@/hooks/useGetValidDate'
 import { ExamSessionType } from '@/types/Examtype'
 import Spinner from '@/components/ui/spinner/spinner'
 import PagePagination from '@/components/ui/Pagination/PagePagination'
+import { formatExamTitle } from '@/utils/generalUtils'
 
 export default function ExamSection() {
   const router = useRouter();
@@ -161,7 +162,7 @@ function ExamSession({ data, id }: Readonly<{ id: string, data: any }>) {
     </div>
     <div className={clsx("flex flex-col z-10   rounded-2xl p-2", isUpcomingExam(data.status) ? 'bg-[#E6F7FD]' : 'bg-[#F0F2F5]')}>
       <div className={clsx("flex  flex-col gap-1 rounded-lg")}>
-        <span className='text-sm uppercase'>{data.title}</span>
+        <span className='text-sm uppercase'>{formatExamTitle(data.title)}</span>
 
         <p className='font-bold text-[2.5rem] '>{data.question_count}</p>
         <div className='flex justify-between items-center'>
