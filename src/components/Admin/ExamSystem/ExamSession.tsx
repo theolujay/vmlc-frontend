@@ -4,6 +4,7 @@ import Spinner from '@/components/ui/spinner/spinner'
 import usePagination from '@/hooks/usePagination'
 import useViewExamQuestions from '@/hooks/useViewExamQuestions'
 import { SessionQuestionItemType } from '@/types/Examtype'
+import { formatExamTitle } from '@/utils/generalUtils'
 import { formatDate } from '@/utils/formatFileSize'
 import clsx from 'clsx'
 import { useSearchParams } from 'next/navigation'
@@ -61,7 +62,7 @@ export default function ExamSession() {
         <Spinner />
       </div> :
         <div className="flex flex-col gap-3 mt-3 w-[96%] mx-auto">
-          <SessionDetails dateCreated={data?.created_at ?? new Date()} title={data?.title} description={data?.description} />
+          <SessionDetails dateCreated={data?.created_at ?? new Date()} title={formatExamTitle(data?.title)} description={data?.description} />
           <QuestionSummaryCard moderate_question={data?.questions.question_pool_data.moderate_questions_count ?? 0} hard_question={data?.questions.question_pool_data.hard_questions_count ?? 0} easy_question={data?.questions.question_pool_data.easy_questions_count ?? 0} total={data?.questions.question_pool_data.total_questions ?? 0} />
           <QuestionsTable page_count={data?.questions.total_pages ?? 0} currentPage={page} onPageChange={setPage} questions={(data?.questions?.results ?? []) as SessionQuestionItemType[]} />
         </div>

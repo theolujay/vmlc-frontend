@@ -35,35 +35,41 @@ export default function CreateExamSessionModal({ open, close }: Readonly<{ open:
                     <ResponsiveContainer className='rounded-md p-4'>
                         <FormProvider {...form}>
                             <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4">
-                                <div className="flex justify-between gap-2">
+                                <div className="grid grid-cols-2 gap-4">
                                     <div className="flex flex-col flex-1">
-                                        <label htmlFor="exam" className='mb-1'>EXAM SESSION TITLE <span className="text-red-500">*</span></label>
-                                        <input required placeholder='Enter title of exam session (E.g., Screening Exam)' type="text" {...register('title')} className='border outline-0 p-2 border-[#D0D5DD] rounded-lg' />
-                                        {errors.title && <p className="text-red-500 text-sm">{errors.title.message}</p>}
+                                        <label htmlFor="stage_id" className='mb-1 text-sm'>STAGE ID</label>
+                                        <input type="number" {...register('stage_id', { valueAsNumber: true })} className='border outline-0 p-2 border-[#D0D5DD] rounded-lg' />
+                                        {errors.stage_id && <p className="text-red-500 text-sm">{errors.stage_id.message}</p>}
                                     </div>
-                                    {/* 
                                     <div className="flex flex-col flex-1">
-                                        <label htmlFor="exam" className='mb-1'>STAGE<span className="text-red-500">*</span></label>
-                                        <Controller control={form.control} name='stage' render={({ field }) => (
-                                            <SelectInput value={field.value} onValueChange={field.onChange} items={['screening', 'league', 'final', 'winner']} />
-                                        )} />
-                                         {errors.stage && <p className="text-red-500 text-sm">{errors.stage.message}</p>}
-
-                                       
-                                    </div> */}
+                                        <label htmlFor="round" className='mb-1 text-sm'>ROUND</label>
+                                        <input type="number" {...register('round', { valueAsNumber: true })} className='border outline-0 p-2 border-[#D0D5DD] rounded-lg' />
+                                        {errors.round && <p className="text-red-500 text-sm">{errors.round.message}</p>}
+                                    </div>
                                 </div>
-                                <div className="flex flex-col flex-1">
-                                    <label htmlFor="stage" className='mb-1'>STAGE<span className="text-red-500">*</span></label>
-                                    <Controller control={form.control} name='stage' render={({ field }) => (
-                                        <SelectInput value={field.value} onValueChange={field.onChange} items={['screening', 'league']} />
-                                    )} />
-                                    {errors.stage && <p className="text-red-500 text-sm">{errors.stage.message}</p>}
-
-                                    {/* <input required type="text" className='border outline-0 p-2 border-[#D0D5DD] rounded-lg' /> */}
-                                </div>
+                                
                                 <div className="flex flex-col">
-                                    <label htmlFor="exam" className='mb-1'>DESCRIPTION <span className="text-red-500">*</span></label>
-                                    <textarea placeholder='Enter a description...' {...register('description')} className='border outline-0 p-2 resize-none border-[#D0D5DD] rounded-lg' id="exam" />
+                                    <label htmlFor="scheduled_date" className='mb-1 text-sm'>SCHEDULED DATE & TIME</label>
+                                    <input type="datetime-local" {...register('scheduled_date')} className='border outline-0 p-2 border-[#D0D5DD] rounded-lg' />
+                                    {errors.scheduled_date && <p className="text-red-500 text-sm">{errors.scheduled_date.message}</p>}
+                                </div>
+
+                                <div className="grid grid-cols-2 gap-4">
+                                    <div className="flex flex-col flex-1">
+                                        <label htmlFor="open_duration_hours" className='mb-1 text-sm'>OPEN DURATION (HOURS)</label>
+                                        <input type="number" {...register('open_duration_hours', { valueAsNumber: true })} className='border outline-0 p-2 border-[#D0D5DD] rounded-lg' />
+                                        {errors.open_duration_hours && <p className="text-red-500 text-sm">{errors.open_duration_hours.message}</p>}
+                                    </div>
+                                    <div className="flex flex-col flex-1">
+                                        <label htmlFor="countdown_minutes" className='mb-1 text-sm'>COUNTDOWN (MINUTES)</label>
+                                        <input type="number" {...register('countdown_minutes', { valueAsNumber: true })} className='border outline-0 p-2 border-[#D0D5DD] rounded-lg' />
+                                        {errors.countdown_minutes && <p className="text-red-500 text-sm">{errors.countdown_minutes.message}</p>}
+                                    </div>
+                                </div>
+
+                                <div className="flex flex-col">
+                                    <label htmlFor="description" className='mb-1 text-sm'>DESCRIPTION <span className="text-red-500">*</span></label>
+                                    <textarea placeholder='Enter a description...' {...register('description')} className='border outline-0 p-2 h-24 resize-none border-[#D0D5DD] rounded-lg' id="description" />
                                     {errors.description && <p className="text-red-500 text-sm">{errors.description.message}</p>}
                                 </div>
                                 <div className="flex gap-2 mt-4 w-full">

@@ -95,21 +95,17 @@ export type PaginationType= {
     }
 
 export type SessionType = {
-  // count: number,
-  // total_pages: number,
-  // next: string,
-  // previous: string | null,
-  results: ExamSessionType[],
-  // results:SessionQuestionItemType,
-  pagination:PaginationType,
+  count: number;
+  next: string | null;
+  previous: string | null;
+  results: ExamSessionType[];
   question_pool_data: {
-    total_questions: number,
-    hard_questions_count: number,
-    moderate_questions_count: number,
-    easy_questions_count: number
-  },
-
-}
+    total_questions: number;
+    hard_questions_count: number;
+    moderate_questions_count: number;
+    easy_questions_count: number;
+  };
+};
 
 
 export type QuestionPoolType= {
@@ -133,13 +129,15 @@ export type QuestionPoolType= {
 
 
 export type ExamSessionType = {
-  id: string,
-  title: string,
-  stage: string,
-  question_count: number,
-  exam_date: Date,
-  created_at: Date
-}
+  id: string;
+  title: string;
+  status: string;
+  competition_edition: number;
+  question_count: number;
+  scheduled_date: string;
+  concluded_at: string | null;
+  created_at: string;
+};
 
 
 
@@ -167,12 +165,26 @@ export type CandidateInfoType = {
 }
 
 export type CreateExamSessionType = {
-  title: string,
-  stage: string,
-  description: string,
-}
+  description?: string;
+  scheduled_date?: string;
+  open_duration_hours?: number;
+  countdown_minutes?: number;
+  is_active?: boolean;
+  questions?: number[];
+  stage_id?: number;
+  round?: number;
+};
 
-
+export type EditExamSession = {
+  description?: string;
+  scheduled_date?: string;
+  open_duration_hours?: number;
+  countdown_minutes?: number;
+  is_active?: boolean;
+  questions?: number[];
+  stage_id?: number;
+  round?: number;
+};
 
 export type CreateQuestionType = {
   text: string,
@@ -182,11 +194,6 @@ export type CreateQuestionType = {
   option_d: string,
   correct_answer: string,
   difficulty: string
-}
-
-export type EditExamSession = {
-  title: string,
-  description: string
 }
 
 
@@ -248,30 +255,28 @@ export type SessionQuestionItemType = {
 
 
 export type UpdatedSessionQuestionType = {
-  id: string,
-  title: string,
-  stage: string,
-  description: string,
-  exam_date: Date,
-  countdown_minutes: number,
-  open_duration_hours: number,
-  is_active: boolean,
-  questions: QuestionType,
-  created_at: Date
+  id: string;
+  title: string;
+  description: string;
+  status: string;
+  is_active: boolean;
+  is_currently_open: boolean;
+  competition_edition: number;
+  open_duration_hours: number;
+  countdown_minutes: number;
+  scheduled_date: string;
+  concluded_at: string | null;
+  created_at: string;
   created_by: {
-    user: RequestUserType,
-    occupation: string,
-    role: string
-  },
-  updated_by: string | null,
-
-  scheduled_date: Date,
-
-  status: string,
-  concluded_at: Date | null,
-
-
-}
+    id: string;
+    user: {
+      first_name: string;
+      last_name: string;
+    };
+  };
+  updated_by: string | null;
+  questions: QuestionType;
+};
 
 
 type QuestionType = {
