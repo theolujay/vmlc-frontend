@@ -1,14 +1,14 @@
 export const authUrls={
-    is_registrations_available:'/registration/',
-    candidate_registeration:'/register/candidate/',
-    staff_registeration:'/register/staff/',
-    login:'/auth/login/',
-    verify:'/verify-email-otp/',
-    sendOtp:'/send-email-otp/',
-    // resendOtp:'/resend-email-otp/',
-    passwordChange:'/auth/password-change/request/',
-    sendOtpForForgotPassword:'/auth/password-change/confirm-otp/',
-    setNewPassword:'/auth/password-change/',
-    passwordChangeResendOtp:'/auth/password-change/resend-otp/',
-    logout:'/auth/logout/'
+    is_registrations_available:'/v1/registration/',
+    candidate_registeration:'/v1/register/candidate/',
+    staff_registeration:'/v1/register/staff/',
+    login:'/v1/auth/login/',
+    verify:'/v1/verify-email-otp/',
+    sendOtp:'/v1/send-email-otp/',
+    // resendOtp:'/v1/resend-email-otp/',
+    passwordChange:'/v1/auth/password-change/request/',
+    sendOtpForForgotPassword:'/v1/auth/password-change/confirm-otp/',
+    setNewPassword:'/v1/auth/password-change/',
+    passwordChangeResendOtp:'/v1/auth/password-change/resend-otp/',
+    logout:'/v1/auth/logout/'
 }
