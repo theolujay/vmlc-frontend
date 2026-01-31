@@ -7,7 +7,6 @@ interface CompetitionStatsProps {
     enrolled: number;
     active: number;
     eliminated: number;
-    awaiting: number;
   };
 }
 
@@ -30,13 +29,7 @@ const CompetitionStats: React.FC<CompetitionStatsProps> = ({ candidatesStats }) 
       label: 'ELIMINATED',
       value: candidatesStats.eliminated,
       color: 'text-[#D92D20]'
-    },
-    // {
-    //   icon: <CandidateIcon />,
-    //   label: 'AWAITING NEXT',
-    //   value: candidatesStats.awaiting,
-    //   color: 'text-[#039855]'
-    // }
+    }
   ];
 
   return (

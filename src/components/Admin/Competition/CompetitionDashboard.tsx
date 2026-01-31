@@ -22,7 +22,7 @@ const CompetitionDashboard: React.FC<CompetitionDashboardProps> = ({
 
   const handleView = (id: string) => {
     const exam = data?.exams.find(e => e.id === id);
-    if (onViewStandings && exam && (exam.standings_status === 'published' || exam.standings_status === 'ready')) {
+    if (onViewStandings && exam && exam.standings_status === 'published') {
       onViewStandings(id, exam.title);
     } else {
       // Fallback or handle operational navigation
@@ -87,8 +87,7 @@ const CompetitionDashboard: React.FC<CompetitionDashboardProps> = ({
               candidatesStats={{
                 enrolled: data.stats.enrolled,
                 active: data.stats.active,
-                eliminated: data.stats.eliminated,
-                awaiting: data.stats.awaiting_next_challenge
+                eliminated: data.stats.eliminated
               }} 
             />
 

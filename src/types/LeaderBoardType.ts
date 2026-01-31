@@ -207,7 +207,6 @@ export interface CompetitionDashboardResponse {
     enrolled: number;
     active: number;
     eliminated: number;
-    awaiting_next_challenge: number;
   };
   progress: {
     current_stage: string;
@@ -215,7 +214,18 @@ export interface CompetitionDashboardResponse {
     total_rounds: number;
     published_rounds: number;
   };
-  exams: any[]; // Using any[] for now or creating a specific ExamOperationalType
+  exams: {
+    id: string;
+    title: string;
+    stage: string;
+    status: 'scheduled' | 'ongoing' | 'concluded';
+    standings_status: 'pending'| 'ready' | 'published';
+    stats: {
+      candidates_sat: number;
+      avg_score: number;
+      absent?: number;
+    };
+  }[];
   leaderboard_summary: LeagueLeaderboardEntry[];
   latest_standings_summary: {
     exam_id: string;

@@ -10,9 +10,6 @@ export type CompetitionExam = {
     avg_score?: number;
     absent?: number;
   };
-  actions: {
-    can_view: boolean;
-  }
 };
 
 interface ExamResultRowProps {
@@ -29,6 +26,8 @@ const ExamResultRow: React.FC<ExamResultRowProps> = ({ exam, onView }) => {
       default: return 'bg-gray-100 text-gray-700 border-gray-200';
     }
   };
+
+  const canView = exam.standings_status === 'published';
 
   return (
     <div className="border border-[#E4E7EC] rounded-lg p-4 bg-white hover:border-[#3E4095] transition-colors group font-sans">
@@ -74,7 +73,7 @@ const ExamResultRow: React.FC<ExamResultRowProps> = ({ exam, onView }) => {
 
         {/* Right: Actions */}
         <div className="flex items-center gap-2">
-           {exam.actions.can_view && (
+           {canView && (
              <button 
                onClick={() => onView(exam.id)}
                className="flex items-center gap-1 px-3 py-1.5 text-xs font-medium text-[#344054] bg-white border border-[#D0D5DD] rounded-full hover:bg-[#3E4095] hover:text-[#FFFFFF]"
