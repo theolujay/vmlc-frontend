@@ -1,15 +1,14 @@
 import CustomTable from '@/components/ui/CustomTable'
 import ResponsiveContainer from '@/components/ui/ResponsiveContainer'
 import useGetCompetitionCandidateDetail from '@/hooks/useGetCompetitionCandidateDetail'
-import { SubmissionItem } from '@/types/LeaderBoardType'
 import { formatTimeToString } from '@/utils/formatFileSize'
-import { getOptionAsArray, getOrdinal } from '@/utils/generalUtils'
+import { getOrdinal } from '@/utils/generalUtils'
 import { getUserInitials } from '@/utils/capitalizeWords'
 import clsx from 'clsx'
 import { AngleIcon, CandidateIcon, SortIcon } from '../AdminIcons'
 import { EndTimeIcon, PositionIcon, StartTimeIcon } from './LeaderBoardIcon'
 import { useAuth } from '@/contexts/AuthProvider'
-import { ReactNode, useMemo } from 'react'
+import { ReactNode } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import MathRenderer from '@/components/Exam/MathRenderer'
@@ -33,7 +32,7 @@ function viewCandidateDetailsByType(role: string,id:string): ReactNode {
         case 'admin':
         case 'manager':
         case 'superadmin':
-             return <Link href={`/admin/overview?tab=Overview&view=view-details&id=${id}`} className="inline-flex gap-2 border border-[#D0D5DD] px-4 cursor-pointer py-2 font-bold uppercase rounded-full transition-colors duration-200 items-center text-xs bg-white hover:bg-gray-50"><span><CandidateIcon className="w-4 h-4" /></span><span>View Profile</span></Link>;
+             return <Link href={`/admin/overview?tab=Registration&view=view-details&id=${id}`} className="inline-flex gap-2 border border-[#D0D5DD] px-4 cursor-pointer py-2 font-bold uppercase rounded-full transition-colors duration-200 items-center text-xs bg-white hover:bg-gray-50"><span><CandidateIcon className="w-4 h-4" /></span><span>View Profile</span></Link>;
 
         default:
             return <></>;

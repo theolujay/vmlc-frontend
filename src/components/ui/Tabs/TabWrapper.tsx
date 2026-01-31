@@ -8,7 +8,7 @@ export default function TabWrapper({
   tabs,
   defaultValue,
   tabListClassName = "flex gap-4 justify-between border-b border-gray-300",
-  triggerClassName = "px-4 data-[state=active]:border-b-2   data-[state=active]:border-[#3E4095] py-2  hover:cursor-pointer data-[state=active]:text-[#3E4095] text-black data-[state=active]:cursor-pointer font-bold"
+  triggerClassName = "px-4 data-[state=active]:border-b-2 whitespace-nowrap data-[state=active]:border-[#3E4095] py-2  hover:cursor-pointer data-[state=active]:text-[#3E4095] text-black data-[state=active]:cursor-pointer font-bold"
 }: Readonly<TabWrapperProps>) {
 
 

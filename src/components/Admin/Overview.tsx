@@ -34,8 +34,8 @@ function getTabsForRole(role: string): TabType[] {
 }
 const tabs: TabType[] = [
     {
-        value: 'Overview',
-        label: <OverViewLabel />,
+        value: 'Registration',
+        label: <RegistrationLabel />,
         content: <OverviewSectionWrapper />
     },
     {
@@ -44,19 +44,19 @@ const tabs: TabType[] = [
         content: <CompetitionWrapper />
     },
     {
-        value: 'Exam System',
-        label: <ExamSystemLabel />,
+        value: 'Exam Console',
+        label: <ExamConsoleLabel />,
         content: <ExamSectionWrapper />
 
     },
     {
-        value: 'User Management',
-        label: <UserManagementLabel />,
+        value: 'User Mgt.',
+        label: <UserMgtLabel />,
         content: <StaffMgtWrapper />
     },
     {
-        value: 'Announcement',
-        label: <AnnouncementLabel />,
+        value: 'Announcements',
+        label: <AnnouncementsLabel />,
         content: <Announcement />
     },
     {
@@ -90,25 +90,25 @@ export function OverviewTabs() {
 export default withAuthentication(OverviewTabs)
 
 
-function OverViewLabel() {
-    return <div className='flex gap-1 items-center'><span><OverviewIcon /></span><span>Overview</span></div>
+function RegistrationLabel() {
+    return <div className='flex gap-1 items-center'><span><OverviewIcon /></span><span>Registration</span></div>
 }
 
 function CompetitionLabel() {
     return <div className='flex gap-1 items-center'><span><CompetitionIcon /></span><span>Competition</span></div>
 }
 
-function ExamSystemLabel() {
-    return <div className='flex gap-1 items-center'><span><ExamSystemIcon /></span><span>Exam System</span></div>
+function ExamConsoleLabel() {
+    return <div className='flex gap-1 items-center'><span><ExamSystemIcon /></span><span>Exam Console</span></div>
 }
 
-function UserManagementLabel() {
-    return <div className='flex gap-1 items-center'><span><UserManagementIcon /></span><span>User Management</span></div>
+function UserMgtLabel() {
+    return <div className='flex gap-1 items-center'><span><UserManagementIcon /></span><span>User Mgt.</span></div>
 }
 
 
-function AnnouncementLabel() {
-    return <div className='flex gap-1 items-center'><span><AnnouncementIcon /></span><span>Announcement</span></div>
+function AnnouncementsLabel() {
+    return <div className='flex gap-1 items-center'><span><AnnouncementIcon /></span><span>Announcements</span></div>
 }
 
 function SupportLabel() {

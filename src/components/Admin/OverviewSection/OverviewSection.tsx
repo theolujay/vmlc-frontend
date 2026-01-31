@@ -466,7 +466,7 @@ function QuickActionsCard() {
       <h2 className="text-lg sm:text-xl font-bold">Quick Actions</h2>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <Link
-          href="/admin/overview?tab=Exam+System&page=1"
+          href="/admin/overview?tab=Exam+Console&page=1"
           className="flex justify-between items-center p-4 rounded-xl border border-[#3E4095]/10 hover:bg-[#3E4095]/5 transition-all group"
         >
           <div className="flex gap-3 items-center">
@@ -480,7 +480,7 @@ function QuickActionsCard() {
           </span>
         </Link>
         <Link
-          href="/admin/overview?tab=Leaderboards"
+          href="/admin/overview?tab=Competition"
           className="flex justify-between items-center p-4 rounded-xl border border-[#3E4095]/10 hover:bg-[#3E4095]/5 transition-all group"
         >
           <div className="flex gap-3 items-center">
@@ -494,7 +494,7 @@ function QuickActionsCard() {
           </span>
         </Link>
         <Link
-          href="/admin/overview?tab=Announcement"
+          href="/admin/overview?tab=Announcements"
           className="flex justify-between items-center p-4 rounded-xl border border-[#3E4095]/10 hover:bg-[#3E4095]/5 transition-all group"
         >
           <div className="flex gap-3 items-center">
