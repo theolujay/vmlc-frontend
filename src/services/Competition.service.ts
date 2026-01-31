@@ -1,0 +1,57 @@
+import client from "@/utils/axios";
+import { competitionUrls } from "@/constants/competitionUrls";
+
+export class CompetitionService {
+  static async publishStandings(exam_id: string, publish_now: boolean = true) {
+    try {
+      const response = await client.post(competitionUrls.PUBLISH_STANDINGS, {
+        exam_id,
+        publish_now,
+      });
+      return response.data;
+    } catch (error) {
+      console.error('Error publishing standings:', error);
+      throw error;
+    }
+  }
+
+  static async getStandings(exam_id: string) {
+    try {
+      const response = await client.get(competitionUrls.GET_STANDINGS(exam_id));
+      return response.data;
+    } catch (error) {
+      console.error(`Error fetching standings for exam ${exam_id}:`, error);
+      throw error;
+    }
+  }
+
+  static async getCandidateStandingDetail(exam_id: string, candidate_id: string) {
+    try {
+      const response = await client.get(competitionUrls.GET_CANDIDATE_STANDING_DETAIL(exam_id, candidate_id));
+      return response.data;
+    } catch (error) {
+      console.error(`Error fetching candidate standing detail for candidate ${candidate_id} in exam ${exam_id}:`, error);
+      throw error;
+    }
+  }
+
+  static async getLeagueLeaderboard() {
+    try {
+      const response = await client.get(competitionUrls.GET_LEAGUE_LEADERBOARD);
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching league leaderboard:', error);
+      throw error;
+    }
+  }
+
+  static async getCandidateLeagueDetail(candidate_id: string) {
+    try {
+      const response = await client.get(competitionUrls.GET_CANDIDATE_LEAGUE_DETAIL(candidate_id));
+      return response.data;
+    } catch (error) {
+      console.error(`Error fetching candidate league detail for candidate ${candidate_id}:`, error);
+      throw error;
+    }
+  }
+}

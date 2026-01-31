@@ -8,24 +8,42 @@ type ViewState = 'dashboard' | 'leaderboard' | 'standings' | 'candidate-details'
 
 interface DetailContext {
     candidate_id: string;
-    round: string;
-    stage: string;
+    exam_id?: string;
+    isLeagueCumulative?: boolean;
+    round?: string;
+    stage?: string;
     previousView: ViewState;
 }
 
 const CompetitionWrapper: React.FC = () => {
   const [currentView, setView] = useState<ViewState>('dashboard');
-  const [selectedExamTitle, setSelectedExamTitle] = useState<string>('League - Round 1');
+  const [selectedExamId, setSelectedExamId] = useState<string>('');
+  const [selectedExamTitle, setSelectedExamTitle] = useState<string>('');
   const [detailContext, setDetailContext] = useState<DetailContext | null>(null);
 
   const handleViewStandings = (id?: string, title?: string) => {
+    if (id) setSelectedExamId(id);
     if (title) setSelectedExamTitle(title);
     setView('standings');
   };
 
-  const handleViewCandidateDetails = (candidate_id: string, stage: string, round: string) => {
+  const handleViewCandidateDetails = ({ 
+    candidate_id, 
+    exam_id, 
+    isLeagueCumulative, 
+    stage, 
+    round 
+  }: { 
+    candidate_id: string, 
+    exam_id?: string, 
+    isLeagueCumulative?: boolean,
+    stage?: string,
+    round?: string
+  }) => {
     setDetailContext({
         candidate_id,
+        exam_id,
+        isLeagueCumulative,
         stage,
         round,
         previousView: currentView
@@ -40,6 +58,7 @@ const CompetitionWrapper: React.FC = () => {
           onViewFullLeaderboard={() => setView('leaderboard')}
           onViewFullStandings={() => handleViewStandings()}
           onViewStandings={handleViewStandings}
+          onViewCandidateDetail={handleViewCandidateDetails}
         />
       )}
 
@@ -47,7 +66,10 @@ const CompetitionWrapper: React.FC = () => {
         <div className="p-4 sm:p-8">
           <FullLeagueLeaderboard 
             onBack={() => setView('dashboard')} 
-            onViewDetails={(id) => handleViewCandidateDetails(id, 'League', '3')} // Assuming League R3 for now
+            onViewDetails={(id) => handleViewCandidateDetails({ 
+              candidate_id: id, 
+              isLeagueCumulative: true 
+            })}
           />
         </div>
       )}
@@ -57,7 +79,12 @@ const CompetitionWrapper: React.FC = () => {
           <FullStandings 
             onBack={() => setView('dashboard')} 
             examTitle={selectedExamTitle}
-            onViewDetails={(id) => handleViewCandidateDetails(id, 'League', '1')} // Placeholder round/stage
+            onViewDetails={(id) => handleViewCandidateDetails({ 
+              candidate_id: id, 
+              exam_id: selectedExamId,
+              stage: 'League', // Default or derived from selectedExamTitle
+              round: selectedExamTitle.includes('Round') ? selectedExamTitle.split('Round')[1].trim() : '1'
+            })}
           />
         </div>
       )}
@@ -66,6 +93,8 @@ const CompetitionWrapper: React.FC = () => {
         <div className="p-4 sm:p-8">
           <ViewCandidateDetails 
             candidate_id={detailContext.candidate_id}
+            exam_id={detailContext.exam_id}
+            isLeagueCumulative={detailContext.isLeagueCumulative}
             stage={detailContext.stage}
             round={detailContext.round}
             onBack={() => setView(detailContext.previousView)}

@@ -81,20 +81,9 @@ const FullStandings: React.FC<FullStandingsProps> = ({ onBack, examTitle = "Late
             {
               key: 'rank',
               header: 'Rank',
-              render: (_, row) => (
+              render: (val) => (
                 <div className="flex items-center justify-center">
-                  {row.rank <= 3 ? (
-                    <div className="relative flex items-center justify-center w-10 h-10">
-                      <div className="w-10 h-10 rounded-full bg-[#F2F4F7] flex items-center justify-center text-[#667185] text-xs font-bold border border-[#E4E7EC] overflow-hidden relative">
-                          {row.profile_picture ? (
-                            <Image src={row.profile_picture} alt="" fill className="object-cover" />
-                          ) : row.candidate_name.charAt(0)}
-                      </div>
-                      <RankMedal rank={row.rank} variant="standings" className="absolute -bottom-1 -right-1 drop-shadow-sm" />
-                    </div>
-                  ) : (
-                    <span className="text-sm font-bold text-gray-400"># {row.rank}</span>
-                  )}
+                  <span className="text-sm font-bold text-gray-400"># {val}</span>
                 </div>
               ),
               align: 'center'
@@ -104,13 +93,16 @@ const FullStandings: React.FC<FullStandingsProps> = ({ onBack, examTitle = "Late
               header: 'Candidate',
               render: (_, row) => (
                 <div className="flex items-center gap-3">
-                  {row.rank > 3 && (
-                    <div className="w-8 h-8 rounded-full bg-[#F2F4F7] flex items-center justify-center text-[#667185] text-[10px] font-bold border border-[#E4E7EC] overflow-hidden relative shrink-0">
+                  <div className="relative flex items-center justify-center shrink-0">
+                    <div className="w-9 h-9 rounded-full bg-[#F2F4F7] flex items-center justify-center text-[#667185] text-xs font-bold border border-[#E4E7EC] overflow-hidden relative">
                       {row.profile_picture ? (
                         <Image src={row.profile_picture} alt="" fill className="object-cover" />
                       ) : row.candidate_name.charAt(0)}
                     </div>
-                  )}
+                    {row.rank <= 3 && (
+                      <RankMedal rank={row.rank} variant="standings" className="absolute -bottom-1 -right-1 drop-shadow-sm w-4 h-4" />
+                    )}
+                  </div>
                   <div className="flex flex-col">
                     <span className="font-bold text-[#101828] text-sm">{row.candidate_name}</span>
                     <span className="text-[10px] text-[#667185]">{row.candidate_email}</span>
@@ -145,7 +137,7 @@ const FullStandings: React.FC<FullStandingsProps> = ({ onBack, examTitle = "Late
               render: (_, row) => (
                 <button 
                   onClick={() => onViewDetails?.(row.candidate)}
-                  className="text-cyan-600 font-bold hover:underline text-xs bg-white px-3 py-1.5 rounded-full border border-cyan-600/40"
+                  className="text-cyan-600 font-bold hover:bg-cyan-600 hover:text-white text-xs bg-white px-3 py-1.5 rounded-full border border-cyan-600/40"
                 >
                   View Details
                 </button>

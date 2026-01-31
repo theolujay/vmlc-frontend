@@ -1,6 +1,6 @@
 import CustomTable from '@/components/ui/CustomTable'
 import ResponsiveContainer from '@/components/ui/ResponsiveContainer'
-import useGetLeaderBoardCandidateDetail from '@/hooks/useGetLeaderBoardCandidateDetail'
+import useGetCompetitionCandidateDetail from '@/hooks/useGetCompetitionCandidateDetail'
 import { SubmissionItem } from '@/types/LeaderBoardType'
 import { formatTimeToString } from '@/utils/formatFileSize'
 import { getOptionAsArray, getOrdinal } from '@/utils/generalUtils'
@@ -9,7 +9,7 @@ import clsx from 'clsx'
 import { AngleIcon, CandidateIcon, SortIcon } from '../AdminIcons'
 import { EndTimeIcon, PositionIcon, StartTimeIcon } from './LeaderBoardIcon'
 import { useAuth } from '@/contexts/AuthProvider'
-import { ReactNode } from 'react'
+import { ReactNode, useMemo } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import MathRenderer from '@/components/Exam/MathRenderer'
@@ -17,8 +17,10 @@ import RankMedal from '../Competition/RankMedal'
 
 interface ViewCandidateDetailsProps {
     candidate_id: string;
-    round: string;
-    stage: string;
+    exam_id?: string;
+    isLeagueCumulative?: boolean;
+    stage?: string;
+    round?: string;
     onBack?: () => void;
 }
 
@@ -38,10 +40,16 @@ function viewCandidateDetailsByType(role: string,id:string): ReactNode {
     }
 }
 
-export default function ViewCandidateDetails({ candidate_id, round, stage, onBack }: ViewCandidateDetailsProps) {
+export default function ViewCandidateDetails({ candidate_id, exam_id, isLeagueCumulative, stage, round, onBack }: ViewCandidateDetailsProps) {
     const { authState } = useAuth()
     const userButton = viewCandidateDetailsByType(authState!.user!.role!, candidate_id);
-    const { data, isLoading } = useGetLeaderBoardCandidateDetail(stage, round, candidate_id);
+    const { data, isLoading } = useGetCompetitionCandidateDetail({ 
+        candidate_id, 
+        exam_id, 
+        isLeagueCumulative 
+    });
+
+    const isStanding = !!exam_id && !isLeagueCumulative;
 
     if (isLoading) {
         return (
@@ -50,6 +58,9 @@ export default function ViewCandidateDetails({ candidate_id, round, stage, onBac
             </div>
         );
     }
+
+    const performanceData = isStanding ? data?.candidate_performance : data;
+    const examDetails = isStanding ? data?.exam_details : null;
 
     return (
         <div className='flex flex-col gap-4 w-full animate-in fade-in slide-in-from-bottom-2 duration-500'>
@@ -65,9 +76,11 @@ export default function ViewCandidateDetails({ candidate_id, round, stage, onBac
                         </button>
                     )}
                     <div className="flex flex-col">
-                        <h1 className="text-xl font-bold text-[#101828]">Candidate Answers</h1>
+                        <h1 className="text-xl font-bold text-[#101828]">
+                            {isStanding ? 'Candidate Answers' : 'League Performance'}
+                        </h1>
                         <p className="text-xs text-[#667185] uppercase font-semibold tracking-wider">
-                            {stage} - Round {round}
+                            {isStanding ? `${examDetails?.title || stage} - Round ${examDetails?.round || round}` : 'Cumulative League Leaderboard'}
                         </p>
                     </div>
                 </div>
@@ -78,30 +91,74 @@ export default function ViewCandidateDetails({ candidate_id, round, stage, onBac
 
             <div className="flex flex-col gap-4 w-full">
                 <CandidateInfoCard 
-                    endTime={data?.candidate_performance.participated_at as Date} 
-                    startTime={data?.exam_details.scheduled_date as Date} 
-                    position={data?.candidate_performance.rank ?? 0} 
-                    userName={data?.candidate_performance.candidate.full_name ?? ''}
-                    profilePicture={data?.candidate_performance.candidate.profile_picture ?? null}
-                    score={data?.candidate_performance.score}
+                    endTime={performanceData?.recorded_at || performanceData?.participated_at} 
+                    startTime={examDetails?.scheduled_date} 
+                    position={performanceData?.rank || performanceData?.overall_rank || 0} 
+                    userName={performanceData?.candidate_name || performanceData?.candidate?.full_name || ''}
+                    profilePicture={performanceData?.candidate?.profile_picture || null}
+                    score={performanceData?.score || performanceData?.total_score}
+                    isLeague={isLeagueCumulative}
+                    rankChange={performanceData?.rank_change}
                 />
-                <QuestionsTable questions={data?.candidate_performance.candidate.submissions ?? []} />
+                
+                {isStanding && performanceData?.submissions && (
+                    <QuestionsTable questions={performanceData.submissions} />
+                )}
+                
+                {isLeagueCumulative && (
+                   <ResponsiveContainer className="p-8 flex flex-col items-center justify-center text-center gap-4">
+                        <div className="w-16 h-16 bg-[#F9F9FB] rounded-full flex items-center justify-center border border-[#E4E7EC]">
+                            <PositionIcon className="w-8 h-8 text-[#3E4095]" />
+                        </div>
+                        <div className="max-w-md">
+                            <h3 className="text-lg font-bold text-[#101828]">Cumulative League View</h3>
+                            <p className="text-sm text-[#667185] mt-1">
+                                You are viewing the cumulative performance of {performanceData?.candidate_name} across all published league rounds. 
+                                Detailed answer breakdowns are available in the specific round standings.
+                            </p>
+                        </div>
+                   </ResponsiveContainer>
+                )}
             </div>
         </div>
     )
 }
 
-function CandidateInfoCard({ userName, position, startTime, endTime, profilePicture, score }: { userName: string, position: number, startTime: Date, endTime: Date, profilePicture: string | null, score?: number }) {
+function CandidateInfoCard({ 
+    userName, 
+    position, 
+    startTime, 
+    endTime, 
+    profilePicture, 
+    score, 
+    isLeague,
+    rankChange
+}: { 
+    userName: string, 
+    position: number, 
+    startTime?: string | Date, 
+    endTime?: string | Date, 
+    profilePicture: string | null, 
+    score?: string | number,
+    isLeague?: boolean,
+    rankChange?: number
+}) {
     const userInitials = getUserInitials(userName);
+    const displayScore = typeof score === 'string' ? parseFloat(score) : score;
 
     return <ResponsiveContainer className='flex gap-6 flex-col p-6'>
         <div className="flex justify-between items-start">
-            <h2 className='font-bold text-sm text-[#475367] uppercase tracking-widest'>Candidate Performance</h2>
-            {score !== undefined && (
+            <h2 className='font-bold text-sm text-[#475367] uppercase tracking-widest'>
+                {isLeague ? 'League Statistics' : 'Candidate Performance'}
+            </h2>
+            {displayScore !== undefined && (
                 <div className="flex flex-col items-end">
-                    <span className="text-[10px] font-bold text-[#667185] mb-1">FINAL SCORE</span>
+                    <span className="text-[10px] font-bold text-[#667185] mb-1">
+                        {isLeague ? 'CUMULATIVE SCORE' : 'FINAL SCORE'}
+                    </span>
                     <span className="text-xl font-black text-[#3E4095] bg-[#EBEBF5] px-4 py-1 rounded-lg border border-[#3E4095]/10">
-                        {score.toFixed(1)}%
+                        {displayScore.toFixed(2)}
+                        {!isLeague && '%'}
                     </span>
                 </div>
             )}
@@ -122,7 +179,7 @@ function CandidateInfoCard({ userName, position, startTime, endTime, profilePict
                             <span className="font-bold text-lg text-[#667185]">{userInitials}</span>
                         )}
                     </div>
-                    {position <= 3 && (
+                    {position <= 3 && position > 0 && (
                         <RankMedal rank={position} className="absolute -bottom-1 -right-1 drop-shadow-md w-5 h-5 scale-125" />
                     )}
                 </div>
@@ -133,33 +190,75 @@ function CandidateInfoCard({ userName, position, startTime, endTime, profilePict
             </div>
 
             <div className="flex gap-3 items-center">
-                <PositionIcon className="w-10 h-10" />
+                <div className="relative">
+                    <PositionIcon className="w-10 h-10" />
+                    {isLeague && rankChange !== undefined && rankChange !== 0 && (
+                        <div className={clsx(
+                            "absolute -top-1 -right-1 text-[10px] font-bold px-1 rounded flex items-center",
+                            rankChange > 0 ? "bg-green-100 text-green-700" : "bg-red-100 text-red-700"
+                        )}>
+                            {rankChange > 0 ? '▲' : '▼'} {Math.abs(rankChange)}
+                        </div>
+                    )}
+                </div>
                 <div className="flex flex-col">
-                    <span className='text-[10px] font-bold text-[#667185] uppercase'>Rank Position</span>
-                    <p className="font-bold text-[#101828]">{getOrdinal(position)} Place</p>
+                    <span className='text-[10px] font-bold text-[#667185] uppercase'>
+                        {isLeague ? 'Overall Rank' : 'Rank Position'}
+                    </span>
+                    <p className="font-bold text-[#101828]">{position > 0 ? `${getOrdinal(position)} Place` : 'Not Ranked'}</p>
                 </div>
             </div>
 
-            <div className="flex gap-3 items-center">
-                <StartTimeIcon className="w-10 h-10" />
-                <div className="flex flex-col">
-                    <span className='text-[10px] font-bold text-[#667185] uppercase'>Start Time</span>
-                    <p className="font-bold text-[#101828]">{startTime ? formatTimeToString(startTime) : '--:--'}</p>
-                </div>
-            </div>
+            {isLeague ? (
+                <>
+                    <div className="flex gap-3 items-center">
+                        <div className="w-10 h-10 bg-[#F9F9FB] rounded-full flex items-center justify-center border border-[#E4E7EC]">
+                            <SortIcon className="w-5 h-5 text-[#3E4095]" />
+                        </div>
+                        <div className="flex flex-col">
+                            <span className='text-[10px] font-bold text-[#667185] uppercase'>Trend</span>
+                            <p className={clsx(
+                                "font-bold",
+                                !rankChange || rankChange === 0 ? "text-[#101828]" : rankChange > 0 ? "text-green-600" : "text-red-600"
+                            )}>
+                                {!rankChange || rankChange === 0 ? 'Stable' : rankChange > 0 ? `Improved by ${rankChange}` : `Dropped by ${Math.abs(rankChange)}`}
+                            </p>
+                        </div>
+                    </div>
+                    <div className="flex gap-3 items-center">
+                        <div className="w-10 h-10 bg-[#F9F9FB] rounded-full flex items-center justify-center border border-[#E4E7EC]">
+                            <StartTimeIcon className="w-5 h-5 text-[#3E4095]" />
+                        </div>
+                        <div className="flex flex-col">
+                            <span className='text-[10px] font-bold text-[#667185] uppercase'>Status</span>
+                            <p className="font-bold text-[#101828]">Active in League</p>
+                        </div>
+                    </div>
+                </>
+            ) : (
+                <>
+                    <div className="flex gap-3 items-center">
+                        <StartTimeIcon className="w-10 h-10" />
+                        <div className="flex flex-col">
+                            <span className='text-[10px] font-bold text-[#667185] uppercase'>Start Time</span>
+                            <p className="font-bold text-[#101828]">{startTime ? formatTimeToString(new Date(startTime)) : '--:--'}</p>
+                        </div>
+                    </div>
 
-            <div className="flex gap-3 items-center">
-                <EndTimeIcon className="w-10 h-10" />
-                <div className="flex flex-col">
-                    <span className='text-[10px] font-bold text-[#667185] uppercase'>End Time</span>
-                    <p className="font-bold text-[#101828]">{endTime ? formatTimeToString(endTime) : '--:--'}</p>
-                </div>
-            </div>
+                    <div className="flex gap-3 items-center">
+                        <EndTimeIcon className="w-10 h-10" />
+                        <div className="flex flex-col">
+                            <span className='text-[10px] font-bold text-[#667185] uppercase'>Recorded At</span>
+                            <p className="font-bold text-[#101828]">{endTime ? formatTimeToString(new Date(endTime)) : '--:--'}</p>
+                        </div>
+                    </div>
+                </>
+            )}
         </div>
     </ResponsiveContainer>
 }
 
-function QuestionsTable({ questions }: { questions: SubmissionItem[] }) {
+function QuestionsTable({ questions }: { questions: any[] }) {
     return <ResponsiveContainer className='flex gap-4 py-3 px-0 flex-col mx-auto'>
         <div className="flex justify-between px-4 pt-2">
             <div className="flex gap-1 flex-col">
@@ -192,41 +291,57 @@ function QuestionsTable({ questions }: { questions: SubmissionItem[] }) {
                 },
                 {
                     key: 'question_text', header: 'Question & Answers', render: (_, row) => {
-                        const options = getOptionAsArray(row)
+                        const question = row.question;
+                        const options = [
+                            { optionKey: 'option_a', option: question.option_a },
+                            { optionKey: 'option_b', option: question.option_b },
+                            { optionKey: 'option_c', option: question.option_c },
+                            { optionKey: 'option_d', option: question.option_d },
+                        ];
+                        
+                        const isCorrect = row.selected_option === question.correct_answer;
                         
                         return <div className="flex text-start flex-col justify-start items-start gap-3 py-1">
                             <div className="font-bold text-gray-900 text-sm leading-relaxed">
-                                <MathRenderer content={row.question_text} />
+                                <MathRenderer content={question.text} />
                             </div>
                             <div className="grid grid-cols-2 gap-x-8 gap-y-2 w-full mt-1"  >
                                 {
-                                    options.map((val, index) => <div key={`option-${index + 1}`} className={clsx("option flex gap-2 items-center")}>
-                                        <div className={clsx(
-                                            "w-4 h-4 rounded-full border flex items-center justify-center shrink-0 transition-all",
-                                            val.optionKey.endsWith(row.selected_option.toLowerCase()) ? "border-[#3E4095] bg-[#3E4095]" : "border-gray-300"
-                                        )}>
-                                            {val.optionKey.endsWith(row.selected_option.toLowerCase()) && <div className="w-1.5 h-1.5 rounded-full bg-white" />}
+                                    options.map((val, index) => {
+                                        const optionLetter = val.optionKey.split('_')[1].toUpperCase();
+                                        const isSelected = row.selected_option === optionLetter;
+                                        const isCorrectOption = question.correct_answer === optionLetter;
+
+                                        return <div key={`option-${index + 1}`} className={clsx("option flex gap-2 items-center")}>
+                                            <div className={clsx(
+                                                "w-4 h-4 rounded-full border flex items-center justify-center shrink-0 transition-all",
+                                                isSelected ? "border-[#3E4095] bg-[#3E4095]" : "border-gray-300"
+                                            )}>
+                                                {isSelected && <div className="w-1.5 h-1.5 rounded-full bg-white" />}
+                                            </div>
+                                            <label className={clsx(
+                                                'text-xs transition-colors',
+                                                isCorrect && isCorrectOption && 'text-[#099137] font-bold', 
+                                                !isCorrect && isSelected && 'text-[#CB1A14] font-bold', 
+                                                !isCorrect && isCorrectOption && 'text-[#1c61d8] font-bold',
+                                                !isSelected && !isCorrectOption && 'text-gray-500'
+                                            )}>
+                                                <MathRenderer content={val.option} inline />
+                                            </label>
                                         </div>
-                                        <label className={clsx(
-                                            'text-xs transition-colors',
-                                            row.is_correct && val.optionKey.endsWith(row.correct_answer.toLowerCase()) && 'text-[#099137] font-bold', 
-                                            !row.is_correct && val.optionKey.endsWith(row.selected_option.toLowerCase()) && 'text-[#CB1A14] font-bold', 
-                                            !row.is_correct && val.optionKey.endsWith(row.correct_answer.toLowerCase()) && 'text-[#1c61d8] font-bold',
-                                            !val.optionKey.endsWith(row.selected_option.toLowerCase()) && !val.optionKey.endsWith(row.correct_answer.toLowerCase()) && 'text-gray-500'
-                                        )} htmlFor={val.optionKey}>
-                                            <MathRenderer content={val.option} inline />
-                                        </label>
-                                    </div>
-                                    )
+                                    })
                                 }
                             </div>
                         </div>
                     }
                 },
                 {
-                    key: 'is_correct', header: 'Result', render: (val) => <div className='flex items-center'>
-                        {questionPassedStatus(val)}
-                    </div>,
+                    key: 'is_correct', header: 'Result', render: (_, row) => {
+                        const isCorrect = row.selected_option === row.question.correct_answer;
+                        return <div className='flex items-center'>
+                            {questionPassedStatus(isCorrect)}
+                        </div>
+                    },
                     align: 'right'
                 },
             ]}

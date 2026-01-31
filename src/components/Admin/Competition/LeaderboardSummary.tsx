@@ -16,6 +16,7 @@ export interface LeaderboardEntry {
 interface LeaderboardSummaryProps {
   entries: LeaderboardEntry[];
   onViewFull: () => void;
+  onViewCandidate?: (id: string) => void;
 }
 
 const RankChangeIndicator = ({ change }: { change: number }) => {
@@ -24,7 +25,7 @@ const RankChangeIndicator = ({ change }: { change: number }) => {
   return <span className="text-[10px] text-red-600 font-bold flex items-center">▼ {Math.abs(change)}</span>;
 }
 
-const LeaderboardSummary: React.FC<LeaderboardSummaryProps> = ({ entries, onViewFull }) => {
+const LeaderboardSummary: React.FC<LeaderboardSummaryProps> = ({ entries, onViewFull, onViewCandidate }) => {
   return (
     <ResponsiveContainer className="flex flex-col gap-4 font-sans">
       <div className="flex justify-between items-center mb-1 font-sans">
@@ -46,9 +47,10 @@ const LeaderboardSummary: React.FC<LeaderboardSummaryProps> = ({ entries, onView
         {entries.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {entries.map((entry) => (
-              <div 
+              <button 
                 key={entry.candidate} 
-                className="flex items-center gap-3 bg-white p-3 rounded-lg border border-[#E4E7EC] transition-all duration-300 hover:border-[#3E4095]/40 hover:shadow-sm group relative overflow-hidden"
+                onClick={() => onViewCandidate?.(entry.candidate)}
+                className="flex items-center gap-3 bg-white p-3 rounded-lg border border-[#E4E7EC] text-left transition-all duration-300 hover:border-[#3E4095]/40 hover:shadow-sm group relative overflow-hidden"
               >
                 <div className="relative shrink-0">
                   {entry.profile_picture ? (
@@ -90,7 +92,7 @@ const LeaderboardSummary: React.FC<LeaderboardSummaryProps> = ({ entries, onView
                     </div>
                   </div>
                 </div>
-              </div>
+              </button>
             ))}
           </div>
         ) : (

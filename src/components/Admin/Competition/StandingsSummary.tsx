@@ -18,6 +18,7 @@ interface StandingsSummaryProps {
   examTitle: string;
   entries: StandingsEntry[];
   onViewFull: () => void;
+  onViewCandidate?: (id: string) => void;
 }
 
 const RankMedal: React.FC<{ rank: number; className?: string }> = ({ rank, className }) => {
@@ -70,13 +71,21 @@ const RankMedal: React.FC<{ rank: number; className?: string }> = ({ rank, class
   );
 };
 
-const StandingsSummary: React.FC<StandingsSummaryProps> = ({ examTitle, entries }) => {
+const StandingsSummary: React.FC<StandingsSummaryProps> = ({ examTitle, entries, onViewFull, onViewCandidate }) => {
   return (
     <ResponsiveContainer className="flex flex-col gap-4 font-sans">
       <div className="flex justify-between items-center mb-1 font-sans">
         <div>
           <h2 className="text-xs font-bold text-[#475367] uppercase tracking-widest mb-1">Standings: {examTitle}</h2>
           <p className="text-[9px] text-[#667185]">Latest published</p>
+        </div>
+        <div>
+          <button 
+            onClick={onViewFull}
+            className="flex items-center gap-1 px-4 py-1.5 text-xs font-bold text-[#344054] bg-white border border-[#D0D5DD] rounded-full hover:bg-[#3E4095] hover:text-[#FFFFFF] transition-all"
+        >
+            View Full
+          </button>
         </div>
       </div>
 
@@ -86,9 +95,10 @@ const StandingsSummary: React.FC<StandingsSummaryProps> = ({ examTitle, entries 
         {entries.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {entries.map((entry) => (
-              <div 
+              <button 
                 key={entry.candidate} 
-                className="flex items-center gap-3 bg-white p-3 rounded-lg border border-[#E4E7EC] transition-all duration-300 hover:border-cyan-600/40 hover:shadow-sm group relative overflow-hidden"
+                onClick={() => onViewCandidate?.(entry.candidate)}
+                className="flex items-center gap-3 bg-white p-3 rounded-lg border border-[#E4E7EC] text-left transition-all duration-300 hover:border-cyan-600/40 hover:shadow-sm group relative overflow-hidden"
               >
                 {/* Profile Image & Medal Overlay */}
                 <div className="relative shrink-0">
@@ -132,7 +142,7 @@ const StandingsSummary: React.FC<StandingsSummaryProps> = ({ examTitle, entries 
                     </span>
                   </div>
                 </div>
-              </div>
+              </button>
             ))}
           </div>
         ) : (

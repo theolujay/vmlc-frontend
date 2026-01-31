@@ -71,12 +71,14 @@ interface CompetitionDashboardProps {
   onViewFullLeaderboard?: () => void;
   onViewFullStandings?: () => void;
   onViewStandings?: (id: string, title: string) => void;
+  onViewCandidateDetail?: (params: { candidate_id: string, exam_id?: string, isLeagueCumulative?: boolean }) => void;
 }
 
 const CompetitionDashboard: React.FC<CompetitionDashboardProps> = ({ 
   onViewFullLeaderboard, 
   onViewFullStandings,
-  onViewStandings 
+  onViewStandings,
+  onViewCandidateDetail
 }) => {
   const router = useRouter();
   const [exams, setExams] = useState<CompetitionExam[]>(MOCK_EXAMS);
@@ -139,11 +141,13 @@ const CompetitionDashboard: React.FC<CompetitionDashboardProps> = ({
               <LeaderboardSummary 
                 entries={MOCK_TOP_CANDIDATES}
                 onViewFull={onViewFullLeaderboard || (() => {})}
+                onViewCandidate={(id) => onViewCandidateDetail?.({ candidate_id: id, isLeagueCumulative: true })}
               />
               <StandingsSummary
                 examTitle="League - Round 1"
                 entries={MOCK_STANDINGS}
                 onViewFull={onViewFullStandings || (() => {})}
+                onViewCandidate={(id) => onViewCandidateDetail?.({ candidate_id: id, exam_id: 'league-1' })} // Example ID
               />
             </div>
           </div>
