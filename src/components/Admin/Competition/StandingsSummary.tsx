@@ -2,29 +2,33 @@ import React from 'react';
 import ResponsiveContainer from '@/components/ui/ResponsiveContainer';
 import Image from "next/image"
 
-export interface LeaderboardEntry {
-  candidate: string;
+// Define the type based on the Standings API response in COMPETITION.md
+export interface StandingsEntry {
+  candidate: string; // uuid
   candidate_name: string;
+  candidate_email: string;
   school_name: string;
-  total_score: string;
-  overall_rank: number;
-  rank_change: number;
-  profile_picture?: string | null;
+  exam_score: string; // "95.50"
+  rank: number;
+  percentile: number;
+  profile_picture?: string | null; // Optional, assuming we might map this in if available
 }
 
-interface LeaderboardSummaryProps {
-  entries: LeaderboardEntry[];
+interface StandingsSummaryProps {
+  examTitle: string;
+  entries: StandingsEntry[];
   onViewFull: () => void;
 }
 
 const RankMedal: React.FC<{ rank: number; className?: string }> = ({ rank, className }) => {
-  const gradientId = `medal-gradient-${rank}`;
+  const gradientId = `standings-medal-gradient-${rank}`;
   
+  // Slightly different tones for Standings to distinguish from League
   const colors = rank === 1 
-    ? { start: "#FFD700", mid: "#FDB931", end: "#B8860B" } 
+    ? { start: "#FDE68A", mid: "#F59E0B", end: "#B45309" } // Amber/Gold
     : rank === 2 
-    ? { start: "#F2F4F7", mid: "#98A2B3", end: "#475367" } 
-    : { start: "#F97316", mid: "#B54708", end: "#7A2706" };
+    ? { start: "#F3F4F6", mid: "#9CA3AF", end: "#4B5563" } // Cool Gray
+    : { start: "#FDBA74", mid: "#EA580C", end: "#9A3412" }; // Orange/Bronze
 
   return (
     <svg 
@@ -66,38 +70,27 @@ const RankMedal: React.FC<{ rank: number; className?: string }> = ({ rank, class
   );
 };
 
-const RankChangeIndicator = ({ change }: { change: number }) => {
-  if (change === 0) return <span className="text-[10px] text-gray-400 font-medium">-</span>;
-  if (change > 0) return <span className="text-[10px] text-green-600 font-bold flex items-center">▲ {change}</span>;
-  return <span className="text-[10px] text-red-600 font-bold flex items-center">▼ {Math.abs(change)}</span>;
-}
-
-const LeaderboardSummary: React.FC<LeaderboardSummaryProps> = ({ entries, onViewFull }) => {
+const StandingsSummary: React.FC<StandingsSummaryProps> = ({ examTitle, entries }) => {
   return (
     <ResponsiveContainer className="flex flex-col gap-4 font-sans">
       <div className="flex justify-between items-center mb-1 font-sans">
         <div>
-          <h2 className="text-xs font-bold text-[#475367] uppercase tracking-widest mb-1">League Leaderboard</h2>
-          <p className="text-[9px] text-[#667185]">Based on published standings only</p>
+          <h2 className="text-xs font-bold text-[#475367] uppercase tracking-widest mb-1">Standings: {examTitle}</h2>
+          <p className="text-[9px] text-[#667185]">Latest published</p>
         </div>
-        <button 
-          onClick={onViewFull}
-          className="flex items-center gap-1 px-4 py-1.5 text-xs font-bold text-[#344054] bg-white border border-[#D0D5DD] rounded-full hover:bg-[#3E4095] hover:text-[#FFFFFF] transition-all"
-        >
-          View Full
-        </button>
       </div>
 
       <div className="bg-[#F9FAFB] border border-[#F2F4F7] rounded-xl p-4">
-        <h3 className="text-[10px] font-bold text-[#101828] uppercase tracking-wider mb-4">Top Performers</h3>
+        <h3 className="text-[10px] font-bold text-[#101828] uppercase tracking-wider mb-4">Top Results</h3>
         
         {entries.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {entries.map((entry) => (
               <div 
                 key={entry.candidate} 
-                className="flex items-center gap-3 bg-white p-3 rounded-lg border border-[#E4E7EC] transition-all duration-300 hover:border-[#3E4095] hover:shadow-sm group relative overflow-hidden"
+                className="flex items-center gap-3 bg-white p-3 rounded-lg border border-[#E4E7EC] transition-all duration-300 hover:border-[#039855] hover:shadow-sm group relative overflow-hidden"
               >
+                {/* Profile Image & Medal Overlay */}
                 <div className="relative shrink-0">
                   {entry.profile_picture ? (
                     <Image 
@@ -105,7 +98,7 @@ const LeaderboardSummary: React.FC<LeaderboardSummaryProps> = ({ entries, onView
                       alt={entry.candidate_name}
                       width={40}
                       height={40}
-                      className="w-10 h-10 rounded-full object-cover border-2 border-[#F2F4F7] group-hover:border-[#3E4095]/20 transition-colors"
+                      className="w-10 h-10 rounded-full object-cover border-2 border-[#F2F4F7] group-hover:border-[#039855]/20 transition-colors"
                     />
                   ) : (
                     <div className="w-10 h-10 rounded-full bg-[#F2F4F7] flex items-center justify-center text-[#667185] text-xs font-bold border border-[#E4E7EC]">
@@ -114,11 +107,12 @@ const LeaderboardSummary: React.FC<LeaderboardSummaryProps> = ({ entries, onView
                   )}
                   
                   <RankMedal 
-                    rank={entry.overall_rank} 
+                    rank={entry.rank} 
                     className="absolute -bottom-2 -right-2 drop-shadow-md group-hover:scale-110 transition-transform" 
                   />
                 </div>
 
+                {/* Content Wrapper */}
                 <div className="flex flex-1 justify-between items-center min-w-0 ml-1">
                   <div className="flex flex-col min-w-0">
                     <span className="text-sm font-bold text-[#101828] truncate">
@@ -130,12 +124,12 @@ const LeaderboardSummary: React.FC<LeaderboardSummaryProps> = ({ entries, onView
                   </div>
 
                   <div className="flex flex-col items-end pl-2">
-                    <span className="text-xs font-black text-[#3E4095] bg-white border border-[#3E4095]/60  px-1 py-0.5 rounded-md">
-                      {entry.total_score}
+                    <span className="text-xs font-black text-cyan-600 bg-white border border-cyan-600/60 px-1 py-0.5 rounded-md">
+                      {entry.exam_score}
                     </span>
-                    <div className="mt-0.5">
-                      <RankChangeIndicator change={entry.rank_change} />
-                    </div>
+                    <span className="text-[8px] font-medium text-[#667185] mt-0.5">
+                      Top {100 - entry.percentile}%
+                    </span>
                   </div>
                 </div>
               </div>
@@ -143,7 +137,7 @@ const LeaderboardSummary: React.FC<LeaderboardSummaryProps> = ({ entries, onView
           </div>
         ) : (
           <div className="p-6 text-center bg-white rounded-lg border border-dashed border-gray-200">
-            <p className="text-xs text-gray-400 italic">No rankings available yet.</p>
+            <p className="text-xs text-gray-400 italic">No standings available.</p>
           </div>
         )}
       </div>
@@ -151,4 +145,4 @@ const LeaderboardSummary: React.FC<LeaderboardSummaryProps> = ({ entries, onView
   );
 };
 
-export default LeaderboardSummary;
+export default StandingsSummary;

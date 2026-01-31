@@ -5,8 +5,8 @@ import CompetitionStats from './CompetitionStats';
 import StageBoard, { CompetitionStage } from './CompetitionProgress';
 import ExamStatus from './ExamStatus';
 import { CompetitionExam } from './ExamResultRow';
-import LeaderboardSummary from './LeaderboardSummary';
-import { CandidateType } from '@/types/LeaderBoardType';
+import LeaderboardSummary, { LeaderboardEntry } from './LeaderboardSummary';
+import StandingsSummary, { StandingsEntry } from './StandingsSummary';
 
 // Mock Data
 const MOCK_STATS = {
@@ -44,23 +44,27 @@ const MOCK_EXAMS: CompetitionExam[] = [
     title: 'League - Round 2',
     status: 'ongoing',
     standings_status: 'pending',
-    // stats: { candidates_sat: 840, avg_score: 64.1, absent: 190 },
     actions: { can_view: false }
   },
   {
     id: 'league-3',
     title: 'League - Round 3',
     status: 'scheduled',
-    standings_status: 'pending', // Actually, let's say generated but draft
-    // stats: { candidates_sat: 835 },
+    standings_status: 'pending', 
     actions: { can_view: false }
   },
 ];
 
-const MOCK_TOP_CANDIDATES: CandidateType[] = [
-  { rank: 1, score: 372.5, percentage: 92, profile: { id: 'c1', full_name: 'Candidate A', school_name: 'School A', profile_picture: null } },
-  { rank: 2, score: 369.0, percentage: 91, profile: { id: 'c2', full_name: 'Candidate B', school_name: 'School B', profile_picture: null } },
-  { rank: 3, score: 365.0, percentage: 90, profile: { id: 'c3', full_name: 'Candidate C', school_name: 'School C', profile_picture: null } },
+const MOCK_TOP_CANDIDATES: LeaderboardEntry[] = [
+  { overall_rank: 1, total_score: "372.50", rank_change: 0, candidate: 'c1', candidate_name: 'Candidate A', school_name: 'St. Peters College' },
+  { overall_rank: 2, total_score: "369.00", rank_change: 2, candidate: 'c2', candidate_name: 'Candidate B', school_name: 'Victory Academy' },
+  { overall_rank: 3, total_score: "365.00", rank_change: -1, candidate: 'c3', candidate_name: 'Candidate C', school_name: 'Greenwood High' },
+];
+
+const MOCK_STANDINGS: StandingsEntry[] = [
+  { rank: 1, exam_score: "95.50", percentile: 99.9, candidate: 's1', candidate_name: 'John Doe', candidate_email: 'john@example.com', school_name: 'St. Peters College' },
+  { rank: 2, exam_score: "92.00", percentile: 98.5, candidate: 's2', candidate_name: 'Jane Smith', candidate_email: 'jane@example.com', school_name: 'Victory Academy' },
+  { rank: 3, exam_score: "89.50", percentile: 97.2, candidate: 's3', candidate_name: 'Alice Brown', candidate_email: 'alice@example.com', school_name: 'Greenwood High' },
 ];
 
 const CompetitionDashboard: React.FC = () => {
@@ -68,20 +72,17 @@ const CompetitionDashboard: React.FC = () => {
   const [exams, setExams] = useState<CompetitionExam[]>(MOCK_EXAMS);
 
   const handleView = (id: string) => {
-    // Navigate to exam details
     console.log(`Navigating to exam ${id}`);
     router.push(`/admin/exams/${id}`); 
   };
 
   const handleGenerate = (id: string) => {
     console.log(`Generating results for ${id}`);
-    // In real app, call API
   };
 
   const handlePublish = (id: string) => {
     if (confirm('Are you sure you want to publish results? This will be visible to candidates.')) {
         console.log(`Publishing results for ${id}`);
-        // Optimistic update for demo
         setExams(prev => prev.map(e => 
           e.id === id ? { ...e, standings_status: 'published', actions: { ...e.actions, can_publish: false } } : e
         ));
@@ -97,14 +98,16 @@ const CompetitionDashboard: React.FC = () => {
       router.push('/admin/leaderboard');
   };
 
-  return (
+  const handleViewStandings = () => {
+      router.push('/admin/standings/latest');
+  };
 
+  return (
       <div className="flex flex-col gap-2">
         <AdminHeader 
           label="Competition" 
           actionButton={undefined} 
         />
-        {/* <div className="relative space-y-6 max-w-6xl mx-auto w-full animate-in fade-in slide-in-from-bottom-2 duration-700 pb-10 font-sans"> */}
 
           <div className="flex flex-col gap-3 sm:gap-4 mt-3 w-full sm:w-[96%] px-2 sm:px-0 sm:mx-auto">
             <CompetitionStats 
@@ -124,12 +127,18 @@ const CompetitionDashboard: React.FC = () => {
               onEdit={handleEdit}
             />
 
-            <LeaderboardSummary 
-              topCandidates={MOCK_TOP_CANDIDATES}
-              onViewFull={handleViewLeaderboard}
-            />
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+              <StandingsSummary
+                examTitle="League - Round 1"
+                entries={MOCK_STANDINGS}
+                onViewFull={handleViewStandings}
+              />
+              <LeaderboardSummary 
+                entries={MOCK_TOP_CANDIDATES}
+                onViewFull={handleViewLeaderboard}
+              />
+            </div>
           </div>
-        {/* </div> */}
       </div>
   );
 };
