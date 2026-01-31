@@ -242,3 +242,180 @@ The following fields are strictly read-only and will be ignored if included in a
 - `created_by`
 - `updated_by`
 - `question_count`
+
+
+```
++----------------------------------------------------------------------------------+
+| VMLC 3.0                                          Status: League · Round 3 of 6  |
+|----------------------------------------------------------------------------------|
+|• Enrolled: 1575 • Active: 612 • Eliminated: 636 • Awaiting Next Challenge: 412   |
++----------------------------------------------------------------------------------+
+| Stage Board: (read-only orientation)                                             |
+|  [SCREENING] ● Completed   [LEAGUE] ● Active (Round 3/6)   [FINAL] ○ Pending     |
+|                                                                                  |
++----------------------------------------------------------------------------------+
+|                                                                                  |
+|  [ Stage Progress (league) ]                                                     |
+|  R1 ●─R2 ●─R3 ●─R4 ○─R5 ○─R6 ○                                                   |
+|  (● = published standings)                                                       |
+|                                                                                  |
++----------------------------------------------------------------------------------+
+| Available Results (select exam to view details)                                  |
+| 1) Screening Exam                     [Status: Completed]   [View] [Generate]    |
+|    - Candidates sat: 10,230           Standings: Published (screening_1)         | 
+|                                                                                  |
+| 2) League - Round 1                   [Status: Concluded]  [View] [Generate]     |
+|    - Standings: Published (league_1)       Avg: 62.4  | Absent: 200              |
+|                                                                                  |
+| 3) League - Round 2                   [Status: Concluded]  [View] [Generate]     |
+|    - Standings: Published (league_2)       Avg: 64.1  | Absent: 190              |
+|                                                                                  |
+| 4) League - Round 3                   [Status: Completed]  [View] [Generate]     |
+|    - Standings: Draft (not published)  [Publish]                                 |
+|                                                                                  |
+| 5) Final Exam                         [Status: Draft]      [Edit Exam]           |
++----------------------------------------------------------------------------------+
+| League Leaderboard                                                               |
+| - Based on published rounds only                                                 |
+| - Actions: [View]                                                                |
+| (Shows only Top 3 like it's currently implemented)                               |
+|  Top 3:                                                                          |
+|   1. Candidate A — 372.5   2. Candidate B — 369.0   3. Candidate C — 365.0       |
++----------------------------------------------------------------------------------+
+
+```
+
+
+---
+
+
+**Task: Design the Competition Tab (Staff View)**
+
+You are designing the **Competition tab** for the staff portal**.
+
+This is a **staff-facing screen**, not candidate-facing.
+Your job is to **design the UI and interaction flow**.
+
+Work **in the style of the project**:
+
+* Calm, structured, no visual noise
+* Explicit actions (nothing happens “magically”)
+* Read-only orientation at the top, actions lower down
+* Designed for clarity under pressure
+* Assumes staff already understand the competition rules
+
+Do **not** introduce new concepts or features beyond what is shown.
+You can take inspration from the candidate's portal, though
+
+---
+
+## What this screen is for
+
+The Competition tab answers three questions for staff:
+
+1. **Where are we in the competition right now?**
+2. **What results exist, and what state are they in?**
+3. **What can I safely act on right now?**
+
+This screen does **not**:
+
+* Create exams
+* Edit exams (except linking out)
+* Automatically publish anything
+* Show full standings tables inline
+
+---
+
+## Target Frontend
+
+* **Next.js**
+* Admin/staff layout
+* Desktop-first
+* Clean, terminal-like density is acceptable
+
+---
+
+## The exact wire sketch to work from
+
+This is the **authoritative layout**.
+You may refine spacing and hierarchy, but do not reinvent the structure.
+
+```
++----------------------------------------------------------------------------------+
+| VMLC 3.0                                          Status: League · Round 3 of 6  |
+|----------------------------------------------------------------------------------|
+|• Enrolled: 1575 • Active: 612 • Eliminated: 636 • Awaiting Next Challenge: 412   |
++----------------------------------------------------------------------------------+
+| Stage Board: (read-only orientation)                                             |
+|  [SCREENING] ● Completed   [LEAGUE] ● Active (Round 3/6)   [FINAL] ○ Pending     |
+|                                                                                  |
++----------------------------------------------------------------------------------+
+|                                                                                  |
+|  [ Stage Progress (league) ]                                                     |
+|  R1 ●─R2 ●─R3 ●─R4 ○─R5 ○─R6 ○                                                   |
+|  (● = published standings)                                                       |
+|                                                                                  |
++----------------------------------------------------------------------------------+
+| Available Results (select exam to view details)                                  |
+| 1) Screening Exam                     [Status: Completed]   [View] [Generate]    |
+|    - Candidates sat: 10,230           Standings: Published (screening_1)         | 
+|                                                                                  |
+| 2) League - Round 1                   [Status: Concluded]  [View] [Generate]     |
+|    - Standings: Published (league_1)       Avg: 62.4  | Absent: 200              |
+|                                                                                  |
+| 3) League - Round 2                   [Status: Concluded]  [View] [Generate]     |
+|    - Standings: Published (league_2)       Avg: 64.1  | Absent: 190              |
+|                                                                                  |
+| 4) League - Round 3                   [Status: Completed]  [View] [Generate]     |
+|    - Standings: Draft (not published)  [Publish]                                 |
+|                                                                                  |
+| 5) Final Exam                         [Status: Draft]      [Edit Exam]           |
++----------------------------------------------------------------------------------+
+| League Leaderboard                                                               |
+| - Based on published rounds only                                                 |
+| - Actions: [View]                                                                |
+| (Shows only Top 3 like it's currently implemented)                               |
+|  Top 3:                                                                          |
+|   1. Candidate A — 372.5   2. Candidate B — 369.0   3. Candidate C — 365.0       |
++----------------------------------------------------------------------------------+
+```
+
+---
+
+## Design expectations
+
+* Top section is **pure orientation**, no actions
+* Stage Board is **read-only**, you can take inspiration from @src/components/General/Portal/DashboardParts/StageProgress.tsx
+* Progress dots visually communicate:
+
+  * completed
+  * published vs unpublished
+* “Available Results” is the **primary action area**
+* Buttons must reflect state:
+
+  * No publish button if nothing is generated (assume the backend informs you via an endpoint)
+  * No generate button if exam is not completed
+* Leaderboard is **summary only**, not the full table. Only show the top three like in the Leaderboards tab.
+
+---
+
+## What to deliver
+
+1. A **clear UI breakdown** of this screen
+2. Component-level structure (sections, cards, rows)
+3. Interaction notes (what happens on click)
+4. Assumptions you are making, stated explicitly
+
+Do **not**:
+
+* Talk about database models
+* Redesign the flow
+* Add automation
+* Add candidate-facing features
+* Add analytics dashboards
+
+If something is unclear, state the assumption and move on.
+
+Design it like it will be used during a live competition, by tired humans, who cannot afford surprises.
+
+---

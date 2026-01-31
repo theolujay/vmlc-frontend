@@ -67,13 +67,29 @@ const MOCK_STANDINGS: StandingsEntry[] = [
   { rank: 3, exam_score: "89.50", percentile: 97.2, candidate: 's3', candidate_name: 'Alice Brown', candidate_email: 'alice@example.com', school_name: 'Greenwood High' },
 ];
 
-const CompetitionDashboard: React.FC = () => {
+interface CompetitionDashboardProps {
+  onViewFullLeaderboard?: () => void;
+  onViewFullStandings?: () => void;
+  onViewStandings?: (id: string, title: string) => void;
+}
+
+const CompetitionDashboard: React.FC<CompetitionDashboardProps> = ({ 
+  onViewFullLeaderboard, 
+  onViewFullStandings,
+  onViewStandings 
+}) => {
   const router = useRouter();
   const [exams, setExams] = useState<CompetitionExam[]>(MOCK_EXAMS);
 
   const handleView = (id: string) => {
-    console.log(`Navigating to exam ${id}`);
-    router.push(`/admin/exams/${id}`); 
+    const exam = exams.find(e => e.id === id);
+    if (onViewStandings && exam && (exam.standings_status === 'published' || exam.standings_status === 'ready')) {
+      onViewStandings(id, exam.title);
+    } else {
+      // Fallback or navigate to exam details if not a standings view
+      console.log(`Navigating to exam details for ${id}`);
+      router.push(`/admin/exams/${id}`); 
+    }
   };
 
   const handleGenerate = (id: string) => {
@@ -92,14 +108,6 @@ const CompetitionDashboard: React.FC = () => {
   const handleEdit = (id: string) => {
      console.log(`Editing exam ${id}`);
      router.push(`/admin/exams/${id}/edit`);
-  };
-
-  const handleViewLeaderboard = () => {
-      router.push('/admin/leaderboard');
-  };
-
-  const handleViewStandings = () => {
-      router.push('/admin/standings/latest');
   };
 
   return (
@@ -128,14 +136,14 @@ const CompetitionDashboard: React.FC = () => {
             />
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+              <LeaderboardSummary 
+                entries={MOCK_TOP_CANDIDATES}
+                onViewFull={onViewFullLeaderboard || (() => {})}
+              />
               <StandingsSummary
                 examTitle="League - Round 1"
                 entries={MOCK_STANDINGS}
-                onViewFull={handleViewStandings}
-              />
-              <LeaderboardSummary 
-                entries={MOCK_TOP_CANDIDATES}
-                onViewFull={handleViewLeaderboard}
+                onViewFull={onViewFullStandings || (() => {})}
               />
             </div>
           </div>

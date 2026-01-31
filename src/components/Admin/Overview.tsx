@@ -3,15 +3,14 @@ import { useAuth } from '@/contexts/AuthProvider'
 import withAuthentication from '@/hocs/withAuthentication'
 import {  TabType } from '@/types/TabType'
 import TabWrapper from '../ui/Tabs/TabWrapper'
-import { AnnouncementIcon, ExamSystemIcon, LeaderboardIcon, OverviewIcon, SupportIcon, UserManagementIcon, ActivitiesIcon } from './AdminIcons'
+import { AnnouncementIcon, ExamSystemIcon, OverviewIcon, SupportIcon, UserManagementIcon, ActivitiesIcon } from './AdminIcons'
 import AdminLayout from './AdminLayout'
 import Announcement from './Announcement/Announcement'
 import ExamSectionWrapper from './ExamSystem/ExamSectionWrapper'
 import OverviewSectionWrapper from './OverviewSection/OverviewSectionWrapper'
 import StaffMgtWrapper from './UserManagement/StaffMgtWrapper'
-import LeaderBoardWrapper from './Leaderboard/LeaderBoardWrapper'
 import SupportSectionWrapper from './Support/SupportSectionWrapper'
-import CompetitionDashboard from './Competition/CompetitionDashboard'
+import CompetitionWrapper from './Competition/CompetitionWrapper'
 
 
 
@@ -19,10 +18,10 @@ import CompetitionDashboard from './Competition/CompetitionDashboard'
 function getTabsForRole(role: string): TabType[] {
     switch (role) {
         case 'volunteer':
-            return tabs.slice(0, 4); // Included Competition
+            return tabs.slice(0, 3); // Overview, Competition, Exam System
 
         case 'moderator':
-            return [...tabs.slice(0, 4), tabs[6]];
+            return [...tabs.slice(0, 3), tabs[5]]; // Overview, Competition, Exam System, Support
 
         case 'admin':
         case 'manager':
@@ -38,12 +37,11 @@ const tabs: TabType[] = [
         value: 'Overview',
         label: <OverViewLabel />,
         content: <OverviewSectionWrapper />
-        // content:<OverviewSection/>
     },
     {
         value: 'Competition',
         label: <CompetitionLabel />,
-        content: <CompetitionDashboard />
+        content: <CompetitionWrapper />
     },
     {
         value: 'Exam System',
@@ -52,16 +50,9 @@ const tabs: TabType[] = [
 
     },
     {
-        value: 'Leaderboards',
-        label: <LeaderboardsLabel />,
-        // content: <LeaderBoardSection />
-        content:<LeaderBoardWrapper/>
-    },
-    {
         value: 'User Management',
         label: <UserManagementLabel />,
         content: <StaffMgtWrapper />
-        // content:<UserManagement/>
     },
     {
         value: 'Announcement',
@@ -110,13 +101,6 @@ function CompetitionLabel() {
 function ExamSystemLabel() {
     return <div className='flex gap-1 items-center'><span><ExamSystemIcon /></span><span>Exam System</span></div>
 }
-
-
-function LeaderboardsLabel() {
-    return <div className='flex gap-1 items-center'><span><LeaderboardIcon /></span><span>Leaderboards</span></div>
-}
-
-
 
 function UserManagementLabel() {
     return <div className='flex gap-1 items-center'><span><UserManagementIcon /></span><span>User Management</span></div>

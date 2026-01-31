@@ -88,7 +88,7 @@ const StandingsSummary: React.FC<StandingsSummaryProps> = ({ examTitle, entries 
             {entries.map((entry) => (
               <div 
                 key={entry.candidate} 
-                className="flex items-center gap-3 bg-white p-3 rounded-lg border border-[#E4E7EC] transition-all duration-300 hover:border-[#039855] hover:shadow-sm group relative overflow-hidden"
+                className="flex items-center gap-3 bg-white p-3 rounded-lg border border-[#E4E7EC] transition-all duration-300 hover:border-cyan-600/40 hover:shadow-sm group relative overflow-hidden"
               >
                 {/* Profile Image & Medal Overlay */}
                 <div className="relative shrink-0">
@@ -98,7 +98,7 @@ const StandingsSummary: React.FC<StandingsSummaryProps> = ({ examTitle, entries 
                       alt={entry.candidate_name}
                       width={40}
                       height={40}
-                      className="w-10 h-10 rounded-full object-cover border-2 border-[#F2F4F7] group-hover:border-[#039855]/20 transition-colors"
+                      className="w-10 h-10 rounded-full object-cover border-2 border-[#F2F4F7] group-hover:border-cyan-600/40 transition-colors"
                     />
                   ) : (
                     <div className="w-10 h-10 rounded-full bg-[#F2F4F7] flex items-center justify-center text-[#667185] text-xs font-bold border border-[#E4E7EC]">
