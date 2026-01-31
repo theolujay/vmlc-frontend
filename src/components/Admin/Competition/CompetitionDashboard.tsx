@@ -11,12 +11,20 @@ interface CompetitionDashboardProps {
   onViewFullLeaderboard?: () => void;
   onViewFullStandings?: () => void;
   onViewStandings?: (id: string, title: string) => void;
+  onViewCandidateDetail?: (params: { 
+    candidate_id: string, 
+    exam_id?: string, 
+    isLeagueCumulative?: boolean,
+    stage?: string,
+    round?: string
+  }) => void;
 }
 
 const CompetitionDashboard: React.FC<CompetitionDashboardProps> = ({ 
   onViewFullLeaderboard, 
   onViewFullStandings,
-  onViewStandings 
+  onViewStandings,
+  onViewCandidateDetail 
 }) => {
   const { data, isLoading, error, refetch } = useGetCompetitionDashboard();
 
@@ -112,13 +120,21 @@ const CompetitionDashboard: React.FC<CompetitionDashboardProps> = ({
               <LeaderboardSummary 
                 entries={data.leaderboard_summary}
                 onViewFull={onViewFullLeaderboard || (() => {})}
-                onViewCandidate={(id) => onViewStandings?.(id, 'League Leaderboard')} 
+                onViewCandidate={(id) => onViewCandidateDetail?.({ 
+                  candidate_id: id, 
+                  isLeagueCumulative: true 
+                })} 
               />
               <StandingsSummary
                 examTitle={data.latest_standings_summary?.exam_title || "Latest Exam"}
                 entries={data.latest_standings_summary?.entries || []}
                 onViewFull={onViewFullStandings || (() => {})}
-                onViewCandidate={(id) => onViewStandings?.(id, data.latest_standings_summary?.exam_title || "Standings")}
+                onViewCandidate={(id) => onViewCandidateDetail?.({ 
+                  candidate_id: id, 
+                  exam_id: data.latest_standings_summary?.exam_id,
+                  stage: data.progress.current_stage,
+                  round: String(data.progress.current_round)
+                })}
               />
             </div>
           </div>

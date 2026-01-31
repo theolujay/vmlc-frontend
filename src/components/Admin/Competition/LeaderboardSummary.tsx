@@ -33,12 +33,14 @@ const LeaderboardSummary: React.FC<LeaderboardSummaryProps> = ({ entries, onView
           <h2 className="text-xs font-bold text-[#475367] uppercase tracking-widest mb-1">League Leaderboard</h2>
           <p className="text-[9px] text-[#667185]">Based on published standings only</p>
         </div>
-        <button 
-          onClick={onViewFull}
-          className="flex items-center gap-1 px-4 py-1.5 text-xs font-bold text-[#344054] bg-white border border-[#D0D5DD] rounded-full hover:bg-[#3E4095] hover:text-[#FFFFFF] transition-all"
-        >
-          View Full
-        </button>
+        {entries.length > 0 && (
+          <button 
+            onClick={onViewFull}
+            className="flex items-center gap-1 px-4 py-1.5 text-xs font-bold text-[#344054] bg-white border border-[#D0D5DD] rounded-full hover:bg-[#3E4095] hover:text-[#FFFFFF] transition-all"
+          >
+            View Full
+          </button>
+        )}
       </div>
 
       <div className="bg-[#F9FAFB] border border-[#F2F4F7] rounded-xl p-4">

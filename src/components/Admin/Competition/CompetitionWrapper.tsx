@@ -78,6 +78,7 @@ const CompetitionWrapper: React.FC = () => {
         <div className="p-4 sm:p-8">
           <FullStandings 
             onBack={() => setView('dashboard')} 
+            examId={selectedExamId}
             examTitle={selectedExamTitle}
             onViewDetails={(id) => handleViewCandidateDetails({ 
               candidate_id: id, 
