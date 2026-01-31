@@ -11,6 +11,7 @@ This document provides detailed information on the response bodies for the compe
 | **GET** | `/competition/standings/{exam_id}/candidate/{candidate_id}/` | Retrieve detailed performance for a specific candidate in an exam standing. |
 | **GET** | `/competition/leaderboard/league/` | Retrieve the latest cumulative league leaderboard. |
 | **GET** | `/competition/leaderboard/league/candidate/{candidate_id}/` | Retrieve cumulative performance for a specific candidate in the league. |
+| **GET** | `/competition/dashboard/` | Retrieve aggregated data for the competition dashboard. |
 
 ---
 
@@ -170,5 +171,79 @@ Retrieves cumulative performance for a specific candidate in the latest league l
   "total_score": "285.50",
   "overall_rank": 1,
   "rank_change": 0
+}
+```
+
+---
+
+## 6. Competition Dashboard
+`GET /v1/competition/dashboard/`
+
+Provides an aggregated view of competition statistics, progress, exam statuses, and ranking summaries.
+
+### Response Body (`200 OK`)
+```json
+{
+  "stats": {
+    "enrolled": 1575,
+    "active": 612,
+    "eliminated": 636,
+  },
+  "progress": {
+    "current_stage": "league",
+    "current_round": 3,
+    "total_rounds": 6,
+    "published_rounds": 2
+  },
+  "exams": [
+    {
+      "id": "screening-uuid",
+      "title": "Screening Exam",
+      "stage": "screening",
+      "status": "concluded",
+      "standings_status": "published",
+      "stats": {
+        "candidates_sat": 10230,
+        "avg_score": 55.2
+      },
+    },
+    {
+      "id": "league-r1-uuid",
+      "title": "League - Round 1",
+      "stage": "league",
+      "status": "concluded",
+      "standings_status": "published",
+      "stats": {
+        "candidates_sat": 850,
+        "avg_score": 62.4,
+        "absent": 200
+      },
+    }
+  ],
+  "leaderboard_summary": [
+    // only top 3 rankings
+    {
+      "candidate": "uuid-1",
+      "candidate_name": "Candidate A",
+      "school_name": "St. Peters College",
+      "total_score": "372.50",
+      "overall_rank": 1,
+      "rank_change": 0
+    }
+  ],
+  "latest_standings_summary": {
+    // only top 3 rankings
+    "exam_id": "league-r1-uuid",
+    "exam_title": "League - Round 1",
+    "entries": [
+      {
+        "candidate": "uuid-1",
+        "candidate_name": "Candidate A",
+        "exam_score": "95.50",
+        "rank": 1,
+        "percentile": 99.9
+      }
+    ]
+  }
 }
 ```

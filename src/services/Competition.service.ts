@@ -45,6 +45,16 @@ export class CompetitionService {
     }
   }
 
+  static async getCompetitionDashboard() {
+    try {
+      const response = await client.get('/competition/dashboard/');
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching competition dashboard:', error);
+      throw error;
+    }
+  }
+
   static async getCandidateLeagueDetail(candidate_id: string) {
     try {
       const response = await client.get(competitionUrls.GET_CANDIDATE_LEAGUE_DETAIL(candidate_id));

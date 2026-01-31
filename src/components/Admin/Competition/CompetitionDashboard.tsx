@@ -1,119 +1,82 @@
-import React, { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import React from 'react';
 import AdminHeader from '@/components/Admin/AdminHeader';
 import CompetitionStats from './CompetitionStats';
 import StageBoard, { CompetitionStage } from './CompetitionProgress';
 import ExamStatus from './ExamStatus';
-import { CompetitionExam } from './ExamResultRow';
-import LeaderboardSummary, { LeaderboardEntry } from './LeaderboardSummary';
-import StandingsSummary, { StandingsEntry } from './StandingsSummary';
-
-// Mock Data
-const MOCK_STATS = {
-  enrolled: 1575,
-  active: 612,
-  eliminated: 636,
-  awaiting: 412
-};
-
-const MOCK_LEAGUE_STATUS = {
-  currentRound: 3,
-  totalRounds: 6,
-  publishedRounds: 2
-};
-
-const MOCK_EXAMS: CompetitionExam[] = [
-  {
-    id: 'screening-1',
-    title: 'Screening',
-    status: 'concluded',
-    standings_status: 'published',
-    stats: { candidates_sat: 10230, avg_score: 55.2 },
-    actions: { can_view: true }
-  },
-  {
-    id: 'league-1',
-    title: 'League - Round 1',
-    status: 'concluded',
-    standings_status: 'ready',
-    stats: { candidates_sat: 850, avg_score: 62.4, absent: 200 },
-    actions: { can_view: true }
-  },
-  {
-    id: 'league-2',
-    title: 'League - Round 2',
-    status: 'ongoing',
-    standings_status: 'pending',
-    actions: { can_view: false }
-  },
-  {
-    id: 'league-3',
-    title: 'League - Round 3',
-    status: 'scheduled',
-    standings_status: 'pending', 
-    actions: { can_view: false }
-  },
-];
-
-const MOCK_TOP_CANDIDATES: LeaderboardEntry[] = [
-  { overall_rank: 1, total_score: "372.50", rank_change: 0, candidate: 'c1', candidate_name: 'Candidate A', school_name: 'St. Peters College' },
-  { overall_rank: 2, total_score: "369.00", rank_change: 2, candidate: 'c2', candidate_name: 'Candidate B', school_name: 'Victory Academy' },
-  { overall_rank: 3, total_score: "365.00", rank_change: -1, candidate: 'c3', candidate_name: 'Candidate C', school_name: 'Greenwood High' },
-];
-
-const MOCK_STANDINGS: StandingsEntry[] = [
-  { rank: 1, exam_score: "95.50", percentile: 99.9, candidate: 's1', candidate_name: 'John Doe', candidate_email: 'john@example.com', school_name: 'St. Peters College' },
-  { rank: 2, exam_score: "92.00", percentile: 98.5, candidate: 's2', candidate_name: 'Jane Smith', candidate_email: 'jane@example.com', school_name: 'Victory Academy' },
-  { rank: 3, exam_score: "89.50", percentile: 97.2, candidate: 's3', candidate_name: 'Alice Brown', candidate_email: 'alice@example.com', school_name: 'Greenwood High' },
-];
+import LeaderboardSummary from './LeaderboardSummary';
+import StandingsSummary from './StandingsSummary';
+import useGetCompetitionDashboard from '@/hooks/useGetCompetitionDashboard';
 
 interface CompetitionDashboardProps {
   onViewFullLeaderboard?: () => void;
   onViewFullStandings?: () => void;
   onViewStandings?: (id: string, title: string) => void;
-  onViewCandidateDetail?: (params: { candidate_id: string, exam_id?: string, isLeagueCumulative?: boolean }) => void;
 }
 
 const CompetitionDashboard: React.FC<CompetitionDashboardProps> = ({ 
   onViewFullLeaderboard, 
   onViewFullStandings,
-  onViewStandings,
-  onViewCandidateDetail
+  onViewStandings 
 }) => {
-  const router = useRouter();
-  const [exams, setExams] = useState<CompetitionExam[]>(MOCK_EXAMS);
+  const { data, isLoading, error, refetch } = useGetCompetitionDashboard();
 
   const handleView = (id: string) => {
-    const exam = exams.find(e => e.id === id);
+    const exam = data?.exams.find(e => e.id === id);
     if (onViewStandings && exam && (exam.standings_status === 'published' || exam.standings_status === 'ready')) {
       onViewStandings(id, exam.title);
     } else {
-      // Fallback or navigate to exam details if not a standings view
-      console.log(`Navigating to exam details for ${id}`);
-      router.push(`/admin/exams/${id}`); 
+      // Fallback or handle operational navigation
+      console.log(`Navigating to operational details for ${id}`);
     }
   };
 
   const handleGenerate = (id: string) => {
     console.log(`Generating results for ${id}`);
+    // Implementation for generating results
   };
 
   const handlePublish = (id: string) => {
     if (confirm('Are you sure you want to publish results? This will be visible to candidates.')) {
         console.log(`Publishing results for ${id}`);
-        setExams(prev => prev.map(e => 
-          e.id === id ? { ...e, standings_status: 'published', actions: { ...e.actions, can_publish: false } } : e
-        ));
+        // Implementation for publishing results
     }
   };
 
   const handleEdit = (id: string) => {
      console.log(`Editing exam ${id}`);
-     router.push(`/admin/exams/${id}/edit`);
   };
 
+  if (isLoading) {
+    return (
+      <div className="flex flex-col gap-2 min-h-screen">
+        <AdminHeader label="Competition" actionButton={undefined} />
+        <div className="flex items-center justify-center p-20 flex-1">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#3E4095]"></div>
+        </div>
+      </div>
+    );
+  }
+
+  if (error || !data) {
+    return (
+      <div className="flex flex-col gap-2 min-h-screen">
+        <AdminHeader label="Competition" actionButton={undefined} />
+        <div className="flex flex-col items-center justify-center p-20 flex-1 text-center">
+          <h2 className="text-xl font-bold text-gray-800 mb-2">Failed to load competition data</h2>
+          <p className="text-gray-600 mb-6">Please check your connection and try again.</p>
+          <button 
+            onClick={() => refetch()}
+            className="px-6 py-2 bg-[#3E4095] text-white rounded-full font-bold hover:bg-[#2d2f6e] transition-colors"
+          >
+            Retry
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   return (
-      <div className="flex flex-col gap-2 font-sans">
+      <div className="flex flex-col gap-2">
         <AdminHeader 
           label="Competition" 
           actionButton={undefined} 
@@ -121,33 +84,42 @@ const CompetitionDashboard: React.FC<CompetitionDashboardProps> = ({
 
           <div className="flex flex-col gap-3 sm:gap-4 mt-3 w-full sm:w-[96%] px-2 sm:px-0 sm:mx-auto">
             <CompetitionStats 
-              candidatesStats={MOCK_STATS} 
+              candidatesStats={{
+                enrolled: data.stats.enrolled,
+                active: data.stats.active,
+                eliminated: data.stats.eliminated,
+                awaiting: data.stats.awaiting_next_challenge
+              }} 
             />
 
             <StageBoard 
-              currentStage={CompetitionStage.LEAGUE}
-              leagueStatus={MOCK_LEAGUE_STATUS}
+              currentStage={data.progress.current_stage as CompetitionStage}
+              leagueStatus={{
+                currentRound: data.progress.current_round,
+                totalRounds: data.progress.total_rounds,
+                publishedRounds: data.progress.published_rounds
+              }}
             />
 
             <ExamStatus 
-              exams={exams}
+              exams={data.exams}
               onView={handleView}
               onGenerate={handleGenerate}
               onPublish={handlePublish}
               onEdit={handleEdit}
             />
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 pb-10">
               <LeaderboardSummary 
-                entries={MOCK_TOP_CANDIDATES}
+                entries={data.leaderboard_summary}
                 onViewFull={onViewFullLeaderboard || (() => {})}
-                onViewCandidate={(id) => onViewCandidateDetail?.({ candidate_id: id, isLeagueCumulative: true })}
+                onViewCandidate={(id) => onViewStandings?.(id, 'League Leaderboard')} 
               />
               <StandingsSummary
-                examTitle="League - Round 1"
-                entries={MOCK_STANDINGS}
+                examTitle={data.latest_standings_summary?.exam_title || "Latest Exam"}
+                entries={data.latest_standings_summary?.entries || []}
                 onViewFull={onViewFullStandings || (() => {})}
-                onViewCandidate={(id) => onViewCandidateDetail?.({ candidate_id: id, exam_id: 'league-1' })} // Example ID
+                onViewCandidate={(id) => onViewStandings?.(id, data.latest_standings_summary?.exam_title || "Standings")}
               />
             </div>
           </div>
