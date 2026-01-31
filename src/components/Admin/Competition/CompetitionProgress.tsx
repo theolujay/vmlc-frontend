@@ -61,7 +61,7 @@ const StageBoard: React.FC<StageBoardProps> = ({ currentStage, leagueStatus }) =
   };
 
   return (
-    <ResponsiveContainer className="flex flex-col gap-6">
+    <ResponsiveContainer className="flex flex-col gap-6 font-sans">
       <div className="flex justify-between items-center">
         <h2 className="text-xs font-bold text-[#475367] uppercase tracking-widest">Competition Progress</h2>
         {/* <span className="text-[8px] text-[#3E4095] font-bold border border-[#3E4095]/50 px-1 py-0.5 rounded uppercase">Current Stage</span> */}

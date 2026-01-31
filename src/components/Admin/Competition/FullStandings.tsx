@@ -10,6 +10,7 @@ export interface StandingsEntry {
   candidate_name: string;
   candidate_email: string;
   school_name: string;
+  candidate_state: string;
   exam_score: string;
   rank: number;
   percentile: number;
@@ -17,11 +18,11 @@ export interface StandingsEntry {
 }
 
 const MOCK_STANDINGS_DATA: StandingsEntry[] = [
-  { rank: 1, exam_score: "95.50", percentile: 99.9, candidate: 's1', candidate_name: 'John Doe', candidate_email: 'john@example.com', school_name: 'St. Peters College' },
-  { rank: 2, exam_score: "92.00", percentile: 98.5, candidate: 's2', candidate_name: 'Jane Smith', candidate_email: 'jane@example.com', school_name: 'Victory Academy' },
-  { rank: 3, exam_score: "89.50", percentile: 97.2, candidate: 's3', candidate_name: 'Alice Brown', candidate_email: 'alice@example.com', school_name: 'Greenwood High' },
-  { rank: 4, exam_score: "88.00", percentile: 96.0, candidate: 's4', candidate_name: 'Bob White', candidate_email: 'bob@example.com', school_name: 'Blue Valley School' },
-  { rank: 5, exam_score: "85.00", percentile: 94.5, candidate: 's5', candidate_name: 'Charlie Green', candidate_email: 'charlie@example.com', school_name: 'St. Peters College' },
+  { rank: 1, exam_score: "95.50", percentile: 99.9, candidate: 's1', candidate_name: 'John Doe', candidate_email: 'john@example.com', school_name: 'St. Peters College', candidate_state: 'Lagos' },
+  { rank: 2, exam_score: "92.00", percentile: 98.5, candidate: 's2', candidate_name: 'Jane Smith', candidate_email: 'jane@example.com', school_name: 'Victory Academy', candidate_state: 'Abuja' },
+  { rank: 3, exam_score: "89.50", percentile: 97.2, candidate: 's3', candidate_name: 'Alice Brown', candidate_email: 'alice@example.com', school_name: 'Greenwood High', candidate_state: 'Oyo' },
+  { rank: 4, exam_score: "88.00", percentile: 96.0, candidate: 's4', candidate_name: 'Bob White', candidate_email: 'bob@example.com', school_name: 'Blue Valley School', candidate_state: 'Rivers' },
+  { rank: 5, exam_score: "85.00", percentile: 94.5, candidate: 's5', candidate_name: 'Charlie Green', candidate_email: 'charlie@example.com', school_name: 'St. Peters College', candidate_state: 'Lagos' },
 ];
 
 interface FullStandingsProps {
@@ -39,7 +40,7 @@ const FullStandings: React.FC<FullStandingsProps> = ({ onBack, examTitle = "Late
   );
 
   return (
-    <div className="flex flex-col gap-4 w-full animate-in fade-in slide-in-from-bottom-2 duration-500">
+    <div className="flex flex-col gap-4 w-full font-sans animate-in fade-in slide-in-from-bottom-2 duration-500">
       <div className="flex items-center gap-2 mb-2">
         <button 
           onClick={onBack}
@@ -48,7 +49,7 @@ const FullStandings: React.FC<FullStandingsProps> = ({ onBack, examTitle = "Late
           <div className="rotate-180"><AngleIcon width={8} height={14} /></div>
         </button>
         <div className="flex flex-col">
-          <h1 className="text-xl font-bold text-[#101828]">Standings: {examTitle}</h1>
+          <h1 className="text-xl font-sans font-bold text-[#101828]">Standings {examTitle}</h1>
           <p className="text-xs text-[#667185]">Detailed results for this round</p>
         </div>
       </div>
@@ -105,7 +106,7 @@ const FullStandings: React.FC<FullStandingsProps> = ({ onBack, examTitle = "Late
                   </div>
                   <div className="flex flex-col">
                     <span className="font-bold text-[#101828] text-sm">{row.candidate_name}</span>
-                    <span className="text-[10px] text-[#667185]">{row.candidate_email}</span>
+                    {/* <span className="text-[10px] text-[#667185]">{row.candidate_email}</span> */}
                   </div>
                 </div>
               )
@@ -113,7 +114,12 @@ const FullStandings: React.FC<FullStandingsProps> = ({ onBack, examTitle = "Late
             {
               key: 'school_name',
               header: 'School',
-              render: (val) => <span className="text-sm text-[#475467] font-medium">{val}</span>
+              render: (val, row) => (
+                <div className="flex flex-col">
+                  <span className="text-sm text-[#475467] font-medium">{val}</span>
+                  <span className="text-[10px] text-[#667185]">{row.candidate_state}</span>
+                </div>
+              )
             },
             {
               key: 'percentile',

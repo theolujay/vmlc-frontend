@@ -31,7 +31,7 @@ const ExamResultRow: React.FC<ExamResultRowProps> = ({ exam, onView }) => {
   };
 
   return (
-    <div className="border border-[#E4E7EC] rounded-lg p-4 bg-white hover:border-[#3E4095] transition-colors group">
+    <div className="border border-[#E4E7EC] rounded-lg p-4 bg-white hover:border-[#3E4095] transition-colors group font-sans">
       <div className="flex justify-between items-center">
         {/* Left: Info */}
         <div className="flex-1">

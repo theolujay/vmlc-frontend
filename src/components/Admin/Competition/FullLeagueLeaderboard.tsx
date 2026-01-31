@@ -48,7 +48,7 @@ const FullLeagueLeaderboard: React.FC<FullLeagueLeaderboardProps> = ({ onBack, o
   );
 
   return (
-    <div className="flex flex-col gap-4 w-full animate-in fade-in slide-in-from-bottom-2 duration-500">
+    <div className="flex flex-col gap-4 w-full font-sans animate-in fade-in slide-in-from-bottom-2 duration-500">
       <div className="flex items-center gap-2 mb-2">
         <button 
           onClick={onBack}

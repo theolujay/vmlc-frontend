@@ -63,7 +63,7 @@ export default function ViewCandidateDetails({ candidate_id, exam_id, isLeagueCu
     const examDetails = isStanding ? data?.exam_details : null;
 
     return (
-        <div className='flex flex-col gap-4 w-full animate-in fade-in slide-in-from-bottom-2 duration-500'>
+        <div className='flex flex-col gap-4 w-full animate-in fade-in slide-in-from-bottom-2 duration-500 font-sans'>
             {/* Custom Header with Back Button */}
             <div className="flex justify-between items-center bg-white p-4 sm:p-6 rounded-xl border border-[#E4E7EC] shadow-sm">
                 <div className="flex items-center gap-3">

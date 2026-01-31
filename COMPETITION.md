@@ -8,7 +8,9 @@ This document provides detailed information on the response bodies for the compe
 | :--- | :--- | :--- |
 | **POST** | `/competition/standings/publish/` | Trigger asynchronous generation/publishing of standings. |
 | **GET** | `/competition/standings/{exam_id}/` | Retrieve specific standings with detailed entries using Exam ID. |
+| **GET** | `/competition/standings/{exam_id}/candidate/{candidate_id}/` | Retrieve detailed performance for a specific candidate in an exam standing. |
 | **GET** | `/competition/leaderboard/league/` | Retrieve the latest cumulative league leaderboard. |
+| **GET** | `/competition/leaderboard/league/candidate/{candidate_id}/` | Retrieve cumulative performance for a specific candidate in the league. |
 
 ---
 
@@ -63,16 +65,6 @@ Retrieves a snapshot of standings for a specific stage and round using the Exam 
       "rank": 1,
       "percentile": 100.0,
       "tie_break_reason": null
-    },
-    {
-      "candidate": "uuid-of-candidate-2",
-      "candidate_name": "Jane Smith",
-      "candidate_email": "jane.smith@example.com",
-      "school_name": "Victory Academy",
-      "exam_score": "92.00",
-      "rank": 2,
-      "percentile": 98.5,
-      "tie_break_reason": null
     }
   ]
 }
@@ -80,7 +72,58 @@ Retrieves a snapshot of standings for a specific stage and round using the Exam 
 
 ---
 
-## 3. League Leaderboard
+## 3. Candidate Standing Detail
+`GET /competition/standings/{exam_id}/candidate/{candidate_id}/`
+
+Retrieves detailed performance for a specific candidate in a specific exam standing, including their answers and the correct options.
+
+### Response Body (`200 OK`)
+```json
+{
+  "exam_details": {
+    "id": "550e8400-e29b-41d4-a716-446655440000",
+    "title": "League Round 1",
+    "stage": "league",
+    "round": 1,
+    "scheduled_date": "2026-01-30T08:00:00Z",
+    "concluded_at": "2026-01-30T20:00:00Z",
+    "total_questions": 50,
+    "total_candidates": 1200,
+    "average_score": 72.45
+  },
+  "candidate_performance": {
+    "candidate": "uuid-of-candidate",
+    "candidate_name": "John Doe",
+    "candidate_email": "john.doe@example.com",
+    "school_name": "St. Peters College",
+    "score": "95.50",
+    "rank": 1,
+    "percentile": 100.0,
+    "recorded_at": "2026-01-30T10:00:00Z",
+    "auto_score": true,
+    "submissions": [
+      {
+        "question": {
+          "id": 1,
+          "text": "What is 2+2?",
+          "option_a": "3",
+          "option_b": "4",
+          "option_c": "5",
+          "option_d": "6",
+          "correct_answer": "B",
+          "difficulty": "easy"
+        },
+        "selected_option": "B",
+        "answered_at": "2026-01-30T10:05:00Z"
+      }
+    ]
+  }
+}
+```
+
+---
+
+## 4. League Leaderboard
 `GET /competition/leaderboard/league/`
 
 Retrieves the latest cumulative leaderboard for the active competition's league stage. This combines scores from all published rounds.
@@ -101,27 +144,31 @@ Retrieves the latest cumulative leaderboard for the active competition's league 
       "candidate_name": "John Doe",
       "candidate_email": "john.doe@example.com",
       "school_name": "St. Peters College",
+      "state": "Rivers",
       "total_score": "285.50",
       "overall_rank": 1,
       "rank_change": 0
-    },
-    {
-      "candidate": "uuid-of-candidate-3",
-      "candidate_name": "Alice Brown",
-      "candidate_email": "alice.b@example.com",
-      "school_name": "Greenwood High",
-      "total_score": "278.00",
-      "overall_rank": 2,
-      "rank_change": 2
     }
   ]
 }
 ```
 
-### Field Definitions (Entries)
-- **total_score**: The cumulative score across all rounds processed so far in the current stage.
-- **overall_rank**: The current ranking of the candidate based on `total_score`.
-- **rank_change**: The difference between the candidate's rank in the previous round and the current round. 
-    - `0`: No change.
-    - `+N`: Improved position (e.g., `2` means they moved up 2 spots).
-    - `-N`: Dropped position (e.g., `-1` means they dropped 1 spot).
+---
+
+## 5. Candidate League Cumulative Detail
+`GET /competition/leaderboard/league/candidate/{candidate_id}/`
+
+Retrieves cumulative performance for a specific candidate in the latest league leaderboard.
+
+### Response Body (`200 OK`)
+```json
+{
+  "candidate": "uuid-of-candidate",
+  "candidate_name": "John Doe",
+  "candidate_email": "john.doe@example.com",
+  "school_name": "St. Peters College",
+  "total_score": "285.50",
+  "overall_rank": 1,
+  "rank_change": 0
+}
+```

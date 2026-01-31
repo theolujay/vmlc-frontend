@@ -52,7 +52,7 @@ const CompetitionWrapper: React.FC = () => {
   };
 
   return (
-    <div className="w-full">
+    <div className="w-full font-sans">
       {currentView === 'dashboard' && (
         <CompetitionDashboard 
           onViewFullLeaderboard={() => setView('leaderboard')}
