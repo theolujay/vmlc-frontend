@@ -1,7 +1,8 @@
 import React from 'react';
+import ResponsiveContainer from '@/components/ui/ResponsiveContainer';
 import ExamResultRow, { CompetitionExam } from './ExamResultRow';
 
-interface ResultsListProps {
+interface ExamStatusProps {
   exams: CompetitionExam[];
   onView: (id: string) => void;
   onGenerate: (id: string) => void;
@@ -9,12 +10,12 @@ interface ResultsListProps {
   onEdit: (id: string) => void;
 }
 
-const ResultsList: React.FC<ResultsListProps> = ({ exams, onView, onGenerate, onPublish, onEdit }) => {
+const ExamStatus: React.FC<ExamStatusProps> = ({ exams, onView }) => {
   return (
-    <div className="flex flex-col gap-4">
-      <div className="flex justify-between items-center">
-        <h2 className="text-sm font-bold text-[#475367] uppercase tracking-widest">Available Results</h2>
-        <span className="text-xs text-[#667185] font-normal">(Select exam to view details)</span>
+    <ResponsiveContainer className="flex flex-col gap-4 font-sans">
+      <div className="flex justify-between items-center mb-2">
+        <h2 className="text-xs font-bold text-[#475367] uppercase tracking-widest">Exam Status</h2>
+        {/* <span className="text-xs text-[#667185] font-normal">(Select exam to view details)</span> */}
       </div>
       
       <div className="flex flex-col gap-3">
@@ -22,21 +23,18 @@ const ResultsList: React.FC<ResultsListProps> = ({ exams, onView, onGenerate, on
           exams.map((exam) => (
             <ExamResultRow 
               key={exam.id} 
-              exam={exam} 
+              exam={exam}
               onView={onView}
-              onGenerate={onGenerate}
-              onPublish={onPublish}
-              onEdit={onEdit}
             />
           ))
         ) : (
           <div className="p-8 text-center bg-gray-50 rounded-lg border border-dashed border-gray-200 text-gray-400 text-sm">
-            No exams available for the current stage.
+            No upcoming or concluded exams yet.
           </div>
         )}
       </div>
-    </div>
+    </ResponsiveContainer>
   );
 };
 
-export default ResultsList;
+export default ExamStatus;

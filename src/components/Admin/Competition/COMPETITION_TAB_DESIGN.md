@@ -37,7 +37,7 @@ The implementation is housed in `src/components/Admin/Competition/`:
 *   **`CompetitionDashboard.tsx`**: Main container. Manages state (mocked for now) and assembles the zones.
 *   **`CompetitionHeader.tsx`**: Renders Zone A (Title + Metrics).
 *   **`StageBoard.tsx`**: Renders Zone B (Macro & Micro stage logic).
-*   **`ResultsList.tsx`**: Renders Zone C (List container).
+*   **`ExamStatus.tsx`**: Renders Zone C (List container).
     *   **`ExamResultRow.tsx`**: Individual exam row with conditional action logic.
 *   **`LeaderboardSummary.tsx`**: Renders Zone D (Top 3 summary).
 
