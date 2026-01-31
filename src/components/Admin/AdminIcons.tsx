@@ -1,5 +1,11 @@
 import React from "react"
 
+export function CompetitionIcon(props: Readonly<React.SVGProps<SVGSVGElement>>) {
+    return <svg {...props} className={`stroke-current ${props.className}`} width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M5 17.5H15M10 14V17.5M10 14C7.23858 14 5 11.7614 5 9V4C5 2.89543 5.89543 2 7 2H13C14.1046 2 15 2.89543 15 4V9C15 11.7614 12.7614 14 10 14ZM5 5H3C1.89543 5 1 5.89543 1 7V8C1 10.2091 2.79086 12 5 12V5ZM15 5H17C18.1046 5 19 5.89543 19 7V8C19 10.2091 17.2091 12 15 12V5Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+}
+
 export function SupportIcon(props: Readonly<React.SVGProps<SVGSVGElement>>) {
     return <svg {...props} className={`stroke-current ${props.className}`} width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path d="M17 14V5C17 3.34315 15.6569 2 14 2H6C4.34315 2 3 3.34315 3 5V18L7 14H14C15.6569 14 17 12.6569 17 11Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />

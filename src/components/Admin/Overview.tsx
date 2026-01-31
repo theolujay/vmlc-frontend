@@ -3,7 +3,7 @@ import { useAuth } from '@/contexts/AuthProvider'
 import withAuthentication from '@/hocs/withAuthentication'
 import {  TabType } from '@/types/TabType'
 import TabWrapper from '../ui/Tabs/TabWrapper'
-import { AnnouncementIcon, ExamSystemIcon, OverviewIcon, SupportIcon, UserManagementIcon, ActivitiesIcon } from './AdminIcons'
+import { AnnouncementIcon, ExamSystemIcon, OverviewIcon, SupportIcon, UserManagementIcon, CompetitionIcon } from './AdminIcons'
 import AdminLayout from './AdminLayout'
 import Announcement from './Announcement/Announcement'
 import ExamSectionWrapper from './ExamSystem/ExamSectionWrapper'
@@ -95,7 +95,7 @@ function OverViewLabel() {
 }
 
 function CompetitionLabel() {
-    return <div className='flex gap-1 items-center'><span><ActivitiesIcon /></span><span>Competition</span></div>
+    return <div className='flex gap-1 items-center'><span><CompetitionIcon /></span><span>Competition</span></div>
 }
 
 function ExamSystemLabel() {
