@@ -7,6 +7,8 @@ interface RankMedalProps {
 }
 
 const RankMedal: React.FC<RankMedalProps> = ({ rank, className, variant = 'league' }) => {
+  if (rank > 3) return null;
+
   const gradientId = `medal-gradient-${variant}-${rank}`;
   
   // Define colors for Gold, Silver, Bronze

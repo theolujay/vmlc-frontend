@@ -122,7 +122,9 @@ function CandidateInfoCard({ userName, position, startTime, endTime, profilePict
                             <span className="font-bold text-lg text-[#667185]">{userInitials}</span>
                         )}
                     </div>
-                    <RankMedal rank={position} className="absolute -bottom-1 -right-1 drop-shadow-md w-5 h-5 scale-125" />
+                    {position <= 3 && (
+                        <RankMedal rank={position} className="absolute -bottom-1 -right-1 drop-shadow-md w-5 h-5 scale-125" />
+                    )}
                 </div>
                 <div className="flex flex-col overflow-hidden">
                     <span className='text-[10px] font-bold text-[#667185] uppercase'>Candidate</span>
