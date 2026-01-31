@@ -3,7 +3,7 @@ import { useAuth } from '@/contexts/AuthProvider'
 import withAuthentication from '@/hocs/withAuthentication'
 import {  TabType } from '@/types/TabType'
 import TabWrapper from '../ui/Tabs/TabWrapper'
-import { AnnouncementIcon, ExamSystemIcon, LeaderboardIcon, OverviewIcon, SupportIcon, UserManagementIcon } from './AdminIcons'
+import { AnnouncementIcon, ExamSystemIcon, LeaderboardIcon, OverviewIcon, SupportIcon, UserManagementIcon, ActivitiesIcon } from './AdminIcons'
 import AdminLayout from './AdminLayout'
 import Announcement from './Announcement/Announcement'
 import ExamSectionWrapper from './ExamSystem/ExamSectionWrapper'
@@ -11,6 +11,7 @@ import OverviewSectionWrapper from './OverviewSection/OverviewSectionWrapper'
 import StaffMgtWrapper from './UserManagement/StaffMgtWrapper'
 import LeaderBoardWrapper from './Leaderboard/LeaderBoardWrapper'
 import SupportSectionWrapper from './Support/SupportSectionWrapper'
+import CompetitionDashboard from './Competition/CompetitionDashboard'
 
 
 
@@ -18,10 +19,10 @@ import SupportSectionWrapper from './Support/SupportSectionWrapper'
 function getTabsForRole(role: string): TabType[] {
     switch (role) {
         case 'volunteer':
-            return tabs.slice(0, 3);
+            return tabs.slice(0, 4); // Included Competition
 
         case 'moderator':
-            return [...tabs.slice(0, 3), tabs[5]];
+            return [...tabs.slice(0, 4), tabs[6]];
 
         case 'admin':
         case 'manager':
@@ -38,6 +39,11 @@ const tabs: TabType[] = [
         label: <OverViewLabel />,
         content: <OverviewSectionWrapper />
         // content:<OverviewSection/>
+    },
+    {
+        value: 'Competition',
+        label: <CompetitionLabel />,
+        content: <CompetitionDashboard />
     },
     {
         value: 'Exam System',
@@ -97,6 +103,9 @@ function OverViewLabel() {
     return <div className='flex gap-1 items-center'><span><OverviewIcon /></span><span>Overview</span></div>
 }
 
+function CompetitionLabel() {
+    return <div className='flex gap-1 items-center'><span><ActivitiesIcon /></span><span>Competition</span></div>
+}
 
 function ExamSystemLabel() {
     return <div className='flex gap-1 items-center'><span><ExamSystemIcon /></span><span>Exam System</span></div>
