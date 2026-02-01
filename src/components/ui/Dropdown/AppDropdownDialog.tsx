@@ -16,7 +16,7 @@ export default function AppDropdownDialog({triggerButton,actionItems,children}: 
 
             <DropdownMenu.Portal>
                 <DropdownMenu.Content
-                    className="min-w-[220px] flex flex-col gap-3 rounded-lg bg-white p-[10px] shadow-[0px_10px_38px_-10px_rgba(22,_23,_24,_0.35),_0px_10px_20px_-15px_rgba(22,_23,_24,_0.2)] will-change-[opacity,transform] data-[side=bottom]:animate-slideUpAndFade data-[side=left]:animate-slideRightAndFade data-[side=right]:animate-slideLeftAndFade data-[side=top]:animate-slideDownAndFade"
+                    className="z-[100] min-w-[220px] flex flex-col gap-3 rounded-lg bg-white p-[10px] shadow-[0px_10px_38px_-10px_rgba(22,_23,_24,_0.35),_0px_10px_20px_-15px_rgba(22,_23,_24,_0.2)] will-change-[opacity,transform] data-[side=bottom]:animate-slideUpAndFade data-[side=left]:animate-slideRightAndFade data-[side=right]:animate-slideLeftAndFade data-[side=top]:animate-slideDownAndFade"
                     sideOffset={5}
                 >
                     {
