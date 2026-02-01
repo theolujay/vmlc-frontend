@@ -7,7 +7,7 @@ import { StandingsEntry } from '@/types/LeaderBoardType';
 interface StandingsSummaryProps {
   examTitle: string;
   entries: StandingsEntry[];
-  onViewFull: () => void;
+  onViewFull?: () => void;
   onViewCandidate?: (id: string) => void;
   isLoading?: boolean;
 }
@@ -28,7 +28,7 @@ const StandingsSummary: React.FC<StandingsSummaryProps> = ({ examTitle, entries,
           <h2 className="text-xs font-bold text-[#475367] uppercase tracking-widest mb-1">Standings: {examTitle}</h2>
           <p className="text-[9px] text-[#667185]">Latest published</p>
         </div>
-        {entries.length > 0 && (
+        {onViewFull && entries.length > 0 && (
           <div>
             <button 
               onClick={onViewFull}
@@ -49,7 +49,7 @@ const StandingsSummary: React.FC<StandingsSummaryProps> = ({ examTitle, entries,
               <button 
                 key={entry.candidate} 
                 onClick={() => onViewCandidate?.(entry.candidate)}
-                className="flex items-center gap-3 bg-white p-3 rounded-lg border border-[#E4E7EC] text-left transition-all duration-300 hover:border-cyan-600/40 hover:shadow-sm group relative overflow-hidden"
+                className={`flex items-center gap-3 bg-white p-3 rounded-lg border border-[#E4E7EC] text-left transition-all duration-300 relative overflow-hidden ${onViewCandidate ? 'hover:border-cyan-600/40 hover:shadow-sm group' : 'cursor-default'}`}
               >
                 {/* Profile Image & Medal Overlay */}
                 <div className="relative shrink-0">
@@ -59,7 +59,7 @@ const StandingsSummary: React.FC<StandingsSummaryProps> = ({ examTitle, entries,
                       alt={entry.candidate_name}
                       width={40}
                       height={40}
-                      className="w-10 h-10 rounded-full object-cover border-2 border-[#F2F4F7] group-hover:border-cyan-600/40 transition-colors"
+                      className={`w-10 h-10 rounded-full object-cover border-2 border-[#F2F4F7] transition-colors ${onViewCandidate ? 'group-hover:border-cyan-600/40' : ''}`}
                     />
                   ) : (
                     <div className="w-10 h-10 rounded-full bg-[#F2F4F7] flex items-center justify-center text-[#667185] text-xs font-bold border border-[#E4E7EC]">
@@ -69,7 +69,7 @@ const StandingsSummary: React.FC<StandingsSummaryProps> = ({ examTitle, entries,
                   
                   <RankMedal 
                     rank={entry.rank} 
-                    className="absolute -bottom-2 -right-2 drop-shadow-md group-hover:scale-110 transition-transform" 
+                    className={`absolute -bottom-2 -right-2 drop-shadow-md transition-transform ${onViewCandidate ? 'group-hover:scale-110' : ''}`} 
                   />
                 </div>
 

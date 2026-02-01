@@ -15,7 +15,7 @@ export interface LeaderboardEntry {
 
 interface LeaderboardSummaryProps {
   entries: LeaderboardEntry[];
-  onViewFull: () => void;
+  onViewFull?: () => void;
   onViewCandidate?: (id: string) => void;
 }
 
@@ -33,7 +33,7 @@ const LeaderboardSummary: React.FC<LeaderboardSummaryProps> = ({ entries, onView
           <h2 className="text-xs font-bold text-[#475367] uppercase tracking-widest mb-1">League Leaderboard</h2>
           <p className="text-[9px] text-[#667185]">Based on published standings only</p>
         </div>
-        {entries.length > 0 && (
+        {onViewFull && entries.length > 0 && (
           <button 
             onClick={onViewFull}
             className="flex items-center gap-1 px-4 py-1.5 text-xs font-bold text-[#344054] bg-white border border-[#D0D5DD] rounded-full hover:bg-[#3E4095] hover:text-[#FFFFFF] transition-all"
@@ -52,7 +52,7 @@ const LeaderboardSummary: React.FC<LeaderboardSummaryProps> = ({ entries, onView
               <button 
                 key={entry.candidate} 
                 onClick={() => onViewCandidate?.(entry.candidate)}
-                className="flex items-center gap-3 bg-white p-3 rounded-lg border border-[#E4E7EC] text-left transition-all duration-300 hover:border-[#3E4095]/40 hover:shadow-sm group relative overflow-hidden"
+                className={`flex items-center gap-3 bg-white p-3 rounded-lg border border-[#E4E7EC] text-left transition-all duration-300 relative overflow-hidden ${onViewCandidate ? 'hover:border-[#3E4095]/40 hover:shadow-sm group' : 'cursor-default'}`}
               >
                 <div className="relative shrink-0">
                   {entry.profile_picture ? (
@@ -61,7 +61,7 @@ const LeaderboardSummary: React.FC<LeaderboardSummaryProps> = ({ entries, onView
                       alt={entry.candidate_name}
                       width={40}
                       height={40}
-                      className="w-10 h-10 rounded-full object-cover border-2 border-[#F2F4F7] group-hover:border-[#3E4095]/20 transition-colors"
+                      className={`w-10 h-10 rounded-full object-cover border-2 border-[#F2F4F7] transition-colors ${onViewCandidate ? 'group-hover:border-[#3E4095]/20' : ''}`}
                     />
                   ) : (
                     <div className="w-10 h-10 rounded-full bg-[#F2F4F7] flex items-center justify-center text-[#667185] text-xs font-bold border border-[#E4E7EC]">
@@ -71,7 +71,7 @@ const LeaderboardSummary: React.FC<LeaderboardSummaryProps> = ({ entries, onView
                   
                   <RankMedal 
                     rank={entry.overall_rank} 
-                    className="absolute -bottom-2 -right-2 drop-shadow-md group-hover:scale-110 transition-transform" 
+                    className={`absolute -bottom-2 -right-2 drop-shadow-md transition-transform ${onViewCandidate ? 'group-hover:scale-110' : ''}`} 
                   />
                 </div>
 

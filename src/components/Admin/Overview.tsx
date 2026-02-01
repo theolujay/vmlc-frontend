@@ -18,12 +18,12 @@ import CompetitionWrapper from './Competition/CompetitionWrapper'
 function getTabsForRole(role: string): TabType[] {
     switch (role) {
         case 'volunteer':
-            return tabs.slice(0, 3); // Overview, Competition, Exams & Questions
+            return tabs.slice(0, 2); // Registration, Competition
 
         case 'moderator':
-            return [...tabs.slice(0, 3), tabs[5]]; // Overview, Competition, Exams & Questions, Support
-
         case 'admin':
+            return [tabs[0], tabs[1], tabs[2], tabs[5]]; // Registration, Competition, Exams & Questions, Support
+
         case 'manager':
         case 'superadmin':
             return tabs;

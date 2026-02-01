@@ -15,9 +15,10 @@ export type CompetitionExam = {
 interface ExamResultRowProps {
   exam: CompetitionExam;
   onView: (id: string) => void;
+  canInteract?: boolean;
 }
 
-const ExamResultRow: React.FC<ExamResultRowProps> = ({ exam, onView }) => {
+const ExamResultRow: React.FC<ExamResultRowProps> = ({ exam, onView, canInteract = true }) => {
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'scheduled': return 'bg-white text-green-500 border-green-100';
@@ -27,10 +28,10 @@ const ExamResultRow: React.FC<ExamResultRowProps> = ({ exam, onView }) => {
     }
   };
 
-  const canView = exam.standings_status === 'published';
+  const canView = exam.standings_status === 'published' && canInteract;
 
   return (
-    <div className="border border-[#E4E7EC] rounded-lg p-4 bg-white hover:border-[#3E4095] transition-colors group font-sans">
+    <div className={`border border-[#E4E7EC] rounded-lg p-4 bg-white transition-colors group font-sans ${canInteract ? 'hover:border-[#3E4095]' : ''}`}>
       <div className="flex justify-between items-center">
         {/* Left: Info */}
         <div className="flex-1">

@@ -23,12 +23,17 @@ import usePagination from '@/hooks/usePagination'
 import useListQuestions from '@/hooks/useListQuestions'
 import QuestionPoolTable from './QuestionPoolTable'
 import QuestionPoolStats from './QuestionPoolStats'
+import { useAuth } from '@/contexts/AuthProvider'
 
 const AddQuestionModal = dynamic(() => import('../../Modals/AddQuestionModal'), {
   ssr: false,
 });
 
 export default function ExamSection() {
+  const { authState } = useAuth();
+  const userRole = authState?.user?.role;
+  const isAdminOrAbove = ['admin', 'manager', 'superadmin'].includes(userRole || '');
+
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
@@ -88,29 +93,33 @@ export default function ExamSection() {
             <i className="fas fa-plus text-xs"></i>
             <span>ADD QUESTION</span>
           </button>,
-          <button 
-            key="create-session"
-            onClick={() => setOpenCreateSession(true)} 
-            className="inline-flex items-center gap-2.5 bg-[#3E4095] text-white px-6 py-3 rounded-xl font-black text-[10px] tracking-widest hover:bg-[#2d2f6e] transition-all uppercase shadow-lg shadow-[#3E4095]/20 active:scale-95"
-          >
-            <i className="fas fa-calendar-plus text-xs"></i>
-            <span>CREATE EXAM</span>
-          </button>
-        ]} 
+          isAdminOrAbove && (
+            <button 
+              key="create-session"
+              onClick={() => setOpenCreateSession(true)} 
+              className="inline-flex items-center gap-2.5 bg-[#3E4095] text-white px-6 py-3 rounded-xl font-black text-[10px] tracking-widest hover:bg-[#2d2f6e] transition-all uppercase shadow-lg shadow-[#3E4095]/20 active:scale-95"
+            >
+              <i className="fas fa-calendar-plus text-xs"></i>
+              <span>CREATE EXAM</span>
+            </button>
+          )
+        ].filter(Boolean) as React.ReactNode[]} 
       />
       
       <div className="flex flex-col gap-12 mt-8 w-[96%] mx-auto pb-20">
         {/* Exams Section */}
-        <div className='flex flex-col gap-6'>
-          <div className="flex items-center space-x-2 px-2">
-            <i className="fas fa-layer-group text-[#3E4095] text-[10px]"></i>
-            <h3 className="text-[9px] font-black text-gray-400 uppercase tracking-widest">Active Exam Sessions</h3>
+        {isAdminOrAbove && (
+          <div className='flex flex-col gap-6'>
+            <div className="flex items-center space-x-2 px-2">
+              <i className="fas fa-layer-group text-[#3E4095] text-[10px]"></i>
+              <h3 className="text-[9px] font-black text-gray-400 uppercase tracking-widest">Active Exam Sessions</h3>
+            </div>
+            {
+              isExamsPending ? <div className="grid w-full h-[30vh] place-content-center"><Spinner /></div> :
+                <QuestionSession currentPage={currentPage} onPageChange={setCurrentPage} total_pages={examData?.pagination.total_pages ?? 0} sessions={examData?.results ?? []} />
+            }
           </div>
-          {
-            isExamsPending ? <div className="grid w-full h-[30vh] place-content-center"><Spinner /></div> :
-              <QuestionSession currentPage={currentPage} onPageChange={setCurrentPage} total_pages={examData?.pagination.total_pages ?? 0} sessions={examData?.results ?? []} />
-          }
-        </div>
+        )}
         
         {/* Global Question Pool Section */}
         <div className="space-y-6">

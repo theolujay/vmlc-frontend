@@ -8,9 +8,10 @@ interface ExamStatusProps {
   onGenerate: (id: string) => void;
   onPublish: (id: string) => void;
   onEdit: (id: string) => void;
+  canInteract?: boolean;
 }
 
-const ExamStatus: React.FC<ExamStatusProps> = ({ exams, onView }) => {
+const ExamStatus: React.FC<ExamStatusProps> = ({ exams, onView, canInteract = true }) => {
   return (
     <ResponsiveContainer className="flex flex-col gap-4 font-sans">
       <div className="flex justify-between items-center mb-2">
@@ -25,6 +26,7 @@ const ExamStatus: React.FC<ExamStatusProps> = ({ exams, onView }) => {
               key={exam.id} 
               exam={exam}
               onView={onView}
+              canInteract={canInteract}
             />
           ))
         ) : (

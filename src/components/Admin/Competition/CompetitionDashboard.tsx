@@ -6,6 +6,7 @@ import ExamStatus from './ExamStatus';
 import LeaderboardSummary from './LeaderboardSummary';
 import StandingsSummary from './StandingsSummary';
 import useGetCompetitionDashboard from '@/hooks/useGetCompetitionDashboard';
+import { useAuth } from '@/contexts/AuthProvider';
 
 interface CompetitionDashboardProps {
   onViewFullLeaderboard?: () => void;
@@ -26,9 +27,15 @@ const CompetitionDashboard: React.FC<CompetitionDashboardProps> = ({
   onViewStandings,
   onViewCandidateDetail 
 }) => {
+  const { authState } = useAuth();
+  const userRole = authState?.user?.role;
+  const isVolunteer = userRole === 'volunteer';
+  const isModeratorOrAbove = ['moderator', 'admin', 'manager', 'superadmin'].includes(userRole || '');
+
   const { data, isLoading, error, refetch } = useGetCompetitionDashboard();
 
   const handleView = (id: string) => {
+    if (isVolunteer) return;
     const exam = data?.exams.find(e => e.id === id);
     if (onViewStandings && exam && exam.standings_status === 'published') {
       onViewStandings(id, exam.title);
@@ -39,11 +46,13 @@ const CompetitionDashboard: React.FC<CompetitionDashboardProps> = ({
   };
 
   const handleGenerate = (id: string) => {
+    if (isVolunteer) return;
     console.log(`Generating results for ${id}`);
     // Implementation for generating results
   };
 
   const handlePublish = (id: string) => {
+    if (isVolunteer) return;
     if (confirm('Are you sure you want to publish results? This will be visible to candidates.')) {
         console.log(`Publishing results for ${id}`);
         // Implementation for publishing results
@@ -51,6 +60,7 @@ const CompetitionDashboard: React.FC<CompetitionDashboardProps> = ({
   };
 
   const handleEdit = (id: string) => {
+    if (isVolunteer) return;
      console.log(`Editing exam ${id}`);
   };
 
@@ -114,27 +124,28 @@ const CompetitionDashboard: React.FC<CompetitionDashboardProps> = ({
               onGenerate={handleGenerate}
               onPublish={handlePublish}
               onEdit={handleEdit}
+              canInteract={isModeratorOrAbove}
             />
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 pb-10">
               <LeaderboardSummary 
                 entries={data.leaderboard_summary}
-                onViewFull={onViewFullLeaderboard || (() => {})}
-                onViewCandidate={(id) => onViewCandidateDetail?.({ 
+                onViewFull={isModeratorOrAbove ? (onViewFullLeaderboard || (() => {})) : undefined}
+                onViewCandidate={isModeratorOrAbove ? ((id) => onViewCandidateDetail?.({ 
                   candidate_id: id, 
                   isLeagueCumulative: true 
-                })} 
+                })) : undefined} 
               />
               <StandingsSummary
                 examTitle={data.latest_standings_summary?.exam_title || "Latest Exam"}
                 entries={data.latest_standings_summary?.entries || []}
-                onViewFull={onViewFullStandings || (() => {})}
-                onViewCandidate={(id) => onViewCandidateDetail?.({ 
+                onViewFull={isModeratorOrAbove ? (onViewFullStandings || (() => {})) : undefined}
+                onViewCandidate={isModeratorOrAbove ? ((id) => onViewCandidateDetail?.({ 
                   candidate_id: id, 
                   exam_id: data.latest_standings_summary?.exam_id,
                   stage: data.progress.current_stage,
                   round: String(data.progress.current_round)
-                })}
+                })) : undefined}
               />
             </div>
           </div>
