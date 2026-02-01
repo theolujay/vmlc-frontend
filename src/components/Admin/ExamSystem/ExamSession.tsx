@@ -7,6 +7,7 @@ import { formatExamTitle } from '@/utils/generalUtils'
 import { formatDate } from '@/utils/formatFileSize'
 import clsx from 'clsx'
 import { useSearchParams } from 'next/navigation'
+import { useState } from 'react'
 import ResponsiveContainer from '../../ui/ResponsiveContainer'
 import AdminHeader from '../AdminHeader'
 import QuestionsTable from '../QuestionsTable'
@@ -23,7 +24,8 @@ export default function ExamSession() {
   const searchParams = useSearchParams();
   const id = searchParams.get("id")!;
   const { page, setPage } = usePagination()
-  const { data, isPending } = useViewExamQuestions(id)
+  const [filters, setFilters] = useState<Record<string, string>>({});
+  const { data, isPending } = useViewExamQuestions(id, page, filters)
 
 
   return (
@@ -37,7 +39,14 @@ export default function ExamSession() {
         <div className="flex flex-col gap-3 mt-3 w-[96%] mx-auto">
           <SessionDetails dateCreated={data?.created_at ?? new Date()} title={formatExamTitle(data?.title)} description={data?.description} />
           <QuestionSummaryCard moderate_question={data?.questions?.question_pool_data?.moderate_questions_count ?? 0} hard_question={data?.questions?.question_pool_data?.hard_questions_count ?? 0} easy_question={data?.questions?.question_pool_data?.easy_questions_count ?? 0} total={data?.questions?.question_pool_data?.total_questions ?? 0} />
-          <QuestionsTable page_count={data?.questions?.total_pages ?? 0} currentPage={page} onPageChange={setPage} questions={(data?.questions?.results ?? []) as SessionQuestionItemType[]} />
+          <QuestionsTable 
+            page_count={data?.questions?.total_pages ?? 0} 
+            currentPage={page} 
+            onPageChange={setPage} 
+            questions={(data?.questions?.results ?? []) as SessionQuestionItemType[]} 
+            filters={filters}
+            setFilters={setFilters}
+          />
         </div>
       }
     </div>

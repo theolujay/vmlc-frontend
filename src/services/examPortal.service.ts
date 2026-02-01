@@ -47,10 +47,13 @@ export class ExamPortal {
         }
     }
 
-    static async viewExamQuestions(id: string): Promise<UpdatedSessionQuestionType> {
+    static async viewExamQuestions(id: string, page: number = 1, filters: Record<string, string> = {}): Promise<UpdatedSessionQuestionType> {
         try {
-
-            const response = await client.get(examUrls.EXAM_DETAILS(id))
+            const queryParams = new URLSearchParams({
+                page: page.toString(),
+                ...Object.fromEntries(Object.entries(filters).filter(([, value]) => value !== undefined && value !== ''))
+            });
+            const response = await client.get(`${examUrls.EXAM_DETAILS(id)}?${queryParams.toString()}`)
             return response.data;
         } catch (error) {
             console.error(error)
