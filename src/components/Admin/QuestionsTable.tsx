@@ -50,62 +50,83 @@ export default function QuestionsTable({
   };
 
   return (
-    <ResponsiveContainer className="flex gap-6 py-6 px-0 flex-col mx-auto font-sans bg-white border border-gray-100 rounded-[2rem] shadow-sm overflow-hidden mt-6">
+    <ResponsiveContainer className="flex gap-4 py-8 px-0 flex-col mx-auto font-sans bg-white border border-gray-100 rounded-[2rem] shadow-sm overflow-hidden mt-4">
       <div className="flex flex-col md:flex-row md:items-center justify-between px-8 gap-4">
-        <div className="flex gap-1 flex-col">
-          <div className="flex items-center space-x-2">
-            <i className="fas fa-list-ul text-[#3E4095] text-[10px]"></i>
-            <h2 className="text-[9px] font-black text-gray-400 uppercase tracking-widest">Session Questions</h2>
+        <div className="flex gap-3 items-center">
+          <div className="w-1.5 h-6 bg-[#3E4095] rounded-full"></div>
+          <div className="flex flex-col">
+            <div className="flex items-center space-x-2">
+              <i className="fas fa-list-ul text-[#3E4095] text-[10px]"></i>
+              <h2 className="text-[9px] font-black text-gray-400 uppercase tracking-[0.2em]">Session Questions</h2>
+            </div>
+            <p className="text-lg font-black text-gray-900 tracking-tight uppercase">Exam Content</p>
           </div>
-          <p className="text-xl font-bold text-gray-800 tracking-tight">Exam Content</p>
         </div>
         <div className="flex flex-wrap items-center gap-3">
-          <div className="relative">
-            <i className="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-xs"></i>
+          <div className="relative group">
+            <i className="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-[#3E4095] transition-colors text-xs"></i>
             <input 
               value={searchInput}
               onChange={(e) => setSearchInput(e.target.value)}
               type="text" 
               placeholder='Search questions...' 
-              className='bg-gray-50 border border-gray-100 h-11 pl-10 pr-4 py-2 rounded-xl outline-none focus:ring-4 focus:ring-[#3E4095]/5 focus:border-[#3E4095] transition-all text-sm font-medium w-64' 
+              className='bg-gray-50/50 border border-gray-100 h-11 pl-11 pr-4 py-2 rounded-xl outline-none focus:ring-4 focus:ring-[#3E4095]/5 focus:border-[#3E4095] focus:bg-white transition-all text-sm font-semibold w-64 shadow-inner' 
             />
           </div>
           
           <div className="flex gap-2">
             <DropdownMenu.Root>
               <DropdownMenu.Trigger asChild>
-                <button className='inline-flex items-center justify-center gap-2 bg-white border border-gray-100 h-11 rounded-xl px-4 text-gray-600 hover:bg-gray-50 transition-all font-bold text-[10px] uppercase tracking-widest shadow-sm'>
-                  <span><SortIcon /></span>
+                <button className='inline-flex items-center justify-center gap-2 bg-white border border-gray-100 h-11 rounded-xl px-4 text-gray-600 hover:bg-gray-50 hover:border-gray-200 transition-all font-black text-[10px] uppercase tracking-widest shadow-sm active:scale-95'>
+                  <SortIcon />
                   <span>Sort</span>
                 </button>
               </DropdownMenu.Trigger>
               <DropdownMenu.Portal>
-                <DropdownMenu.Content className="z-50 min-w-[150px] bg-white rounded-md p-1 shadow-lg border border-[#E4E7EC]" sideOffset={5}>
-                  <DropdownMenu.Label className="px-2 py-1.5 text-[9px] font-black text-gray-400 uppercase tracking-widest">Sort By</DropdownMenu.Label>
-                  <DropdownMenu.Item onClick={() => handleSort('text')} className="px-2 py-2 text-xs font-bold text-gray-700 outline-none cursor-pointer hover:bg-gray-100 rounded uppercase tracking-tighter">Question (A-Z)</DropdownMenu.Item>
-                  <DropdownMenu.Item onClick={() => handleSort('-text')} className="px-2 py-2 text-xs font-bold text-gray-700 outline-none cursor-pointer hover:bg-gray-100 rounded uppercase tracking-tighter">Question (Z-A)</DropdownMenu.Item>
-                  <DropdownMenu.Item onClick={() => handleSort('-created_at')} className="px-2 py-2 text-xs font-bold text-gray-700 outline-none cursor-pointer hover:bg-gray-100 rounded uppercase tracking-tighter">Newest First</DropdownMenu.Item>
-                  <DropdownMenu.Item onClick={() => handleSort('created_at')} className="px-2 py-2 text-xs font-bold text-gray-700 outline-none cursor-pointer hover:bg-gray-100 rounded uppercase tracking-tighter">Oldest First</DropdownMenu.Item>
+                <DropdownMenu.Content className="z-50 min-w-[180px] bg-white rounded-2xl p-2 shadow-xl border border-gray-100 animate-in fade-in zoom-in-95 duration-200" sideOffset={8}>
+                  <DropdownMenu.Label className="px-3 py-2 text-[9px] font-black text-gray-400 uppercase tracking-widest border-b border-gray-50 mb-1">Sort Questions By</DropdownMenu.Label>
+                  <DropdownMenu.Item onClick={() => handleSort('text')} className="px-3 py-2.5 text-[10px] font-black text-gray-700 outline-none cursor-pointer hover:bg-gray-50 hover:text-[#3E4095] rounded-xl uppercase tracking-wider transition-colors">Question (A-Z)</DropdownMenu.Item>
+                  <DropdownMenu.Item onClick={() => handleSort('-text')} className="px-3 py-2.5 text-[10px] font-black text-gray-700 outline-none cursor-pointer hover:bg-gray-50 hover:text-[#3E4095] rounded-xl uppercase tracking-wider transition-colors">Question (Z-A)</DropdownMenu.Item>
+                  <DropdownMenu.Item onClick={() => handleSort('-created_at')} className="px-3 py-2.5 text-[10px] font-black text-gray-700 outline-none cursor-pointer hover:bg-gray-50 hover:text-[#3E4095] rounded-xl uppercase tracking-wider transition-colors">Newest First</DropdownMenu.Item>
+                  <DropdownMenu.Item onClick={() => handleSort('created_at')} className="px-3 py-2.5 text-[10px] font-black text-gray-700 outline-none cursor-pointer hover:bg-gray-50 hover:text-[#3E4095] rounded-xl uppercase tracking-wider transition-colors">Oldest First</DropdownMenu.Item>
                 </DropdownMenu.Content>
               </DropdownMenu.Portal>
             </DropdownMenu.Root>
 
             <DropdownMenu.Root>
               <DropdownMenu.Trigger asChild>
-                <button className='inline-flex items-center justify-center gap-2 bg-white border border-gray-100 h-11 rounded-xl px-4 text-gray-600 hover:bg-gray-50 transition-all font-bold text-[10px] uppercase tracking-widest shadow-sm'>
-                  <span><FilterIcon /></span>
+                <button className='inline-flex items-center justify-center gap-2 bg-white border border-gray-100 h-11 rounded-xl px-4 text-gray-600 hover:bg-gray-50 hover:border-gray-200 transition-all font-black text-[10px] uppercase tracking-widest shadow-sm active:scale-95'>
+                  <FilterIcon />
                   <span>Filter</span>
                 </button>
               </DropdownMenu.Trigger>
               <DropdownMenu.Portal>
-                <DropdownMenu.Content className="z-50 min-w-[200px] bg-white rounded-md p-3 shadow-lg border border-[#E4E7EC]" sideOffset={5}>
-                  <div className="flex flex-col gap-3">
-                    <div className="flex flex-col gap-1">
-                      <label className="text-[9px] font-black text-gray-400 uppercase tracking-widest">Difficulty</label>
+                <DropdownMenu.Content className="z-50 min-w-[180px] bg-white rounded-2xl p-2 shadow-xl border border-gray-100 animate-in fade-in zoom-in-95 duration-200" sideOffset={8}>
+                  <DropdownMenu.Label className="px-3 py-2 text-[9px] font-black text-gray-400 uppercase tracking-widest border-b border-gray-50 mb-1">Sort Questions By</DropdownMenu.Label>
+                  <DropdownMenu.Item onClick={() => handleSort('text')} className="px-3 py-2.5 text-[10px] font-black text-gray-700 outline-none cursor-pointer hover:bg-gray-50 hover:text-[#3E4095] rounded-xl uppercase tracking-wider transition-colors">Question (A-Z)</DropdownMenu.Item>
+                  <DropdownMenu.Item onClick={() => handleSort('-text')} className="px-3 py-2.5 text-[10px] font-black text-gray-700 outline-none cursor-pointer hover:bg-gray-50 hover:text-[#3E4095] rounded-xl uppercase tracking-wider transition-colors">Question (Z-A)</DropdownMenu.Item>
+                  <DropdownMenu.Item onClick={() => handleSort('-created_at')} className="px-3 py-2.5 text-[10px] font-black text-gray-700 outline-none cursor-pointer hover:bg-gray-50 hover:text-[#3E4095] rounded-xl uppercase tracking-wider transition-colors">Newest First</DropdownMenu.Item>
+                  <DropdownMenu.Item onClick={() => handleSort('created_at')} className="px-3 py-2.5 text-[10px] font-black text-gray-700 outline-none cursor-pointer hover:bg-gray-50 hover:text-[#3E4095] rounded-xl uppercase tracking-wider transition-colors">Oldest First</DropdownMenu.Item>
+                </DropdownMenu.Content>
+              </DropdownMenu.Portal>
+            </DropdownMenu.Root>
+
+            <DropdownMenu.Root>
+              <DropdownMenu.Trigger asChild>
+                <button className='inline-flex items-center justify-center gap-2 bg-white border border-gray-100 h-12 rounded-2xl px-5 text-gray-600 hover:bg-gray-50 hover:border-gray-200 transition-all font-black text-[10px] uppercase tracking-widest shadow-sm active:scale-95'>
+                  <FilterIcon />
+                  <span>Filter</span>
+                </button>
+              </DropdownMenu.Trigger>
+              <DropdownMenu.Portal>
+                <DropdownMenu.Content className="z-50 min-w-[220px] bg-white rounded-2xl p-4 shadow-xl border border-gray-100 animate-in fade-in zoom-in-95 duration-200" sideOffset={8}>
+                  <div className="flex flex-col gap-4">
+                    <div className="flex flex-col gap-2">
+                      <label className="text-[9px] font-black text-gray-400 uppercase tracking-widest">Difficulty Level</label>
                       <select 
                         value={filters.difficulty || ''} 
                         onChange={(e) => handleFilterChange('difficulty', e.target.value)}
-                        className="border rounded-lg px-2 py-1.5 text-xs font-bold text-gray-700 outline-none focus:ring-2 focus:ring-[#3E4095]/10"
+                        className="w-full bg-gray-50 border border-gray-100 rounded-xl px-3 py-2 text-[10px] font-black text-gray-700 outline-none focus:ring-4 focus:ring-[#3E4095]/5 focus:border-[#3E4095] transition-all uppercase tracking-wider"
                       >
                         <option value="">All Difficulties</option>
                         <option value="easy">Easy</option>
@@ -119,8 +140,9 @@ export default function QuestionsTable({
                         setFilters({});
                         onPageChange(1);
                       }}
-                      className="mt-2 text-[9px] text-red-600 font-black uppercase tracking-widest hover:underline text-left"
+                      className="mt-2 text-[9px] text-rose-500 font-black uppercase tracking-[0.2em] hover:text-rose-600 transition-colors flex items-center gap-2 group w-fit"
                     >
+                      <i className="fas fa-times-circle group-hover:rotate-90 transition-transform"></i>
                       Clear Filters
                     </button>
                   </div>
@@ -152,24 +174,24 @@ export default function QuestionsTable({
               render: (_, row) => {
                 const options = getOptionAsArray(row)
                 return (
-                  <div className="flex text-start flex-col gap-3 py-2 min-w-[400px]">
-                    <div className="text-sm font-bold text-gray-800 leading-relaxed">
+                  <div className="flex text-start flex-col gap-4 py-3 min-w-[450px]">
+                    <div className="text-sm font-bold text-gray-800 leading-relaxed bg-gray-50/50 p-4 rounded-[1.5rem] border border-gray-50">
                       <MathRenderer content={row.text} />
                     </div>
-                    <div className="flex flex-wrap gap-x-6 gap-y-2 w-full">
+                    <div className="flex flex-wrap gap-x-8 gap-y-3 w-full px-2">
                       {options.map((val, index) => (
-                        <div key={`option-${index + 1}`} className="flex gap-2.5 items-center">
+                        <div key={`option-${index + 1}`} className="flex gap-3 items-center group/opt">
                           <div className={clsx(
-                            "w-4 h-4 rounded-full border flex items-center justify-center shrink-0",
+                            "w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 transition-all duration-300 shadow-sm",
                             val.optionKey.endsWith(row.correct_answer.toLowerCase()) 
-                              ? "bg-[#3E4095] border-[#3E4095]" 
-                              : "border-gray-200"
+                              ? "bg-[#3E4095] border-[#3E4095] scale-110" 
+                              : "border-gray-200 group-hover/opt:border-[#3E4095]/30"
                           )}>
                             {val.optionKey.endsWith(row.correct_answer.toLowerCase()) && (
-                              <i className="fas fa-check text-[8px] text-white"></i>
+                              <i className="fas fa-check text-[9px] text-white"></i>
                             )}
                           </div>
-                          <label className="text-[11px] font-medium text-gray-500">
+                          <label className="text-[11px] font-semibold text-gray-600 group-hover/opt:text-gray-900 transition-colors">
                               <MathRenderer content={val.option} inline />
                           </label>
                         </div>
@@ -185,7 +207,7 @@ export default function QuestionsTable({
               align: 'center', 
               render: (_, row) => (
                 <div className="flex justify-center">
-                  <span className={clsx(getAppropriateColor(row.difficulty), 'px-3 py-1 uppercase rounded-full text-[9px] font-black tracking-widest bg-white border border-current/30')}>
+                  <span className={clsx(getAppropriateColor(row.difficulty), 'px-4 py-1.5 uppercase rounded-full text-[9px] font-black tracking-[0.15em] bg-white border border-current/20 shadow-sm')}>
                     {row.difficulty}
                   </span>
                 </div>
@@ -197,7 +219,7 @@ export default function QuestionsTable({
               align: 'center', 
               render: (_, row) => (
                 <div className="flex justify-center">
-                  <span className="text-[11px] font-bold text-gray-400">
+                  <span className="text-[11px] font-bold text-gray-400 tracking-tight">
                     {formatDate(row.created_at)}
                   </span>
                 </div>
@@ -208,13 +230,13 @@ export default function QuestionsTable({
               header: "Action", 
               align: 'center', 
               render: (_, row) => (
-                <div className="flex flex-col justify-end items-center gap-2 px-2">
+                <div className="flex flex-col justify-end items-center gap-2.5 px-4">
                   <button 
                     onClick={() => {
                       setOpenDrawer(true)
                       setCurrentQuestion(row)
                     }} 
-                    className="px-4 py-1.5 rounded-full bg-[#3E4095]/5 text-[#3E4095] border border-[#3E4095]/10 font-black text-[9px] uppercase tracking-widest hover:bg-[#3E4095] hover:text-white transition-all cursor-pointer w-24 text-center"
+                    className="px-5 py-2.5 rounded-xl bg-[#3E4095]/5 text-[#3E4095] border border-[#3E4095]/10 font-black text-[10px] uppercase tracking-widest hover:bg-[#3E4095] hover:text-white hover:shadow-lg hover:shadow-[#3E4095]/20 transition-all cursor-pointer w-28 text-center active:scale-95"
                   >
                     View
                   </button>
@@ -223,7 +245,7 @@ export default function QuestionsTable({
                       setSelectedQuestionId(row.id);
                       handleOpenModal()
                     }} 
-                    className="px-4 py-1.5 rounded-full bg-red-50 text-red-600 border border-red-100 font-black text-[9px] uppercase tracking-widest hover:bg-red-600 hover:text-white transition-all cursor-pointer w-24 text-center"
+                    className="px-5 py-2.5 rounded-xl bg-rose-50 text-rose-600 border border-rose-100 font-black text-[10px] uppercase tracking-widest hover:bg-rose-600 hover:text-white hover:shadow-lg hover:shadow-rose-600/20 transition-all cursor-pointer w-28 text-center active:scale-95"
                   >
                     Remove
                   </button>

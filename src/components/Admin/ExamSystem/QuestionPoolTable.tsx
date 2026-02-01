@@ -15,11 +15,13 @@ import AddToExamSessionModal from "@/components/Modals/AddToExamSessionModal";
 import BulkRemoveQuestionsModal from "@/components/Modals/BulkRemoveQuestionsModal";
 import { useDebouncedSearch } from "@/hooks/useDebouncedSearch";
 import MathRenderer from "@/components/Exam/MathRenderer";
+import useGetCurrentUser from "@/hooks/useGetCurrentUser";
 
 type ColumnType<T> = {
   key: keyof T | string;
   header: string;
   render?: (value: any, row: T, index: number) => React.ReactNode;
+  align?: 'left' | 'center' | 'right';
 };
 
 type CustomTableProps<T> = {
@@ -31,6 +33,7 @@ type CustomTableProps<T> = {
   onSelectAll?: (checked: boolean) => void;
   onSelectRow?: (id: number, checked: boolean) => void;
   selectedIds?: number[];
+  isAdminOrAbove?: boolean;
 };
 
 function CustomTable<T extends { id: number }>({
@@ -42,6 +45,7 @@ function CustomTable<T extends { id: number }>({
   onSelectAll,
   onSelectRow,
   selectedIds = [],
+  isAdminOrAbove = false,
 }: Readonly<CustomTableProps<T>>) {
   const allSelected = data.length > 0 && data.every((row) => selectedIds.includes(row.id));
 
@@ -51,16 +55,18 @@ function CustomTable<T extends { id: number }>({
         <table className="min-w-full border-collapse">
           <thead>
             <tr className="border-b border-[#E4E7EC] bg-[#E4E7EC]">
-              <th className="py-2 px-3 text-center">
-                <div className="flex justify-center">
-                  <Checkbox
-                    checked={allSelected}
-                    onChange={(checked) => onSelectAll?.(checked)}
-                  />
-                </div>
-              </th>
+              {isAdminOrAbove && (
+                <th className="py-2 px-3 text-center">
+                  <div className="flex justify-center">
+                    <Checkbox
+                      checked={allSelected}
+                      onChange={(checked) => onSelectAll?.(checked)}
+                    />
+                  </div>
+                </th>
+              )}
               {columns.map((col, i) => (
-                <th key={i} className={clsx("py-3 px-3 text-[9px] font-black uppercase tracking-widest text-gray-500", (col as any).align === 'center' ? 'text-center' : 'text-left')}>
+                <th key={i} className={clsx("py-3 px-3 text-[9px] font-black uppercase tracking-widest text-gray-500", col.align === 'center' ? 'text-center' : col.align === 'right' ? 'text-right' : 'text-left')}>
                   {col.header}
                 </th>
               ))}
@@ -70,7 +76,7 @@ function CustomTable<T extends { id: number }>({
           <tbody>
             {data.length === 0 ? (
               <tr>
-                <td colSpan={columns.length + 1} className="py-6 text-center">
+                <td colSpan={columns.length + (isAdminOrAbove ? 1 : 0)} className="py-6 text-center">
                   <EmptyRecords label={emptyLabel} desc={emptyDesc} />
                 </td>
               </tr>
@@ -80,14 +86,16 @@ function CustomTable<T extends { id: number }>({
                   key={row.id}
                   className="border-b border-[#E4E7EC] last:border-0 hover:bg-gray-50 transition-colors"
                 >
-                  <td className="py-2 px-3">
-                    <div className="flex justify-center">
-                      <Checkbox
-                        checked={selectedIds.includes(row.id)}
-                        onChange={(checked) => onSelectRow?.(row.id, checked)}
-                      />
-                    </div>
-                  </td>
+                  {isAdminOrAbove && (
+                    <td className="py-2 px-3">
+                      <div className="flex justify-center">
+                        <Checkbox
+                          checked={selectedIds.includes(row.id)}
+                          onChange={(checked) => onSelectRow?.(row.id, checked)}
+                        />
+                      </div>
+                    </td>
+                  )}
 
                   {columns.map((col, ci) => {
                     const value =
@@ -101,7 +109,7 @@ function CustomTable<T extends { id: number }>({
                         : (row as any)[col.key as keyof T];
 
                     return (
-                      <td key={ci} className="py-2 px-3 text-center">
+                      <td key={ci} className={clsx("py-2 px-3", col.align === 'center' ? 'text-center' : col.align === 'right' ? 'text-right' : 'text-left')}>
                         {col.render ? col.render(value, row, index) : value}
                       </td>
                     );
@@ -153,6 +161,10 @@ export default function QuestionPoolTable({
   const [selectedQuestionId, setSelectedQuestionId] = useState<number>(0);
   const [currentQuestion, setCurrentQuestion] = useState<SessionQuestionItemType | null>(null);
 
+  const currentUser = useGetCurrentUser();
+  const userRole = currentUser?.profile?.role || "";
+  const isAdminOrAbove = ["admin", "manager", "superadmin"].includes(userRole);
+
   // handle single selection
   function handleSelectRow(id: number, checked: boolean) {
     setSelectedQuestions((prev) =>
@@ -188,24 +200,21 @@ export default function QuestionPoolTable({
 
 
   return (
-    <ResponsiveContainer className="flex gap-6 py-6 px-0 flex-col mx-auto font-sans bg-white border border-gray-100 rounded-[2rem] shadow-sm overflow-hidden">
+    <ResponsiveContainer className="flex gap-4 py-8 px-0 flex-col mx-auto font-sans bg-white border border-gray-100 rounded-[2rem] shadow-sm overflow-hidden">
       <div className="flex flex-col md:flex-row md:items-center justify-between px-8 gap-4">
-        <div className="flex gap-1 flex-col">
-          {/* <div className="flex items-center space-x-2">
-            <i className="fas fa-database text-[#3E4095] text-[10px]"></i>
-            <h2 className="text-[9px] font-black text-gray-400 uppercase tracking-widest">Pool</h2>
-          </div> */}
-          <h2 className="text-xl font-bold text-gray-800 tracking-tight">Questions Pool</h2>
+        <div className="flex gap-2.5 items-center">
+          <div className="w-1.5 h-6 bg-[#3E4095] rounded-full"></div>
+          <h2 className="text-lg font-black text-gray-800 tracking-tight uppercase">Questions Pool</h2>
         </div>
         <div className="flex flex-wrap items-center gap-3">
-          <div className="relative">
-            <i className="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-xs"></i>
+          <div className="relative group">
+            <i className="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-[#3E4095] transition-colors text-xs"></i>
             <input
               value={searchInput}
               onChange={(e) => setSearchInput(e.target.value)}
               type="text"
               placeholder="Search questions..."
-              className="bg-gray-50 border border-gray-100 h-11 pl-10 pr-4 py-2 rounded-xl outline-none focus:ring-4 focus:ring-[#3E4095]/5 focus:border-[#3E4095] transition-all text-sm font-medium w-64"
+              className="bg-gray-50/50 border border-gray-100 h-11 pl-11 pr-4 py-2 rounded-xl outline-none focus:ring-4 focus:ring-[#3E4095]/5 focus:border-[#3E4095] focus:bg-white transition-all text-sm font-semibold w-64 shadow-inner"
             />
           </div>
           <button className="inline-flex items-center justify-center gap-2 bg-white border border-gray-100 h-11 rounded-xl px-4 text-gray-600 hover:bg-gray-50 transition-all font-bold text-[10px] uppercase tracking-widest shadow-sm">
@@ -219,7 +228,7 @@ export default function QuestionPoolTable({
         </div>
       </div>
 
-      {selectedQuestions.length > 0 && (
+      {isAdminOrAbove && selectedQuestions.length > 0 && (
         <div className="mx-8 px-6 bg-[#3E4095] items-center py-4 rounded-2xl flex justify-between shadow-lg shadow-[#3E4095]/20 animate-in slide-in-from-top-4 duration-300">
           <div className="flex items-center gap-3">
             <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center text-white">
@@ -240,7 +249,7 @@ export default function QuestionPoolTable({
               onClick={handleOpenExamSessionModal} 
               className="rounded-xl py-2.5 px-5 font-black text-[10px] uppercase tracking-widest bg-white text-[#3E4095] hover:bg-gray-50 transition-all shadow-sm"
             >
-              Add to session
+              Add to exam
             </button>
           </div>
         </div>
@@ -249,6 +258,7 @@ export default function QuestionPoolTable({
       <div className="px-1">
         <CustomTable
           data={questions}
+          isAdminOrAbove={isAdminOrAbove}
           columns={[
             {
               key: "user",
