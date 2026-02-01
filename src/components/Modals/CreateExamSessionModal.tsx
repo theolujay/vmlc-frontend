@@ -55,7 +55,7 @@ export default function CreateExamSessionModal({ open, close }: Readonly<{ open:
     }, [isSuccess, handleClose])
 
     return (
-        <AppDialog open={open}>
+        <AppDialog open={open} onOpenChange={close}>
             <div className="flex bg-[#F7F9FC] rounded-[2rem] z-50 flex-col overflow-hidden border border-gray-100 shadow-2xl max-w-lg w-full mx-auto font-sans">
                 <div className="header bg-white p-8 border-b border-gray-50">
                     <div className="flex items-center space-x-3 mb-2">

@@ -144,7 +144,7 @@ export default function AddQuestionModal({
   };
 
   return (
-    <AppDialog open={open} className="!max-w-6xl !w-auto !p-0 bg-transparent shadow-none">
+    <AppDialog open={open} onOpenChange={handleClose} className="!max-w-6xl !w-auto !p-0 bg-transparent shadow-none">
       <div className="flex flex-col bg-[#F7F9FC] w-[95vw] md:w-[85vw] lg:w-[80vw] xl:w-[70vw] h-[90vh] rounded-3xl overflow-hidden shadow-2xl relative font-sans border border-white/20">
         
         {/* Close Confirmation Overlay */}
