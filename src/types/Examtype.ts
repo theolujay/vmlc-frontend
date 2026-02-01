@@ -190,6 +190,8 @@ export type ExamSessionType = {
   scheduled_date: string;
   concluded_at: string | null;
   created_at: string;
+  has_standings?: boolean;
+  is_standings_published?: boolean;
 };
 
 
@@ -328,6 +330,8 @@ export type UpdatedSessionQuestionType = {
     };
   };
   updated_by: string | null;
+  has_standings?: boolean;
+  is_standings_published?: boolean;
   questions: QuestionType;
 };
 

@@ -1,5 +1,4 @@
 "use client";
-import UploadExamSessionModal from '@/components/Modals/UploadExamSessionModal'
 import Spinner from '@/components/ui/spinner/spinner'
 import usePagination from '@/hooks/usePagination'
 import useViewExamQuestions from '@/hooks/useViewExamQuestions'
@@ -8,14 +7,12 @@ import { formatExamTitle } from '@/utils/generalUtils'
 import { formatDate } from '@/utils/formatFileSize'
 import clsx from 'clsx'
 import { useSearchParams } from 'next/navigation'
-import { useState } from 'react'
-import { GotoIcon } from '../../General/GettingStarted/GettingStartedAssets'
-import Button from '../../ui/Button'
 import ResponsiveContainer from '../../ui/ResponsiveContainer'
 import AdminHeader from '../AdminHeader'
-import { SummaryIcon } from '../AdminIcons'
 import QuestionsTable from '../QuestionsTable'
 import ExamSessionDropdownDialog from './ExamSessionDropdownDialog'
+import { SummaryIcon } from '../AdminIcons';
+import { GotoIcon } from '@/components/General/GettingStarted/GettingStartedAssets';
 
 
 
@@ -27,36 +24,12 @@ export default function ExamSession() {
   const id = searchParams.get("id")!;
   const { page, setPage } = usePagination()
   const { data, isPending } = useViewExamQuestions(id)
-  const [openUpload, setOpenUpload] = useState(false);
 
-
-
-
-  function handleCanUploadButton(status: string | undefined) {
-    switch (status) {
-      case 'draft':
-        return <Button key='button-one' onClick={handleOpenUpload} className="inline-flex gap-2 border px-2 items-center text-sm"><span>UPLOAD</span></Button>
-      case 'scheduled':
-      case 'concluded':
-      case 'cancelled':
-        return <Button key='button-one' disabled className="inline-flex uppercase gap-2 border px-2 items-center cursor-not-allowed text-sm"><span>{status}</span></Button>;
-      case 'ongoing':
-        return <Button key='button-one' disabled pendingState='hover:opacity-50' className=" inline-flex uppercase bg-[#d42620] gap-2 border px-2 items-center text-sm"><span>{status}</span></Button>;
-      default:
-        return <Button key='button-one' onClick={handleOpenUpload} className="inline-flex gap-2 border px-2 items-center text-sm"><span>UPLOAD</span></Button>;
-    }
-  }
-
-
-  function handleOpenUpload() {
-    setOpenUpload(true);
-  }
 
   return (
     <div className='flex flex-col gap-1 '>
-      <AdminHeader isExport={false} label='Exam System' actionButton={[handleCanUploadButton(data?.status),
-      // <Button key='button-one' onClick={handleOpenUpload} className="inline-flex gap-2 border px-2 items-center text-sm"><span>UPLOAD</span></Button>,
-      <ExamSessionDropdownDialog exam_id={id} key='button-two' />
+      <AdminHeader isExport={false} label='Exam System' actionButton={[
+        <ExamSessionDropdownDialog exam_id={id} data={data} key='actions' />
       ]} />
       {isPending ? <div className='w-full h-full grid place-content-center'>
         <Spinner />
@@ -67,8 +40,6 @@ export default function ExamSession() {
           <QuestionsTable page_count={data?.questions?.total_pages ?? 0} currentPage={page} onPageChange={setPage} questions={(data?.questions?.results ?? []) as SessionQuestionItemType[]} />
         </div>
       }
-      <UploadExamSessionModal exam_id={id} open={openUpload} close={setOpenUpload} />
-      {/* <RemoveQuestionModal open={false} close={() => { }} session_id={id} /> */}
     </div>
   )
 }
