@@ -40,14 +40,14 @@ export default function Exam() {
 const formattedAnswers = {
     answers: Object.entries(answers).map(([questionId, selected_option]) => ({
       question: Number(questionId),
-      selected_option,
+      selected_option: selected_option.toLowerCase(),
     })),
   };
 
 
 
   function handleSubmit() {
-    onSubmit(formattedAnswers)
+    return onSubmit(formattedAnswers)
   }
 
   if (dashboardPending || isPending) {
@@ -59,7 +59,7 @@ const formattedAnswers = {
   }
 
   return (
-    <ExamLayout onTimeUp={handleSubmit} timer={data?.countdown_minutes} title={data?.title}>
+    <ExamLayout onTimeUp={handleSubmit} timer={data?.countdown_minutes ?? 0} title={data?.title}>
       <Questions submitPending={submitPending} handleSubmit={handleSubmit} answers={answers} setAnswers={setAnswers} isPending={isPending} data={data} />
     </ExamLayout>
   )

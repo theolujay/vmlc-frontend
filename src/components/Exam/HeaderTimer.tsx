@@ -35,8 +35,6 @@ export default function HeaderTimer({
                 await onTimeUp?.() 
               } catch (err) {
                 console.error("Error submitting exam:", err)
-              } finally {
-                router.back()      
               }
             })()
           }

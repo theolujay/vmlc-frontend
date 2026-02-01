@@ -1,6 +1,6 @@
 import { candidateUrls } from "@/constants/candidateUrls";
 import { examUrls } from "@/constants/examUrls";
-import { CreateExamSessionType, CreateQuestionType, DashboardType, EditExamSession, QuestionPoolType, SessionType, UpdatedSessionQuestionType } from "@/types/Examtype";
+import { CreateExamSessionType, CreateQuestionType, DashboardType, EditExamSession, QuestionPoolType, SessionType, TakeExamType, UpdatedSessionQuestionType } from "@/types/Examtype";
 import { BulkArchiveType, BulkPayloadType, CandidateSubmitAnswerType } from "@/types/Index";
 import client from "@/utils/axios";
 
@@ -155,7 +155,7 @@ export class ExamPortal {
     }
 
 
-    static async candidateTakeExam(exam_id: string) {
+    static async candidateTakeExam(exam_id: string): Promise<TakeExamType> {
         try {
             const response = await client.get(examUrls.TAKE_EXAM(exam_id));
             return response.data;

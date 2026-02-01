@@ -96,7 +96,7 @@ Provides a comprehensive overview for the student, including their current stand
 ```
 
 ## Take Exam
-`GET /v1/exams/<uuid:exam_id>/take-exam/`
+`GET /v2/exams/<uuid:exam_id>/take-exam/`
 
 Returns the exam details and questions for a candidate to start the exam. Supports LaTeX for mathematical content.
 
@@ -111,7 +111,7 @@ Returns the exam details and questions for a candidate to start the exam. Suppor
   "countdown_minutes": 60,
   "questions": [
     {
-      "id": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+      "id": 3,
       "text": "What is the value of $x$ in the equation $2x + 5 = 15$?",
       "option_a": "$5$",
       "option_b": "$10$",
@@ -119,7 +119,7 @@ Returns the exam details and questions for a candidate to start the exam. Suppor
       "option_d": "$20$"
     },
     {
-      "id": "678bc10b-58cc-4372-a567-0e02b2c3d480",
+      "id": 5,
       "text": "Identify the integral: $\\int_{0}^{1} x^2 \\, dx$",
       "option_a": "$1/3$",
       "option_b": "$1/2$",
@@ -131,7 +131,7 @@ Returns the exam details and questions for a candidate to start the exam. Suppor
 ```
 
 ## Submit Exam Answers
-`POST /v1/exams/<uuid:exam_id>/submit-exam-answers/`
+`POST /v2/exams/<uuid:exam_id>/submit-exam-answers/`
 
 Submit all answers for a specific exam in bulk.
 

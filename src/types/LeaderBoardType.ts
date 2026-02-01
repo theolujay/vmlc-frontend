@@ -56,7 +56,7 @@ type ExamDetailsType = {
 
 export type CandidateType = {
     rank: number,
-    profile: EachCandidate,
+    candidate: EachCandidate,
     score: number
     percentage: number
 }

@@ -94,6 +94,25 @@ export type PerformanceSnapshotType = {
   } | null;
 };
 
+export type TakeExamQuestionType = {
+  id: number;
+  text: string;
+  option_a: string;
+  option_b: string;
+  option_c: string;
+  option_d: string;
+};
+
+export type TakeExamType = {
+  id: string;
+  title: string;
+  description: string;
+  open_duration_hours: number;
+  scheduled_date: Date;
+  countdown_minutes: number;
+  questions: TakeExamQuestionType[];
+};
+
 export type ExamHistoryItem = {
   exam_id: string;
   exam_title: string;
@@ -101,7 +120,7 @@ export type ExamHistoryItem = {
   round: number | null;
   score: number;
   percentage: number;
-  date: string;
+  date: Date;
   status: string;
 };
 
@@ -132,6 +151,7 @@ export type SessionType = {
   next: string | null;
   previous: string | null;
   results: ExamSessionType[];
+  pagination: PaginationType;
   question_pool_data: {
     total_questions: number;
     hard_questions_count: number;
