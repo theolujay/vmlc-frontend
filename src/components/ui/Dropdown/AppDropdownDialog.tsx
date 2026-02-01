@@ -2,7 +2,8 @@ import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
 
 type ActionItem={
     label:React.ReactNode;
-    onClick?:()=>void
+    onClick?:()=>void;
+    disabled?: boolean;
 }
 type Props = Readonly<{triggerButton:React.ReactNode,actionItems:ActionItem[],children?:React.ReactNode }>
 
@@ -20,17 +21,21 @@ export default function AppDropdownDialog({triggerButton,actionItems,children}: 
                 >
                     {
                         actionItems.map((item,index)=>(
-                            <DropdownMenu.Item onClick={e=>{
-                                item.onClick?.()
-                            }} key={`dropdown-${index}`}  className="group cursor-pointer relative flex w-full  h-[25px]  items-center   leading-none  outline-none  ">
-
+                            <DropdownMenu.Item 
+                                disabled={item.disabled}
+                                onClick={e=>{
+                                    if (!item.disabled) item.onClick?.()
+                                }} 
+                                key={`dropdown-${index}`}  
+                                className="group cursor-pointer relative flex w-full h-[35px] items-center px-2 leading-none outline-none data-[disabled]:cursor-not-allowed data-[disabled]:opacity-50 hover:bg-gray-100 rounded-md"
+                            >
                        {item.label}
                     </DropdownMenu.Item>
                         ))
                     }
                     
                 
-                    <DropdownMenu.Separator className="m-[5px] h-px bg-violet6" />
+                    <DropdownMenu.Separator className="m-[5px] h-px bg-gray-200" />
                    
                 </DropdownMenu.Content>
             </DropdownMenu.Portal>

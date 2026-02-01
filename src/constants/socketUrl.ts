@@ -1,7 +1,7 @@
 import 'dotenv/config'
 
 const getSocketUrl = () => {
-    let baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:8000/v1';
+    let baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:8000/';
 
     // Replace http(s) with ws(s)
     if (baseUrl.startsWith('https://')) {

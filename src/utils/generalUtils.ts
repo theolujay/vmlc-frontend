@@ -100,3 +100,9 @@ export function getOrdinal(n: number): string {
             return `${n}TH`;
     }
 }
+
+
+export function formatExamTitle(title: string | undefined): string {
+    if (!title) return '';
+    return title.replace(/^\d{4}\s*\|\s*/, '');
+}

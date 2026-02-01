@@ -29,7 +29,7 @@ const defaultValues = {
     difficulty: ''
 }
 
-export default function useCreateQuestion(onSuccess: () => void) {
+export default function useCreateQuestion(onSuccess: () => void, examId?: string) {
     const form = useForm({
         resolver: zodResolver(createQuestionSchema),
         defaultValues
@@ -49,6 +49,9 @@ export default function useCreateQuestion(onSuccess: () => void) {
 
 
     function onSubmit(payload: CreateQuestionType) {
+        if (examId) {
+            payload.add_to_exams = [examId];
+        }
         mutate(payload)
     }
     return { isPending, onSubmit, form }

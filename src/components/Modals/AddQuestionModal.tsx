@@ -11,11 +11,12 @@ import { DIFFICULTY_OPTIONS } from "@/constants/math"
 export default function AddQuestionModal({
   open,
   close,
-}: Readonly<{ open: boolean; close: (close: boolean) => void }>) {
+  examId,
+}: Readonly<{ open: boolean; close: (close: boolean) => void; examId?: string }>) {
   const { onSubmit, isPending, form } = useCreateQuestion(() => {
     setHasChanges(false);
     handleClose(true);
-  });
+  }, examId);
 
   const initialFormData: QuestionData = useMemo(() => ({
     questionText: '',

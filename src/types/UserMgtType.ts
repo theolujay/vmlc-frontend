@@ -34,10 +34,24 @@ export type AddStaffMemberFormProps<T extends FieldValues> = {
 };
 
 
+export type CompetitionStage = {
+  id: number;
+  name: string;
+  type: string;
+  rounds?: number[];
+};
+
+export type CompetitionData = {
+  active_competition: string;
+  active_competition_id: number;
+  stages: CompetitionStage[];
+};
+
 export type StatOverviewType = {
   candidates: OverviewType;
   staff: OverviewType;
   exams: ExamOverviewType;
+  competition: CompetitionData;
   funnel: {
     overall: FunnelData;
     candidate: FunnelData;

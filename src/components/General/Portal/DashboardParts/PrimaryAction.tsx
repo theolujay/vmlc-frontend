@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { AvailableExamType } from '@/types/Examtype';
 import { useRouter } from 'next/navigation';
+import { formatExamTitle } from '@/utils/generalUtils';
 
 interface PrimaryActionProps {
   exam: AvailableExamType | null;
@@ -80,7 +81,7 @@ const PrimaryAction: React.FC<PrimaryActionProps> = ({ exam, candidateName }) =>
           {isFinals ? 'On-site Finals' : 'Next Exam'}
         </span>
         <h2 className="text-2xl font-bold text-slate-800 mt-3">
-          {exam.title}
+          {formatExamTitle(exam.title)}
         </h2>
         <p className="text-[#667185] mt-2 text-sm leading-relaxed">
           {isFinals 

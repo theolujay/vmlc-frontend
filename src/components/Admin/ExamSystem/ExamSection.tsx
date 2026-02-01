@@ -1,134 +1,194 @@
 "use client"
 import clsx from 'clsx'
 import Link from 'next/link'
-import React, { Dispatch, SetStateAction, useEffect, useState } from 'react'
+import React, { Dispatch, SetStateAction, useEffect, useState, useMemo } from 'react'
 import { ExamCardGoTo } from '../../General/GeneralIcon'
-import { GotoIcon } from '../../General/GettingStarted/GettingStartedAssets'
-import Button from '../../ui/Button'
 import ResponsiveContainer from '../../ui/ResponsiveContainer'
 import AdminHeader from '../AdminHeader'
-import { SummaryIcon } from '../AdminIcons'
 // import EmptySession from '../EmptySession'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import CreateExamSessionModal from '../../Modals/CreateExamSessionModal'
 import EmptySession from '../EmptySession'
 import useListExams from '@/hooks/useListExams'
 import { formatDate } from '@/utils/formatFileSize'
-import useGetValidDate, { useSortedExams } from '@/hooks/useGetValidDate'
+import { useSortedExams } from '@/hooks/useGetValidDate'
+import useGetStatOverview from '@/hooks/useGetStatOverview'
 import { ExamSessionType } from '@/types/Examtype'
 import Spinner from '@/components/ui/spinner/spinner'
 import PagePagination from '@/components/ui/Pagination/PagePagination'
+import { formatExamTitle } from '@/utils/generalUtils'
+
+import dynamic from 'next/dynamic'
+import usePagination from '@/hooks/usePagination'
+import useListQuestions from '@/hooks/useListQuestions'
+import QuestionPoolTable from './QuestionPoolTable'
+import QuestionPoolStats from './QuestionPoolStats'
+import { useAuth } from '@/contexts/AuthProvider'
+
+const AddQuestionModal = dynamic(() => import('../../Modals/AddQuestionModal'), {
+  ssr: false,
+});
 
 export default function ExamSection() {
+  const { authState } = useAuth();
+  const userRole = authState?.user?.role;
+  const isAdminOrAbove = ['admin', 'manager', 'superadmin'].includes(userRole || '');
+
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
+  
+  // Exam Pagination
   const initialPage = Number(searchParams.get("page") || 1)
   const [currentPage, setCurrentPage] = useState(initialPage);
-  const [open, setOpen] = useState(false);
-  const { data, isPending } = useListExams(currentPage)
+  
+  // Modals
+  const [openCreateSession, setOpenCreateSession] = useState(false);
+  const [openAddQuestion, setOpenAddQuestion] = useState(false);
 
+  // Data Fetching
+  const { data: examData, isPending: isExamsPending } = useListExams(currentPage)
+  const { data: statOverview } = useGetStatOverview()
 
+  // Question Pool Logic
+  const { page: questionPage, setPage: setQuestionPage } = usePagination()
+  const [questionFilters, setQuestionFilters] = useState<Record<string, string>>({
+    difficulty: 'total',
+    search: ''
+  })
+
+  const memoizedQuestionFilters = useMemo(() => {
+    const { difficulty, search } = questionFilters;
+    const cleaned: Record<string, string> = {};
+    if (search.trim() !== '') cleaned.search = search.trim();
+    if (difficulty !== 'total') cleaned.difficulty = difficulty;
+    return cleaned;
+  }, [questionFilters]);
+
+  const { data: questionData } = useListQuestions(questionPage, memoizedQuestionFilters)
 
   useEffect(() => {
     const params = new URLSearchParams(searchParams.toString());
-    params.set("page", currentPage.toString());
-    router.replace(`${pathname}?${params.toString()}`, { scroll: false })
-  }, [currentPage, pathname, router])
+    const urlPage = params.get("page");
+    
+    if (urlPage !== currentPage.toString()) {
+      params.set("page", currentPage.toString());
+      router.replace(`${pathname}?${params.toString()}`, { scroll: false })
+    }
+  }, [currentPage, pathname, router, searchParams])
 
-
-
-
-
-
+  const competitionTitle = statOverview?.competition?.active_competition || 'Exams & Questions';
 
   return (
-    <div className='flex flex-col gap-1 '>
-      <AdminHeader isExport={false} label='Exam System' actionButton={<Button onClick={() => setOpen(true)} className="inline-flex gap-2 border px-2 items-center text-sm">CREATE EXAM SESSION</Button>} />
-      <div className="flex flex-col gap-3 mt-3 w-[96%] mx-auto">
-        {
-          isPending ? <div className="grid w-full h-screen place-content-center"><Spinner /></div> :
-            <QuestionSession currentPage={currentPage} onPageChange={setCurrentPage} total_pages={data?.pagination.total_pages ?? 0} sessions={data?.results ?? []} />
-        }
-        <ExamSummary total_question={data?.question_pool_data?.total_questions} moderate_question={data?.question_pool_data?.moderate_questions_count} hard_question={data?.question_pool_data?.hard_questions_count} easy_question={data?.question_pool_data?.easy_questions_count} />
+    <div className='flex flex-col gap-1 font-sans'>
+      <AdminHeader 
+        isExport={false} 
+        label={competitionTitle} 
+        actionButton={[
+          <button 
+            key="add-question"
+            onClick={() => setOpenAddQuestion(true)} 
+            className="inline-flex items-center gap-2.5 bg-white text-[#3E4095] border border-[#3E4095]/20 px-6 py-3 rounded-xl font-black text-[10px] tracking-widest hover:bg-gray-50 transition-all uppercase shadow-sm active:scale-95"
+          >
+            <i className="fas fa-plus text-xs"></i>
+            <span>ADD QUESTION</span>
+          </button>,
+          isAdminOrAbove && (
+            <button 
+              key="create-session"
+              onClick={() => setOpenCreateSession(true)} 
+              className="inline-flex items-center gap-2.5 bg-[#3E4095] text-white px-6 py-3 rounded-xl font-black text-[10px] tracking-widest hover:bg-[#2d2f6e] transition-all uppercase shadow-lg shadow-[#3E4095]/20 active:scale-95"
+            >
+              <i className="fas fa-calendar-plus text-xs"></i>
+              <span>CREATE EXAM</span>
+            </button>
+          )
+        ].filter(Boolean) as React.ReactNode[]} 
+      />
+      
+      <div className="flex flex-col gap-12 mt-8 w-[96%] mx-auto pb-20">
+        {/* Exams Section */}
+        {isAdminOrAbove && (
+          <div className='flex flex-col gap-6'>
+            <div className="flex items-center space-x-2 px-2">
+              <i className="fas fa-layer-group text-[#3E4095] text-[10px]"></i>
+              <h3 className="text-[9px] font-black text-gray-400 uppercase tracking-widest">Active Exam Sessions</h3>
+            </div>
+            {
+              isExamsPending ? <div className="grid w-full h-[30vh] place-content-center"><Spinner /></div> :
+                <QuestionSession currentPage={currentPage} onPageChange={setCurrentPage} total_pages={examData?.pagination.total_pages ?? 0} sessions={examData?.results ?? []} />
+            }
+          </div>
+        )}
+        
+        {/* Global Question Pool Section */}
+        <div className="space-y-6">
+          <QuestionPoolStats 
+            title='Questions Stats'
+            activeDifficulty={questionFilters.difficulty}
+            onDifficultyChange={(difficulty) => setQuestionFilters(prev => ({ ...prev, difficulty }))}
+            stats={{
+              total: examData?.question_pool_data?.total_questions ?? 0,
+              easy: examData?.question_pool_data?.easy_questions_count ?? 0,
+              moderate: examData?.question_pool_data?.moderate_questions_count ?? 0,
+              hard: examData?.question_pool_data?.hard_questions_count ?? 0,
+            }}
+          />
+
+          <QuestionPoolTable 
+            handleSearch={setQuestionFilters} 
+            page_count={questionData?.pagination.total_pages ?? 0} 
+            currentPage={questionPage} 
+            onPageChange={setQuestionPage} 
+            questions={questionData?.results ?? []} 
+          />
+        </div>
       </div>
 
-      <CreateExamSessionModal open={open} close={setOpen} />
+      <CreateExamSessionModal open={openCreateSession} close={setOpenCreateSession} />
+      <AddQuestionModal open={openAddQuestion} close={setOpenAddQuestion} />
     </div>
   )
 }
 
 
-function ExamSummary({ total_question = 0, easy_question = 0, moderate_question = 0, hard_question = 0 }: Readonly<{ total_question?: number, easy_question?: number, moderate_question?: number, hard_question?: number }>) {
-  return <ResponsiveContainer className='grid grid-cols-1 md:grid-cols-4 gap-3'>
-    <SummaryCard link='total-question' label='TOTAL QUESTION POOL' value={total_question} className='bg-[#E6F7FD] p-3' textColor='text-[#018ABB]' />
-    <SummaryCard link='easy-question' label='EASY QUESTION LEVEL' value={easy_question} className='bg-[#E7F6EC] p-3' textColor='text-[#099137]' />
-    <SummaryCard link='moderate-question' label='MODERATE QUESTION LEVEL' value={moderate_question} className='bg-[#FEF6E7] p-3' textColor='text-[#AD6F07]' />
-    <SummaryCard link='hard-question' label='HARD QUESTION LEVEL' value={hard_question} className='bg-[#FBEAE9] p-3' textColor='text-[#CB1A14]' />
-
-  </ResponsiveContainer>
-}
-
-
-function SummaryCard({ label, className, textColor = 'text-black', value, link }: Readonly<{ className?: string, textColor?: string, value: number, label: string, link: string }>) {
-  const pathName = usePathname();
-  const searchParams = useSearchParams()
-  const href = (() => {
-    const params = new URLSearchParams(searchParams.toString())
-    params.set("view", link)
-    return `${pathName}?${params.toString()}`
-  })()
-
-  return <Link href={href} className={clsx("flex cursor-pointer flex-col p-4 gap-2 rounded-[10px]", className)}>
-    <div className="flex flex-col gap-1">
-      <span><SummaryIcon /></span>
-      <span className={clsx(textColor, 'text-sm font-bold ')}>{label}</span>
-    </div>
-    <div className="flex justify-between items-center">
-      <span className='text-2xl font-bold'>{value}</span>
-      <span className={clsx('text-sm font-bold', textColor)}><GotoIcon /></span>
-    </div>
-  </Link>
-}
-
 function QuestionSession({ sessions, total_pages, onPageChange, currentPage }: Readonly<{ sessions: ExamSessionType[], total_pages: number, currentPage: number, onPageChange: Dispatch<SetStateAction<number>> }>) {
   const sortedSessions = useSortedExams(sessions)
 
-  return <ResponsiveContainer className='gap-3'>
-    {
-      sortedSessions.length == 0 && <EmptySession label='No question session has been created yet' desc='Question session set on the platform would appear here ' />
-    }
+  return <div className='flex flex-col gap-6'>
+    {/* <div className="flex items-center space-x-2 px-2">
+      <i className="fas fa-list-ul text-[#3E4095] text-[10px]"></i>
+      <h3 className="text-[9px] font-black text-gray-400 uppercase tracking-widest">Active Sessions</h3>
+    </div> */}
+    
+    <ResponsiveContainer className='gap-6 p-0 bg-transparent border-none shadow-none'>
+      {
+        sortedSessions.length == 0 && <EmptySession label='No question session has been created yet' desc='Question session set on the platform would appear here ' />
+      }
 
-
-    {sortedSessions.length > 0 &&
-      <div className="flex flex-col gap-3">
-
-        <div className="grid gap-3 grid-cols-1 md:grid-cols-4">
-          {
-            sortedSessions
-              // sessions
-              .map((val, index) => <ExamSession key={`session-${index + 1}`} id={val.id}
-                // applicationDate={val?.exam_date}
-                data={val}
-              // status={val?.status}
-              // applicationDate={val?.created_at}
-              // count={val?.question_count} 
-              // title={val?.title}
-              />)}
+      {sortedSessions.length > 0 &&
+        <div className="flex flex-col gap-8">
+          <div className="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            {
+              sortedSessions.map((val, index) => <ExamSession key={`session-${index + 1}`} id={val.id} data={val} />)
+            }
+          </div>
+          {total_pages > 1 && (
+            <div className="flex justify-center pt-4">
+              <PagePagination currentPage={currentPage} onPageChange={onPageChange} pageCount={total_pages} />
+            </div>
+          )}
         </div>
-        {total_pages > 1 && <PagePagination currentPage={currentPage} onPageChange={onPageChange} pageCount={total_pages} />}
-      </div>
-    }
-  </ResponsiveContainer>
+      }
+    </ResponsiveContainer>
+  </div>
 }
 
 
 
 
 
-function ExamSession({ data, id }: Readonly<{ id: string, data: any }>) {
-
-
+function ExamSession({ data, id }: Readonly<{ id: string, data: ExamSessionType }>) {
   const pathName = usePathname();
   const searchParams = useSearchParams()
   const href = (() => {
@@ -138,64 +198,43 @@ function ExamSession({ data, id }: Readonly<{ id: string, data: any }>) {
     return `${pathName}?${params.toString()}`
   })()
 
+  const statusConfig: Record<string, { color: string, bg: string, label: string }> = {
+    draft: { color: "text-gray-500", bg: "bg-gray-100", label: "Draft" },
+    scheduled: { color: "text-green-600", bg: "bg-green-50", label: "Scheduled" },
+    ongoing: { color: "text-red-600", bg: "bg-red-50", label: "Ongoing" },
+    concluded: { color: "text-[#3E4095]", bg: "bg-blue-50", label: "Concluded" },
+    cancelled: { color: "text-gray-400", bg: "bg-gray-50", label: "Cancelled" },
+  };
 
+  const currentStatus = statusConfig[data.status] || { color: "text-gray-400", bg: "bg-gray-50", label: data.status };
 
-  const { isUpcoming, daysDiff } = useGetValidDate(data.created_at)
-
-
-  return <Link href={href} className='flex relative mt-8 justify-center flex-col'>
-    <div className={clsx('pt-2 pb-7 p-2  absolute w-full -top-8   text-white rounded-t-2xl', isUpcomingExam(data.status) ? 'bg-[#00455E]' : 'bg-[#667185]')}>
-      <div className="flex justify-between">
-        <span className="text-sm capitalize">
-          {/* {isUpcoming
-            ? `${daysDiff} Day${daysDiff === 1 ? '' : 's'} to exam`
-            : 'Done'} */}
-
-
-          {data.status}
-        </span>
-
-        {/* <span className='text-sm'>{!isActive ? 'Done' : `${daysDiff} Days to exam`}</span> */}
-        <span className='font-bold text-sm'>{data.scheduled_date ? formatDate(data.scheduled_date) : 'DD:MM:YYYY'}</span>
+  return <Link href={href} className='group flex flex-col bg-white border border-gray-100 rounded-[2rem] shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all overflow-hidden'>
+    <div className="p-6 flex flex-col gap-5">
+      <div className="flex justify-between items-start">
+        <div className={clsx("px-3 py-1 rounded-full text-[8px] font-black uppercase tracking-widest flex items-center gap-1.5", currentStatus.bg, currentStatus.color)}>
+          <span className={clsx("w-1 h-1 rounded-full", currentStatus.color.replace('text', 'bg'))}></span>
+          {currentStatus.label}
+        </div>
+        <div className="text-[8px] font-black text-gray-500 uppercase tracking-widest">
+          {data.scheduled_date ? formatDate(data.scheduled_date) : 'Not Scheduled'}
+        </div>
       </div>
-    </div>
-    <div className={clsx("flex flex-col z-10   rounded-2xl p-2", isUpcomingExam(data.status) ? 'bg-[#E6F7FD]' : 'bg-[#F0F2F5]')}>
-      <div className={clsx("flex  flex-col gap-1 rounded-lg")}>
-        <span className='text-sm uppercase'>{data.title}</span>
 
-        <p className='font-bold text-[2.5rem] '>{data.question_count}</p>
-        <div className='flex justify-between items-center'>
-          <span className='text-sm'>questions set in this session</span>
-          <span><ExamCardGoTo /></span>
+      <div className="flex flex-col gap-1">
+        <h4 className='text-sm font-bold text-gray-800 uppercase line-clamp-1 group-hover:text-[#3E4095] transition-colors'>{formatExamTitle(data.title)}</h4>
+        <p className='text-[9px] text-gray-400 font-medium line-clamp-1'>{data.competition_title}</p>
+      </div>
+
+      <div className="flex items-end justify-between mt-2">
+        <div className="flex flex-col">
+          <span className='text-[2.5rem] font-bold tracking-tight text-gray-900 leading-none'>{data.question_count}</span>
+          <span className='text-[8px] font-black text-gray-400 uppercase tracking-widest mt-1'>Questions</span>
+        </div>
+        <div className="w-10 h-10 rounded-xl bg-gray-50 flex items-center justify-center text-gray-700 group-hover:bg-[#3E4095] group-hover:text-white transition-all">
+          <ExamCardGoTo />
         </div>
       </div>
     </div>
+    <div className="h-1 w-full bg-gray-50 group-hover:bg-[#3E4095]/10 transition-colors"></div>
   </Link>
 }
-
-
-
-
-
-function isUpcomingExam(status: string) {
-  switch (status) {
-    case 'concluded':
-    case 'cancelled':
-      return false;
-    case 'draft':
-    case 'scheduled':
-    case 'ongoing':
-      return true;
-
-    default:
-      break;
-  }
-}
-
-
-
-
-
-
-
-

@@ -1,4 +1,4 @@
-import { CreatedByType, RequestUserType } from "./auth";
+import { CreatedByType } from "./auth";
 
 export type Option = {
   value: string;
@@ -15,69 +15,121 @@ export type QuestionProps = {
 
 
 
-type RecentResultType = {
-  exam: string,
-  exam_title?: string,
-  score: number,
-  date: Date,
-  exam_stage: string
-}
+// New API Types based on CANDIDATE_DASHBOARD.md
+export type CandidateContext = {
+  full_name: string;
+  role: string;
+  profile_picture: string | null;
+  is_setup_complete: boolean;
+  status: string;
+  notifications: Array<{
+    id: number;
+    type: string;
+    message: string;
+  }>;
+};
 
-export type StageProgressType = {
+export type DashboardStageProgress = {
   current_stage: string;
   current_round: number;
-  has_taken_exam: boolean;
-  qualification_threshold_score: number;
+  total_rounds: number;
+  published_rounds: number;
+  has_taken_current_round: boolean;
+  qualification_status: {
+    is_qualified: boolean;
+    advancement_policy: {
+      mode: string;
+      value: number;
+    };
+    message: string;
+  };
+};
+
+export type ActiveExamType = {
+  id: string;
+  title: string;
+  stage: string;
+  round: number;
+  question_count: number;
+  starts_at: Date;
+  ends_at: Date;
+  duration_minutes: number;
+  status: string;
+  has_participated: boolean;
+};
+
+export type AvailableExamType = {
+  id: string;
+  title: string;
+  description?: string;
+  open_duration_hours: number;
+  countdown_minutes: number;
+  question_count: number;
+  round: number;
+  scheduled_date: Date;
+  stage: string;
+  stage_display: string;
+  participation: 'done' | 'not_done';
+};
+
+export type LeaderboardRankingType = {
+  current_rank?: number;
+  position: number;
+  total_candidates: number;
+};
+
+export type PerformanceSnapshotType = {
+  screening_standing: {
+    rank: number;
+    total_candidates: number;
+    score: number;
+    percentile: number;
+  } | null;
+  league_leaderboard: {
+    overall_rank: number;
+    total_candidates: number;
+    total_score: number;
+    rank_change: number;
+    as_of_round: number;
+  } | null;
+};
+
+export type TakeExamQuestionType = {
+  id: number;
+  text: string;
+  option_a: string;
+  option_b: string;
+  option_c: string;
+  option_d: string;
+};
+
+export type TakeExamType = {
+  id: string;
+  title: string;
+  description: string;
+  open_duration_hours: number;
+  scheduled_date: Date;
+  countdown_minutes: number;
+  questions: TakeExamQuestionType[];
+};
+
+export type ExamHistoryItem = {
+  exam_id: string;
+  exam_title: string;
+  stage: string;
+  round: number | null;
+  score: number;
+  percentage: number;
+  date: Date;
+  status: string;
 };
 
 export type DashboardType = {
-  candidate_info: CandidateInfoType,
-  exam_stats: ExamStatType,
-  stage_progress: StageProgressType,
-  league_leaderboard_ranking: LeaderboardRankingType | null,
-  screening_standings_ranking: LeaderboardRankingType | null,
-  recent_results: RecentResultType[],
-  available_exams: AvailableExamType[],
-  concluded_exams: ConcludedExamType[],
-  next_exam: AvailableExamType | null
-}
-
-
-export type LeaderboardRankingType = {
-  current_rank: number,
-  position: number,
-  total_candidates: number
-}
-
-
-
-
-
-export type AvailableExamType = {
-  id: string,
-  title: string,
-  description: string,
-  open_duration_hours: number,
-  // exam_date: Date,
-  countdown_minutes: number,
-  question_count: number,
-  round:number,
-  scheduled_date:Date
-  stage: string,
-  stage_display:string,
-  participation: string
-}
-
-export type ConcludedExamType = {
-  id: string,
-  title: string,
-  description: string,
-  concluded_at: string,
-  question_count: number,
-  participation: string,
-  stage: string,
-  round: number,
-  stage_display: string
+  candidate_context: CandidateContext;
+  stage_progress: DashboardStageProgress;
+  active_exam: ActiveExamType | null;
+  performance_snapshot: PerformanceSnapshotType;
+  exam_history: ExamHistoryItem[];
 }
 
 
@@ -95,21 +147,18 @@ export type PaginationType= {
     }
 
 export type SessionType = {
-  // count: number,
-  // total_pages: number,
-  // next: string,
-  // previous: string | null,
-  results: ExamSessionType[],
-  // results:SessionQuestionItemType,
-  pagination:PaginationType,
+  count: number;
+  next: string | null;
+  previous: string | null;
+  results: ExamSessionType[];
+  pagination: PaginationType;
   question_pool_data: {
-    total_questions: number,
-    hard_questions_count: number,
-    moderate_questions_count: number,
-    easy_questions_count: number
-  },
-
-}
+    total_questions: number;
+    hard_questions_count: number;
+    moderate_questions_count: number;
+    easy_questions_count: number;
+  };
+};
 
 
 export type QuestionPoolType= {
@@ -133,13 +182,21 @@ export type QuestionPoolType= {
 
 
 export type ExamSessionType = {
-  id: string,
-  title: string,
-  stage: string,
-  question_count: number,
-  exam_date: Date,
-  created_at: Date
-}
+  id: string;
+  title: string;
+  status: string;
+  competition_title: string;
+  question_count: number;
+  scheduled_date: string;
+  concluded_at: string | null;
+  created_at: string;
+  standings?: {
+    exists: boolean;
+    is_published: boolean;
+    created_at: string;
+    published_at: string | null;
+  };
+};
 
 
 
@@ -167,12 +224,26 @@ export type CandidateInfoType = {
 }
 
 export type CreateExamSessionType = {
-  title: string,
-  stage: string,
-  description: string,
-}
+  description?: string;
+  scheduled_date?: string;
+  open_duration_hours?: number;
+  countdown_minutes?: number;
+  is_active?: boolean;
+  questions?: number[];
+  stage_id?: number;
+  round?: number;
+};
 
-
+export type EditExamSession = {
+  description?: string;
+  scheduled_date?: string;
+  open_duration_hours?: number;
+  countdown_minutes?: number;
+  is_active?: boolean;
+  questions?: number[];
+  stage_id?: number;
+  round?: number;
+};
 
 export type CreateQuestionType = {
   text: string,
@@ -181,12 +252,8 @@ export type CreateQuestionType = {
   option_c: string,
   option_d: string,
   correct_answer: string,
-  difficulty: string
-}
-
-export type EditExamSession = {
-  title: string,
-  description: string
+  difficulty: string,
+  add_to_exams?: string[]
 }
 
 
@@ -248,30 +315,34 @@ export type SessionQuestionItemType = {
 
 
 export type UpdatedSessionQuestionType = {
-  id: string,
-  title: string,
-  stage: string,
-  description: string,
-  exam_date: Date,
-  countdown_minutes: number,
-  open_duration_hours: number,
-  is_active: boolean,
-  questions: QuestionType,
-  created_at: Date
+  id: string;
+  title: string;
+  description: string;
+  status: string;
+  is_active: boolean;
+  is_currently_open: boolean;
+  competition_title: string;
+  open_duration_hours: number;
+  countdown_minutes: number;
+  scheduled_date: string;
+  concluded_at: string | null;
+  created_at: string;
   created_by: {
-    user: RequestUserType,
-    occupation: string,
-    role: string
-  },
-  updated_by: string | null,
-
-  scheduled_date: Date,
-
-  status: string,
-  concluded_at: Date | null,
-
-
-}
+    id: string;
+    user: {
+      first_name: string;
+      last_name: string;
+    };
+  };
+  updated_by: string | null;
+  standings?: {
+    exists: boolean;
+    is_published: boolean;
+    created_at: string;
+    published_at: string | null;
+  };
+  questions: QuestionType;
+};
 
 
 type QuestionType = {
