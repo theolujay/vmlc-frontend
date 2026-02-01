@@ -185,7 +185,6 @@ export type ExamSessionType = {
   id: string;
   title: string;
   status: string;
-  competition_edition: number;
   competition_title: string;
   question_count: number;
   scheduled_date: string;
@@ -321,7 +320,6 @@ export type UpdatedSessionQuestionType = {
   status: string;
   is_active: boolean;
   is_currently_open: boolean;
-  competition_edition: number;
   competition_title: string;
   open_duration_hours: number;
   countdown_minutes: number;

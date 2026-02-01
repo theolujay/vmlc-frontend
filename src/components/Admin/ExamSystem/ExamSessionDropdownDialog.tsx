@@ -132,7 +132,7 @@ export default function ExamSessionDropdownDialog({ exam_id, data }: Props) {
                 </button>
             } 
         >
-            <EditSessionModal exam_id={exam_id} open={openEditModal} close={setOpenEditModal} />
+            <EditSessionModal data={data} exam_id={exam_id} open={openEditModal} close={setOpenEditModal} />
             <AddQuestionModal open={openAddQuestion} close={setAddQuestion} />
             <DeleteExamSessionModal session_id={exam_id} open={openDeleteModal} close={setOpenDeleteModal} />
             <UploadExamSessionModal title={data?.title} exam_id={exam_id} open={openUpload} close={setOpenUpload} />
