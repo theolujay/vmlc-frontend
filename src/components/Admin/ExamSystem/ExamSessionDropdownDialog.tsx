@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import dynamic from 'next/dynamic';
 import { useRouter } from 'next/navigation';
+import clsx from 'clsx';
 
 import { DeleteIcon } from '@/components/General/GeneralIcon';
 import { AddIcon, EditIcon, GotoIcon } from '@/components/General/GettingStarted/GettingStartedAssets';
@@ -54,32 +55,40 @@ export default function ExamSessionDropdownDialog({ exam_id, data }: Props) {
     const actionItems = [
         // Publish Exam action (only if draft)
         {
-            label: <div className='flex items-center gap-2'>
-                <AddIcon />
-                <span>{status === 'draft' ? 'PUBLISH EXAM' : status?.toUpperCase()}</span>
+            label: <div className='flex items-center gap-3 py-1'>
+                <div className="w-8 h-8 bg-blue-50 rounded-lg flex items-center justify-center text-[#3E4095]">
+                    <AddIcon />
+                </div>
+                <span className="text-[10px] font-black uppercase tracking-widest">{status === 'draft' ? 'PUBLISH EXAM' : status?.toUpperCase()}</span>
             </div>,
             onClick: handleOpenUpload,
             disabled: status !== 'draft' && status !== undefined
         },
         {
-            label: <div className='flex items-center gap-2'>
-                <AddIcon />
-                <span>Add Question</span>
+            label: <div className='flex items-center gap-3 py-1'>
+                <div className="w-8 h-8 bg-blue-50 rounded-lg flex items-center justify-center text-[#3E4095]">
+                    <AddIcon />
+                </div>
+                <span className="text-[10px] font-black uppercase tracking-widest">Add Question</span>
             </div>,
             onClick: addExamSessionModal
         },
         {
-            label: <div className='flex items-center gap-2'>
-                <EditIcon />
-                <span>Edit Session</span>
+            label: <div className='flex items-center gap-3 py-1'>
+                <div className="w-8 h-8 bg-blue-50 rounded-lg flex items-center justify-center text-[#3E4095]">
+                    <EditIcon />
+                </div>
+                <span className="text-[10px] font-black uppercase tracking-widest">Edit Session</span>
             </div>,
             onClick: handleOpenEditModal
         },
         // Standings actions
         {
-            label: <div className='flex items-center gap-2'>
-                <SummaryIcon />
-                <span>{hasStandings ? 'VIEW STANDINGS' : 'GENERATE STANDINGS'}</span>
+            label: <div className='flex items-center gap-3 py-1'>
+                <div className="w-8 h-8 bg-blue-50 rounded-lg flex items-center justify-center text-[#3E4095]">
+                    <SummaryIcon />
+                </div>
+                <span className="text-[10px] font-black uppercase tracking-widest">{hasStandings ? 'VIEW STANDINGS' : 'GENERATE STANDINGS'}</span>
             </div>,
             onClick: () => {
                 if (hasStandings) {
@@ -91,9 +100,11 @@ export default function ExamSessionDropdownDialog({ exam_id, data }: Props) {
             disabled: !hasStandings && (status !== 'concluded' || isPublishingStandings)
         },
         {
-            label: <div className='flex items-center gap-2'>
-                <SummaryIcon />
-                <span className={isPublished ? 'text-gray-400' : 'text-green-600'}>
+            label: <div className='flex items-center gap-3 py-1'>
+                <div className="w-8 h-8 bg-green-50 rounded-lg flex items-center justify-center text-green-600">
+                    <SummaryIcon />
+                </div>
+                <span className={clsx('text-[10px] font-black uppercase tracking-widest', isPublished ? 'text-gray-400' : 'text-green-600')}>
                     {isPublished ? 'PUBLISHED' : 'PUBLISH STANDINGS'}
                 </span>
             </div>,
@@ -101,9 +112,11 @@ export default function ExamSessionDropdownDialog({ exam_id, data }: Props) {
             disabled: isPublished || status !== 'concluded' || !hasStandings || isPublishingStandings
         },
         {
-            label: <div className='flex items-center gap-2'>
-                <DeleteIcon />
-                <span className='text-[#D42620]'>Delete Session</span>
+            label: <div className='flex items-center gap-3 py-1'>
+                <div className="w-8 h-8 bg-red-50 rounded-lg flex items-center justify-center text-[#D42620]">
+                    <DeleteIcon />
+                </div>
+                <span className='text-[10px] font-black uppercase tracking-widest text-[#D42620]'>Delete Session</span>
             </div>,
             onClick: deleteExamSessionModal
         },
@@ -113,16 +126,16 @@ export default function ExamSessionDropdownDialog({ exam_id, data }: Props) {
         <AppDropdownDialog 
             actionItems={actionItems} 
             triggerButton={
-                <button key='actions-trigger' className="inline-flex items-center gap-2 bg-[#3E4095] text-white px-4 py-2 rounded-md font-bold text-sm hover:bg-[#2d2f6e] transition-colors">
+                <button key='actions-trigger' className="inline-flex items-center gap-2.5 bg-[#3E4095] text-white px-6 py-3 rounded-xl font-black text-[10px] tracking-widest hover:bg-[#2d2f6e] transition-all uppercase shadow-lg shadow-[#3E4095]/20 active:scale-95">
                     <span>ACTIONS</span>
-                    <GotoIcon className="rotate-90 w-3 h-3" />
+                    <GotoIcon className="rotate-90 w-3 h-3 opacity-80" />
                 </button>
             } 
         >
             <EditSessionModal exam_id={exam_id} open={openEditModal} close={setOpenEditModal} />
             <AddQuestionModal open={openAddQuestion} close={setAddQuestion} />
             <DeleteExamSessionModal session_id={exam_id} open={openDeleteModal} close={setOpenDeleteModal} />
-            <UploadExamSessionModal exam_id={exam_id} open={openUpload} close={setOpenUpload} />
+            <UploadExamSessionModal title={data?.title} exam_id={exam_id} open={openUpload} close={setOpenUpload} />
         </AppDropdownDialog>
     )
 }
