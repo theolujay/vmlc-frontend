@@ -5,13 +5,18 @@ import { AddIcon, EyeIcon, GotoIcon } from '@/components/General/GettingStarted/
 import RemoveQuestionModal from '@/components/Modals/RemoveQuestionModal';
 import AppDropdownDialog from '@/components/ui/Dropdown/AppDropdownDialog';
 import { SessionQuestionItemType } from '@/types/Examtype';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
+import useGetCurrentUser from '@/hooks/useGetCurrentUser';
 
 type Props = Readonly<{ question_id: number, information: SessionQuestionItemType }>
 
 export default function QuestionPoolDropdown({ question_id, information }: Props) {
     const [openViewModal, setOpenViewModal] = useState(false)
     const [openDeleteModal, setOpenDeleteModal] = useState(false)
+
+    const currentUser = useGetCurrentUser();
+    const userRole = currentUser?.profile?.role || "";
+    const isAdminOrAbove = ["admin", "manager", "superadmin"].includes(userRole);
 
     function handleDeleteModal() {
         setOpenDeleteModal(true)
@@ -21,35 +26,51 @@ export default function QuestionPoolDropdown({ question_id, information }: Props
         setOpenViewModal(true)
     }
 
-    const actionItems = [
-        {
-            label: <div className='flex items-center gap-3 py-1'>
-                <div className="w-8 h-8 bg-blue-50 rounded-lg flex items-center justify-center text-[#3E4095]">
-                    <AddIcon />
+    const actionItems = useMemo(() => {
+        const items = [];
+
+        if (isAdminOrAbove) {
+            items.push({
+                label: (
+                    <div className='flex items-center gap-3 py-1'>
+                        <div className="w-8 h-8 bg-blue-50 rounded-lg flex items-center justify-center text-[#3E4095]">
+                            <AddIcon />
+                        </div>
+                        <span className="text-[10px] font-black uppercase tracking-widest text-gray-700">Add to exam</span>
+                    </div>
+                ),
+                // Add to exam session logic would go here
+            });
+        }
+
+        items.push({
+            label: (
+                <div className='flex items-center gap-3 py-1'>
+                    <div className="w-8 h-8 bg-blue-50 rounded-lg flex items-center justify-center text-[#3E4095]">
+                        <EyeIcon className="w-4 h-4" />
+                    </div>
+                    <span className="text-[10px] font-black uppercase tracking-widest text-gray-700">View Details</span>
                 </div>
-                <span className="text-[10px] font-black uppercase tracking-widest text-gray-700">Add to exam</span>
-            </div>,
-            // Add to exam session logic would go here
-        },
-        {
-            label: <div className='flex items-center gap-3 py-1'>
-                <div className="w-8 h-8 bg-blue-50 rounded-lg flex items-center justify-center text-[#3E4095]">
-                    <EyeIcon className="w-4 h-4" />
-                </div>
-                <span className="text-[10px] font-black uppercase tracking-widest text-gray-700">View Details</span>
-            </div>,
+            ),
             onClick: handleOpenViewModal
-        },
-        {
-            label: <div className='flex items-center gap-3 py-1'>
-                <div className="w-8 h-8 bg-red-50 rounded-lg flex items-center justify-center text-[#D42620]">
-                    <DeleteIcon />
-                </div>
-                <span className='text-[10px] font-black uppercase tracking-widest text-[#D42620]'>Delete Question</span>
-            </div>,
-            onClick: handleDeleteModal
-        },
-    ];
+        });
+
+        if (isAdminOrAbove) {
+            items.push({
+                label: (
+                    <div className='flex items-center gap-3 py-1'>
+                        <div className="w-8 h-8 bg-red-50 rounded-lg flex items-center justify-center text-[#D42620]">
+                            <DeleteIcon />
+                        </div>
+                        <span className='text-[10px] font-black uppercase tracking-widest text-[#D42620]'>Delete Question</span>
+                    </div>
+                ),
+                onClick: handleDeleteModal
+            });
+        }
+
+        return items;
+    }, [isAdminOrAbove, handleOpenViewModal, handleDeleteModal]);
 
     return (
         <AppDropdownDialog 

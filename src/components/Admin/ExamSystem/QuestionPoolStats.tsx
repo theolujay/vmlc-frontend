@@ -75,7 +75,7 @@ const QuestionPoolStats: React.FC<QuestionPoolStatsProps> = ({
               key={item.key}
               onClick={() => onDifficultyChange(item.key)}
               className={clsx(
-                "flex flex-col gap-2 p-4 rounded-xl transition-all text-left group border",
+                "flex flex-col gap-2 p-4 rounded-xl transition-all text-left group border cursor-pointer",
                 isActive 
                   ? "bg-[#3E4095] border-[#3E4095] shadow-lg shadow-[#3E4095]/20" 
                   : "bg-gray-50 border-gray-50 hover:border-gray-200"

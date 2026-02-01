@@ -15,6 +15,7 @@ import AddToExamSessionModal from "@/components/Modals/AddToExamSessionModal";
 import BulkRemoveQuestionsModal from "@/components/Modals/BulkRemoveQuestionsModal";
 import { useDebouncedSearch } from "@/hooks/useDebouncedSearch";
 import MathRenderer from "@/components/Exam/MathRenderer";
+import useGetCurrentUser from "@/hooks/useGetCurrentUser";
 
 type ColumnType<T> = {
   key: keyof T | string;
@@ -32,6 +33,7 @@ type CustomTableProps<T> = {
   onSelectAll?: (checked: boolean) => void;
   onSelectRow?: (id: number, checked: boolean) => void;
   selectedIds?: number[];
+  isAdminOrAbove?: boolean;
 };
 
 function CustomTable<T extends { id: number }>({
@@ -43,6 +45,7 @@ function CustomTable<T extends { id: number }>({
   onSelectAll,
   onSelectRow,
   selectedIds = [],
+  isAdminOrAbove = false,
 }: Readonly<CustomTableProps<T>>) {
   const allSelected = data.length > 0 && data.every((row) => selectedIds.includes(row.id));
 
@@ -52,14 +55,16 @@ function CustomTable<T extends { id: number }>({
         <table className="min-w-full border-collapse">
           <thead>
             <tr className="border-b border-[#E4E7EC] bg-[#E4E7EC]">
-              <th className="py-2 px-3 text-center">
-                <div className="flex justify-center">
-                  <Checkbox
-                    checked={allSelected}
-                    onChange={(checked) => onSelectAll?.(checked)}
-                  />
-                </div>
-              </th>
+              {isAdminOrAbove && (
+                <th className="py-2 px-3 text-center">
+                  <div className="flex justify-center">
+                    <Checkbox
+                      checked={allSelected}
+                      onChange={(checked) => onSelectAll?.(checked)}
+                    />
+                  </div>
+                </th>
+              )}
               {columns.map((col, i) => (
                 <th key={i} className={clsx("py-3 px-3 text-[9px] font-black uppercase tracking-widest text-gray-500", col.align === 'center' ? 'text-center' : col.align === 'right' ? 'text-right' : 'text-left')}>
                   {col.header}
@@ -71,7 +76,7 @@ function CustomTable<T extends { id: number }>({
           <tbody>
             {data.length === 0 ? (
               <tr>
-                <td colSpan={columns.length + 1} className="py-6 text-center">
+                <td colSpan={columns.length + (isAdminOrAbove ? 1 : 0)} className="py-6 text-center">
                   <EmptyRecords label={emptyLabel} desc={emptyDesc} />
                 </td>
               </tr>
@@ -81,14 +86,16 @@ function CustomTable<T extends { id: number }>({
                   key={row.id}
                   className="border-b border-[#E4E7EC] last:border-0 hover:bg-gray-50 transition-colors"
                 >
-                  <td className="py-2 px-3">
-                    <div className="flex justify-center">
-                      <Checkbox
-                        checked={selectedIds.includes(row.id)}
-                        onChange={(checked) => onSelectRow?.(row.id, checked)}
-                      />
-                    </div>
-                  </td>
+                  {isAdminOrAbove && (
+                    <td className="py-2 px-3">
+                      <div className="flex justify-center">
+                        <Checkbox
+                          checked={selectedIds.includes(row.id)}
+                          onChange={(checked) => onSelectRow?.(row.id, checked)}
+                        />
+                      </div>
+                    </td>
+                  )}
 
                   {columns.map((col, ci) => {
                     const value =
@@ -153,6 +160,10 @@ export default function QuestionPoolTable({
   const [openDrawer, setOpenDrawer] = useState(false);
   const [selectedQuestionId, setSelectedQuestionId] = useState<number>(0);
   const [currentQuestion, setCurrentQuestion] = useState<SessionQuestionItemType | null>(null);
+
+  const currentUser = useGetCurrentUser();
+  const userRole = currentUser?.profile?.role || "";
+  const isAdminOrAbove = ["admin", "manager", "superadmin"].includes(userRole);
 
   // handle single selection
   function handleSelectRow(id: number, checked: boolean) {
@@ -220,7 +231,7 @@ export default function QuestionPoolTable({
         </div>
       </div>
 
-      {selectedQuestions.length > 0 && (
+      {isAdminOrAbove && selectedQuestions.length > 0 && (
         <div className="mx-8 px-6 bg-[#3E4095] items-center py-4 rounded-2xl flex justify-between shadow-lg shadow-[#3E4095]/20 animate-in slide-in-from-top-4 duration-300">
           <div className="flex items-center gap-3">
             <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center text-white">
@@ -241,7 +252,7 @@ export default function QuestionPoolTable({
               onClick={handleOpenExamSessionModal} 
               className="rounded-xl py-2.5 px-5 font-black text-[10px] uppercase tracking-widest bg-white text-[#3E4095] hover:bg-gray-50 transition-all shadow-sm"
             >
-              Add to session
+              Add to exam
             </button>
           </div>
         </div>
@@ -250,6 +261,7 @@ export default function QuestionPoolTable({
       <div className="px-1">
         <CustomTable
           data={questions}
+          isAdminOrAbove={isAdminOrAbove}
           columns={[
             {
               key: "user",
