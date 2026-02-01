@@ -71,7 +71,8 @@ export default function ExamSessionDropdownDialog({ exam_id, data }: Props) {
                 </div>
                 <span className="text-[10px] font-black uppercase tracking-widest">Add Question</span>
             </div>,
-            onClick: addExamSessionModal
+            onClick: addExamSessionModal,
+            disabled: status !== 'draft'
         },
         {
             label: <div className='flex items-center gap-3 py-1'>
@@ -80,7 +81,8 @@ export default function ExamSessionDropdownDialog({ exam_id, data }: Props) {
                 </div>
                 <span className="text-[10px] font-black uppercase tracking-widest">Edit Session</span>
             </div>,
-            onClick: handleOpenEditModal
+            onClick: handleOpenEditModal,
+            disabled: status !== 'draft'
         },
         // Standings actions
         {
@@ -118,7 +120,8 @@ export default function ExamSessionDropdownDialog({ exam_id, data }: Props) {
                 </div>
                 <span className='text-[10px] font-black uppercase tracking-widest text-[#D42620]'>Delete Session</span>
             </div>,
-            onClick: deleteExamSessionModal
+            onClick: deleteExamSessionModal,
+            disabled: status !== 'draft'
         },
     ];
 
