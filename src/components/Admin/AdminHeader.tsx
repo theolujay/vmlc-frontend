@@ -1,11 +1,12 @@
 "use client"
 import useGetBreadCrumbs from "@/hooks/useGetBreadCrumbs";
 import { ExportButton } from "../ui/Button";
-import { GreaterThanIcon, HomeIcon } from "../General/GettingStarted/GettingStartedAssets";
+import { GreaterThanIcon, HomeIcon, BackIcon } from "../General/GettingStarted/GettingStartedAssets";
 import Link from "next/link";
 import { capitalizeWord } from "@/utils/capitalizeWords";
 import { DownloadIcon } from "./AdminIcons";
 import { ReactNode } from "react";
+import { useRouter } from "next/navigation";
 
 
 
@@ -14,13 +15,21 @@ import { ReactNode } from "react";
 export default function AdminHeader({ label, actionButton, isExport = false}: Readonly<{ label: string, actionButton: ReactNode | ReactNode[], isExport?: boolean }>) {
 
     const pathSegments = useGetBreadCrumbs();
+    const router = useRouter();
 
-    return <div className='flex bg-white px-10 py-3 justify-between items-center'>
-        <div className="flex flex-col gap-0.5">
-            {/* <p className='font-normal inline-flex flex-wrap gap-2 text-lg md:text-2xl'><span>Staff Portal</span><span>{label}</span></p> */}
-            <div className="flex gap-2">
-                <ol className='flex'>
-                    {pathSegments.map((segment, index) => {
+    return <div className='flex bg-white px-10 py-3 justify-between items-center border-b border-gray-100'>
+        <div className="flex items-center gap-4">
+            <button 
+                onClick={() => router.back()}
+                className="flex items-center justify-center w-8 h-8 rounded-full hover:bg-gray-100 transition-colors cursor-pointer text-gray-600"
+                title="Go Back"
+            >
+                <BackIcon className="w-4 h-4" />
+            </button>
+            <div className="flex flex-col gap-0.5">
+                <div className="flex gap-2">
+                    <ol className='flex items-center'>
+                        {pathSegments.map((segment, index) => {
                         const href = '/' + pathSegments.slice(0, index + 1).join('/');
                         const isLast = index == pathSegments.length - 1;
                         const decodeHref = decodeURIComponent(segment)
@@ -33,12 +42,13 @@ export default function AdminHeader({ label, actionButton, isExport = false}: Re
                         }
                         return <li key={href} className='inline-flex justify-between px-1 items-center gap-1'>
                             <span><GreaterThanIcon /></span>
-                            {isLast ? <span>{capitalizeWord(decodeHref)}</span> : <Link href={href} className='text-[#667185]'>{capitalizeWord(decodeHref)}</Link>}
+                            {isLast ? <span>{label || capitalizeWord(decodeHref)}</span> : <Link href={href} className='text-[#667185]'>{capitalizeWord(decodeHref)}</Link>}
                         </li>
                     })}
                 </ol>
             </div>
 
+        </div>
         </div>
         <div className="flex gap-2 justify-between">
             {
