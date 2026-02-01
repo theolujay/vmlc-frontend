@@ -142,7 +142,7 @@ export default function OverviewSection() {
           />
         </div>
         
-        <QuickActionsCard />
+        {/* <QuickActionsCard /> */}
 
         {showPreRegistered ? (
           <PreRegisteredCandidatesTable

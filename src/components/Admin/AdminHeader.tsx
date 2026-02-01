@@ -17,7 +17,7 @@ export default function AdminHeader({ label, actionButton, isExport = false}: Re
 
     return <div className='flex bg-white px-10 py-3 justify-between items-center'>
         <div className="flex flex-col gap-0.5">
-            <p className='font-normal inline-flex flex-wrap gap-2 text-lg md:text-2xl'><span>Staff Portal</span><span>{label}</span></p>
+            {/* <p className='font-normal inline-flex flex-wrap gap-2 text-lg md:text-2xl'><span>Staff Portal</span><span>{label}</span></p> */}
             <div className="flex gap-2">
                 <ol className='flex'>
                     {pathSegments.map((segment, index) => {

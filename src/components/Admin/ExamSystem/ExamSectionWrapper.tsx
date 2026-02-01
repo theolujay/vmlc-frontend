@@ -2,7 +2,6 @@
 import { useSearchParams } from 'next/navigation'
 import React from 'react'
 import ExamSession from './ExamSession';
-import QuestionPool from './QuestionPool';
 import ExamSection from './ExamSection';
 
 
