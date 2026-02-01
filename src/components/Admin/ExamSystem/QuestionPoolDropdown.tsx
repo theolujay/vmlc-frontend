@@ -1,18 +1,15 @@
 "use client";
 import QuestionInformation from '@/components/Drawer/QuestionInformation';
 import { DeleteIcon } from '@/components/General/GeneralIcon';
-import { AddIcon, EyeIcon } from '@/components/General/GettingStarted/GettingStartedAssets';
+import { AddIcon, EyeIcon, GotoIcon } from '@/components/General/GettingStarted/GettingStartedAssets';
 import RemoveQuestionModal from '@/components/Modals/RemoveQuestionModal';
 import AppDropdownDialog from '@/components/ui/Dropdown/AppDropdownDialog';
 import { SessionQuestionItemType } from '@/types/Examtype';
 import { useState } from 'react';
-// import ViewDetails from '../OverviewSection/ViewDetails';
 
+type Props = Readonly<{ question_id: number, information: SessionQuestionItemType }>
 
-
-type Props = Readonly<{ question_id: number,information:SessionQuestionItemType }>
-
-export default function QuestionPoolDropdown({ question_id ,information}: Props) {
+export default function QuestionPoolDropdown({ question_id, information }: Props) {
     const [openViewModal, setOpenViewModal] = useState(false)
     const [openDeleteModal, setOpenDeleteModal] = useState(false)
 
@@ -23,50 +20,48 @@ export default function QuestionPoolDropdown({ question_id ,information}: Props)
     function handleOpenViewModal() {
         setOpenViewModal(true)
     }
-    return (
-        <AppDropdownDialog actionItems={[
-            {
-                label: <div className='flex justify-between'>
-                    <span className=" pr-5  ">
-                        <AddIcon />
-                    </span>
-                    <span>
-                        Add to exam session
-                    </span>
-                </div>
-            },
-            {
-                label: <div className='flex justify-between'>
-                    <span className=" pr-5  ">
-                        <EyeIcon/>
-                    </span>
-                    <span>
-                        View Details
-                    </span>
-                </div>,
-                onClick: handleOpenViewModal
-            },
-            {
-                label: <div className='flex justify-between'>
-                    <span className=" pr-5  ">
-                        <DeleteIcon />
-                    </span>
-                    <span className='text-[#D42620]'>
-                        Delete Question
-                    </span>
-                </div>,
-                onClick:handleDeleteModal
-                // onClick:()=>alert('I was clicked')
-            },
 
-        ]} triggerButton={<button key='button-two' className="flex flex-col p-2 items-center justify-center w-10 h-full rounded-md border border-gray-300 hover:bg-gray-100">
-            <span className=" w-1 h-1 bg-gray-700 rounded-full"></span>
-            <span className="w-1 h-1 bg-gray-700 rounded-full my-0.5"></span>
-            <span className="w-1 h-1 bg-gray-700 rounded-full"></span>
-        </button>} >
-        {/* <ViewDetails */}
-        <QuestionInformation information={information} open={openViewModal} setOpen={setOpenViewModal} />
-            {/* <EditSesionModal exam_id={exam_id} open={openEditModal} close={setOpenEditModal} /> */}
+    const actionItems = [
+        {
+            label: <div className='flex items-center gap-3 py-1'>
+                <div className="w-8 h-8 bg-blue-50 rounded-lg flex items-center justify-center text-[#3E4095]">
+                    <AddIcon />
+                </div>
+                <span className="text-[10px] font-black uppercase tracking-widest text-gray-700">Add to session</span>
+            </div>,
+            // Add to exam session logic would go here
+        },
+        {
+            label: <div className='flex items-center gap-3 py-1'>
+                <div className="w-8 h-8 bg-blue-50 rounded-lg flex items-center justify-center text-[#3E4095]">
+                    <EyeIcon className="w-4 h-4" />
+                </div>
+                <span className="text-[10px] font-black uppercase tracking-widest text-gray-700">View Details</span>
+            </div>,
+            onClick: handleOpenViewModal
+        },
+        {
+            label: <div className='flex items-center gap-3 py-1'>
+                <div className="w-8 h-8 bg-red-50 rounded-lg flex items-center justify-center text-[#D42620]">
+                    <DeleteIcon />
+                </div>
+                <span className='text-[10px] font-black uppercase tracking-widest text-[#D42620]'>Delete Question</span>
+            </div>,
+            onClick: handleDeleteModal
+        },
+    ];
+
+    return (
+        <AppDropdownDialog 
+            actionItems={actionItems} 
+            triggerButton={
+                <button key='actions-trigger' className="inline-flex items-center gap-2 bg-[#3E4095] text-white px-2 py-2 rounded-xl font-black text-[9px] tracking-widest hover:bg-[#2d2f6e] transition-all uppercase shadow-md shadow-[#3E4095]/10 active:scale-95">
+                    <span>ACTIONS</span>
+                    <GotoIcon className="rotate-90 w-2.5 h-2.5 opacity-80" />
+                </button>
+            } 
+        >
+            <QuestionInformation information={information} open={openViewModal} setOpen={setOpenViewModal} />
             <RemoveQuestionModal question_id={question_id} open={openDeleteModal} close={setOpenDeleteModal} />
         </AppDropdownDialog>
     )

@@ -52,13 +52,15 @@ function CustomTable<T extends { id: number }>({
           <thead>
             <tr className="border-b border-[#E4E7EC] bg-[#E4E7EC]">
               <th className="py-2 px-3 text-center">
-                <Checkbox
-                  checked={allSelected}
-                  onChange={(checked) => onSelectAll?.(checked)}
-                />
+                <div className="flex justify-center">
+                  <Checkbox
+                    checked={allSelected}
+                    onChange={(checked) => onSelectAll?.(checked)}
+                  />
+                </div>
               </th>
               {columns.map((col, i) => (
-                <th key={i} className="py-3 text-left px-3">
+                <th key={i} className={clsx("py-3 px-3 text-[9px] font-black uppercase tracking-widest text-gray-500", (col as any).align === 'center' ? 'text-center' : 'text-left')}>
                   {col.header}
                 </th>
               ))}
@@ -78,11 +80,13 @@ function CustomTable<T extends { id: number }>({
                   key={row.id}
                   className="border-b border-[#E4E7EC] last:border-0 hover:bg-gray-50 transition-colors"
                 >
-                  <td className="py-2 px-3 text-center">
-                    <Checkbox
-                      checked={selectedIds.includes(row.id)}
-                      onChange={(checked) => onSelectRow?.(row.id, checked)}
-                    />
+                  <td className="py-2 px-3">
+                    <div className="flex justify-center">
+                      <Checkbox
+                        checked={selectedIds.includes(row.id)}
+                        onChange={(checked) => onSelectRow?.(row.id, checked)}
+                      />
+                    </div>
                   </td>
 
                   {columns.map((col, ci) => {
@@ -184,123 +188,161 @@ export default function QuestionPoolTable({
 
 
   return (
-    <ResponsiveContainer className="flex gap-4 py-3 px-0 flex-col mx-auto">
-      <div className="flex  justify-between px-3">
+    <ResponsiveContainer className="flex gap-6 py-6 px-0 flex-col mx-auto font-sans bg-white border border-gray-100 rounded-[2rem] shadow-sm overflow-hidden">
+      <div className="flex flex-col md:flex-row md:items-center justify-between px-8 gap-4">
         <div className="flex gap-1 flex-col">
-          <h2 className="font-bold">Questions</h2>
-          <p>Questions added to the platform</p>
+          <div className="flex items-center space-x-2">
+            <i className="fas fa-database text-[#3E4095] text-[10px]"></i>
+            <h2 className="text-[9px] font-black text-gray-400 uppercase tracking-widest">Pool</h2>
+          </div>
+          <p className="text-xl font-bold text-gray-800 tracking-tight">Manage Questions</p>
         </div>
-        <div className="flex justify-between items-center gap-2">
-          <div className="flex">
+        <div className="flex flex-wrap items-center gap-3">
+          <div className="relative">
+            <i className="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-xs"></i>
             <input
               value={searchInput}
               onChange={(e) => setSearchInput(e.target.value)}
               type="text"
-              placeholder="Search questions"
-              className="border h-10 px-2 py-1 rounded-md border-[#E4E7EC] outline-none"
+              placeholder="Search questions..."
+              className="bg-gray-50 border border-gray-100 h-11 pl-10 pr-4 py-2 rounded-xl outline-none focus:ring-4 focus:ring-[#3E4095]/5 focus:border-[#3E4095] transition-all text-sm font-medium w-64"
             />
           </div>
-          <button className="inline-flex items-center gap-2 border rounded-md h-10 px-2 py-1 border-[#E4E7EC] cursor-pointer">
+          <button className="inline-flex items-center justify-center gap-2 bg-white border border-gray-100 h-11 rounded-xl px-4 text-gray-600 hover:bg-gray-50 transition-all font-bold text-[10px] uppercase tracking-widest shadow-sm">
             <SortIcon />
-            <span className="text-[#344054]">Sort</span>
+            <span>Sort</span>
           </button>
-          <button className="inline-flex items-center gap-2 border rounded-md px-2 h-10 py-1 border-[#E4E7EC] cursor-pointer">
+          <button className="inline-flex items-center justify-center gap-2 bg-white border border-gray-100 h-11 rounded-xl px-4 text-gray-600 hover:bg-gray-50 transition-all font-bold text-[10px] uppercase tracking-widest shadow-sm">
             <FilterIcon />
-            <span className="text-[#344054]">Filter</span>
+            <span>Filter</span>
           </button>
         </div>
       </div>
-      {
-        selectedQuestions.length > 0 &&
-        <div className="flex px-3 bg-[#F7F9FC] items-center py-2 -mb-3 justify-between">
-          <span className="text-lg font-bold">{selectedQuestions.length} Question{selectedQuestions.length > 1 && 's'} selected</span>
-          <div className="flex gap-2">
-            <button onClick={handleOpenDeleteModal} className="rounded-xl py-2 font-semibold bg-[#FBEAE9] cursor-pointer text-[#CB1A14] px-3">Delete Question</button>
-            <button onClick={handleOpenExamSessionModal} className="rounded-xl py-2 font-semibold bg-[#3E4095] cursor-pointer text-white px-3">Add to exam session</button>
+
+      {selectedQuestions.length > 0 && (
+        <div className="mx-8 px-6 bg-[#3E4095] items-center py-4 rounded-2xl flex justify-between shadow-lg shadow-[#3E4095]/20 animate-in slide-in-from-top-4 duration-300">
+          <div className="flex items-center gap-3">
+            <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center text-white">
+              <i className="fas fa-check-double text-xs"></i>
+            </div>
+            <span className="text-sm font-black text-white uppercase tracking-widest">
+              {selectedQuestions.length} Question{selectedQuestions.length > 1 && 's'} selected
+            </span>
+          </div>
+          <div className="flex gap-3">
+            <button 
+              onClick={handleOpenDeleteModal} 
+              className="rounded-xl py-2.5 px-5 font-black text-[10px] uppercase tracking-widest bg-red-500/60 text-white hover:bg-red-500/30 transition-all border border-red-500/20"
+            >
+              Delete
+            </button>
+            <button 
+              onClick={handleOpenExamSessionModal} 
+              className="rounded-xl py-2.5 px-5 font-black text-[10px] uppercase tracking-widest bg-white text-[#3E4095] hover:bg-gray-50 transition-all shadow-sm"
+            >
+              Add to session
+            </button>
           </div>
         </div>
-      }
+      )}
 
-      <CustomTable
-        data={questions}
-        columns={[
-          {
-            key: "user",
-            header: "S/N",
-            render: (_, __, index) => <span>{index + 1}</span>,
-          },
-          {
-            key: "data.text",
-            header: "Question",
-            render: (_, row) => {
-              const options = getOptionAsArray(row);
-              return (
-                <div className="flex text-start flex-col gap-1 min-w-[300px]">
-                  <div className="font-medium text-gray-900">
-                    <MathRenderer content={row.text} />
-                  </div>
-                  <div className="flex flex-wrap gap-x-4 gap-y-1 w-full mt-1">
-                    {options.map((val, index) => (
-                      <div key={index} className="option flex gap-2 items-center">
-                        <input
-                          id={val.optionKey}
-                          type="radio"
-                          disabled
-                          className="w-3 h-3 text-[#3E4095]"
-                          checked={val.optionKey.endsWith(row.correct_answer.toLowerCase())}
-                        />
-                        <label htmlFor={val.optionKey} className="text-xs text-gray-600">
-                           <MathRenderer content={val.option} inline />
-                        </label>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              );
+      <div className="px-1">
+        <CustomTable
+          data={questions}
+          columns={[
+            {
+              key: "user",
+              header: "S/N",
+              align: 'center',
+              render: (_, __, index) => <div className="flex justify-center"><span className="text-xs font-bold text-gray-400">{(currentPage - 1) * 10 + index + 1}</span></div>,
             },
-          },
-          {
-            key: "difficulty",
-            header: "Difficulty",
-            render: (_, row) => (
-              <span
-                className={clsx(
-                  getAppropriateColor(row.difficulty),
-                  "px-3 capitalize rounded-full text-sm font-bold py-2"
-                )}
-              >
-                {row.difficulty}
-              </span>
-            ),
-          },
-          {
-            key: "date_created",
-            header: "Date Added",
-            render: (_, row) => <span>{formatDate(row.created_at)}</span>,
-          },
-          {
-            key: "action",
-            header: "Action",
-            render: (_, row) => (
-              <div className="flex justify-between items-center gap-1">
-
-                <QuestionPoolDropdown information={row} question_id={row.id} />
-
-              </div>
-            ),
-          },
-        ]}
-        footer={
-          <TablePagination
-            currentPage={currentPage}
-            pageCount={page_count}
-            onPageChange={onPageChange}
-          />
-        }
-        onSelectAll={handleSelectAll}
-        onSelectRow={handleSelectRow}
-        selectedIds={selectedQuestions}
-      />
+            {
+              key: "data.text",
+              header: "Question",
+              render: (_, row) => {
+                const options = getOptionAsArray(row);
+                return (
+                  <div className="flex text-start flex-col gap-3 py-2 min-w-[400px]">
+                    <div className="text-sm font-bold text-gray-800 leading-relaxed">
+                      <MathRenderer content={row.text} />
+                    </div>
+                    <div className="flex flex-wrap gap-x-6 gap-y-2 w-full">
+                      {options.map((val, index) => (
+                        <div key={index} className="flex gap-2.5 items-center">
+                          <div className={clsx(
+                            "w-4 h-4 rounded-full border flex items-center justify-center shrink-0",
+                            val.optionKey.endsWith(row.correct_answer.toLowerCase()) 
+                              ? "bg-[#3E4095] border-[#3E4095]" 
+                              : "border-gray-200"
+                          )}>
+                            {val.optionKey.endsWith(row.correct_answer.toLowerCase()) && (
+                              <i className="fas fa-check text-[8px] text-white"></i>
+                            )}
+                          </div>
+                          <label className="text-[11px] font-medium text-gray-500">
+                             <MathRenderer content={val.option} inline />
+                          </label>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                );
+              },
+            },
+            {
+              key: "difficulty",
+              header: "Difficulty",
+              align: 'center',
+              render: (_, row) => (
+                <div className="flex justify-center">
+                  <span
+                    className={clsx(
+                      getAppropriateColor(row.difficulty),
+                      "px-3 py-1 uppercase rounded-full text-[9px] font-black tracking-widest bg-white border border-current/30"
+                    )}
+                  >
+                    {row.difficulty}
+                  </span>
+                </div>
+              ),
+            },
+            {
+              key: "date_created",
+              header: "Date Added",
+              align: 'center',
+              render: (_, row) => (
+                <div className="flex justify-center">
+                  <span className="text-[11px] font-bold text-gray-400">
+                    {formatDate(row.created_at)}
+                  </span>
+                </div>
+              ),
+            },
+            {
+              key: "action",
+              header: "Action",
+              align: 'center',
+              render: (_, row) => (
+                <div className="flex justify-center items-center">
+                  <QuestionPoolDropdown information={row} question_id={row.id} />
+                </div>
+              ),
+            },
+          ]}
+          footer={
+            <div className="px-8 border-t border-gray-50">
+              <TablePagination
+                currentPage={currentPage}
+                pageCount={page_count}
+                onPageChange={onPageChange}
+              />
+            </div>
+          }
+          onSelectAll={handleSelectAll}
+          onSelectRow={handleSelectRow}
+          selectedIds={selectedQuestions}
+        />
+      </div>
 
       {currentQuestion && (
         <QuestionInformation

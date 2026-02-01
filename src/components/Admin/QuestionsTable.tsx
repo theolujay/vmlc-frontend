@@ -49,164 +49,201 @@ export default function QuestionsTable({
     onPageChange(1);
   };
 
-  return <ResponsiveContainer className='flex gap-4 py-3 px-0 flex-col w-full mt-6 mx-auto font-sans'>
-    <div className="flex flex-col sm:flex-row sm:justify-between gap-3 sm:gap-0 px-3">
-      <div className="flex gap-1 flex-col">
-        <h2 className='font-bold text-lg sm:text-xl'>Questions</h2>
-        <p className="text-sm text-gray-600">Questions added to the platform</p>
-      </div>
-      <div className="flex flex-col sm:flex-row gap-2 sm:items-center">
-        <div className="flex w-full sm:w-auto">
-          <input 
-            value={searchInput}
-            onChange={(e) => setSearchInput(e.target.value)}
-            type="text" 
-            placeholder='Search questions' 
-            className='border h-10 px-3 py-1 rounded-md border-[#E4E7EC] outline-none w-full sm:w-auto text-sm' 
-          />
+  return (
+    <ResponsiveContainer className="flex gap-6 py-6 px-0 flex-col mx-auto font-sans bg-white border border-gray-100 rounded-[2rem] shadow-sm overflow-hidden mt-6">
+      <div className="flex flex-col md:flex-row md:items-center justify-between px-8 gap-4">
+        <div className="flex gap-1 flex-col">
+          <div className="flex items-center space-x-2">
+            <i className="fas fa-list-ul text-[#3E4095] text-[10px]"></i>
+            <h2 className="text-[9px] font-black text-gray-400 uppercase tracking-widest">Session Questions</h2>
+          </div>
+          <p className="text-xl font-bold text-gray-800 tracking-tight">Exam Content</p>
         </div>
-        
-        <div className="flex gap-2">
-          <DropdownMenu.Root>
-            <DropdownMenu.Trigger asChild>
-              <button className='inline-flex items-center justify-center gap-2 border h-10 rounded-md px-3 py-1 border-[#E4E7EC] cursor-pointer flex-1 sm:flex-none'>
-                <span><SortIcon /></span>
-                <span className='text-[#344054] text-sm'>Sort</span>
-              </button>
-            </DropdownMenu.Trigger>
-            <DropdownMenu.Portal>
-              <DropdownMenu.Content className="z-50 min-w-[150px] bg-white rounded-md p-1 shadow-lg border border-[#E4E7EC]" sideOffset={5}>
-                <DropdownMenu.Label className="px-2 py-1.5 text-xs font-semibold text-gray-500 uppercase">Sort By</DropdownMenu.Label>
-                <DropdownMenu.Item onClick={() => handleSort('text')} className="px-2 py-2 text-sm text-gray-700 outline-none cursor-pointer hover:bg-gray-100 rounded">Question (A-Z)</DropdownMenu.Item>
-                <DropdownMenu.Item onClick={() => handleSort('-text')} className="px-2 py-2 text-sm text-gray-700 outline-none cursor-pointer hover:bg-gray-100 rounded">Question (Z-A)</DropdownMenu.Item>
-                <DropdownMenu.Item onClick={() => handleSort('-created_at')} className="px-2 py-2 text-sm text-gray-700 outline-none cursor-pointer hover:bg-gray-100 rounded">Newest First</DropdownMenu.Item>
-                <DropdownMenu.Item onClick={() => handleSort('created_at')} className="px-2 py-2 text-sm text-gray-700 outline-none cursor-pointer hover:bg-gray-100 rounded">Oldest First</DropdownMenu.Item>
-              </DropdownMenu.Content>
-            </DropdownMenu.Portal>
-          </DropdownMenu.Root>
+        <div className="flex flex-wrap items-center gap-3">
+          <div className="relative">
+            <i className="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-xs"></i>
+            <input 
+              value={searchInput}
+              onChange={(e) => setSearchInput(e.target.value)}
+              type="text" 
+              placeholder='Search questions...' 
+              className='bg-gray-50 border border-gray-100 h-11 pl-10 pr-4 py-2 rounded-xl outline-none focus:ring-4 focus:ring-[#3E4095]/5 focus:border-[#3E4095] transition-all text-sm font-medium w-64' 
+            />
+          </div>
+          
+          <div className="flex gap-2">
+            <DropdownMenu.Root>
+              <DropdownMenu.Trigger asChild>
+                <button className='inline-flex items-center justify-center gap-2 bg-white border border-gray-100 h-11 rounded-xl px-4 text-gray-600 hover:bg-gray-50 transition-all font-bold text-[10px] uppercase tracking-widest shadow-sm'>
+                  <span><SortIcon /></span>
+                  <span>Sort</span>
+                </button>
+              </DropdownMenu.Trigger>
+              <DropdownMenu.Portal>
+                <DropdownMenu.Content className="z-50 min-w-[150px] bg-white rounded-md p-1 shadow-lg border border-[#E4E7EC]" sideOffset={5}>
+                  <DropdownMenu.Label className="px-2 py-1.5 text-[9px] font-black text-gray-400 uppercase tracking-widest">Sort By</DropdownMenu.Label>
+                  <DropdownMenu.Item onClick={() => handleSort('text')} className="px-2 py-2 text-xs font-bold text-gray-700 outline-none cursor-pointer hover:bg-gray-100 rounded uppercase tracking-tighter">Question (A-Z)</DropdownMenu.Item>
+                  <DropdownMenu.Item onClick={() => handleSort('-text')} className="px-2 py-2 text-xs font-bold text-gray-700 outline-none cursor-pointer hover:bg-gray-100 rounded uppercase tracking-tighter">Question (Z-A)</DropdownMenu.Item>
+                  <DropdownMenu.Item onClick={() => handleSort('-created_at')} className="px-2 py-2 text-xs font-bold text-gray-700 outline-none cursor-pointer hover:bg-gray-100 rounded uppercase tracking-tighter">Newest First</DropdownMenu.Item>
+                  <DropdownMenu.Item onClick={() => handleSort('created_at')} className="px-2 py-2 text-xs font-bold text-gray-700 outline-none cursor-pointer hover:bg-gray-100 rounded uppercase tracking-tighter">Oldest First</DropdownMenu.Item>
+                </DropdownMenu.Content>
+              </DropdownMenu.Portal>
+            </DropdownMenu.Root>
 
-          <DropdownMenu.Root>
-            <DropdownMenu.Trigger asChild>
-              <button className='inline-flex items-center justify-center gap-2 border h-10 rounded-md px-3 py-1 border-[#E4E7EC] cursor-pointer flex-1 sm:flex-none'>
-                <span><FilterIcon /></span>
-                <span className='text-[#344054] text-sm'>Filter</span>
-              </button>
-            </DropdownMenu.Trigger>
-            <DropdownMenu.Portal>
-              <DropdownMenu.Content className="z-50 min-w-[200px] bg-white rounded-md p-3 shadow-lg border border-[#E4E7EC]" sideOffset={5}>
-                <div className="flex flex-col gap-3">
-                  <div className="flex flex-col gap-1">
-                    <label className="text-xs font-semibold text-gray-500 uppercase">Difficulty</label>
-                    <select 
-                      value={filters.difficulty || ''} 
-                      onChange={(e) => handleFilterChange('difficulty', e.target.value)}
-                      className="border rounded px-2 py-1.5 text-sm outline-none"
+            <DropdownMenu.Root>
+              <DropdownMenu.Trigger asChild>
+                <button className='inline-flex items-center justify-center gap-2 bg-white border border-gray-100 h-11 rounded-xl px-4 text-gray-600 hover:bg-gray-50 transition-all font-bold text-[10px] uppercase tracking-widest shadow-sm'>
+                  <span><FilterIcon /></span>
+                  <span>Filter</span>
+                </button>
+              </DropdownMenu.Trigger>
+              <DropdownMenu.Portal>
+                <DropdownMenu.Content className="z-50 min-w-[200px] bg-white rounded-md p-3 shadow-lg border border-[#E4E7EC]" sideOffset={5}>
+                  <div className="flex flex-col gap-3">
+                    <div className="flex flex-col gap-1">
+                      <label className="text-[9px] font-black text-gray-400 uppercase tracking-widest">Difficulty</label>
+                      <select 
+                        value={filters.difficulty || ''} 
+                        onChange={(e) => handleFilterChange('difficulty', e.target.value)}
+                        className="border rounded-lg px-2 py-1.5 text-xs font-bold text-gray-700 outline-none focus:ring-2 focus:ring-[#3E4095]/10"
+                      >
+                        <option value="">All Difficulties</option>
+                        <option value="easy">Easy</option>
+                        <option value="moderate">Moderate</option>
+                        <option value="hard">Hard</option>
+                      </select>
+                    </div>
+                    
+                    <button 
+                      onClick={() => {
+                        setFilters({});
+                        onPageChange(1);
+                      }}
+                      className="mt-2 text-[9px] text-red-600 font-black uppercase tracking-widest hover:underline text-left"
                     >
-                      <option value="">All Difficulties</option>
-                      <option value="easy">Easy</option>
-                      <option value="moderate">Moderate</option>
-                      <option value="hard">Hard</option>
-                    </select>
+                      Clear Filters
+                    </button>
                   </div>
-                  
+                </DropdownMenu.Content>
+              </DropdownMenu.Portal>
+            </DropdownMenu.Root>
+          </div>
+        </div>
+      </div>
+
+      <div className="px-1 overflow-x-auto">
+        <CustomTable
+          data={questions}
+          minWidth="1000px"
+          columns={[
+            {
+              key: "sn", 
+              header: "S/N", 
+              align: 'center',
+              render: (_, __, index) => (
+                <div className="flex justify-center">
+                  <span className="text-xs font-bold text-gray-400">{(currentPage - 1) * 10 + index + 1}</span>
+                </div>
+              )
+            },
+            {
+              key: 'data.text', 
+              header: 'Question', 
+              render: (_, row) => {
+                const options = getOptionAsArray(row)
+                return (
+                  <div className="flex text-start flex-col gap-3 py-2 min-w-[400px]">
+                    <div className="text-sm font-bold text-gray-800 leading-relaxed">
+                      <MathRenderer content={row.text} />
+                    </div>
+                    <div className="flex flex-wrap gap-x-6 gap-y-2 w-full">
+                      {options.map((val, index) => (
+                        <div key={`option-${index + 1}`} className="flex gap-2.5 items-center">
+                          <div className={clsx(
+                            "w-4 h-4 rounded-full border flex items-center justify-center shrink-0",
+                            val.optionKey.endsWith(row.correct_answer.toLowerCase()) 
+                              ? "bg-[#3E4095] border-[#3E4095]" 
+                              : "border-gray-200"
+                          )}>
+                            {val.optionKey.endsWith(row.correct_answer.toLowerCase()) && (
+                              <i className="fas fa-check text-[8px] text-white"></i>
+                            )}
+                          </div>
+                          <label className="text-[11px] font-medium text-gray-500">
+                              <MathRenderer content={val.option} inline />
+                          </label>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )
+              }
+            },
+            {
+              key: 'difficulty', 
+              header: 'Difficulty', 
+              align: 'center', 
+              render: (_, row) => (
+                <div className="flex justify-center">
+                  <span className={clsx(getAppropriateColor(row.difficulty), 'px-3 py-1 uppercase rounded-full text-[9px] font-black tracking-widest bg-white border border-current/30')}>
+                    {row.difficulty}
+                  </span>
+                </div>
+              ),
+            },
+            {
+              key: 'date_created', 
+              header: "Date Added", 
+              align: 'center', 
+              render: (_, row) => (
+                <div className="flex justify-center">
+                  <span className="text-[11px] font-bold text-gray-400">
+                    {formatDate(row.created_at)}
+                  </span>
+                </div>
+              ),
+            },
+            {
+              key: 'action', 
+              header: "Action", 
+              align: 'center', 
+              render: (_, row) => (
+                <div className="flex flex-col justify-end items-center gap-2 px-2">
                   <button 
                     onClick={() => {
-                      setFilters({});
-                      onPageChange(1);
-                    }}
-                    className="mt-2 text-xs text-red-600 font-semibold hover:underline"
+                      setOpenDrawer(true)
+                      setCurrentQuestion(row)
+                    }} 
+                    className="px-4 py-1.5 rounded-full bg-[#3E4095]/5 text-[#3E4095] border border-[#3E4095]/10 font-black text-[9px] uppercase tracking-widest hover:bg-[#3E4095] hover:text-white transition-all cursor-pointer w-24 text-center"
                   >
-                    Clear Filters
+                    View
+                  </button>
+                  <button 
+                    onClick={() => {
+                      setSelectedQuestionId(row.id);
+                      handleOpenModal()
+                    }} 
+                    className="px-4 py-1.5 rounded-full bg-red-50 text-red-600 border border-red-100 font-black text-[9px] uppercase tracking-widest hover:bg-red-600 hover:text-white transition-all cursor-pointer w-24 text-center"
+                  >
+                    Remove
                   </button>
                 </div>
-              </DropdownMenu.Content>
-            </DropdownMenu.Portal>
-          </DropdownMenu.Root>
-        </div>
-      </div>
-    </div>
-    <CustomTable
-      data={questions}
-      minWidth="1000px"
-      columns={[
-        {
-          key: "sn", header: "S/N", render: (_, __, index) => {
-            return (
-              <div className="flex items-center justify-center">
-                <span>{(currentPage - 1) * 10 + index + 1}</span>
-              </div>
-            )
-          },
-        },
-        {
-          key: 'data.text', header: 'Question', render: (_, row) => {
-            const options = getOptionAsArray(row)
-            return <div className="flex text-start flex-col justify-start items-start gap-1 min-w-[400px]">
-              <div className="font-medium text-gray-900 mb-1">
-                <MathRenderer content={row.text} />
-              </div>
-              <div className="flex flex-wrap gap-x-4 gap-y-1 w-full mt-1">
-                {
-                  options.map((val, index) => <div key={`option-${index + 1}`} className="option flex gap-2 items-center">
-                    <input id={val.optionKey} type="radio" disabled checked={val.optionKey.endsWith(row.correct_answer.toLowerCase())} className="w-3 h-3 text-[#3E4095]" />
-                    <label htmlFor={val.optionKey} className="text-xs text-gray-600">
-                        <MathRenderer content={val.option} inline />
-                    </label>
-                  </div>
-                  )
-                }
-              </div>
+              ),
+            }
+          ]}
+          footer={
+            <div className="px-8 border-t border-gray-50 py-3">
+              <TablePagination currentPage={currentPage} pageCount={page_count} onPageChange={onPageChange} />
             </div>
           }
-        },
-        {
-          key: 'difficulty', header: 'Difficulty', align: 'center', render: (_, row) => <div>
-            <span className={clsx(getAppropriateColor(row.difficulty), 'px-3 py-1 uppercase rounded-full text-[10px] font-black tracking-widest bg-white border border-current/40')}>
-              {row.difficulty}
-            </span>
-          </div>,
-        },
-        {
-          key: 'date_created', header: "Date Added", align: 'center', render: (_, row) => {
-            return (
-              <div className="text-sm font-medium text-gray-500">
-                {formatDate(row.created_at)}
-              </div>
-            )
-          },
-        },
-        {
-          key: 'action', header: "Action", align: 'center', render: (_, row) => (
-            <div className="flex flex-col justify-end items-center gap-2 px-2">
-              <button 
-                onClick={() => {
-                  setOpenDrawer(true)
-                  setCurrentQuestion(row)
-                }} 
-                className="px-4 py-1 rounded-full bg-[#3E4095]/5 text-[#3E4095] border border-[#3E4095]/10 font-bold text-[10px] uppercase tracking-widest hover:bg-[#3E4095] hover:text-white transition-all cursor-pointer w-24 text-center"
-              >
-                View
-              </button>
-              <button 
-                onClick={() => {
-                  setSelectedQuestionId(row.id);
-                  handleOpenModal()
-                }} 
-                className="px-4 py-1 rounded-full bg-red-50 text-red-600 border border-red-100 font-bold text-[10px] uppercase tracking-widest hover:bg-red-600 hover:text-white transition-all cursor-pointer w-24 text-center"
-              >
-                Remove
-              </button>
-            </div>
-          ),
-        }
-      ]}
-      footer={<TablePagination currentPage={currentPage} pageCount={page_count} onPageChange={onPageChange} />}
-    />
-    {currentQuestion &&
-      <QuestionInformation information={currentQuestion} open={openDrawer} setOpen={setOpenDrawer} />
-    }
-    <RemoveQuestionModal question_id={selectedQuestionId} close={setOpenRemoveQuestion} open={openRemoveQuestion} />
-  </ResponsiveContainer>
+        />
+      </div>
+      {currentQuestion &&
+        <QuestionInformation information={currentQuestion} open={openDrawer} setOpen={setOpenDrawer} />
+      }
+      <RemoveQuestionModal question_id={selectedQuestionId} close={setOpenRemoveQuestion} open={openRemoveQuestion} />
+    </ResponsiveContainer>
+  )
 }
 
 

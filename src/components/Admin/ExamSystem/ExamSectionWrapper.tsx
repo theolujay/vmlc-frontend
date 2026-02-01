@@ -18,11 +18,6 @@ function renderComponent(view: string | null) {
     switch (view) {
         case 'exam-session':
             return <ExamSession />
-        case 'easy-question':
-        case 'moderate-question':
-        case 'hard-question':
-        case 'total-question':
-            return <QuestionPool />
         default:
             return <ExamSection />
     }
