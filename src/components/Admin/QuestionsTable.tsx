@@ -160,30 +160,30 @@ export default function QuestionsTable({
           }
         },
         {
-          key: 'difficulty', header: 'Difficulty', render: (_, row) => <div>
-            <span className={clsx(getAppropriateColor(row.difficulty), 'px-3 capitalize rounded-full text-xs font-bold py-1')}>
+          key: 'difficulty', header: 'Difficulty', align: 'center', render: (_, row) => <div>
+            <span className={clsx(getAppropriateColor(row.difficulty), 'px-3 py-1 uppercase rounded-full text-[10px] font-black tracking-widest bg-white border border-current/40')}>
               {row.difficulty}
             </span>
-          </div>
+          </div>,
         },
         {
-          key: 'date_created', header: "Date Added", render: (_, row) => {
+          key: 'date_created', header: "Date Added", align: 'center', render: (_, row) => {
             return (
-              <div className="text-sm">
+              <div className="text-sm font-medium text-gray-500">
                 {formatDate(row.created_at)}
               </div>
             )
           },
         },
         {
-          key: 'action', header: "Action", align: 'right', render: (_, row) => (
-            <div className="flex justify-end items-center gap-3 px-2">
+          key: 'action', header: "Action", align: 'center', render: (_, row) => (
+            <div className="flex flex-col justify-end items-center gap-2 px-2">
               <button 
                 onClick={() => {
                   setOpenDrawer(true)
                   setCurrentQuestion(row)
                 }} 
-                className="text-[#3E4095] font-bold hover:underline text-sm cursor-pointer"
+                className="px-4 py-1 rounded-full bg-[#3E4095]/5 text-[#3E4095] border border-[#3E4095]/10 font-bold text-[10px] uppercase tracking-widest hover:bg-[#3E4095] hover:text-white transition-all cursor-pointer w-24 text-center"
               >
                 View
               </button>
@@ -192,7 +192,7 @@ export default function QuestionsTable({
                   setSelectedQuestionId(row.id);
                   handleOpenModal()
                 }} 
-                className="text-red-600 font-bold hover:underline text-sm cursor-pointer"
+                className="px-4 py-1 rounded-full bg-red-50 text-red-600 border border-red-100 font-bold text-[10px] uppercase tracking-widest hover:bg-red-600 hover:text-white transition-all cursor-pointer w-24 text-center"
               >
                 Remove
               </button>
