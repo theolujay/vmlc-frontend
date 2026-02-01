@@ -50,7 +50,7 @@ export class ExamPortal {
     static async viewExamQuestions(id: string): Promise<UpdatedSessionQuestionType> {
         try {
 
-            const response = await client.get(examUrls.VIEW_QUESTIONS(id))
+            const response = await client.get(examUrls.EXAM_DETAILS(id))
             return response.data;
         } catch (error) {
             console.error(error)
