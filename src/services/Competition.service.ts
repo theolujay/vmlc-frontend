@@ -47,7 +47,7 @@ export class CompetitionService {
 
   static async getCompetitionDashboard() {
     try {
-      const response = await client.get('/v1/competition/dashboard/');
+      const response = await client.get('/v1/competition/dashboard/staff');
       return response.data;
     } catch (error) {
       console.error('Error fetching competition dashboard:', error);
