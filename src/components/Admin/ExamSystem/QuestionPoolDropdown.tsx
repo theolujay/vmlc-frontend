@@ -27,7 +27,7 @@ export default function QuestionPoolDropdown({ question_id, information }: Props
                 <div className="w-8 h-8 bg-blue-50 rounded-lg flex items-center justify-center text-[#3E4095]">
                     <AddIcon />
                 </div>
-                <span className="text-[10px] font-black uppercase tracking-widest text-gray-700">Add to session</span>
+                <span className="text-[10px] font-black uppercase tracking-widest text-gray-700">Add to exam</span>
             </div>,
             // Add to exam session logic would go here
         },

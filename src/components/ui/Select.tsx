@@ -8,15 +8,17 @@ export default function SelectInput({
     placeholder = "Select an item",
     items,
     value,
-    onValueChange
+    onValueChange,
+    disabled
 }: Readonly<{
     placeholder?: string;
     value?:string,
     onValueChange?:(value:string)=>void
     items: string[];
+    disabled?: boolean;
 }>) {
     return (
-        <Select.Root value={value} onValueChange={onValueChange}>
+        <Select.Root value={value} onValueChange={onValueChange} disabled={disabled}>
             <Select.Trigger
                 className="inline-flex h-[40px] w-full border border-[#D0D5DD] items-center justify-between gap-[5px] rounded-md bg-white px-[15px] leading-none outline-none"
                 aria-label="stages"
@@ -86,15 +88,17 @@ export function UploadSelectInput({
     placeholder = "Select an item",
     items,
     value,
-    onValueChange
+    onValueChange,
+    disabled
 }: Readonly<{
     placeholder?: string;
     value?:string,
     onValueChange?:(value:string)=>void
     items: string[];
+    disabled?: boolean;
 }>) {
     return (
-        <Select.Root value={value} onValueChange={onValueChange}>
+        <Select.Root value={value} onValueChange={onValueChange} disabled={disabled}>
             <Select.Trigger
                 className="inline-flex h-[40px] w-full border border-[#D0D5DD] items-center justify-between gap-[5px] rounded-md bg-white px-[15px] leading-none outline-none"
                 aria-label="stages"

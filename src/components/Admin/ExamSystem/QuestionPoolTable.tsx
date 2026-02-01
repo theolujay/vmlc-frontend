@@ -20,6 +20,7 @@ type ColumnType<T> = {
   key: keyof T | string;
   header: string;
   render?: (value: any, row: T, index: number) => React.ReactNode;
+  align?: 'left' | 'center' | 'right';
 };
 
 type CustomTableProps<T> = {
@@ -60,7 +61,7 @@ function CustomTable<T extends { id: number }>({
                 </div>
               </th>
               {columns.map((col, i) => (
-                <th key={i} className={clsx("py-3 px-3 text-[9px] font-black uppercase tracking-widest text-gray-500", (col as any).align === 'center' ? 'text-center' : 'text-left')}>
+                <th key={i} className={clsx("py-3 px-3 text-[9px] font-black uppercase tracking-widest text-gray-500", col.align === 'center' ? 'text-center' : col.align === 'right' ? 'text-right' : 'text-left')}>
                   {col.header}
                 </th>
               ))}
@@ -101,7 +102,7 @@ function CustomTable<T extends { id: number }>({
                         : (row as any)[col.key as keyof T];
 
                     return (
-                      <td key={ci} className="py-2 px-3 text-center">
+                      <td key={ci} className={clsx("py-2 px-3", col.align === 'center' ? 'text-center' : col.align === 'right' ? 'text-right' : 'text-left')}>
                         {col.render ? col.render(value, row, index) : value}
                       </td>
                     );

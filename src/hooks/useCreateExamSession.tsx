@@ -12,7 +12,7 @@ const createExamSchema = z.object({
   stage_id: z.number().optional(),
   round: z.number().optional(),
   description: z.string().optional(),
-  is_active: z.boolean().default(true),
+  is_active: z.boolean(),
 })
 
 
