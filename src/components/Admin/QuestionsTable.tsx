@@ -49,7 +49,7 @@ export default function QuestionsTable({
     onPageChange(1);
   };
 
-  return <ResponsiveContainer className='flex gap-4 py-3 px-0 flex-col w-full mt-6 mx-auto'>
+  return <ResponsiveContainer className='flex gap-4 py-3 px-0 flex-col w-full mt-6 mx-auto font-sans'>
     <div className="flex flex-col sm:flex-row sm:justify-between gap-3 sm:gap-0 px-3">
       <div className="flex gap-1 flex-col">
         <h2 className='font-bold text-lg sm:text-xl'>Questions</h2>
