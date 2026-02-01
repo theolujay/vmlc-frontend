@@ -252,7 +252,8 @@ export type CreateQuestionType = {
   option_c: string,
   option_d: string,
   correct_answer: string,
-  difficulty: string
+  difficulty: string,
+  add_to_exams?: string[]
 }
 
 
