@@ -1,4 +1,4 @@
-import { CreatedByType, RequestUserType } from "./auth";
+import { CreatedByType } from "./auth";
 
 export type Option = {
   value: string;
@@ -15,69 +15,102 @@ export type QuestionProps = {
 
 
 
-type RecentResultType = {
-  exam: string,
-  exam_title?: string,
-  score: number,
-  date: Date,
-  exam_stage: string
-}
+// New API Types based on CANDIDATE_DASHBOARD.md
+export type CandidateContext = {
+  full_name: string;
+  role: string;
+  profile_picture: string | null;
+  is_setup_complete: boolean;
+  status: string;
+  notifications: Array<{
+    id: number;
+    type: string;
+    message: string;
+  }>;
+};
 
-export type StageProgressType = {
+export type DashboardStageProgress = {
   current_stage: string;
   current_round: number;
-  has_taken_exam: boolean;
-  qualification_threshold_score: number;
+  total_rounds: number;
+  published_rounds: number;
+  has_taken_current_round: boolean;
+  qualification_status: {
+    is_qualified: boolean;
+    advancement_policy: {
+      mode: string;
+      value: number;
+    };
+    message: string;
+  };
+};
+
+export type ActiveExamType = {
+  id: string;
+  title: string;
+  stage: string;
+  round: number;
+  question_count: number;
+  starts_at: Date;
+  ends_at: Date;
+  duration_minutes: number;
+  status: string;
+  has_participated: boolean;
+};
+
+export type AvailableExamType = {
+  id: string;
+  title: string;
+  description?: string;
+  open_duration_hours: number;
+  countdown_minutes: number;
+  question_count: number;
+  round: number;
+  scheduled_date: Date;
+  stage: string;
+  stage_display: string;
+  participation: 'done' | 'not_done';
+};
+
+export type LeaderboardRankingType = {
+  current_rank?: number;
+  position: number;
+  total_candidates: number;
+};
+
+export type PerformanceSnapshotType = {
+  screening_standing: {
+    rank: number;
+    total_candidates: number;
+    score: number;
+    percentile: number;
+  } | null;
+  league_leaderboard: {
+    overall_rank: number;
+    total_candidates: number;
+    total_score: number;
+    rank_change: number;
+    as_of_round: number;
+  } | null;
+};
+
+export type ExamHistoryItem = {
+  exam_id: string;
+  exam_title: string;
+  stage: string;
+  round: number | null;
+  score: number;
+  percentage: number;
+  date: string;
+  status: string;
 };
 
 export type DashboardType = {
-  candidate_info: CandidateInfoType,
-  exam_stats: ExamStatType,
-  stage_progress: StageProgressType,
-  league_leaderboard_ranking: LeaderboardRankingType | null,
-  screening_standings_ranking: LeaderboardRankingType | null,
-  recent_results: RecentResultType[],
-  available_exams: AvailableExamType[],
-  concluded_exams: ConcludedExamType[],
-  next_exam: AvailableExamType | null
-}
-
-
-export type LeaderboardRankingType = {
-  current_rank: number,
-  position: number,
-  total_candidates: number
-}
-
-
-
-
-
-export type AvailableExamType = {
-  id: string,
-  title: string,
-  description: string,
-  open_duration_hours: number,
-  // exam_date: Date,
-  countdown_minutes: number,
-  question_count: number,
-  round:number,
-  scheduled_date:Date
-  stage: string,
-  stage_display:string,
-  participation: string
-}
-
-export type ConcludedExamType = {
-  id: string,
-  title: string,
-  description: string,
-  concluded_at: string,
-  question_count: number,
-  participation: string,
-  stage: string,
-  round: number,
-  stage_display: string
+  candidate_context: CandidateContext;
+  stage_progress: DashboardStageProgress;
+  active_exam: ActiveExamType | null;
+  performance_snapshot: PerformanceSnapshotType;
+  exam_history: ExamHistoryItem[];
 }
 
 

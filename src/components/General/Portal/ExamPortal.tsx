@@ -1,3 +1,4 @@
+
 "use client"
 import React, { useState, useEffect } from 'react';
 import PageLayout from '../Layout/PageLayout';
@@ -11,6 +12,7 @@ import PerformanceSnapshot from './DashboardParts/PerformanceSnapshot';
 import ExamHistory from './DashboardParts/ExamHistory';
 import SupportChat from './DashboardParts/SupportChat';
 import ProfileModal from '@/components/Modals/ProfileModal';
+import { AvailableExamType } from '@/types/Examtype';
 
 function ExamPortal() {
   const { isPending, data } = useGetExamPortal();
@@ -19,11 +21,34 @@ function ExamPortal() {
   const [isSupportOpen, setIsSupportOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
 
+  const candidateContext = data?.candidate_context;
+  const stageProgressData = data?.stage_progress;
+  const activeExamData = data?.active_exam;
+  const performanceSnapshot = data?.performance_snapshot;
+  const examHistory = data?.exam_history;
+
   useEffect(() => {
-    if (user && user.profile && user.profile.is_setup_complete === false) {
-      setInfoMessage("Your profile is incomplete. Please update your profile to ensure you don't miss any important updates.");
+    // Priority: 1. API Notifications, 2. Profile Setup Check (API or User Context)
+    
+    // Check Notifications first
+    if (candidateContext?.notifications && candidateContext.notifications.length > 0) {
+       setInfoMessage(candidateContext.notifications[0].message);
+       return;
     }
-  }, [user]);
+
+    // Check Setup status
+    const isSetupComplete = candidateContext?.is_setup_complete ?? user?.profile?.is_setup_complete;
+    
+    if (isSetupComplete === false) {
+      setInfoMessage("Your profile is incomplete. Please update your profile to ensure you don't miss any important updates.");
+    } else {
+       // Clear message if setup is complete and no notifications (and default message was shown)
+       if (infoMessage === "Stay sharp! The competition is about to begin." && isSetupComplete) {
+           // Optional: Keep the default welcome message or clear it. 
+           // setInfoMessage(undefined); 
+       }
+    }
+  }, [user, candidateContext, infoMessage]);
 
   if (isPending) {
     return (
@@ -36,16 +61,12 @@ function ExamPortal() {
   }
 
   // Use login response or API data
-  const candidateName = user?.profile?.user 
-    ? `${user.profile.user.first_name} ${user.profile.user.last_name}` 
-    : data?.candidate_info 
-      ? `${data.candidate_info.first_name} ${data.candidate_info.last_name}` 
+  const candidateName = candidateContext?.full_name 
+    ? candidateContext.full_name
+    : user?.profile?.user 
+      ? `${user.profile.user.first_name} ${user.profile.user.last_name}` 
       : "Candidate";
   
-  const recentResults = data?.recent_results || [];
-  const leagueRanking = data?.league_leaderboard_ranking;
-  const screeningRanking = data?.screening_standings_ranking;
-  const stageProgress = data?.stage_progress;
 
   const determineStage = (stage: string): 'SCREENING' | 'LEAGUE' | 'FINAL' | null => {
     if (!stage) return null;
@@ -57,18 +78,58 @@ function ExamPortal() {
   };
 
   // Derive current stage from data
-  const currentStage: 'SCREENING' | 'LEAGUE' | 'FINAL' = determineStage(stageProgress?.current_stage || '') || 'SCREENING';
-  
-  const currentExam = data?.next_exam || null;
-  const leagueWeek = stageProgress?.current_round || currentExam?.round || 1; 
+  const currentStage: 'SCREENING' | 'LEAGUE' | 'FINAL' = determineStage(stageProgressData?.current_stage || '') || 'SCREENING';
+  const leagueWeek = stageProgressData?.current_round || activeExamData?.round || 1; 
+
+  // Map Active Exam to AvailableExamType for PrimaryAction component
+  const currentExam: AvailableExamType | null = activeExamData ? {
+    id: activeExamData.id,
+    title: activeExamData.title,
+    open_duration_hours: activeExamData.duration_minutes / 60,
+    countdown_minutes: 0,
+    question_count: activeExamData.question_count || 0, 
+    round: activeExamData.round,
+    scheduled_date: new Date(activeExamData.starts_at),
+    stage: activeExamData.stage,
+    stage_display: activeExamData.stage.toUpperCase(),
+    participation: activeExamData.has_participated ? 'done' : 'not_done'
+  } : null;
 
   // Map history
-  const history = recentResults.map(score => ({
-    exam: score.exam,
-    score: score.score,
-    date: score.date,
-    exam_stage: score.exam_stage
+  const history = (examHistory || []).map(item => ({
+    exam: item.exam_title,
+    score: item.percentage,
+    date: new Date(item.date),
+    exam_stage: item.stage
   }));
+
+  // Map Performance Snapshot
+  const leagueRanking = performanceSnapshot?.league_leaderboard ? {
+      current_rank: performanceSnapshot.league_leaderboard.overall_rank,
+      position: performanceSnapshot.league_leaderboard.overall_rank,
+      total_candidates: performanceSnapshot.league_leaderboard.total_candidates
+  } : null;
+
+  const screeningRanking = performanceSnapshot?.screening_standing ? {
+      current_rank: performanceSnapshot.screening_standing.rank,
+      position: performanceSnapshot.screening_standing.rank,
+      total_candidates: performanceSnapshot.screening_standing.total_candidates
+  } : null;
+  
+  // Qualification Threshold logic
+  let qualificationThreshold = 0;
+  if (stageProgressData?.qualification_status?.advancement_policy) {
+      const { mode, value } = stageProgressData.qualification_status.advancement_policy;
+      if (mode === 'top_percent') {
+           const total = currentStage === 'SCREENING' ? screeningRanking?.total_candidates : leagueRanking?.total_candidates;
+           if (total) {
+               qualificationThreshold = Math.ceil(total * value);
+           }
+      } else {
+          qualificationThreshold = value;
+      }
+  }
+
 
   return (
     <PageLayout>
@@ -89,7 +150,7 @@ function ExamPortal() {
         <InfoBoard 
           message={infoMessage} 
           onDismiss={() => setInfoMessage(undefined)} 
-          actionLabel={user?.profile?.is_setup_complete === false ? "Update Profile" : undefined}
+          actionLabel={candidateContext?.is_setup_complete === false || user?.profile?.is_setup_complete === false ? "Update Profile" : undefined}
           onAction={() => setIsProfileOpen(true)}
         />
 
@@ -106,8 +167,8 @@ function ExamPortal() {
             screeningRanking={screeningRanking}
             stage={currentStage}
             currentWeek={leagueWeek}
-            qualificationThreshold={stageProgress?.qualification_threshold_score}
-            hasTakenExam={stageProgress?.has_taken_exam || false}
+            qualificationThreshold={qualificationThreshold}
+            hasTakenExam={stageProgressData?.has_taken_current_round || false}
           />
 
           {/* EXAM HISTORY */}
