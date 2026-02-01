@@ -200,24 +200,21 @@ export default function QuestionPoolTable({
 
 
   return (
-    <ResponsiveContainer className="flex gap-6 py-6 px-0 flex-col mx-auto font-sans bg-white border border-gray-100 rounded-[2rem] shadow-sm overflow-hidden">
+    <ResponsiveContainer className="flex gap-4 py-8 px-0 flex-col mx-auto font-sans bg-white border border-gray-100 rounded-[2rem] shadow-sm overflow-hidden">
       <div className="flex flex-col md:flex-row md:items-center justify-between px-8 gap-4">
-        <div className="flex gap-1 flex-col">
-          {/* <div className="flex items-center space-x-2">
-            <i className="fas fa-database text-[#3E4095] text-[10px]"></i>
-            <h2 className="text-[9px] font-black text-gray-400 uppercase tracking-widest">Pool</h2>
-          </div> */}
-          <h2 className="text-xl font-bold text-gray-800 tracking-tight">Questions Pool</h2>
+        <div className="flex gap-2.5 items-center">
+          <div className="w-1.5 h-6 bg-[#3E4095] rounded-full"></div>
+          <h2 className="text-lg font-black text-gray-800 tracking-tight uppercase">Questions Pool</h2>
         </div>
         <div className="flex flex-wrap items-center gap-3">
-          <div className="relative">
-            <i className="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-xs"></i>
+          <div className="relative group">
+            <i className="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-[#3E4095] transition-colors text-xs"></i>
             <input
               value={searchInput}
               onChange={(e) => setSearchInput(e.target.value)}
               type="text"
               placeholder="Search questions..."
-              className="bg-gray-50 border border-gray-100 h-11 pl-10 pr-4 py-2 rounded-xl outline-none focus:ring-4 focus:ring-[#3E4095]/5 focus:border-[#3E4095] transition-all text-sm font-medium w-64"
+              className="bg-gray-50/50 border border-gray-100 h-11 pl-11 pr-4 py-2 rounded-xl outline-none focus:ring-4 focus:ring-[#3E4095]/5 focus:border-[#3E4095] focus:bg-white transition-all text-sm font-semibold w-64 shadow-inner"
             />
           </div>
           <button className="inline-flex items-center justify-center gap-2 bg-white border border-gray-100 h-11 rounded-xl px-4 text-gray-600 hover:bg-gray-50 transition-all font-bold text-[10px] uppercase tracking-widest shadow-sm">

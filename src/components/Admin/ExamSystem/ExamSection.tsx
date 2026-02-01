@@ -106,23 +106,23 @@ export default function ExamSection() {
         ].filter(Boolean) as React.ReactNode[]} 
       />
       
-      <div className="flex flex-col gap-12 mt-8 w-[96%] mx-auto pb-20">
+      <div className="flex flex-col gap-6 mt-4 w-full sm:w-[96%] px-2 sm:px-0 sm:mx-auto pb-20">
         {/* Exams Section */}
         {isAdminOrAbove && (
-          <div className='flex flex-col gap-6'>
-            <div className="flex items-center space-x-2 px-2">
+          <div className='flex flex-col gap-4'>
+            <div className="flex items-center space-x-2.5 px-2">
               <i className="fas fa-layer-group text-[#3E4095] text-[10px]"></i>
-              <h3 className="text-[9px] font-black text-gray-400 uppercase tracking-widest">Active Exam Sessions</h3>
+              <h3 className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Active Exam Sessions</h3>
             </div>
             {
-              isExamsPending ? <div className="grid w-full h-[30vh] place-content-center"><Spinner /></div> :
+              isExamsPending ? <div className="grid w-full h-[20vh] place-content-center"><Spinner /></div> :
                 <QuestionSession currentPage={currentPage} onPageChange={setCurrentPage} total_pages={examData?.pagination.total_pages ?? 0} sessions={examData?.results ?? []} />
             }
           </div>
         )}
         
         {/* Global Question Pool Section */}
-        <div className="space-y-6">
+        <div className="space-y-4">
           <QuestionPoolStats 
             title='Questions Stats'
             activeDifficulty={questionFilters.difficulty}

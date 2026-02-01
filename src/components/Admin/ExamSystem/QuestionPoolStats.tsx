@@ -58,19 +58,19 @@ const QuestionPoolStats: React.FC<QuestionPoolStatsProps> = ({
   ];
 
   return (
-    <ResponsiveContainer className="font-sans flex flex-col gap-6 p-8 bg-white border border-gray-100 rounded-[2.5rem] shadow-sm">
-      <div className="flex justify-between items-center border-b border-gray-50 pb-4">
+    <ResponsiveContainer className="font-sans flex flex-col gap-5 p-6 bg-white border border-gray-100 rounded-[2rem] shadow-sm">
+      <div className="flex justify-between items-center border-b border-gray-50 pb-3">
         <div className="flex items-center gap-3">
-          <div className="w-1.5 h-6 bg-[#3E4095] rounded-full"></div>
-          <h1 className="text-xl font-black text-gray-800 tracking-tight uppercase">{title}</h1>
+          <div className="w-1.5 h-5 bg-[#3E4095] rounded-full"></div>
+          <h1 className="text-lg font-black text-gray-800 tracking-tight uppercase">{title}</h1>
         </div>
-        <div className="hidden md:flex items-center gap-2 px-4 py-1.5 bg-gray-50 rounded-full border border-gray-100">
+        <div className="hidden md:flex items-center gap-2 px-3 py-1 bg-gray-50 rounded-full border border-gray-100">
           <i className="fas fa-filter text-[#3E4095] text-[10px]"></i>
           <span className="text-[9px] font-black text-gray-400 uppercase tracking-widest">Filter By Difficulty</span>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {statItems.map((item) => {
           const isActive = activeDifficulty === item.key;
           return (
@@ -78,10 +78,10 @@ const QuestionPoolStats: React.FC<QuestionPoolStatsProps> = ({
               key={item.key}
               onClick={() => onDifficultyChange(item.key)}
               className={clsx(
-                "flex flex-col gap-4 p-6 rounded-[2rem] transition-all duration-300 text-left group border cursor-pointer relative overflow-hidden",
+                "flex flex-col gap-3 p-5 rounded-2xl transition-all duration-300 text-left group border cursor-pointer relative overflow-hidden",
                 isActive 
-                  ? "bg-[#3E4095] border-[#3E4095] shadow-xl shadow-[#3E4095]/20 scale-[1.02]" 
-                  : "bg-gray-50/50 border-gray-50 hover:bg-white hover:border-[#3E4095]/20 hover:shadow-lg hover:shadow-[#3E4095]/5"
+                  ? "bg-[#3E4095] border-[#3E4095] shadow-lg shadow-[#3E4095]/20 scale-[1.02]" 
+                  : "bg-gray-50/50 border-gray-50 hover:bg-white hover:border-[#3E4095]/20 hover:shadow-md hover:shadow-[#3E4095]/5"
               )}
             >
               {isActive && (

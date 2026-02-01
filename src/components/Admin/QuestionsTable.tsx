@@ -50,19 +50,19 @@ export default function QuestionsTable({
   };
 
   return (
-    <ResponsiveContainer className="flex gap-6 py-10 px-0 flex-col mx-auto font-sans bg-white border border-gray-100 rounded-[2.5rem] shadow-sm overflow-hidden mt-8">
-      <div className="flex flex-col md:flex-row md:items-center justify-between px-10 gap-4">
+    <ResponsiveContainer className="flex gap-4 py-8 px-0 flex-col mx-auto font-sans bg-white border border-gray-100 rounded-[2rem] shadow-sm overflow-hidden mt-4">
+      <div className="flex flex-col md:flex-row md:items-center justify-between px-8 gap-4">
         <div className="flex gap-3 items-center">
-          <div className="w-1.5 h-8 bg-[#3E4095] rounded-full"></div>
+          <div className="w-1.5 h-6 bg-[#3E4095] rounded-full"></div>
           <div className="flex flex-col">
             <div className="flex items-center space-x-2">
               <i className="fas fa-list-ul text-[#3E4095] text-[10px]"></i>
               <h2 className="text-[9px] font-black text-gray-400 uppercase tracking-[0.2em]">Session Questions</h2>
             </div>
-            <p className="text-2xl font-black text-gray-900 tracking-tight uppercase">Exam Content</p>
+            <p className="text-lg font-black text-gray-900 tracking-tight uppercase">Exam Content</p>
           </div>
         </div>
-        <div className="flex flex-wrap items-center gap-4">
+        <div className="flex flex-wrap items-center gap-3">
           <div className="relative group">
             <i className="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-[#3E4095] transition-colors text-xs"></i>
             <input 
@@ -70,16 +70,34 @@ export default function QuestionsTable({
               onChange={(e) => setSearchInput(e.target.value)}
               type="text" 
               placeholder='Search questions...' 
-              className='bg-gray-50/50 border border-gray-100 h-12 pl-12 pr-6 py-2 rounded-2xl outline-none focus:ring-4 focus:ring-[#3E4095]/5 focus:border-[#3E4095] focus:bg-white transition-all text-sm font-semibold w-72 shadow-inner' 
+              className='bg-gray-50/50 border border-gray-100 h-11 pl-11 pr-4 py-2 rounded-xl outline-none focus:ring-4 focus:ring-[#3E4095]/5 focus:border-[#3E4095] focus:bg-white transition-all text-sm font-semibold w-64 shadow-inner' 
             />
           </div>
           
           <div className="flex gap-2">
             <DropdownMenu.Root>
               <DropdownMenu.Trigger asChild>
-                <button className='inline-flex items-center justify-center gap-2 bg-white border border-gray-100 h-12 rounded-2xl px-5 text-gray-600 hover:bg-gray-50 hover:border-gray-200 transition-all font-black text-[10px] uppercase tracking-widest shadow-sm active:scale-95'>
+                <button className='inline-flex items-center justify-center gap-2 bg-white border border-gray-100 h-11 rounded-xl px-4 text-gray-600 hover:bg-gray-50 hover:border-gray-200 transition-all font-black text-[10px] uppercase tracking-widest shadow-sm active:scale-95'>
                   <SortIcon />
                   <span>Sort</span>
+                </button>
+              </DropdownMenu.Trigger>
+              <DropdownMenu.Portal>
+                <DropdownMenu.Content className="z-50 min-w-[180px] bg-white rounded-2xl p-2 shadow-xl border border-gray-100 animate-in fade-in zoom-in-95 duration-200" sideOffset={8}>
+                  <DropdownMenu.Label className="px-3 py-2 text-[9px] font-black text-gray-400 uppercase tracking-widest border-b border-gray-50 mb-1">Sort Questions By</DropdownMenu.Label>
+                  <DropdownMenu.Item onClick={() => handleSort('text')} className="px-3 py-2.5 text-[10px] font-black text-gray-700 outline-none cursor-pointer hover:bg-gray-50 hover:text-[#3E4095] rounded-xl uppercase tracking-wider transition-colors">Question (A-Z)</DropdownMenu.Item>
+                  <DropdownMenu.Item onClick={() => handleSort('-text')} className="px-3 py-2.5 text-[10px] font-black text-gray-700 outline-none cursor-pointer hover:bg-gray-50 hover:text-[#3E4095] rounded-xl uppercase tracking-wider transition-colors">Question (Z-A)</DropdownMenu.Item>
+                  <DropdownMenu.Item onClick={() => handleSort('-created_at')} className="px-3 py-2.5 text-[10px] font-black text-gray-700 outline-none cursor-pointer hover:bg-gray-50 hover:text-[#3E4095] rounded-xl uppercase tracking-wider transition-colors">Newest First</DropdownMenu.Item>
+                  <DropdownMenu.Item onClick={() => handleSort('created_at')} className="px-3 py-2.5 text-[10px] font-black text-gray-700 outline-none cursor-pointer hover:bg-gray-50 hover:text-[#3E4095] rounded-xl uppercase tracking-wider transition-colors">Oldest First</DropdownMenu.Item>
+                </DropdownMenu.Content>
+              </DropdownMenu.Portal>
+            </DropdownMenu.Root>
+
+            <DropdownMenu.Root>
+              <DropdownMenu.Trigger asChild>
+                <button className='inline-flex items-center justify-center gap-2 bg-white border border-gray-100 h-11 rounded-xl px-4 text-gray-600 hover:bg-gray-50 hover:border-gray-200 transition-all font-black text-[10px] uppercase tracking-widest shadow-sm active:scale-95'>
+                  <FilterIcon />
+                  <span>Filter</span>
                 </button>
               </DropdownMenu.Trigger>
               <DropdownMenu.Portal>
