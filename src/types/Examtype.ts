@@ -186,12 +186,17 @@ export type ExamSessionType = {
   title: string;
   status: string;
   competition_edition: number;
+  competition_title: string;
   question_count: number;
   scheduled_date: string;
   concluded_at: string | null;
   created_at: string;
-  has_standings?: boolean;
-  is_standings_published?: boolean;
+  standings?: {
+    exists: boolean;
+    is_published: boolean;
+    created_at: string;
+    published_at: string | null;
+  };
 };
 
 
@@ -317,6 +322,7 @@ export type UpdatedSessionQuestionType = {
   is_active: boolean;
   is_currently_open: boolean;
   competition_edition: number;
+  competition_title: string;
   open_duration_hours: number;
   countdown_minutes: number;
   scheduled_date: string;
@@ -330,8 +336,12 @@ export type UpdatedSessionQuestionType = {
     };
   };
   updated_by: string | null;
-  has_standings?: boolean;
-  is_standings_published?: boolean;
+  standings?: {
+    exists: boolean;
+    is_published: boolean;
+    created_at: string;
+    published_at: string | null;
+  };
   questions: QuestionType;
 };
 

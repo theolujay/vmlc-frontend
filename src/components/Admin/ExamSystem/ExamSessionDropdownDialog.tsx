@@ -32,8 +32,8 @@ export default function ExamSessionDropdownDialog({ exam_id, data }: Props) {
     const { publishStandings, isPending: isPublishingStandings } = usePublishStandings();
 
     const status = data?.status;
-    const hasStandings = data?.has_standings;
-    const isPublished = data?.is_standings_published;
+    const hasStandings = data?.standings?.exists;
+    const isPublished = data?.standings?.is_published;
 
     function deleteExamSessionModal() {
         setOpenDeleteModal(true)

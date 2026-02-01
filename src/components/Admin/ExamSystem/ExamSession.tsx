@@ -77,7 +77,7 @@ function SessionDetails({ data }: Readonly<{ data?: any }>) {
                 <i className="fas fa-file-invoice text-xl"></i>
             </div>
             <div>
-                <p className='text-[9px] text-gray-400 font-black uppercase tracking-widest'>Verboheit MLC {data?.competition_edition}.0</p>
+                <p className='text-[9px] text-gray-400 font-black uppercase tracking-widest'>{data?.competition_title || `Edition ${data?.competition_edition}`}</p>
                 <div className="flex items-center space-x-2 mt-0.5">
                     <div className="flex items-center space-x-1.5">
                         <span className={clsx("w-1.5 h-1.5 rounded-full", currentStatus.color)}></span>
