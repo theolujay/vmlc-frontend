@@ -63,7 +63,7 @@ export default function CreateExamSessionModal({ open, close }: Readonly<{ open:
                             <i className="fas fa-plus-circle text-xl"></i>
                         </div>
                         <div>
-                            <p className='text-[9px] text-gray-400 font-black uppercase tracking-widest'>{statOverview?.competition?.active_competition || 'Exam System'}</p>
+                            <p className='text-[9px] text-gray-400 font-black uppercase tracking-widest'>{statOverview?.competition?.active_competition || 'Exams & Questions'}</p>
                             <h2 className='text-xl font-bold text-gray-800 tracking-tight uppercase'>Create Exam Session</h2>
                         </div>
                     </div>

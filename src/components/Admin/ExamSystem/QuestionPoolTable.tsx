@@ -191,11 +191,11 @@ export default function QuestionPoolTable({
     <ResponsiveContainer className="flex gap-6 py-6 px-0 flex-col mx-auto font-sans bg-white border border-gray-100 rounded-[2rem] shadow-sm overflow-hidden">
       <div className="flex flex-col md:flex-row md:items-center justify-between px-8 gap-4">
         <div className="flex gap-1 flex-col">
-          <div className="flex items-center space-x-2">
+          {/* <div className="flex items-center space-x-2">
             <i className="fas fa-database text-[#3E4095] text-[10px]"></i>
             <h2 className="text-[9px] font-black text-gray-400 uppercase tracking-widest">Pool</h2>
-          </div>
-          <p className="text-xl font-bold text-gray-800 tracking-tight">Manage Questions</p>
+          </div> */}
+          <h2 className="text-xl font-bold text-gray-800 tracking-tight">Questions Pool</h2>
         </div>
         <div className="flex flex-wrap items-center gap-3">
           <div className="relative">

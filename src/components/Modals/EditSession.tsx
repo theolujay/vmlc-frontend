@@ -45,7 +45,7 @@ export default function EditSessionModal({ open, close, exam_id, data }: Props) 
                             <i className="fas fa-edit text-xl"></i>
                         </div>
                         <div>
-                            <p className='text-[9px] text-gray-400 font-black uppercase tracking-widest'>{data?.competition_title || 'Exam System'}</p>
+                            <p className='text-[9px] text-gray-400 font-black uppercase tracking-widest'>{data?.competition_title || 'Exams & Questions'}</p>
                             <h2 className='text-xl font-bold text-gray-800 tracking-tight uppercase'>Edit Exam Session</h2>
                         </div>
                     </div>

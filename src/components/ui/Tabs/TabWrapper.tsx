@@ -17,9 +17,11 @@ export default function TabWrapper({
 
   const activeTab = searchParams.get('tab') || tabs[0]?.value;
   const handleTabChange = useCallback((value: string) => {
-    router.push(`?tab=${value}`, { scroll: false });
+    const params = new URLSearchParams(searchParams.toString());
+    params.set("tab", value);
+    router.push(`?${params.toString()}`, { scroll: false });
 
-  }, [router])
+  }, [router, searchParams])
   return (
     <Tabs.Root
       onValueChange={handleTabChange}

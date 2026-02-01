@@ -30,7 +30,7 @@ export default function ExamSession() {
   const { data, isPending } = useViewExamQuestions(id, page, filters)
   const { data: statOverview } = useGetStatOverview()
 
-  const competitionTitle = statOverview?.competition?.active_competition || 'Exam System';
+  const competitionTitle = statOverview?.competition?.active_competition || 'Exams & Questions';
 
   return (
     <div className='flex flex-col gap-1 min-h-screen bg-[#F7F9FC] font-sans'>

@@ -20,12 +20,12 @@ const QuestionPoolStats: React.FC<QuestionPoolStatsProps> = ({
   activeDifficulty, 
   onDifficultyChange,
   title,
-  headerLabel = "Question Repository"
+  // headerLabel = ""
 }) => {
   const statItems = [
     {
       key: 'total',
-      label: 'TOTAL POOL',
+      label: 'TOTAL',
       value: stats.total,
       icon: 'fa-database',
       color: 'text-[#3E4095]',
@@ -60,11 +60,11 @@ const QuestionPoolStats: React.FC<QuestionPoolStatsProps> = ({
   return (
     <ResponsiveContainer className="font-sans flex flex-col gap-4">
       <div className="flex justify-between items-center border-b border-gray-100 pb-2 mb-2">
-        <h1 className="text-xl font-bold text-[#101828] uppercase tracking-tight">{title}</h1>
-        <div className="flex items-center gap-2">
+        <h1 className="text-xl font-bold text-[#101828] tracking-tight">{title}</h1>
+        {/* <div className="flex items-center gap-2">
           <i className="fas fa-database text-[#3E4095] text-[10px]"></i>
           <h2 className="text-[10px] text-[#475367] font-bold uppercase tracking-widest">{headerLabel}</h2>
-        </div>
+        </div> */}
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">

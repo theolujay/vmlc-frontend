@@ -64,11 +64,15 @@ export default function ExamSection() {
 
   useEffect(() => {
     const params = new URLSearchParams(searchParams.toString());
-    params.set("page", currentPage.toString());
-    router.replace(`${pathname}?${params.toString()}`, { scroll: false })
+    const urlPage = params.get("page");
+    
+    if (urlPage !== currentPage.toString()) {
+      params.set("page", currentPage.toString());
+      router.replace(`${pathname}?${params.toString()}`, { scroll: false })
+    }
   }, [currentPage, pathname, router, searchParams])
 
-  const competitionTitle = statOverview?.competition?.active_competition || 'Exam System';
+  const competitionTitle = statOverview?.competition?.active_competition || 'Exams & Questions';
 
   return (
     <div className='flex flex-col gap-1 font-sans'>
@@ -90,7 +94,7 @@ export default function ExamSection() {
             className="inline-flex items-center gap-2.5 bg-[#3E4095] text-white px-6 py-3 rounded-xl font-black text-[10px] tracking-widest hover:bg-[#2d2f6e] transition-all uppercase shadow-lg shadow-[#3E4095]/20 active:scale-95"
           >
             <i className="fas fa-calendar-plus text-xs"></i>
-            <span>CREATE SESSION</span>
+            <span>CREATE EXAM</span>
           </button>
         ]} 
       />
@@ -111,7 +115,7 @@ export default function ExamSection() {
         {/* Global Question Pool Section */}
         <div className="space-y-6">
           <QuestionPoolStats 
-            title={competitionTitle}
+            title='Questions Stats'
             activeDifficulty={questionFilters.difficulty}
             onDifficultyChange={(difficulty) => setQuestionFilters(prev => ({ ...prev, difficulty }))}
             stats={{

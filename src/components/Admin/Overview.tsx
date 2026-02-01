@@ -18,10 +18,10 @@ import CompetitionWrapper from './Competition/CompetitionWrapper'
 function getTabsForRole(role: string): TabType[] {
     switch (role) {
         case 'volunteer':
-            return tabs.slice(0, 3); // Overview, Competition, Exam System
+            return tabs.slice(0, 3); // Overview, Competition, Exams & Questions
 
         case 'moderator':
-            return [...tabs.slice(0, 3), tabs[5]]; // Overview, Competition, Exam System, Support
+            return [...tabs.slice(0, 3), tabs[5]]; // Overview, Competition, Exams & Questions, Support
 
         case 'admin':
         case 'manager':
@@ -34,33 +34,33 @@ function getTabsForRole(role: string): TabType[] {
 }
 const tabs: TabType[] = [
     {
-        value: 'Registration',
+        value: 'registration',
         label: <RegistrationLabel />,
         content: <OverviewSectionWrapper />
     },
     {
-        value: 'Competition',
+        value: 'competition',
         label: <CompetitionLabel />,
         content: <CompetitionWrapper />
     },
     {
-        value: 'Exam Console',
+        value: 'exams-questions',
         label: <ExamConsoleLabel />,
         content: <ExamSectionWrapper />
 
     },
     {
-        value: 'User Mgt.',
+        value: 'user-mgt',
         label: <UserMgtLabel />,
         content: <StaffMgtWrapper />
     },
     {
-        value: 'Announcements',
+        value: 'announcements',
         label: <AnnouncementsLabel />,
         content: <Announcement />
     },
     {
-        value: 'Support',
+        value: 'support',
         label: <SupportLabel />,
         content: <SupportSectionWrapper />
     }
@@ -99,7 +99,7 @@ function CompetitionLabel() {
 }
 
 function ExamConsoleLabel() {
-    return <div className='flex gap-1 items-center'><span><ExamSystemIcon /></span><span>Exam Console</span></div>
+    return <div className='flex gap-1 items-center'><span><ExamSystemIcon /></span><span>Exams & Questions</span></div>
 }
 
 function UserMgtLabel() {

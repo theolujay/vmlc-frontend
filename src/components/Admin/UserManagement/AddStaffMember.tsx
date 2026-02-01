@@ -119,7 +119,7 @@ const roles: Role[] = [
     label: "Administrator",
     permissions: [
       { name: "overview", label: "Overview" },
-      { name: "examSystem", label: "Exam System" },
+      { name: "examSystem", label: "Exams & Questions" },
       { name: "leaderboards", label: "Leaderboards" },
       { name: "userManagement", label: "User Management" },
       { name: "announcement", label: "Announcement" },
@@ -130,7 +130,7 @@ const roles: Role[] = [
     label: "Moderator",
     permissions: [
       { name: "overview", label: "Overview" },
-      { name: "examSystem", label: "Exam System" },
+      { name: "examSystem", label: "Exams & Questions" },
       { name: "leaderboards", label: "Leaderboards" },
 
     ],
