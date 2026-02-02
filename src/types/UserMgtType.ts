@@ -89,6 +89,7 @@ export type ExamOverviewType = {
 export type OverviewType = {
   registered: number;
   active: number;
+  once_logged_in: number;
   inactive: number;
   pre_registered: number;
   deactivated: number;
@@ -99,6 +100,17 @@ export type OverviewType = {
 };
 
 
+export type RegistrationStatusType = {
+  candidate_registration: {
+    is_open: boolean;
+    closing_date: string | null;
+  };
+  staff_registration: {
+    is_open: boolean;
+    closing_date: string | null;
+  };
+  support_email: string;
+};
 
 
 export type UserMgtType = {

@@ -1,5 +1,5 @@
 import { UserMgtUrls } from "@/constants/UserMgtUrls";
-import { HandleVerificationStatusPayloadType, InviteStaffMemberPayloadType, PreRegisteredCandidateType, RegistrationTrendType, StaffDetailsType, UserMgtType } from "@/types/UserMgtType";
+import { HandleVerificationStatusPayloadType, InviteStaffMemberPayloadType, PreRegisteredCandidateType, RegistrationStatusType, RegistrationTrendType, StaffDetailsType, UserMgtType } from "@/types/UserMgtType";
 import client from "@/utils/axios";
 
 export class UserMgtService {
@@ -39,18 +39,70 @@ export class UserMgtService {
     }
 
 
-    static async getStatOverview() {
-        try {
-            const response = await client.get(UserMgtUrls.STATISTICS_OVERVIEW);
+        static async getStatOverview() {
 
-            return response.data
-        } catch (error) {
-            console.error(error, 'what is error')
-            throw error;
+
+            try {
+
+
+                const response = await client.get(UserMgtUrls.STATISTICS_OVERVIEW);
+
+
+    
+
+
+                return response.data
+
+
+            } catch (error) {
+
+
+                console.error(error, 'what is error')
+
+
+                throw error;
+
+
+            }
+
+
         }
-    }
 
-    static async getRegistrationTrends(days: number): Promise<RegistrationTrendType> {
+
+    
+
+
+        static async getRegistrationStatus(): Promise<RegistrationStatusType> {
+
+
+            try {
+
+
+                const response = await client.get(UserMgtUrls.REGISTRATION_STATUS);
+
+
+                return response.data;
+
+
+            } catch (error) {
+
+
+                console.error(error, 'Error getting registration status');
+
+
+                throw error;
+
+
+            }
+
+
+        }
+
+
+    
+
+
+        static async getRegistrationTrends(days: number): Promise<RegistrationTrendType> {
         try {
             const response = await client.get(UserMgtUrls.REGISTRATION_TRENDS(days));
             return response.data;
