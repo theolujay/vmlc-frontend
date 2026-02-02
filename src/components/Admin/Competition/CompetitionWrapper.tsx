@@ -3,6 +3,7 @@ import CompetitionDashboard from './CompetitionDashboard';
 import FullLeagueLeaderboard from './FullLeagueLeaderboard';
 import FullStandings from './FullStandings';
 import ViewCandidateDetails from '../Leaderboard/ViewCandidateDetails';
+import { useAuth } from '@/contexts/AuthProvider';
 
 type ViewState = 'dashboard' | 'leaderboard' | 'standings' | 'candidate-details';
 
@@ -16,12 +17,17 @@ interface DetailContext {
 }
 
 const CompetitionWrapper: React.FC = () => {
+  const { authState } = useAuth();
+  const userRole = authState?.user?.role;
+  const isModeratorOrAbove = ['moderator', 'admin', 'manager', 'superadmin'].includes(userRole || '');
+
   const [currentView, setView] = useState<ViewState>('dashboard');
   const [selectedExamId, setSelectedExamId] = useState<string>('');
   const [selectedExamTitle, setSelectedExamTitle] = useState<string>('');
   const [detailContext, setDetailContext] = useState<DetailContext | null>(null);
 
   const handleViewStandings = (id?: string, title?: string) => {
+    if (!isModeratorOrAbove) return;
     if (id) setSelectedExamId(id);
     if (title) setSelectedExamTitle(title);
     setView('standings');
@@ -40,6 +46,7 @@ const CompetitionWrapper: React.FC = () => {
     stage?: string,
     round?: string
   }) => {
+    if (!isModeratorOrAbove) return;
     setDetailContext({
         candidate_id,
         exam_id,
@@ -55,10 +62,10 @@ const CompetitionWrapper: React.FC = () => {
     <div className="w-full font-sans">
       {currentView === 'dashboard' && (
         <CompetitionDashboard 
-          onViewFullLeaderboard={() => setView('leaderboard')}
-          onViewFullStandings={() => handleViewStandings()}
-          onViewStandings={handleViewStandings}
-          onViewCandidateDetail={handleViewCandidateDetails}
+          onViewFullLeaderboard={isModeratorOrAbove ? () => setView('leaderboard') : undefined}
+          onViewFullStandings={isModeratorOrAbove ? (id, title) => handleViewStandings(id, title) : undefined}
+          onViewStandings={isModeratorOrAbove ? handleViewStandings : undefined}
+          onViewCandidateDetail={isModeratorOrAbove ? handleViewCandidateDetails : undefined}
         />
       )}
 
@@ -66,10 +73,10 @@ const CompetitionWrapper: React.FC = () => {
         <div className="p-4 sm:p-8">
           <FullLeagueLeaderboard 
             onBack={() => setView('dashboard')} 
-            onViewDetails={(id) => handleViewCandidateDetails({ 
+            onViewDetails={isModeratorOrAbove ? (id) => handleViewCandidateDetails({ 
               candidate_id: id, 
               isLeagueCumulative: true 
-            })}
+            }) : undefined}
           />
         </div>
       )}
@@ -80,12 +87,12 @@ const CompetitionWrapper: React.FC = () => {
             onBack={() => setView('dashboard')} 
             examId={selectedExamId}
             examTitle={selectedExamTitle}
-            onViewDetails={(id) => handleViewCandidateDetails({ 
+            onViewDetails={isModeratorOrAbove ? (id) => handleViewCandidateDetails({ 
               candidate_id: id, 
               exam_id: selectedExamId,
               stage: 'League', // Default or derived from selectedExamTitle
               round: selectedExamTitle.includes('Round') ? selectedExamTitle.split('Round')[1].trim() : '1'
-            })}
+            }) : undefined}
           />
         </div>
       )}

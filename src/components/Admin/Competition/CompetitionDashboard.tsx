@@ -11,7 +11,7 @@ import { capitalizeWord } from '@/utils/capitalizeWords';
 
 interface CompetitionDashboardProps {
   onViewFullLeaderboard?: () => void;
-  onViewFullStandings?: () => void;
+  onViewFullStandings?: (id: string, title: string) => void;
   onViewStandings?: (id: string, title: string) => void;
   onViewCandidateDetail?: (params: { 
     candidate_id: string, 
@@ -140,7 +140,9 @@ const CompetitionDashboard: React.FC<CompetitionDashboardProps> = ({
               <StandingsSummary
                 examTitle={data.latest_standings_summary?.exam_title || "Latest Exam"}
                 entries={data.latest_standings_summary?.entries || []}
-                onViewFull={isModeratorOrAbove ? (onViewFullStandings || (() => {})) : undefined}
+                onViewFull={isModeratorOrAbove && onViewFullStandings && data.latest_standings_summary ? 
+                  (() => onViewFullStandings(data.latest_standings_summary!.exam_id, data.latest_standings_summary!.exam_title)) 
+                  : undefined}
                 onViewCandidate={isModeratorOrAbove ? ((id) => onViewCandidateDetail?.({ 
                   candidate_id: id, 
                   exam_id: data.latest_standings_summary?.exam_id,
