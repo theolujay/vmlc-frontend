@@ -35,7 +35,7 @@ export default function AddStaffMember() {
   
   return (
     <div className='flex flex-col gap-1 '>
-      <AdminHeader isExport={false} label='Add staff' actionButton={<Button onClick={handleOpenModal}  className={clsx("inline-flex gap-2 border min-w-10 px-2 items-center text-sm")}><span><SendIcon /></span><span>SEND INVITE</span></Button>} />
+      <AdminHeader isExport={false} label='Add staff' backUrl='?tab=user-mgt' actionButton={<Button onClick={handleOpenModal}  className={clsx("inline-flex gap-2 border min-w-10 px-2 items-center text-sm")}><span><SendIcon /></span><span>SEND INVITE</span></Button>} />
       <div className="flex flex-col gap-3 mt-3  w-[96%] mx-auto">
         <AddStaffMemberForm form={form} onSubmit={onSubmit} />
       </div>
