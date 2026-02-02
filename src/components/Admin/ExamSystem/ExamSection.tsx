@@ -163,7 +163,7 @@ function QuestionSession({ sessions, total_pages, onPageChange, currentPage }: R
     
     <ResponsiveContainer className='gap-6 p-0 bg-transparent border-none shadow-none'>
       {
-        sortedSessions.length == 0 && <EmptySession label='No question session has been created yet' desc='Question session set on the platform would appear here ' />
+        sortedSessions.length == 0 && <EmptySession label='No exam sessions yet' desc='Create one using "Create Exam"' />
       }
 
       {sortedSessions.length > 0 &&

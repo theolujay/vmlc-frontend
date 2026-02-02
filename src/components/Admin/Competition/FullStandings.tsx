@@ -115,9 +115,7 @@ const FullStandings: React.FC<FullStandingsProps> = ({ onBack, examId, examTitle
                           <Image src={row.profile_picture} alt="" fill className="object-cover" />
                         ) : row.candidate_name.charAt(0)}
                     </div>
-                    {row.rank <= 3 && (
-                      <RankMedal rank={row.rank} variant="standings" className="absolute -bottom-1 -right-1 drop-shadow-md" />
-                    )}
+                    <RankMedal rank={row.rank} className="absolute -bottom-1 -right-1 drop-shadow-md" />
                   </div>
                   <div className="flex flex-col">
                     <span className="font-bold text-[#101828] text-sm">{row.candidate_name}</span>

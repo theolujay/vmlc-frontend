@@ -7,20 +7,21 @@ interface RankMedalProps {
 }
 
 const RankMedal: React.FC<RankMedalProps> = ({ rank, className, variant = 'league' }) => {
-  if (rank > 3) return null;
+  const numericRank = Number(rank);
+  if (numericRank < 1 || numericRank > 3) return null;
 
-  const gradientId = `medal-gradient-${variant}-${rank}`;
+  const gradientId = `medal-gradient-${variant}-${numericRank}`;
   
   // Define colors for Gold, Silver, Bronze
-  const leagueColors = rank === 1 
+  const leagueColors = numericRank === 1 
     ? { start: "#FFD700", mid: "#FDB931", end: "#B8860B" } // Gold
-    : rank === 2 
+    : numericRank === 2 
     ? { start: "#F2F4F7", mid: "#98A2B3", end: "#475367" } // Silver
     : { start: "#F97316", mid: "#B54708", end: "#7A2706" }; // Bronze
 
-  const standingsColors = rank === 1 
+  const standingsColors = numericRank === 1 
     ? { start: "#FDE68A", mid: "#F59E0B", end: "#B45309" } // Amber/Gold
-    : rank === 2 
+    : numericRank === 2 
     ? { start: "#F3F4F6", mid: "#9CA3AF", end: "#4B5563" } // Cool Gray
     : { start: "#FDBA74", mid: "#EA580C", end: "#9A3412" }; // Orange/Bronze
 
@@ -60,7 +61,7 @@ const RankMedal: React.FC<RankMedalProps> = ({ rank, className, variant = 'leagu
         fontWeight="900" 
         className="font-sans"
       >
-        {rank}
+        {numericRank}
       </text>
     </svg>
   );
