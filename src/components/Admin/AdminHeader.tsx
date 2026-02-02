@@ -9,14 +9,22 @@ import { useRouter } from "next/navigation";
 
 
 
-export default function AdminHeader({ actionButton, isExport = false}: Readonly<{ label: string, actionButton: ReactNode | ReactNode[], isExport?: boolean }>) {
+export default function AdminHeader({ actionButton, isExport = false, backUrl }: Readonly<{ label: string, actionButton?: ReactNode | ReactNode[], isExport?: boolean, backUrl?: string }>) {
 
     const router = useRouter();
+
+    const handleBack = () => {
+        if (backUrl) {
+            router.push(backUrl);
+        } else {
+            router.back();
+        }
+    };
 
     return <div className='flex bg-white px-10 py-3 justify-between items-center border-b border-gray-100 relative z-20'>
         <div className="flex items-center gap-4">
             <button 
-                onClick={() => router.back()}
+                onClick={handleBack}
                 className="flex items-center justify-center w-8 h-8 rounded-full hover:bg-gray-100 transition-colors cursor-pointer text-gray-600"
                 title="Go Back"
             >

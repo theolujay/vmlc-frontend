@@ -178,9 +178,7 @@ function CandidateInfoCard({
                             <span className="font-bold text-lg text-[#667185]">{userInitials}</span>
                         )}
                     </div>
-                    {position <= 3 && position > 0 && (
-                        <RankMedal rank={position} className="absolute -bottom-1 -right-1 drop-shadow-md w-5 h-5 scale-125" />
-                    )}
+                    <RankMedal rank={position} className="absolute -bottom-1 -right-1 drop-shadow-md w-5 h-5 scale-125" />
                 </div>
                 <div className="flex flex-col overflow-hidden">
                     <span className='text-[10px] font-bold text-[#667185] uppercase'>Candidate</span>
@@ -289,7 +287,7 @@ function QuestionsTable({ questions }: { questions: any[] }) {
                     align: 'center'
                 },
                 {
-                    key: 'question_text', header: 'Question & Answers', render: (_, row) => {
+                    key: 'question_text', header: 'Question & Answers', align: 'left', render: (_, row) => {
                         const question = row.question;
                         const options = [
                             { optionKey: 'option_a', option: question.option_a },
@@ -335,13 +333,12 @@ function QuestionsTable({ questions }: { questions: any[] }) {
                     }
                 },
                 {
-                    key: 'is_correct', header: 'Result', render: (_, row) => {
+                    key: 'is_correct', header: 'Result', align: 'center', render: (_, row) => {
                         const isCorrect = row.selected_option === row.question.correct_answer;
-                        return <div className='flex items-center'>
+                        return <div className='items-center'>
                             {questionPassedStatus(isCorrect)}
                         </div>
                     },
-                    align: 'right'
                 },
             ]}
         />

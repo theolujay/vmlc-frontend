@@ -88,9 +88,9 @@ const StandingsSummary: React.FC<StandingsSummaryProps> = ({ examTitle, entries,
                     <span className="text-xs font-black text-cyan-600 bg-white border border-cyan-600/60 px-1 py-0.5 rounded-md">
                       {entry.exam_score}
                     </span>
-                    <span className="text-[8px] font-medium text-[#667185] mt-0.5">
+                    {/* <span className="text-[8px] font-medium text-[#667185] mt-0.5">
                       Top {100 - entry.percentile}%
-                    </span>
+                    </span> */}
                   </div>
                 </div>
               </button>

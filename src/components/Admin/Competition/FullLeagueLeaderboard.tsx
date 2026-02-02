@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useState } from 'react';
 import CustomTable from '@/components/ui/CustomTable';
 import ResponsiveContainer from '@/components/ui/ResponsiveContainer';
@@ -67,7 +68,7 @@ const FullLeagueLeaderboard: React.FC<FullLeagueLeaderboardProps> = ({ onBack, o
         </button>
         <div className="flex flex-col">
           <h1 className="text-xl font-bold text-[#101828]">League Leaderboard</h1>
-          <p className="text-xs text-[#667185]">Cumulative scores across all published rounds</p>
+          <p className="text-xs text-[#667185]">Cumulative scores across all published standings</p>
         </div>
       </div>
 
@@ -125,9 +126,7 @@ const FullLeagueLeaderboard: React.FC<FullLeagueLeaderboardProps> = ({ onBack, o
                           <Image src={row.profile_picture} alt="" fill className="object-cover" />
                         ) : row.candidate_name.charAt(0)}
                     </div>
-                    {row.overall_rank <= 3 && (
-                      <RankMedal rank={row.overall_rank} className="absolute -bottom-1 -right-1 drop-shadow-md" />
-                    )}
+                    <RankMedal rank={row.overall_rank} className="absolute -bottom-1 -right-1 drop-shadow-md" />
                   </div>
                   <div className="flex flex-col">
                     <span className="font-bold text-[#101828] text-sm">{row.candidate_name}</span>
@@ -139,22 +138,23 @@ const FullLeagueLeaderboard: React.FC<FullLeagueLeaderboardProps> = ({ onBack, o
             {
               key: 'school_name',
               header: 'School',
+              align: 'left',
               render: (val) => <span className="text-sm text-[#475467] font-medium">{val}</span>
             },
             {
               key: 'total_score',
-              header: 'Cumulative Score',
+              header: 'Cumulative',
               render: (val) => (
                 <span className="text-xs font-black text-[#3E4095] bg-white px-2 py-1 rounded-full border border-[#3E4095]/50">
                   {val}
                 </span>
               ),
-              align: 'right'
+              align: 'center'
             },
-            {
+            ...(onViewDetails ? [{
               key: 'action',
               header: 'Action',
-              render: (_, row) => (
+              render: (_: any, row: LeagueLeaderboardEntry) => (
                 <button 
                   onClick={() => onViewDetails?.(row.candidate)}
                   className="text-[#3E4095] font-bold hover:bg-[#3E4095] hover:text-white text-xs bg-[#F9F9FB] px-3 py-1.5 rounded-full border border-[#E4E7EC] transition-colors"
@@ -162,8 +162,8 @@ const FullLeagueLeaderboard: React.FC<FullLeagueLeaderboardProps> = ({ onBack, o
                   View Details
                 </button>
               ),
-              align: 'right'
-            }
+              align: 'center' as const
+            }] : [])
           ]}
         />
       </ResponsiveContainer>

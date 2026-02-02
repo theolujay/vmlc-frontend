@@ -34,7 +34,7 @@ export default function ExamSession() {
 
   return (
     <div className='flex flex-col gap-1 min-h-screen bg-[#F7F9FC] font-sans'>
-      <AdminHeader isExport={false} label={competitionTitle} actionButton={[
+      <AdminHeader isExport={false} label={competitionTitle} backUrl='?tab=exams-questions' actionButton={[
         <ExamSessionDropdownDialog exam_id={id} data={data} key='actions' />
       ]} />
       {isPending ? <div className='w-full h-full grid place-content-center'>

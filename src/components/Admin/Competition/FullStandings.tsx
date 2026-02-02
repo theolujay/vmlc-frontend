@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useState } from 'react';
 import CustomTable from '@/components/ui/CustomTable';
 import ResponsiveContainer from '@/components/ui/ResponsiveContainer';
@@ -115,28 +116,27 @@ const FullStandings: React.FC<FullStandingsProps> = ({ onBack, examId, examTitle
                           <Image src={row.profile_picture} alt="" fill className="object-cover" />
                         ) : row.candidate_name.charAt(0)}
                     </div>
-                    {row.rank <= 3 && (
-                      <RankMedal rank={row.rank} variant="standings" className="absolute -bottom-1 -right-1 drop-shadow-md" />
-                    )}
+                    <RankMedal rank={row.rank} className="absolute -bottom-1 -right-1 drop-shadow-md" />
                   </div>
                   <div className="flex flex-col">
                     <span className="font-bold text-[#101828] text-sm">{row.candidate_name}</span>
                     <span className="text-[10px] text-[#667185]">{row.candidate_email}</span>
                   </div>
                 </div>
-              )
+              ),
+              align: 'left'
             },
             {
               key: 'school_name',
               header: 'School',
               render: (val) => <span className="text-sm text-[#475467] font-medium">{val}</span>
             },
-            {
-              key: 'percentile',
-              header: 'Percentile',
-              render: (val) => <span className="text-xs text-gray-500">{val}%</span>,
-              align: 'right'
-            },
+            // {
+            //   key: 'percentile',
+            //   header: 'Percentile',
+            //   render: (val) => <span className="text-xs text-gray-500">{val}%</span>,
+            //   align: 'right'
+            // },
             {
               key: 'exam_score',
               header: 'Score',
@@ -145,12 +145,12 @@ const FullStandings: React.FC<FullStandingsProps> = ({ onBack, examId, examTitle
                   {val}
                 </span>
               ),
-              align: 'right'
+              align: 'center'
             },
-            {
+            ...(onViewDetails ? [{
               key: 'action',
               header: 'Action',
-              render: (_, row) => (
+              render: (_: any, row: StandingsEntry) => (
                 <button 
                   onClick={() => onViewDetails?.(row.candidate)}
                   className="text-cyan-600 font-bold hover:bg-cyan-600 hover:text-white text-xs bg-white px-3 py-1.5 rounded-full border border-cyan-600/40 transition-colors"
@@ -158,8 +158,8 @@ const FullStandings: React.FC<FullStandingsProps> = ({ onBack, examId, examTitle
                   View Details
                 </button>
               ),
-              align: 'right'
-            }
+              align: 'center' as const
+            }] : [])
           ]}
         />
       </ResponsiveContainer>
