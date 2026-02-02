@@ -201,8 +201,8 @@ export function AnnouncementHistoryTable({
             header: 'Sent by',
             render: (_, row) => {
               const userName = getUserName(
-                row.created_by.user.first_name,
-                row.created_by.user.last_name
+                row.created_by.user?.first_name || '',
+                row.created_by.user?.last_name || ''
               );
               return (
                 <div className="flex  items-center gap-1">

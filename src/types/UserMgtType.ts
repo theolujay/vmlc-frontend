@@ -89,7 +89,7 @@ export type ExamOverviewType = {
 export type OverviewType = {
   registered: number;
   active: number;
-  once_logged_in: number;
+  has_logged_in: number;
   inactive: number;
   pre_registered: number;
   deactivated: number;
