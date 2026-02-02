@@ -83,6 +83,9 @@ export default function OverviewSection() {
   const { data: statOverview } = useGetStatOverview();
   const { data: preRegisteredData } = useListPreRegisteredCandidates(page, filters)
 
+  const userRole = user?.profile?.role;
+  const isVolunteer = userRole === 'volunteer';
+
   const totalExams = statOverview?.exams?.total ?? ((statOverview?.exams?.upcoming ?? 0) + (statOverview?.exams?.active ?? 0));
 
   const handleViewProfile = (id: string) => {
@@ -129,31 +132,33 @@ export default function OverviewSection() {
         
         {/* <QuickActionsCard /> */}
 
-        {showPreRegistered ? (
-          <PreRegisteredCandidatesTable
-            page_count={preRegisteredData?.pagination.total_pages ?? 0}
-            currentPage={page}
-            onPageChange={setPage}
-            handleSearch={setFilters}
-            candidates={preRegisteredData?.results as PreRegisteredCandidate[] ?? []}
-            setFilters={setFilters}
-            showPreRegistered={showPreRegistered}
-            setShowPreRegistered={setShowPreRegistered}
-          />
-        ) : (
-          <RegisteredCandidatesTable
-            handleSearch={setFilters}
-            page_count={data?.pagination.total_pages ?? 0}
-            currentPage={page}
-            onPageChange={setPage}
-            data={(data?.results as RegisteredCandidatesType[]) ?? []}
-            onViewProfile={handleViewProfile}
-            filters={filters}
-            setFilters={setFilters}
-            showPreRegistered={showPreRegistered}
-            setShowPreRegistered={setShowPreRegistered}
-            setPage={setPage}
-          />
+        {!isVolunteer && (
+          showPreRegistered ? (
+            <PreRegisteredCandidatesTable
+              page_count={preRegisteredData?.pagination.total_pages ?? 0}
+              currentPage={page}
+              onPageChange={setPage}
+              handleSearch={setFilters}
+              candidates={preRegisteredData?.results as PreRegisteredCandidate[] ?? []}
+              setFilters={setFilters}
+              showPreRegistered={showPreRegistered}
+              setShowPreRegistered={setShowPreRegistered}
+            />
+          ) : (
+            <RegisteredCandidatesTable
+              handleSearch={setFilters}
+              page_count={data?.pagination.total_pages ?? 0}
+              currentPage={page}
+              onPageChange={setPage}
+              data={(data?.results as RegisteredCandidatesType[]) ?? []}
+              onViewProfile={handleViewProfile}
+              filters={filters}
+              setFilters={setFilters}
+              showPreRegistered={showPreRegistered}
+              setShowPreRegistered={setShowPreRegistered}
+              setPage={setPage}
+            />
+          )
         )}
       </div>
       <SendBulkMessageModal open={open} close={setOpen} />
