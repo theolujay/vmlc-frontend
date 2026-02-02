@@ -21,8 +21,13 @@ import TablePagination from '@/components/ui/Pagination/TablePagination'
 import { useDebouncedSearch } from '@/hooks/useDebouncedSearch'
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu'
 import clsx from 'clsx'
+import { useAuth } from '@/contexts/AuthProvider'
 
 export default function UserManagement() {
+    const { authState } = useAuth();
+    const userRole = authState?.user?.role;
+    const isVolunteer = userRole === 'volunteer';
+
     const pathName = usePathname();
     const searchParams = useSearchParams()
     const router = useRouter()
@@ -30,7 +35,7 @@ export default function UserManagement() {
     const { page, setPage } = usePagination();
     const [filters, setFilters] = useState<Record<string, string>>({ profile: 'staff' });
     
-    const { data } = useListUserMgt(page, filters)
+    const { data } = useListUserMgt(page, filters, !isVolunteer)
     const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
     const [profileOpen, setProfileOpen] = useState(false);
     
@@ -55,9 +60,21 @@ export default function UserManagement() {
         setProfileOpen(true);
     };
 
+    if (isVolunteer) {
+        return (
+            <div className='flex flex-col gap-1 '>
+                <AdminHeader label='User Mgt.' />
+                <div className="flex flex-col items-center justify-center p-20 text-center">
+                    <h2 className="text-xl font-bold text-gray-800 mb-2">Access Restricted</h2>
+                    <p className="text-gray-600">Volunteers do not have permission to access user management.</p>
+                </div>
+            </div>
+        );
+    }
+
     return (
         <div className='flex flex-col gap-1 '>
-            <AdminHeader isExport label='Exams & Questions' actionButton={<Button onClick={addStaffMember} className="inline-flex gap-2 border px-2 items-center text-sm"><span><AddIcon /></span><span>ADD STAFF</span></Button>} />
+            <AdminHeader isExport label='User Mgt.' actionButton={<Button onClick={addStaffMember} className="inline-flex gap-2 border px-2 items-center text-sm"><span><AddIcon /></span><span>ADD STAFF</span></Button>} />
             <div className="flex flex-col gap-3 mt-3 w-[96%] mx-auto">
 
                 <UserSummaryCard overview={overview} />
