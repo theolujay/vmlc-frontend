@@ -60,6 +60,9 @@ import clsx from 'clsx';
 export default function OverviewSection() {
   // const { authState } = useAuth();
   const user = useGetCurrentUser();
+  const userRole = user?.profile?.role;
+  const isVolunteer = userRole === 'volunteer';
+
   const { page, setPage } = usePagination();
   const [open, setOpen] = useState(false);
   const [showPreRegistered, setShowPreRegistered] = useState(false)
@@ -79,12 +82,9 @@ export default function OverviewSection() {
     }
   }, [user]);
 
-  const { data } = useListUserMgt(page, filters);
+  const { data } = useListUserMgt(page, filters, !isVolunteer);
   const { data: statOverview } = useGetStatOverview();
-  const { data: preRegisteredData } = useListPreRegisteredCandidates(page, filters)
-
-  const userRole = user?.profile?.role;
-  const isVolunteer = userRole === 'volunteer';
+  const { data: preRegisteredData } = useListPreRegisteredCandidates(page, filters, !isVolunteer)
 
   const totalExams = statOverview?.exams?.total ?? ((statOverview?.exams?.upcoming ?? 0) + (statOverview?.exams?.active ?? 0));
 
