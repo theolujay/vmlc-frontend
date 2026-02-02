@@ -9,27 +9,26 @@ import { PreRegisteredCandidate } from '@/types/UserMgtType';
 import { formatDate } from '@/utils/formatFileSize';
 import { getUserName } from '@/utils/generalUtils';
 import { getUserInitials } from '@/utils/capitalizeWords';
-import Link from 'next/link';
+// import Link from 'next/link';
 import Image from 'next/image';
 import { Dispatch, SetStateAction, useEffect, useState } from 'react';
-import Button from '../../ui/Button';
 import ResponsiveContainer from '../../ui/ResponsiveContainer';
 import AdminHeader from '../AdminHeader';
 import {
   ActiveIcon,
-  AngleIcon,
-  BroadcastIcon,
+  // AngleIcon,
+  // BroadcastIcon,
   FilterIcon,
-  ManageQuestionIcon,
+  // ManageQuestionIcon,
   PreRegisteredIcon,
   RegisteredIcon,
   SortIcon,
-  ViewLeaderBoardIcon,
+  // ViewLeaderBoardIcon,
   ExamSystemIcon
 } from '../AdminIcons';
 import SendBulkMessageModal from '@/components/Modals/SendBulkMessageModal';
 import ProfileModal from '@/components/Modals/ProfileModal';
-import { useAuth } from '@/contexts/AuthProvider';
+// import { useAuth } from '@/contexts/AuthProvider';
 import useListPreRegisteredCandidates from '@/hooks/useListPreRegisteredCandidates';
 import PreRegisteredCandidatesTable from './PreRegisteredTable';
 import useGetStatOverview from '@/hooks/useGetStatOverview';
@@ -41,25 +40,25 @@ import useGetCurrentUser from '@/hooks/useGetCurrentUser';
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
 import clsx from 'clsx';
 
-function shouldShowHeaderButtons(role: string): boolean {
-  switch (role) {
-    case 'volunteer':
-    case 'moderator':
-      return false;
+// function shouldShowHeaderButtons(role: string): boolean {
+//   switch (role) {
+//     case 'sponsor':
+//     case 'volunteer':
+//     case 'moderator':
+//     case 'admin':
+//       return false;
 
-    case 'admin':
-    case 'manager':
-    case 'superadmin':
-    case 'sponsor':
-      return true;
+//     case 'manager':
+//     case 'superadmin':
+//       return true;
 
-    default:
-      return false;
-  }
-}
+//     default:
+//       return false;
+//   }
+// }
 
 export default function OverviewSection() {
-  const { authState } = useAuth();
+  // const { authState } = useAuth();
   const user = useGetCurrentUser();
   const { page, setPage } = usePagination();
   const [open, setOpen] = useState(false);
@@ -84,8 +83,6 @@ export default function OverviewSection() {
   const { data: statOverview } = useGetStatOverview();
   const { data: preRegisteredData } = useListPreRegisteredCandidates(page, filters)
 
-  const showBroadcast = shouldShowHeaderButtons(authState?.user?.role ?? '');
-
   const totalExams = statOverview?.exams?.total ?? ((statOverview?.exams?.upcoming ?? 0) + (statOverview?.exams?.active ?? 0));
 
   const handleViewProfile = (id: string) => {
@@ -96,19 +93,7 @@ export default function OverviewSection() {
   return (
     <div className="flex flex-col gap-1">
       <AdminHeader
-        isExport
         label="Overview"
-        actionButton={
-          showBroadcast ? (
-            <Button
-              onClick={() => setOpen(true)}
-              className="inline-flex gap-2 border px-2 sm:px-4 items-center text-xs sm:text-sm whitespace-nowrap"
-            >
-              <span className="hidden sm:inline">SEND BROADCAST</span>
-              <span className="sm:hidden">BROADCAST</span>
-            </Button>
-          ) : undefined
-        }
       />
       <div className="flex flex-col gap-3 sm:gap-4 mt-3 w-full sm:w-[96%] px-2 sm:px-0 sm:mx-auto">
         {infoMessage && (
@@ -460,57 +445,57 @@ function RegisteredCandidatesTable({
   );
 }
 
-function QuickActionsCard() {
-  return (
-    <ResponsiveContainer className="flex w-full gap-3 sm:gap-4 p-3 sm:p-4 flex-col mx-auto">
-      <h2 className="text-lg sm:text-xl font-bold">Quick Actions</h2>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <Link
-          href="/admin/overview?tab=Exam+Console&page=1"
-          className="flex justify-between items-center p-4 rounded-xl border border-[#3E4095]/10 hover:bg-[#3E4095]/5 transition-all group"
-        >
-          <div className="flex gap-3 items-center">
-            <span className="flex-shrink-0">
-              <ManageQuestionIcon />
-            </span>
-            <p className="text-m text-gray-700 tracking-tight">Explore Questions</p>
-          </div>
-          <span className="flex-shrink-0 group-hover:translate-x-1 transition-transform">
-            <AngleIcon />
-          </span>
-        </Link>
-        <Link
-          href="/admin/overview?tab=Competition"
-          className="flex justify-between items-center p-4 rounded-xl border border-[#3E4095]/10 hover:bg-[#3E4095]/5 transition-all group"
-        >
-          <div className="flex gap-3 items-center">
-            <span className="flex-shrink-0">
-              <ViewLeaderBoardIcon />
-            </span>
-            <p className="text-m text-gray-700 tracking-tight">View Leaderboard</p>
-          </div>
-          <span className="flex-shrink-0 group-hover:translate-x-1 transition-transform">
-            <AngleIcon />
-          </span>
-        </Link>
-        <Link
-          href="/admin/overview?tab=Announcements"
-          className="flex justify-between items-center p-4 rounded-xl border border-[#3E4095]/10 hover:bg-[#3E4095]/5 transition-all group"
-        >
-          <div className="flex gap-3 items-center">
-            <span className="flex-shrink-0">
-              <BroadcastIcon />
-            </span>
-            <p className="text-m text-gray-700 tracking-tight">Manage Broadcast</p>
-          </div>
-          <span className="flex-shrink-0 group-hover:translate-x-1 transition-transform">
-            <AngleIcon />
-          </span>
-        </Link>
-      </div>
-    </ResponsiveContainer>
-  );
-}
+// function QuickActionsCard() {
+//   return (
+//     <ResponsiveContainer className="flex w-full gap-3 sm:gap-4 p-3 sm:p-4 flex-col mx-auto">
+//       <h2 className="text-lg sm:text-xl font-bold">Quick Actions</h2>
+//       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+//         <Link
+//           href="/admin/overview?tab=Exam+Console&page=1"
+//           className="flex justify-between items-center p-4 rounded-xl border border-[#3E4095]/10 hover:bg-[#3E4095]/5 transition-all group"
+//         >
+//           <div className="flex gap-3 items-center">
+//             <span className="flex-shrink-0">
+//               <ManageQuestionIcon />
+//             </span>
+//             <p className="text-m text-gray-700 tracking-tight">Explore Questions</p>
+//           </div>
+//           <span className="flex-shrink-0 group-hover:translate-x-1 transition-transform">
+//             <AngleIcon />
+//           </span>
+//         </Link>
+//         <Link
+//           href="/admin/overview?tab=Competition"
+//           className="flex justify-between items-center p-4 rounded-xl border border-[#3E4095]/10 hover:bg-[#3E4095]/5 transition-all group"
+//         >
+//           <div className="flex gap-3 items-center">
+//             <span className="flex-shrink-0">
+//               <ViewLeaderBoardIcon />
+//             </span>
+//             <p className="text-m text-gray-700 tracking-tight">View Leaderboard</p>
+//           </div>
+//           <span className="flex-shrink-0 group-hover:translate-x-1 transition-transform">
+//             <AngleIcon />
+//           </span>
+//         </Link>
+//         <Link
+//           href="/admin/overview?tab=Announcements"
+//           className="flex justify-between items-center p-4 rounded-xl border border-[#3E4095]/10 hover:bg-[#3E4095]/5 transition-all group"
+//         >
+//           <div className="flex gap-3 items-center">
+//             <span className="flex-shrink-0">
+//               <BroadcastIcon />
+//             </span>
+//             <p className="text-m text-gray-700 tracking-tight">Manage Broadcast</p>
+//           </div>
+//           <span className="flex-shrink-0 group-hover:translate-x-1 transition-transform">
+//             <AngleIcon />
+//           </span>
+//         </Link>
+//       </div>
+//     </ResponsiveContainer>
+//   );
+// }
 
 function OverviewSummaryCard({
   registeredStudents,
