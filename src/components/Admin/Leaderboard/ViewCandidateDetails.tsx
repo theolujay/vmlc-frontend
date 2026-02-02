@@ -289,7 +289,7 @@ function QuestionsTable({ questions }: { questions: any[] }) {
                     align: 'center'
                 },
                 {
-                    key: 'question_text', header: 'Question & Answers', render: (_, row) => {
+                    key: 'question_text', header: 'Question & Answers', align: 'left', render: (_, row) => {
                         const question = row.question;
                         const options = [
                             { optionKey: 'option_a', option: question.option_a },
@@ -335,13 +335,12 @@ function QuestionsTable({ questions }: { questions: any[] }) {
                     }
                 },
                 {
-                    key: 'is_correct', header: 'Result', render: (_, row) => {
+                    key: 'is_correct', header: 'Result', align: 'center', render: (_, row) => {
                         const isCorrect = row.selected_option === row.question.correct_answer;
-                        return <div className='flex items-center'>
+                        return <div className='items-center'>
                             {questionPassedStatus(isCorrect)}
                         </div>
                     },
-                    align: 'right'
                 },
             ]}
         />

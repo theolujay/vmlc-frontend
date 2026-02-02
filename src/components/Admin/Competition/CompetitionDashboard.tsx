@@ -7,6 +7,7 @@ import LeaderboardSummary from './LeaderboardSummary';
 import StandingsSummary from './StandingsSummary';
 import useGetCompetitionDashboard from '@/hooks/useGetCompetitionDashboard';
 import { useAuth } from '@/contexts/AuthProvider';
+import { capitalizeWord } from '@/utils/capitalizeWords';
 
 interface CompetitionDashboardProps {
   onViewFullLeaderboard?: () => void;
@@ -110,7 +111,7 @@ const CompetitionDashboard: React.FC<CompetitionDashboardProps> = ({
             />
 
             <StageBoard 
-              currentStage={data.progress.current_stage as CompetitionStage}
+              currentStage={capitalizeWord(data.progress.current_stage) as CompetitionStage}
               leagueStatus={{
                 currentRound: data.progress.current_round,
                 totalRounds: data.progress.total_rounds,
