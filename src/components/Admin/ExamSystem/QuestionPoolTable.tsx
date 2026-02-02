@@ -154,6 +154,7 @@ export default function QuestionPoolTable({
   handleSearch: Dispatch<SetStateAction<{}>>
 }>) {
   const [selectedQuestions, setSelectedQuestions] = useState<number[]>([]);
+  const [modalQuestionIds, setModalQuestionIds] = useState<number[]>([]);
   const [openRemoveQuestion, setOpenRemoveQuestion] = useState(false);
   const [openExamSession, setOpenExamSession] = useState(false)
   const [openBulkDelete, setOpenBulkDelete] = useState(false)
@@ -182,11 +183,12 @@ export default function QuestionPoolTable({
     );
   }
 
-
-
-
-
-  function handleOpenExamSessionModal() {
+  function handleOpenExamSessionModal(ids?: number[]) {
+    if (ids) {
+        setModalQuestionIds(ids);
+    } else {
+        setModalQuestionIds(selectedQuestions);
+    }
     setOpenExamSession(true);
   }
   function handleOpenDeleteModal() {
@@ -246,7 +248,7 @@ export default function QuestionPoolTable({
               Delete
             </button>
             <button 
-              onClick={handleOpenExamSessionModal} 
+              onClick={() => handleOpenExamSessionModal()} 
               className="rounded-xl py-2.5 px-5 font-black text-[10px] uppercase tracking-widest bg-white text-[#3E4095] hover:bg-gray-50 transition-all shadow-sm"
             >
               Add to exam
@@ -334,7 +336,11 @@ export default function QuestionPoolTable({
               align: 'center',
               render: (_, row) => (
                 <div className="flex justify-center items-center">
-                  <QuestionPoolDropdown information={row} question_id={row.id} />
+                  <QuestionPoolDropdown 
+                    onAddToExam={() => handleOpenExamSessionModal([row.id])}
+                    information={row} 
+                    question_id={row.id} 
+                  />
                 </div>
               ),
             },
@@ -362,7 +368,7 @@ export default function QuestionPoolTable({
         />
       )}
       <BulkRemoveQuestionsModal questions={selectedQuestions} open={openBulkDelete} close={setOpenBulkDelete} />
-      <AddToExamSessionModal selectedQuestionIds={selectedQuestions} open={openExamSession} close={setOpenExamSession} />
+      <AddToExamSessionModal selectedQuestionIds={modalQuestionIds} open={openExamSession} close={setOpenExamSession} />
       <RemoveQuestionModal
         question_id={selectedQuestionId}
         close={setOpenRemoveQuestion}

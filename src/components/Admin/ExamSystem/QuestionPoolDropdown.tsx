@@ -8,9 +8,13 @@ import { SessionQuestionItemType } from '@/types/Examtype';
 import { useMemo, useState } from 'react';
 import useGetCurrentUser from '@/hooks/useGetCurrentUser';
 
-type Props = Readonly<{ question_id: number, information: SessionQuestionItemType }>
+type Props = Readonly<{ 
+    question_id: number, 
+    information: SessionQuestionItemType,
+    onAddToExam?: () => void 
+}>
 
-export default function QuestionPoolDropdown({ question_id, information }: Props) {
+export default function QuestionPoolDropdown({ question_id, information, onAddToExam }: Props) {
     const [openViewModal, setOpenViewModal] = useState(false)
     const [openDeleteModal, setOpenDeleteModal] = useState(false)
 
@@ -39,7 +43,7 @@ export default function QuestionPoolDropdown({ question_id, information }: Props
                         <span className="text-[10px] font-black uppercase tracking-widest text-gray-700">Add to exam</span>
                     </div>
                 ),
-                // Add to exam session logic would go here
+                onClick: onAddToExam
             });
         }
 
