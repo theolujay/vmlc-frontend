@@ -4,7 +4,7 @@ import { useMutation } from '@tanstack/react-query'
 import { toast } from 'react-toastify'
 
 export default function useBulkAddQuestionsToSession(onSuccessCallback: () => void) {
-    const { isPending, mutate } = useMutation({
+    const { isPending, mutate, isSuccess } = useMutation({
         mutationFn: ExamPortal.bulkAddQuestionToSession,
         onSuccess: () => {
            
@@ -21,5 +21,5 @@ export default function useBulkAddQuestionsToSession(onSuccessCallback: () => vo
         mutate(payload)
         
     }
-    return { onSubmit, isPending }
+    return { onSubmit, isPending, isSuccess }
 }

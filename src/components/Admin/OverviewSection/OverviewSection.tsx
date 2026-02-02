@@ -113,7 +113,7 @@ export default function OverviewSection() {
           />
         )}
         <OverviewSummaryCard
-          once_logged_in={statOverview?.candidates?.once_logged_in ?? 0}
+          has_logged_in={statOverview?.candidates?.has_logged_in ?? 0}
           activeChange={statOverview?.candidates?.active_change}
           preRegisteredStudents={statOverview?.candidates?.pre_registered ?? 0}
           preRegisteredChange={statOverview?.candidates?.pre_registered_change}
@@ -508,14 +508,14 @@ function RegisteredCandidatesTable({
 function OverviewSummaryCard({
   registeredStudents,
   preRegisteredStudents,
-  once_logged_in,
+  has_logged_in,
   registeredChange,
   preRegisteredChange,
   activeChange,
 }: {
   registeredStudents: number;
   preRegisteredStudents: number;
-  once_logged_in: number;
+  has_logged_in: number;
   registeredChange?: string;
   preRegisteredChange?: string;
   activeChange?: string;
@@ -530,7 +530,7 @@ function OverviewSummaryCard({
     {
       icon: <ActiveIcon />,
       label: 'HOW MANY LOGGED IN',
-      value: once_logged_in,
+      value: has_logged_in,
       change: activeChange
     },
     {
