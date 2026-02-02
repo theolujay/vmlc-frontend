@@ -22,16 +22,15 @@ import {
   // ManageQuestionIcon,
   PreRegisteredIcon,
   RegisteredIcon,
-  SortIcon,
-  // ViewLeaderBoardIcon,
-  ExamSystemIcon
-} from '../AdminIcons';
+  SortIcon} from '../AdminIcons';
 import SendBulkMessageModal from '@/components/Modals/SendBulkMessageModal';
 import ProfileModal from '@/components/Modals/ProfileModal';
 // import { useAuth } from '@/contexts/AuthProvider';
 import useListPreRegisteredCandidates from '@/hooks/useListPreRegisteredCandidates';
 import PreRegisteredCandidatesTable from './PreRegisteredTable';
 import useGetStatOverview from '@/hooks/useGetStatOverview';
+import useGetRegistrationStatus from '@/hooks/useGetRegistrationStatus';
+import Countdown from './Countdown';
 import RegistrationFunnel from './RegistrationFunnel';
 import RegistrationTrends from './RegistrationTrends';
 import GeographicsSection from './GeographicsSection';
@@ -82,12 +81,11 @@ export default function OverviewSection() {
     }
   }, [user]);
 
-  const { data } = useListUserMgt(page, filters, !isVolunteer);
+  const { data } = useListUserMgt(page, filters, !isVolunteer && !showPreRegistered);
+  const { data: preRegisteredData } = useListPreRegisteredCandidates(page, filters, !isVolunteer && showPreRegistered);
   const { data: statOverview } = useGetStatOverview();
-  const { data: preRegisteredData } = useListPreRegisteredCandidates(page, filters, !isVolunteer)
-
-  const totalExams = statOverview?.exams?.total ?? ((statOverview?.exams?.upcoming ?? 0) + (statOverview?.exams?.active ?? 0));
-
+  const { data: registrationStatus } = useGetRegistrationStatus();
+  
   const handleViewProfile = (id: string) => {
     setSelectedUserId(id);
     setProfileOpen(true);
@@ -97,6 +95,13 @@ export default function OverviewSection() {
     <div className="flex flex-col gap-1">
       <AdminHeader
         label="Overview"
+        actionButton={
+          <Countdown 
+            targetDate={registrationStatus?.candidate_registration?.closing_date || ''} 
+            isOpen={registrationStatus?.candidate_registration?.is_open}
+            label="Reg. Closes in:"
+          />
+        }
       />
       <div className="flex flex-col gap-3 sm:gap-4 mt-3 w-full sm:w-[96%] px-2 sm:px-0 sm:mx-auto">
         {infoMessage && (
@@ -108,14 +113,12 @@ export default function OverviewSection() {
           />
         )}
         <OverviewSummaryCard
-          active={statOverview?.candidates?.active ?? 0}
+          once_logged_in={statOverview?.candidates?.once_logged_in ?? 0}
           activeChange={statOverview?.candidates?.active_change}
           preRegisteredStudents={statOverview?.candidates?.pre_registered ?? 0}
           preRegisteredChange={statOverview?.candidates?.pre_registered_change}
           registeredStudents={statOverview?.candidates?.registered ?? 0}
           registeredChange={statOverview?.candidates?.registered_change}
-          exams={totalExams}
-          examsChange={statOverview?.exams?.active_change} 
         />
         <RegistrationTrends />
         
@@ -505,21 +508,17 @@ function RegisteredCandidatesTable({
 function OverviewSummaryCard({
   registeredStudents,
   preRegisteredStudents,
-  active,
-  exams,
+  once_logged_in,
   registeredChange,
   preRegisteredChange,
   activeChange,
-  examsChange,
 }: {
   registeredStudents: number;
   preRegisteredStudents: number;
-  active: number;
-  exams: number;
+  once_logged_in: number;
   registeredChange?: string;
   preRegisteredChange?: string;
   activeChange?: string;
-  examsChange?: string;
 }) {
   const stats = [
     {
@@ -529,37 +528,41 @@ function OverviewSummaryCard({
       change: registeredChange
     },
     {
+      icon: <ActiveIcon />,
+      label: 'ONCE LOGGED IN',
+      value: once_logged_in,
+      change: activeChange
+    },
+    {
       icon: <PreRegisteredIcon />,
       label: 'PRE-REGISTERED CANDIDATES',
       value: preRegisteredStudents,
       change: preRegisteredChange
     },
-    {
-      icon: <ActiveIcon />,
-      label: 'ACTIVE CANDIDATES (7D)',
-      value: active,
-      change: activeChange
-    },
-    {
-      icon: <ExamSystemIcon />, 
-      label: 'UPCOMING/ACTIVE EXAMS',
-      value: exams,
-      change: examsChange
-    }
   ];
 
   return (
-    <ResponsiveContainer className="flex gap-3 sm:gap-4 px-2 sm:px-3 flex-col mx-auto">
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+    <ResponsiveContainer className="flex gap-3 sm:gap-4 px-2 sm:px-3 flex-col mx-auto justify-between font-sans">
+      <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-3 gap-3 sm:gap-4">
         {stats.map((stat, index) => (
-          <div key={index} className="flex gap-3 sm:gap-4 flex-col p-4 sm:p-0 bg-gray-50 sm:bg-transparent rounded-lg sm:rounded-none">
+          <div 
+            key={index} 
+            className="flex flex-col gap-3 sm:gap-4 p-4 sm:p-0 bg-gray-50 sm:bg-transparent rounded-lg sm:rounded-none sm:items-center"
+          >
+            {/* Header: Icon & Label */}
             <div className="flex gap-2 items-center">
-              <span className="flex-shrink-0">{stat.icon}</span>
-              <p className="text-xs sm:text-sm font-medium text-gray-700 leading-tight">{stat.label}</p>
+              {/* <span className="flex-shrink-0">{stat.icon}</span> */}
+              <p className="text-xs sm:text-sm font-medium text-gray-700 leading-tight">
+                {stat.label}
+              </p>
             </div>
-            <div className="flex gap-3 items-center">
-              <span className="font-bold text-xl sm:text-2xl">{stat.value}</span>
-              {stat.change && (
+
+            {/* Value & Change */}
+            <div className="flex gap-3 justify-between items-center sm:flex-col sm:gap-1">
+              <div className="font-bold text-xl sm:text-2xl">
+                {stat.value}
+              </div>
+              {typeof stat.change === 'string' && stat.change && (
                 <div className="flex">
                   <span className={`text-xs ${stat.change.startsWith('-') ? 'text-red-500' : 'text-[#0F973D]'}`}>
                     {stat.change}
