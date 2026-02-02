@@ -16,12 +16,20 @@ export default function TabWrapper({
   const searchParams = useSearchParams()
 
   const activeTab = searchParams.get('tab') || tabs[0]?.value;
+  
   const handleTabChange = useCallback((value: string) => {
-    const params = new URLSearchParams(searchParams.toString());
-    params.set("tab", value);
-    router.push(`?${params.toString()}`, { scroll: false });
+    // When switching tabs, we usually want to start at the "main page" of that tab
+    // by clearing other query parameters like 'view', 'id', etc.
+    router.push(`?tab=${value}`, { scroll: false });
+  }, [router])
 
-  }, [router, searchParams])
+  const handleTriggerClick = (value: string) => {
+    // If clicking the already active tab, force a reset to its main page
+    if (activeTab === value) {
+      router.push(`?tab=${value}`, { scroll: false });
+    }
+  }
+
   return (
     <Tabs.Root
       onValueChange={handleTabChange}
@@ -34,6 +42,7 @@ export default function TabWrapper({
           <Tabs.Trigger
             key={`tab-trigger-${index}`}
             value={tab.value}
+            onClick={() => handleTriggerClick(tab.value)}
             className={triggerClassName}
           >
             {tab.label}
