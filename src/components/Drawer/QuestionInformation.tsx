@@ -13,7 +13,7 @@ export default function QuestionInformation({ open, setOpen, information }: Read
     const formattedDate = formatDate(information.created_at);
     const formattedTime = formatTimeToString(information.created_at)
     // const correct = options.find((val) => val.optionKey.endsWith(information.correct_answer.toLowerCase()));
-    const getName = getUserName(information.created_by?.user?.first_name, information.created_by?.user?.last_name)
+    const getName = information.created_by?.full_name || getUserName(information.created_by?.user?.first_name, information.created_by?.user?.last_name)
 
     return (
         <Drawer open={open} onClose={setOpen}>
@@ -145,14 +145,18 @@ export default function QuestionInformation({ open, setOpen, information }: Read
                             <span className='text-[8px] font-black text-gray-400 uppercase tracking-widest'>Timestamp</span>
                             <span className="text-sm font-black text-gray-800 tracking-tight">{formattedDate} <span className="text-gray-300 mx-1">|</span> {formattedTime}</span>
                         </div>
-                        <div className="flex flex-col gap-1.5">
-                            <span className='text-[8px] font-black text-gray-400 uppercase tracking-widest'>Contact Phone</span>
-                            <span className="text-sm font-black text-gray-800 tracking-tight">{information.created_by?.user?.phone || 'N/A'}</span>
-                        </div>
-                        <div className="flex flex-col gap-1.5">
-                            <span className='text-[8px] font-black text-gray-400 uppercase tracking-widest'>Email Address</span>
-                            <span className="text-sm font-black text-gray-800 tracking-tight truncate" title={information.created_by?.user?.email}>{information.created_by?.user?.email}</span>
-                        </div>
+                        {information.created_by?.user && (
+                            <>
+                                <div className="flex flex-col gap-1.5">
+                                    <span className='text-[8px] font-black text-gray-400 uppercase tracking-widest'>Contact Phone</span>
+                                    <span className="text-sm font-black text-gray-800 tracking-tight">{information.created_by?.user?.phone || 'N/A'}</span>
+                                </div>
+                                <div className="flex flex-col gap-1.5">
+                                    <span className='text-[8px] font-black text-gray-400 uppercase tracking-widest'>Email Address</span>
+                                    <span className="text-sm font-black text-gray-800 tracking-tight truncate" title={information.created_by?.user?.email}>{information.created_by?.user?.email}</span>
+                                </div>
+                            </>
+                        )}
                     </div>
                 </div>
             </div>

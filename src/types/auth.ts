@@ -71,9 +71,11 @@ export type RequestUserType = {
 
 
 export type CreatedByType = {
-    user: RequestUserType,
-    occupation: string,
-    role: string
+    id?: string;
+    full_name?: string;
+    user?: RequestUserType,
+    occupation?: string,
+    role?: string
 }
 
 export type AuthState = {
