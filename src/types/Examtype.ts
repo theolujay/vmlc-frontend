@@ -302,7 +302,16 @@ export type SessionQuestionItemType = {
   option_d: string,
   correct_answer: string,
   difficulty: string,
-  // related_exams_count: number,
+  related_exams_count?: number,
+  related_exams?: {
+    id: string,
+    title: string,
+    competition_title: string,
+    stage: string,
+    round: number,
+    scheduled_date: string,
+    status: string
+  }[],
   created_at: Date,
   created_by:CreatedByType,
   updated_at:Date,

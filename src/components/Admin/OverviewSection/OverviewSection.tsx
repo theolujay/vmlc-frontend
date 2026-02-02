@@ -529,7 +529,7 @@ function OverviewSummaryCard({
     },
     {
       icon: <ActiveIcon />,
-      label: 'ONCE LOGGED IN',
+      label: 'HOW MANY LOGGED IN',
       value: once_logged_in,
       change: activeChange
     },

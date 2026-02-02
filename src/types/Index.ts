@@ -34,6 +34,12 @@ export type BulkPayloadType= {
 export type BulkArchiveType={
   question_ids:number[]
 }
+
+export type BulkActionType = {
+  action: 'archive' | 'assign' | 'unassign';
+  question_ids: number[];
+  exam_ids?: (number | string)[];
+}
 export type VerificationUploadPayloadType = FormData;
 
 export type AnswerItem={

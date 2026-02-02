@@ -1,7 +1,7 @@
 import { candidateUrls } from "@/constants/candidateUrls";
 import { examUrls } from "@/constants/examUrls";
 import { CreateExamSessionType, CreateQuestionType, DashboardType, EditExamSession, QuestionPoolType, SessionType, TakeExamType, UpdatedSessionQuestionType } from "@/types/Examtype";
-import { BulkArchiveType, BulkPayloadType, CandidateSubmitAnswerType } from "@/types/Index";
+import { BulkActionType, BulkArchiveType, BulkPayloadType, CandidateSubmitAnswerType } from "@/types/Index";
 import client from "@/utils/axios";
 
 export class ExamPortal {
@@ -128,7 +128,10 @@ export class ExamPortal {
 
     static async bulkAddQuestionToSession(payload: BulkPayloadType) {
         try {
-            const response = await client.post(examUrls.BULK_ADD_QUESTION_TO_SESSION, payload);
+            const response = await client.post(examUrls.BULK_ACTION_QUESTIONS, {
+                action: 'assign',
+                ...payload
+            });
             return response.data;
         } catch (error) {
             console.error(error);
@@ -138,7 +141,20 @@ export class ExamPortal {
 
     static async bulkArchiveQuestions(payload: BulkArchiveType) {
         try {
-            const response = await client.post(examUrls.BULK_ARCHIVE_QUESTIONS, payload);
+            const response = await client.post(examUrls.BULK_ACTION_QUESTIONS, {
+                action: 'archive',
+                ...payload
+            });
+            return response.data;
+        } catch (error) {
+            console.error(error);
+            throw error;
+        }
+    }
+
+    static async bulkActionQuestions(payload: BulkActionType) {
+        try {
+            const response = await client.post(examUrls.BULK_ACTION_QUESTIONS, payload);
             return response.data;
         } catch (error) {
             console.error(error);

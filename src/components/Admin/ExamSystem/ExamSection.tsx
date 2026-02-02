@@ -128,10 +128,10 @@ export default function ExamSection() {
             activeDifficulty={questionFilters.difficulty}
             onDifficultyChange={(difficulty) => setQuestionFilters(prev => ({ ...prev, difficulty }))}
             stats={{
-              total: examData?.question_pool_data?.total_questions ?? 0,
-              easy: examData?.question_pool_data?.easy_questions_count ?? 0,
-              moderate: examData?.question_pool_data?.moderate_questions_count ?? 0,
-              hard: examData?.question_pool_data?.hard_questions_count ?? 0,
+              total: questionData?.question_pool_data?.total_questions ?? 0,
+              easy: questionData?.question_pool_data?.easy_questions_count ?? 0,
+              moderate: questionData?.question_pool_data?.moderate_questions_count ?? 0,
+              hard: questionData?.question_pool_data?.hard_questions_count ?? 0,
             }}
           />
 
