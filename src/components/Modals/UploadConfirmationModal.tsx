@@ -7,7 +7,7 @@ import Spinner from '../ui/spinner/spinner'
 
 export default function UploadConfirmationModal({ open, close }: Readonly<{ open: boolean, close: (close: boolean) => void }>) {
     function handleClose() {
-        close(!open)
+        close(false)
     }
     const { onSubmit,isPending } = usePublishLeaderboard(handleClose)
     return (

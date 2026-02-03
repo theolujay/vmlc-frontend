@@ -18,8 +18,8 @@ type Props = Readonly<{
 
 export default function EditSessionModal({ open, close, exam_id, data }: Props) {
     const handleClose = useCallback(() => {
-        close(!open)
-    }, [close, open])
+        close(false)
+    }, [close])
 
     const { form, onSubmit, isPending } = useEditExamSession(exam_id, handleClose, data)
     const { register, control, watch, formState: { errors } } = form

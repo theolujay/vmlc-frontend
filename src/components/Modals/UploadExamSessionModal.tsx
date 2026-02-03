@@ -9,7 +9,7 @@ import Spinner from '../ui/spinner/spinner';
 
 export default function UploadExamSessionModal({ open, close, exam_id, title }: Readonly<{ open: boolean, close: (close: boolean) => void, exam_id: string, title?: string }>) {
     function handleClose() {
-        close(!open)
+        close(false)
     }
 
     const { onSubmit, isPending, form } = useUploadSession(exam_id, handleClose);

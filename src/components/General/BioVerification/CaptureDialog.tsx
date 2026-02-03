@@ -105,7 +105,7 @@ export default function CaptureDialog({
     onCaptureFile(file);
   };
 
-  const handleClose = () => close(!open);
+  const handleClose = () => close(false);
 
   return (
     <AppDialog open={open}>
