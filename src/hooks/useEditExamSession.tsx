@@ -64,6 +64,7 @@ export default function useEditExamSession(exam_id: string, onSuccessCallback: (
         },
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['list-exams'] })
+            queryClient.invalidateQueries({ queryKey: ['exam-questions', exam_id] })
             onSuccessCallback()
             toast.success('Exam session updated successfully')
         }

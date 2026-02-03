@@ -94,7 +94,7 @@ export default function ExamSessionDropdownDialog({ exam_id, data }: Props) {
             </div>,
             onClick: () => {
                 if (hasStandings) {
-                    router.push(`/admin/competition?view=standings&id=${exam_id}`);
+                    router.push(`/admin/competition?view=standings&id=${exam_id}&title=${encodeURIComponent(data?.title || '')}`);
                 } else {
                     publishStandings({ exam_id, publish_now: false });
                 }

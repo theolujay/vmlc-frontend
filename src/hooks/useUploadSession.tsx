@@ -1,3 +1,4 @@
+import useGetStatOverview from '@/hooks/useGetStatOverview'
 import { ExamPortal } from '@/services/examPortal.service'
 import { UpdatedSessionQuestionType } from '@/types/Examtype'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -30,6 +31,9 @@ const defaultValues: ValueType = {
 }
 export default function useUploadSession(exam_id: string,onSuccessCallback:()=>void, data?: UpdatedSessionQuestionType) {
   const queryClient = useQueryClient()
+  const { data: statOverview } = useGetStatOverview()
+  const stages = statOverview?.competition?.stages || []
+
   const form = useForm({
     resolver: zodResolver(uploadExamSchema),
     defaultValues,
@@ -37,21 +41,38 @@ export default function useUploadSession(exam_id: string,onSuccessCallback:()=>v
 
   useEffect(() => {
     if (data) {
+      let stageId = data.stage_id;
+      
+      // If stage_id is missing, try to find it by matching stage name or status
+      if (!stageId && stages.length > 0) {
+        const stageName = (data as any).stage || data.status;
+        if (stageName) {
+          const matchedStage = stages.find(s => 
+            s.name.toLowerCase() === stageName.toLowerCase()
+          );
+          if (matchedStage) {
+            stageId = matchedStage.id;
+          }
+        }
+      }
+
       form.reset({
         ...defaultValues,
-        stage_id: data.stage_id,
-        round: data.round,
+        stage_id: stageId ?? undefined,
+        round: data.round ?? undefined,
         scheduled_date: data.scheduled_date ? data.scheduled_date.split('T')[0] : '',
+        scheduled_exam_time: data.scheduled_date ? data.scheduled_date.split('T')[1].substring(0, 5) : '',
         countdown_minutes: data.countdown_minutes?.toString() || '',
         open_duration_hours: data.open_duration_hours?.toString() || '',
       })
     }
-  }, [data, form])
+  }, [data, form, stages])
 
   const { isPending, mutate } = useMutation({
     mutationFn: (payload: any) => ExamPortal.updateExamSession(exam_id, payload),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['list-exams'] })
+      queryClient.invalidateQueries({ queryKey: ['exam-questions', exam_id] })
       toast.success('Session uploaded successfully')
       onSuccessCallback()
       form.reset()
