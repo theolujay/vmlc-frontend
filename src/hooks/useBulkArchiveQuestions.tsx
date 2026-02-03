@@ -13,6 +13,8 @@ export default function useBulkArchiveQuestions(onSuccessCallback: () => void) {
                 queryKey: ['list-questions'],
                 exact: false, 
             })
+            queryClient.invalidateQueries({ queryKey: ['list-exams'] })
+            queryClient.invalidateQueries({ queryKey: ['exam-questions'] })
             onSuccessCallback();
         },
         onError: () => {

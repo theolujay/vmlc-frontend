@@ -9,11 +9,12 @@ export default function useDeleteQuestion(onSuccessCallback: () => void) {
 
     const { isPending, mutate } = useMutation({
         mutationFn: ExamPortal.deleteQuestion,
-        onSuccess: (_, question_id) => {
+        onSuccess: () => {
             onSuccessCallback()
             toast.success('Question deleted successfully')
-            queryClient.invalidateQueries({ queryKey: ['exam-questions',question_id] })
-            
+            queryClient.invalidateQueries({ queryKey: ['list-questions'] })
+            queryClient.invalidateQueries({ queryKey: ['list-exams'] })
+            queryClient.invalidateQueries({ queryKey: ['exam-questions'] })
         }
     })
 
