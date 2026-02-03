@@ -7,7 +7,7 @@ import useLogout from '@/hooks/useLogout'
 export default function LogOutModal({ open, close }: Readonly<{ open: boolean, close: (close: boolean) => void }>) {
     const { onLogout } = useLogout(handleClose)
     function handleClose() {
-        close(!open)
+        close(false)
     }
     return (
         <AppDialog open={open}>

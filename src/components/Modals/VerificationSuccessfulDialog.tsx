@@ -13,10 +13,9 @@ export default function VerificationSuccessfulDialog({ open, close }: Readonly<{
     router.push('/exam-portal')
   }
 
-  function handleClose() {
-    close(!open)
-  }
-
+      function handleClose() {
+          close(false)
+      }
   return (
     <AppDialog open={open}>
       <div className="bg-white rounded-lg p-6 gap-2 w-[500px] flex flex-col items-center">

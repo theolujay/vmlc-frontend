@@ -5,7 +5,7 @@ import Spinner from '../ui/spinner/spinner'
 
 export default function SubmissionConfirmationModal({ open, close, totalAnswered, totalQuestions, handleSubmit, isPending }: { open: boolean, close: (close: boolean) => void, totalAnswered: number, totalQuestions: number, handleSubmit: () => void, isPending: boolean }) {
     function handleClose() {
-        close(!open)
+        close(false)
     }
     
 

@@ -9,14 +9,13 @@ import useEmailCountdown from '@/hooks/useEmailCountdown'
 import useVerifyEmailForCandidates from '@/hooks/useVerifyEmailForCandidates'
 import { maskEmail } from '@/utils/maskEmail'
 import Spinner from '../ui/spinner/spinner'
-import ResponsiveContainer from '../ui/ResponsiveContainer'
 export default function EmailVerificationModal({ open, close, currentUserEmail}: Readonly<{ open: boolean, close: (close: boolean) => void ,currentUserEmail?:string}>) {
 
 
 
    const {timer, setTimer} = useEmailCountdown()
     function handleClose() {
-        close(!open)
+        close(false)
     }
     const { onSubmit, form, isPending, resendOtpFunction, resendPending } = useVerifyEmailForCandidates(handleClose,currentUserEmail)
     const otpValue = form.watch('otp');

@@ -151,7 +151,7 @@ export default function QuestionPoolTable({
   onPageChange: Dispatch<SetStateAction<number>>;
   currentPage: number;
   page_count: number;
-  handleSearch: Dispatch<SetStateAction<{}>>
+  handleSearch: Dispatch<SetStateAction<any>>
 }>) {
   const [selectedQuestions, setSelectedQuestions] = useState<number[]>([]);
   const [modalQuestionIds, setModalQuestionIds] = useState<number[]>([]);
@@ -197,8 +197,6 @@ export default function QuestionPoolTable({
 
 
   const { searchInput, setSearchInput } = useDebouncedSearch(handleSearch);
-
-  console.log(searchInput, 'search input from question table')
 
 
   return (

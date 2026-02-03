@@ -10,8 +10,8 @@ import { useEffect, useMemo, useCallback } from 'react'
 
 export default function CreateExamSessionModal({ open, close }: Readonly<{ open: boolean, close: (close: boolean) => void }>) {
     const handleClose = useCallback(() => {
-        close(!open)
-    }, [close, open])
+        close(false)
+    }, [close])
 
     const { onSubmit, form, isPending, isSuccess } = useCreateExamSession()
     const { register, handleSubmit, control, watch, setValue, formState: { errors } } = form

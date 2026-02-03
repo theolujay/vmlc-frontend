@@ -7,7 +7,7 @@ import Spinner from '../ui/spinner/spinner'
 export default function InviteActionConfirmationModal({ open, close, userMail, form, role, isPending = false }: Readonly<{ open: boolean, userMail: string, form?: string, role: string, isPending: boolean, close: (close: boolean) => void }>) {
 
     function handleClose() {
-        close(!open)
+        close(false)
     }
     return (
         <AppDialog open={open}>
