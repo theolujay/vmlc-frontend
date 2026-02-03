@@ -82,7 +82,7 @@ export default function ExamSessionDropdownDialog({ exam_id, data }: Props) {
                 <span className="text-[10px] font-black uppercase tracking-widest">Edit Session</span>
             </div>,
             onClick: handleOpenEditModal,
-            disabled: status !== 'draft'
+            disabled: status !== 'draft' && status !== 'scheduled'
         },
         // Standings actions
         {

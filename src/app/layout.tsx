@@ -1,3 +1,4 @@
+import Script from "next/script";
 import AuthProvider from "@/contexts/AuthProvider";
 import { NotificationProvider } from "@/contexts/NotificationProvider";
 import QueryProvider from "@/contexts/QueryProviders";
@@ -20,8 +21,8 @@ import Spinner from "@/components/ui/spinner/spinner";
 // });
 
 export const metadata: Metadata = {
-  title: "Verboheit Mathematics League Competiton",
-  description: "Welcome to verboheit learning management system",
+  title: "Verboheit MLC Portal",
+  description: "Official portal for the Verboheit Mathematics League Competition.",
 };
 
 export default function RootLayout({
@@ -32,6 +33,35 @@ export default function RootLayout({
   // const routerReady=useRouterReady()
   return (
     <html lang="en">
+      <head>
+        <Script id="mathjax-config" strategy="beforeInteractive">
+          {`
+            window.MathJax = {
+              tex: {
+                inlineMath: [['$', '$'], ['\\\\(', '\\\\)']],
+                displayMath: [['$$', '$$'], ['\\\\[', '\\\\]']],
+                processEscapes: true,
+                processEnvironments: true
+              },
+              options: {
+                skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre']
+              },
+              startup: {
+                pageReady: () => {
+                  return MathJax.startup.defaultPageReady();
+                }
+              },
+              svg: {
+                fontCache: 'global'
+              }
+            };
+          `}
+        </Script>
+        <Script 
+          src="https://cdn.jsdelivr.net/npm/mathjax@4.0.0-beta.7/tex-mml-chtml.js" 
+          strategy="afterInteractive"
+        />
+      </head>
       <body
         className="antialiased"
       >
