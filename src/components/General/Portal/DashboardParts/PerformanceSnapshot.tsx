@@ -13,6 +13,8 @@ interface PerformanceSnapshotProps {
   currentWeek?: number; // Only for League stage (1-6)
   qualificationThreshold?: number;
   hasTakenExam?: boolean;
+  isQualified?: boolean;
+  qualificationMessage?: string;
 }
 
 const PerformanceSnapshot: React.FC<PerformanceSnapshotProps> = ({ 
@@ -21,13 +23,16 @@ const PerformanceSnapshot: React.FC<PerformanceSnapshotProps> = ({
   stage,
   currentWeek = 1,
   qualificationThreshold,
-  hasTakenExam = false
+  hasTakenExam = false,
+  isQualified: isQualifiedFromApi,
+  qualificationMessage
 }) => {
   const activeRanking = stage === 'SCREENING' ? screeningRanking : leagueRanking;
   const rank = activeRanking?.position || 0;
   const totalCandidates = activeRanking?.total_candidates || 0;
 
-  const isQualified = qualificationThreshold ? rank <= qualificationThreshold && rank > 0 : false;
+  // Use API value if available, otherwise fallback to calculation
+  const isQualified = isQualifiedFromApi !== undefined ? isQualifiedFromApi : (qualificationThreshold ? rank <= qualificationThreshold && rank > 0 : false);
 
   const stageConfig = {
     SCREENING: {
@@ -151,7 +156,7 @@ const PerformanceSnapshot: React.FC<PerformanceSnapshotProps> = ({
                 {!hasTakenExam ? currentContent.pendingLabel : isQualified ? currentContent.successLabel : currentContent.failLabel}
             </p>
             <p className="text-[11px] text-[#475367] leading-tight mt-0.5">
-                {!hasTakenExam ? currentContent.pendingSub : isQualified ? currentContent.successSub : currentContent.failSub}
+                {qualificationMessage || (!hasTakenExam ? currentContent.pendingSub : isQualified ? currentContent.successSub : currentContent.failSub)}
             </p>
           </div>
         </div>

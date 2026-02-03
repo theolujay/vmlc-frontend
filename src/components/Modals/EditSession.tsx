@@ -26,6 +26,7 @@ export default function EditSessionModal({ open, close, exam_id, data }: Props) 
 
     const { data: statOverview } = useGetStatOverview()
     const stages = useMemo(() => statOverview?.competition?.stages || [], [statOverview])
+    const stageOptions = useMemo(() => ['No Stage', ...stages.map(s => s.name)], [stages])
     const selectedStageId = watch('stage_id')
     const selectedStage = useMemo(() => stages.find(s => s.id === selectedStageId), [stages, selectedStageId])
     const isLeague = selectedStage?.type === 'league'
@@ -82,11 +83,15 @@ export default function EditSessionModal({ open, close, exam_id, data }: Props) 
                                         name="stage_id"
                                         render={({ field }) => (
                                             <SelectInput
-                                                items={stages.map(s => s.name)}
-                                                value={stages.find(s => s.id === field.value)?.name}
+                                                items={stageOptions}
+                                                value={stages.find(s => s.id === field.value)?.name || 'No Stage'}
                                                 onValueChange={(name) => {
-                                                    const s = stages.find(x => x.name === name)
-                                                    field.onChange(s?.id)
+                                                    if (name === 'No Stage') {
+                                                        field.onChange(undefined)
+                                                    } else {
+                                                        const s = stages.find(x => x.name === name)
+                                                        field.onChange(s?.id)
+                                                    }
                                                 }}
                                                 placeholder="Select Stage"
                                             />

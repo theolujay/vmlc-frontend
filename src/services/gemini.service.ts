@@ -50,7 +50,7 @@ export const parseBulkQuestion = async (bulkText: string): Promise<Partial<Quest
 
   try {
     const response = await ai.models.generateContent({
-      model: 'gemini-2.0-flash',
+      model: 'gemini-2.0-flash-lite',
       contents: {
         role: 'user',
         parts: [{

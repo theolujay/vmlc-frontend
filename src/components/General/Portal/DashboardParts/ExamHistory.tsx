@@ -2,7 +2,7 @@ import React from 'react';
 
 interface ExamRecord {
   exam: string;
-  score: number;
+  score: number | null;
   date: Date;
   exam_stage: string;
 }
@@ -11,7 +11,8 @@ interface ExamHistoryProps {
   history: ExamRecord[];
 }
 
-const getScoreStatus = (score: number) => {
+const getScoreStatus = (score: number | null) => {
+  if (score === null) return { label: 'Awaiting Results', color: 'text-[#667185]' };
   if (score > 75) return { label: 'Excellent', color: 'text-[#0F973D]' }; // Green
   if (score > 60) return { label: 'Great', color: 'text-[#70AD47]' };    // Light Green
   if (score > 50) return { label: 'Good', color: 'text-[#EAB308]' };     // Golden/Yellow
@@ -65,7 +66,7 @@ const ExamHistory: React.FC<ExamHistoryProps> = ({ history }) => {
                   <div className="flex items-center gap-4">
                     <div className="text-right">
                       <p className="text-lg font-bold text-[#101828] leading-none mb-1">
-                        {record.score}%
+                        {record.score !== null ? `${record.score}%` : '--'}
                       </p>
                       <span className={`text-[9px] font-bold uppercase tracking-wider ${color}`}>
                         {label}

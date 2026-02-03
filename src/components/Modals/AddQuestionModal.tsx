@@ -38,6 +38,15 @@ export default function AddQuestionModal({
   const [hasChanges, setHasChanges] = useState(false);
   const [showCloseConfirm, setShowCloseConfirm] = useState(false);
 
+  const isFormValid = useMemo(() => {
+    return (
+      formData.questionText.trim().length >= 3 &&
+      formData.options.every(opt => opt.text.trim().length >= 1) &&
+      !!correctOptionId &&
+      !!formData.difficulty
+    );
+  }, [formData, correctOptionId]);
+
   // Track changes to prompt confirmation on close
   useEffect(() => {
     const isChanged = 
@@ -140,7 +149,9 @@ export default function AddQuestionModal({
     form.setValue("difficulty", payload.difficulty);
     form.setValue("correct_answer", payload.correct_answer);
 
-    form.handleSubmit(onSubmit)();
+    form.handleSubmit(onSubmit, (errors) => {
+      console.error('Form validation errors:', errors);
+    })();
   };
 
   return (
@@ -413,16 +424,18 @@ D) 1/2"
                     Clear All
                 </button>
                 <div className="flex flex-col items-end">
-                  {!correctOptionId && formData.questionText && (
+                  {!isFormValid && (
                     <span className="text-[9px] font-bold text-amber-500 uppercase tracking-widest animate-pulse mb-1">
-                      Mark an option as correct
+                      {!formData.questionText.trim() ? 'Enter question text' : 
+                       formData.options.some(opt => !opt.text.trim()) ? 'Fill all options' :
+                       !correctOptionId ? 'Mark an option as correct' : 'Complete all fields'}
                     </span>
                   )}
                   <button 
                   onClick={handleSubmit}
-                  disabled={isPending || !formData.questionText || !correctOptionId}
+                  disabled={isPending || !isFormValid}
                   className={`px-16 py-4 rounded-2xl font-black uppercase text-[10px] tracking-widest shadow-2xl transition-all flex items-center justify-center cursor-pointer ${
-                      isPending || !formData.questionText || !correctOptionId
+                      isPending || !isFormValid
                       ? 'bg-[#3E4095]/30 cursor-not-allowed text-white' 
                       : 'bg-[#3E4095] hover:bg-[#2d2f6e] text-white hover:-translate-y-1 hover:shadow-[#3E4095]/30 active:translate-y-0'
                   }`}

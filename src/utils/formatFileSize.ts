@@ -23,6 +23,17 @@ export function formatDate(date:Date | string):string{
 })
 }
 
+export function formatDateTime(date: Date | string): string {
+    return new Date(date).toLocaleString('en-GB', {
+        day: '2-digit',
+        month: 'short',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: true
+    });
+}
+
 
 export function formatTimeToString(date:Date):string{
   return new Date(date).toLocaleTimeString([], {

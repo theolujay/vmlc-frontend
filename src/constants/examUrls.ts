@@ -13,7 +13,7 @@ export const examUrls = {
     BULK_ACTION_QUESTIONS: `/v2/questions/bulk-action/`,
     UPDATE_EXAM: (exam_id: string) => `/v2/exams/${exam_id}/`,
     TAKE_EXAM: (exam_id: string) => `/v2/exams/${exam_id}/take-exam/`,
-    CANDIDATE_SUBMIT_ANSWERS: (exam_id: string) => `/v2/exams/${exam_id}/submit-exam-answers/`,
+    CANDIDATE_SUBMIT_ANSWERS: (exam_id: string) => `/v2/exams/${exam_id}/submit/`,
     EXAM_RESULTS: (exam_id: string) => `/v2/exams/${exam_id}/results/`,
     CANDIDATE_EXAM_HISTORY: (candidate_id: string) => `/v2/candidates/${candidate_id}/exam-history/`
 }

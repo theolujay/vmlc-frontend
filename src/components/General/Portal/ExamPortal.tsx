@@ -31,8 +31,22 @@ function ExamPortal() {
     // Priority: 1. API Notifications, 2. Profile Setup Check (API or User Context)
     
     // Check Notifications first
-    if (candidateContext?.notifications && candidateContext.notifications.length > 0) {
-       setInfoMessage(candidateContext.notifications[0].message);
+    const infoNotifications = candidateContext?.notifications?.info || [];
+    const errorNotifications = candidateContext?.notifications?.error || [];
+    const successNotifications = candidateContext?.notifications?.success || [];
+
+    if (errorNotifications.length > 0) {
+      setInfoMessage(errorNotifications[0].message);
+      return;
+    }
+    
+    if (successNotifications.length > 0) {
+      setInfoMessage(successNotifications[0].message);
+      return;
+    }
+
+    if (infoNotifications.length > 0) {
+       setInfoMessage(infoNotifications[0].message);
        return;
     }
 
@@ -92,7 +106,8 @@ function ExamPortal() {
     scheduled_date: new Date(activeExamData.starts_at),
     stage: activeExamData.stage,
     stage_display: activeExamData.stage.toUpperCase(),
-    participation: activeExamData.has_participated ? 'done' : 'not_done'
+    has_participated: activeExamData.has_participated,
+    status: activeExamData.status
   } : null;
 
   // Map history
@@ -169,6 +184,8 @@ function ExamPortal() {
             currentWeek={leagueWeek}
             qualificationThreshold={qualificationThreshold}
             hasTakenExam={stageProgressData?.has_taken_current_round || false}
+            isQualified={stageProgressData?.qualification_status?.is_qualified}
+            qualificationMessage={stageProgressData?.qualification_status?.message}
           />
 
           {/* EXAM HISTORY */}

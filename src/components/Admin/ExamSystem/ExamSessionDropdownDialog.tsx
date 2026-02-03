@@ -72,7 +72,7 @@ export default function ExamSessionDropdownDialog({ exam_id, data }: Props) {
                 <span className="text-[10px] font-black uppercase tracking-widest">Add Question</span>
             </div>,
             onClick: addExamSessionModal,
-            disabled: status !== 'draft'
+            disabled: status !== 'draft' && status !== 'scheduled'
         },
         {
             label: <div className='flex items-center gap-3 py-1'>
@@ -121,7 +121,7 @@ export default function ExamSessionDropdownDialog({ exam_id, data }: Props) {
                 <span className='text-[10px] font-black uppercase tracking-widest text-[#D42620]'>Delete Session</span>
             </div>,
             onClick: deleteExamSessionModal,
-            disabled: status !== 'draft'
+            disabled: status !== 'draft' && status !== 'scheduled'
         },
     ];
 
@@ -138,7 +138,7 @@ export default function ExamSessionDropdownDialog({ exam_id, data }: Props) {
             <EditSessionModal data={data} exam_id={exam_id} open={openEditModal} close={setOpenEditModal} />
             <AddQuestionModal examId={exam_id} open={openAddQuestion} close={setAddQuestion} />
             <DeleteExamSessionModal session_id={exam_id} open={openDeleteModal} close={setOpenDeleteModal} />
-            <UploadExamSessionModal title={data?.title} exam_id={exam_id} open={openUpload} close={setOpenUpload} />
+            <UploadExamSessionModal data={data} title={data?.title} exam_id={exam_id} open={openUpload} close={setOpenUpload} />
         </AppDropdownDialog>
     )
 }
