@@ -158,20 +158,57 @@ const MathInput: React.FC<MathInputProps> = ({
           </div>
         </div>
       ) : (
-        <MathFieldEditor 
-          value={scratchpadValue} 
-          onChange={setScratchpadValue} 
-          placeholder="Build equation here, then copy LaTeX below..." 
-        />
+        <div className="space-y-4">
+          <MathFieldEditor 
+            value={scratchpadValue} 
+            onChange={setScratchpadValue} 
+            placeholder="Build equation here, then use the button below to insert it..." 
+          />
+          <div className="flex justify-center">
+            <button
+              type="button"
+              onClick={() => {
+                if (scratchpadValue) {
+                  const toInsert = `$${scratchpadValue}$`;
+                  onChange(value ? `${value} ${toInsert}` : toInsert);
+                  setScratchpadValue('');
+                  setMode('content');
+                }
+              }}
+              disabled={!scratchpadValue}
+              className={`flex items-center space-x-2 px-6 py-3 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all ${
+                scratchpadValue 
+                ? 'bg-[#3E4095] text-white shadow-lg hover:shadow-[#3E4095]/20 hover:-translate-y-0.5' 
+                : 'bg-gray-100 text-gray-400 cursor-not-allowed'
+              }`}
+            >
+              <i className="fas fa-plus-circle"></i>
+              <span>Insert Equation into Content</span>
+            </button>
+          </div>
+        </div>
       )}
 
       {/* Preview Section */}
       <div className="space-y-2">
-        <div className="flex items-center space-x-2">
-          <span className="text-[9px] font-bold text-gray-400 uppercase tracking-widest">Preview</span>
-          <div className="h-px flex-1 bg-gray-100"></div>
+        <div className="flex justify-between items-center">
+          <div className="flex items-center space-x-2">
+            <span className="text-[9px] font-bold text-gray-400 uppercase tracking-widest">Preview</span>
+            <div className="h-px w-12 bg-gray-100"></div>
+          </div>
+          
+          {/* Hint for missing delimiters in content mode */}
+          {mode === 'content' && value && !value.includes('$') && (value.includes('\\') || value.includes('^') || value.includes('_')) && (
+            <div className="flex items-center space-x-1.5 text-[8px] text-amber-500 font-bold uppercase tracking-widest animate-in fade-in slide-in-from-right-2">
+              <i className="fas fa-lightbulb"></i>
+              <span>Pro-tip: Wrap math in $ ... $ to render it</span>
+            </div>
+          )}
         </div>
-        <MathPreview content={value} className="bg-white border-gray-100 shadow-sm" />
+        <MathPreview 
+          content={mode === 'editor' && scratchpadValue ? `$${scratchpadValue}$` : (value || "_No content preview available_")} 
+          className="bg-white border-gray-100 shadow-sm" 
+        />
       </div>
     </div>
   );

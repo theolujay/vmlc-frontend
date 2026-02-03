@@ -8,6 +8,8 @@ import { parseBulkQuestion } from "@/services/gemini.service"
 import { Difficulty, QuestionData } from "@/types/question"
 import { DIFFICULTY_OPTIONS } from "@/constants/math"
 
+import UnifiedQuestionPreview from "@/components/Admin/ExamSystem/UnifiedQuestionPreview"
+
 export default function AddQuestionModal({
   open,
   close,
@@ -33,10 +35,11 @@ export default function AddQuestionModal({
   const [formData, setFormData] = useState<QuestionData>(initialFormData);
   const [correctOptionId, setCorrectOptionId] = useState<string>('');
   const [isImporting, setIsImporting] = useState(false);
-  const [showImportView, setShowImportView] = useState(false);
+  const [view, setView] = useState<'edit' | 'import' | 'review' | 'preview'>('edit');
   const [bulkText, setBulkText] = useState('');
   const [hasChanges, setHasChanges] = useState(false);
   const [showCloseConfirm, setShowCloseConfirm] = useState(false);
+  const [tempParsedData, setTempParsedData] = useState<QuestionData | null>(null);
 
   const isFormValid = useMemo(() => {
     return (
@@ -71,6 +74,8 @@ export default function AddQuestionModal({
       setBulkText('');
       setHasChanges(false);
       setShowCloseConfirm(false);
+      setView('edit');
+      setTempParsedData(null);
       form.reset();
     }, 300);
   }, [hasChanges, showCloseConfirm, close, form, initialFormData]);
@@ -111,14 +116,14 @@ export default function AddQuestionModal({
         type: opt.type || 'wrong'
       }));
       
-      setFormData({
+      const parsedData = {
         questionText: parsed.questionText || '',
         options: normalizedOptions,
         difficulty: (parsed.difficulty as Difficulty) || Difficulty.EASY
-      });
-      
-      setCorrectOptionId('');
-      setShowImportView(false);
+      };
+
+      setTempParsedData(parsedData);
+      setView('review');
       setBulkText('');
     } catch (error) {
       console.error('Bulk import failed:', error);
@@ -127,6 +132,15 @@ export default function AddQuestionModal({
       );
     } finally {
       setIsImporting(false);
+    }
+  };
+
+  const acceptImport = () => {
+    if (tempParsedData) {
+      setFormData(tempParsedData);
+      setCorrectOptionId(''); // Reset correct answer as AI doesn't always guarantee correctness
+      setView('edit');
+      setTempParsedData(null);
     }
   };
 
@@ -197,23 +211,27 @@ export default function AddQuestionModal({
             </div>
             <div>
               <h1 className="text-2xl font-black text-gray-800 tracking-tight">Add New Question</h1>
-              {/* <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest mt-1 flex items-center">
-                <span className="w-1.5 h-1.5 rounded-full bg-green-400 mr-2 animate-pulse"></span>
-                Visual Editor Ready
-              </p> */}
+              <div className="flex items-center space-x-3 mt-1">
+                 <div className={`px-2 py-0.5 rounded-full text-[8px] font-black uppercase tracking-widest ${
+                   view === 'edit' ? 'bg-[#3E4095] text-white' : 'bg-gray-100 text-gray-400'
+                 }`}>Editor</div>
+                 <div className={`px-2 py-0.5 rounded-full text-[8px] font-black uppercase tracking-widest ${
+                   view === 'preview' ? 'bg-[#3E4095] text-white' : 'bg-gray-100 text-gray-400'
+                 }`}>Preview</div>
+              </div>
             </div>
           </div>
           <div className="flex space-x-3">
              <button 
-              onClick={() => setShowImportView(!showImportView)}
+              onClick={() => setView(view === 'import' ? 'edit' : 'import')}
               className={`flex items-center space-x-3 px-6 py-3 rounded-2xl text-[10px] font-black tracking-widest transition-all uppercase shadow-sm ${
-                showImportView 
+                view === 'import' 
                 ? 'bg-gray-800 text-white hover:bg-gray-900' 
                 : 'bg-white border border-gray-100 text-[#3E4095] hover:bg-gray-50'
               }`}
             >
-              <i className={`fas ${showImportView ? 'fa-keyboard' : 'fa-wand-magic-sparkles'}`}></i>
-              <span>{showImportView ? 'BACK TO DEFAULT' : 'AI IMPORT'}</span>
+              <i className={`fas ${view === 'import' ? 'fa-keyboard' : 'fa-wand-magic-sparkles'}`}></i>
+              <span>{view === 'import' ? 'BACK TO DEFAULT' : 'AI IMPORT'}</span>
             </button>
             <button 
               onClick={handleClose} 
@@ -228,7 +246,7 @@ export default function AddQuestionModal({
         <div className="flex-1 overflow-y-auto relative custom-scrollbar bg-[#F7F9FC]">
           
           {/* AI Smart Import View */}
-          {showImportView && (
+          {view === 'import' && (
             <div className="p-12 bg-white h-full animate-in slide-in-from-right-4 duration-300">
               <div className="max-w-3xl mx-auto space-y-10">
                 <div className="space-y-4">
@@ -236,9 +254,6 @@ export default function AddQuestionModal({
                     <i className="fas fa-robot mr-2"></i> Powered by VMLC engine
                   </div>
                   <h2 className="text-3xl font-black text-gray-800 leading-tight">Import from text</h2>
-                  {/* <p className="text-gray-500 leading-relaxed">
-                    Paste a question with its options and automatically identify the question text, extract options, and format mathematical expressions LaTeX.
-                  </p> */}
                 </div>
                 
                 <div className="relative group">
@@ -254,14 +269,11 @@ C) -1
 D) 1/2"
                     className="w-full h-80 p-8 text-base bg-gray-50 border border-gray-100 rounded-[2rem] focus:ring-4 focus:ring-[#3E4095]/10 focus:border-[#3E4095] outline-none transition-all font-mono leading-relaxed text-black shadow-inner"
                     />
-                    <div className="absolute top-6 right-6 opacity-0 group-focus-within:opacity-100 transition-opacity">
-                         <span className="px-3 py-1 bg-[#3E4095] text-white text-[10px] font-bold rounded-full shadow-lg">AI PROCESSING...</span>
-                    </div>
                 </div>
 
                 <div className="flex space-x-6">
                   <button 
-                    onClick={() => setShowImportView(false)}
+                    onClick={() => setView('edit')}
                     className="px-10 py-5 text-[10px] font-black text-gray-400 uppercase tracking-widest hover:text-gray-600 transition-all cursor-pointer"
                   >
                     Cancel
@@ -282,8 +294,8 @@ D) 1/2"
                       </>
                     ) : (
                       <>
-                        <i className="fas fa-bolt mr-2 text-amber-300"></i>
-                        Process and Import
+                        <i className="fas mr-2 text-amber-300"></i>
+                        Process and Review
                       </>
                     )}
                   </button>
@@ -292,10 +304,55 @@ D) 1/2"
             </div>
           )}
 
+          {/* AI Review View */}
+          {view === 'review' && tempParsedData && (
+            <div className="p-10 animate-in fade-in duration-300 space-y-10">
+              <div className="max-w-4xl mx-auto flex items-center justify-between">
+                <div>
+                  <h2 className="text-2xl font-black text-gray-800">Review AI Parsing</h2>
+                  <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">Verify the extracted content below</p>
+                </div>
+                <div className="flex space-x-4">
+                  <button 
+                    onClick={() => setView('import')}
+                    className="px-6 py-3 rounded-xl text-[10px] font-black text-gray-400 uppercase tracking-widest hover:bg-gray-100"
+                  >
+                    Try Again
+                  </button>
+                  <button 
+                    onClick={acceptImport}
+                    className="px-8 py-3 bg-[#3E4095] text-white rounded-xl text-[10px] font-black uppercase tracking-widest shadow-lg hover:shadow-[#3E4095]/30"
+                  >
+                    Accept and Edit
+                  </button>
+                </div>
+              </div>
+              <UnifiedQuestionPreview data={tempParsedData} />
+            </div>
+          )}
+
+          {/* Unified Preview View */}
+          {view === 'preview' && (
+            <div className="p-10 animate-in fade-in duration-300 space-y-10">
+              <div className="max-w-4xl mx-auto flex items-center justify-between">
+                  <h2 className="text-2xl font-black text-gray-800">Final Preview</h2>
+                  <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">How candidates will see this question</p>
+              </div>
+              <UnifiedQuestionPreview data={formData} correctOptionId={correctOptionId} />
+              <div className="max-w-4xl mx-auto flex items-end justify-end">
+                <button 
+                  onClick={() => setView('edit')}
+                  className="px-8 py-3 bg-white border border-gray-100 text-[#3E4095] rounded-xl text-[10px] font-black uppercase tracking-widest shadow-sm hover:bg-gray-50"
+                >
+                  Back to Editor
+                </button>
+              </div>
+            </div>
+          )}
+
           {/* Standard Editor View */}
-          {!showImportView && (
+          {view === 'edit' && (
             <div className="p-10 pb-32 space-y-16 max-w-6xl mx-auto">
-              
               {/* Question Section */}
               <section className="space-y-6">
                 <div className="flex items-center justify-between">
@@ -331,7 +388,6 @@ D) 1/2"
                         <div className="w-10 h-10 flex items-center justify-center rounded-2xl bg-[#3E4095] text-white font-black shadow-lg shadow-[#3E4095]/20">2</div>
                         <div>
                             <h3 className="text-base font-black text-gray-800 tracking-tight">Answers</h3>
-                            {/* <p className="text-[10px] text-gray-400 font-bold tracking-widest">Select the correct solution</p> */}
                         </div>
                     </div>
                     {form.formState.errors.correct_answer && (
@@ -378,7 +434,6 @@ D) 1/2"
                 <div className="flex flex-col md:flex-row md:items-center justify-between p-8 bg-white rounded-[2rem] border border-gray-100 shadow-sm space-y-6 md:space-y-0">
                   <div className="space-y-2">
                     <h3 className="text-sm font-black text-gray-800 uppercase tracking-widest">Question Difficulty</h3>
-                    {/* <p className="text-[10px] text-gray-400 font-medium leading-relaxed">Categorize this question for personalized student assessments</p> */}
                   </div>
                   <div className="flex justify-between p-1.5 bg-gray-50 rounded-2xl border border-gray-100">
                     {DIFFICULTY_OPTIONS.map(diff => (
@@ -398,12 +453,21 @@ D) 1/2"
                   </div>
                 </div>
               </section>
+              <div className="flex justify-end">
+                <button 
+                  onClick={() => setView('preview')}
+                  className="flex items-center space-x-2 px-6 py-3 bg-white border border-gray-100 text-[#3E4095] rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-sm hover:shadow-md transition-all"
+                >
+                  <i className="fas fa-eye"></i>
+                  <span>Live Preview</span>
+                </button>
+              </div>
             </div>
           )}
         </div>
 
         {/* Footer Actions */}
-        {!showImportView && (
+        {view === 'edit' && (
           <div className="px-10 py-8 bg-white/80 border-t border-gray-100 flex flex-col sm:flex-row space-y-4 sm:space-y-0 sm:space-x-6 sticky bottom-0 z-30 backdrop-blur-xl">
             <button 
                 onClick={handleClose} 
@@ -425,7 +489,7 @@ D) 1/2"
                 </button>
                 <div className="flex flex-col items-end">
                   {!isFormValid && (
-                    <span className="text-[9px] font-bold text-amber-500 uppercase tracking-widest animate-pulse mb-1">
+                    <span className="text-[9px] font-bold text-red-500 uppercase tracking-widest animate-pulse mb-1">
                       {!formData.questionText.trim() ? 'Enter question text' : 
                        formData.options.some(opt => !opt.text.trim()) ? 'Fill all options' :
                        !correctOptionId ? 'Mark an option as correct' : 'Complete all fields'}
