@@ -19,6 +19,7 @@ export default function CreateExamSessionModal({ open, close }: Readonly<{ open:
     const { data: statOverview } = useGetStatOverview()
 
     const stages = useMemo(() => statOverview?.competition?.stages || [], [statOverview])
+    const stageOptions = useMemo(() => ['No Stage', ...stages.map(s => s.name)], [stages])
     const selectedStageId = watch('stage_id')
     const selectedStage = useMemo(() => stages.find(s => s.id === selectedStageId), [stages, selectedStageId])
     const isLeague = selectedStage?.type === 'league'
@@ -77,18 +78,22 @@ export default function CreateExamSessionModal({ open, close }: Readonly<{ open:
                                 <div className="flex flex-col gap-1.5">
                                     <label htmlFor="stage_id" className='text-[9px] font-black text-gray-400 uppercase tracking-widest flex items-center gap-2'>
                                         <i className="fas fa-layer-group text-[#3E4095]"></i>
-                                        Stage <span className="text-red-500">*</span>
+                                        Stage
                                     </label>
                                     <Controller
                                         control={control}
                                         name="stage_id"
                                         render={({ field }) => (
                                             <SelectInput
-                                                items={stages.map(s => s.name)}
-                                                value={stages.find(s => s.id === field.value)?.name}
+                                                items={stageOptions}
+                                                value={stages.find(s => s.id === field.value)?.name || 'No Stage'}
                                                 onValueChange={(name) => {
-                                                    const s = stages.find(x => x.name === name)
-                                                    field.onChange(s?.id)
+                                                    if (name === 'No Stage') {
+                                                        field.onChange(undefined)
+                                                    } else {
+                                                        const s = stages.find(x => x.name === name)
+                                                        field.onChange(s?.id)
+                                                    }
                                                 }}
                                                 placeholder="Select Stage"
                                             />

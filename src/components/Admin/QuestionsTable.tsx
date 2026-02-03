@@ -20,19 +20,23 @@ export default function QuestionsTable({
   currentPage, 
   page_count,
   filters,
-  setFilters 
+  setFilters,
+  status
 }: Readonly<{
   questions: SessionQuestionItemType[]
   onPageChange: Dispatch<SetStateAction<number>>, 
   currentPage: number, 
   page_count: number,
   filters: Record<string, string>,
-  setFilters: Dispatch<SetStateAction<Record<string, string>>>
+  setFilters: Dispatch<SetStateAction<Record<string, string>>>,
+  status?: string
 }>) {
   const [openRemoveQuestion, setOpenRemoveQuestion] = useState(false);
   const [openDrawer, setOpenDrawer] = useState(false)
   const [selectedQuestionId, setSelectedQuestionId] = useState<number>(0);
   const [currentQuestion, setCurrentQuestion] = useState<SessionQuestionItemType | null>(null)
+
+  const isEditable = status === 'draft' || status === 'scheduled';
 
   const { searchInput, setSearchInput } = useDebouncedSearch(setFilters);
 
@@ -242,10 +246,17 @@ export default function QuestionsTable({
                   </button>
                   <button 
                     onClick={() => {
+                      if (!isEditable) return;
                       setSelectedQuestionId(row.id);
                       handleOpenModal()
                     }} 
-                    className="px-5 py-2.5 rounded-xl bg-rose-50 text-rose-600 border border-rose-100 font-black text-[10px] uppercase tracking-widest hover:bg-rose-600 hover:text-white hover:shadow-lg hover:shadow-rose-600/20 transition-all cursor-pointer w-28 text-center active:scale-95"
+                    disabled={!isEditable}
+                    className={clsx(
+                      "px-5 py-2.5 rounded-xl border font-black text-[10px] uppercase tracking-widest transition-all w-28 text-center",
+                      isEditable 
+                        ? "bg-rose-50 text-rose-600 border-rose-100 hover:bg-rose-600 hover:text-white hover:shadow-lg hover:shadow-rose-600/20 cursor-pointer active:scale-95" 
+                        : "bg-gray-50 text-gray-300 border-gray-100 cursor-not-allowed opacity-60"
+                    )}
                   >
                     Remove
                   </button>

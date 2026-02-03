@@ -16,17 +16,22 @@ export type QuestionProps = {
 
 
 // New API Types based on CANDIDATE_DASHBOARD.md
+export type NotificationItem = {
+  id: number;
+  message: string;
+};
+
 export type CandidateContext = {
   full_name: string;
   role: string;
   profile_picture: string | null;
   is_setup_complete: boolean;
   status: string;
-  notifications: Array<{
-    id: number;
-    type: string;
-    message: string;
-  }>;
+  notifications: {
+    info: NotificationItem[];
+    success: NotificationItem[];
+    error: NotificationItem[];
+  };
 };
 
 export type DashboardStageProgress = {
@@ -69,7 +74,8 @@ export type AvailableExamType = {
   scheduled_date: Date;
   stage: string;
   stage_display: string;
-  participation: 'done' | 'not_done';
+  has_participated: boolean;
+  status: string;
 };
 
 export type LeaderboardRankingType = {
@@ -118,10 +124,11 @@ export type ExamHistoryItem = {
   exam_title: string;
   stage: string;
   round: number | null;
-  score: number;
-  percentage: number;
+  score: number | null;
+  percentage: number | null;
   date: Date;
   status: string;
+  is_published: boolean;
 };
 
 export type DashboardType = {
@@ -253,7 +260,7 @@ export type CreateQuestionType = {
   option_d: string,
   correct_answer: string,
   difficulty: string,
-  add_to_exams?: string[]
+  exam_ids?: string[]
 }
 
 
@@ -336,6 +343,8 @@ export type UpdatedSessionQuestionType = {
   scheduled_date: string;
   concluded_at: string | null;
   created_at: string;
+  stage_id?: number;
+  round?: number;
   created_by: {
     id: string;
     user: {

@@ -43,14 +43,20 @@ export default function useCreateQuestion(onSuccess: () => void, examId?: string
             form.reset()
             toast.success('Question created successfully')
             onSuccess()
+        },
+        onError: (error: any) => {
+            console.error('Question creation error:', error);
+            const errorMessage = error?.response?.data?.message || error?.message || 'Failed to create question';
+            toast.error(errorMessage);
         }
     })
 
 
 
     function onSubmit(payload: CreateQuestionType) {
+        console.log('Submitting question payload:', payload);
         if (examId) {
-            payload.add_to_exams = [examId];
+            payload.exam_ids = [examId];
         }
         mutate(payload)
     }

@@ -4,7 +4,7 @@ import usePagination from '@/hooks/usePagination'
 import useViewExamQuestions from '@/hooks/useViewExamQuestions'
 import { SessionQuestionItemType } from '@/types/Examtype'
 import { formatExamTitle } from '@/utils/generalUtils'
-import { formatDate } from '@/utils/formatFileSize'
+import { formatDateTime } from '@/utils/formatFileSize'
 import clsx from 'clsx'
 import { useSearchParams } from 'next/navigation'
 import { useState } from 'react'
@@ -63,6 +63,7 @@ export default function ExamSession() {
             questions={(data?.questions?.results ?? []) as SessionQuestionItemType[]} 
             filters={filters}
             setFilters={setFilters}
+            status={data?.status}
           />
         </div>
       }
@@ -141,13 +142,13 @@ function SessionDetails({ data }: Readonly<{ data?: any }>) {
                 <ConfigMetric 
                     icon="fa-clock" 
                     label="Access Window" 
-                    value={`${data?.open_duration_hours || 0} Hours`} 
+                    value={data?.open_duration_hours ? `${data.open_duration_hours} Hours` : '- -'}
                     sub="Time the exam remains open"
                 />
                 <ConfigMetric 
                     icon="fa-stopwatch" 
                     label="Timer" 
-                    value={`${data?.countdown_minutes || 0} Minutes`} 
+                    value={data?.countdown_minutes ? `${data?.countdown_minutes} Minutes` : '- -'} 
                     sub="Attempt duration per candidate"
                 />
             </div>
@@ -164,21 +165,21 @@ function SessionDetails({ data }: Readonly<{ data?: any }>) {
                 <TimelineEvent 
                     icon="fa-plus-circle"
                     label="Created On"
-                    date={data?.created_at ? formatDate(data.created_at) : 'N/A'}
+                    date={data?.created_at ? formatDateTime(data.created_at) : 'N/A'}
                     color="text-gray-400"
                     isLast={false}
                 />
                 <TimelineEvent 
                     icon="fa-calendar-check"
                     label="Scheduled Start"
-                    date={data?.scheduled_date ? formatDate(data.scheduled_date) : 'Not Scheduled'}
+                    date={data?.scheduled_date ? formatDateTime(data.scheduled_date) : 'Not Scheduled'}
                     color="text-blue-600"
                     isLast={false}
                 />
                 <TimelineEvent 
                     icon="fa-calendar-times"
                     label="Concluded At"
-                    date={data?.concluded_at ? formatDate(data.concluded_at) : '--'}
+                    date={data?.concluded_at ? formatDateTime(data.concluded_at) : '--'}
                     color="text-amber-600"
                     isLast={true}
                 />

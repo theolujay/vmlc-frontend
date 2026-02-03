@@ -47,7 +47,8 @@ export default function useEditExamSession(exam_id: string, onSuccessCallback: (
                 countdown_minutes: data.countdown_minutes,
                 is_active: data.is_active,
                 scheduled_date: data.scheduled_date ? data.scheduled_date.split('T')[0] : '',
-                // stage_id and round might need to be passed if available in data
+                stage_id: data.stage_id,
+                round: data.round,
             })
         }
     }, [data, form])
