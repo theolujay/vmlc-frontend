@@ -10,10 +10,10 @@ export default function useDeleteExamSession(onSuccessCallback: () => void) {
     const router = useRouter()
     const { isPending, mutate } = useMutation({
         mutationFn: ExamPortal.deleteExamSession,
-        onSuccess: (_, session_id) => {
+        onSuccess: () => {
             onSuccessCallback()
             toast.success('Exam session deleted successfully')
-            queryClient.invalidateQueries({ queryKey: ['list-exams', session_id] })
+            queryClient.invalidateQueries({ queryKey: ['list-exams'] })
             router.back()
         }
     })

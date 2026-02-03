@@ -1,7 +1,7 @@
 import { ExamPortal } from '@/services/examPortal.service'
 import { UpdatedSessionQuestionType } from '@/types/Examtype'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useMutation } from '@tanstack/react-query'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { toast } from 'react-toastify'
@@ -29,6 +29,7 @@ const defaultValues: ValueType = {
   round: undefined,
 }
 export default function useUploadSession(exam_id: string,onSuccessCallback:()=>void, data?: UpdatedSessionQuestionType) {
+  const queryClient = useQueryClient()
   const form = useForm({
     resolver: zodResolver(uploadExamSchema),
     defaultValues,
@@ -50,6 +51,7 @@ export default function useUploadSession(exam_id: string,onSuccessCallback:()=>v
   const { isPending, mutate } = useMutation({
     mutationFn: (payload: any) => ExamPortal.updateExamSession(exam_id, payload),
     onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['list-exams'] })
       toast.success('Session uploaded successfully')
       onSuccessCallback()
       form.reset()

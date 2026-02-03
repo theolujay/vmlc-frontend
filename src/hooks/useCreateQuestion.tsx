@@ -2,7 +2,7 @@
 import { ExamPortal } from '@/services/examPortal.service';
 import { CreateQuestionType } from '@/types/Examtype';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useForm } from 'react-hook-form';
 import { toast } from 'react-toastify';
 import z from 'zod';
@@ -30,6 +30,7 @@ const defaultValues = {
 }
 
 export default function useCreateQuestion(onSuccess: () => void, examId?: string) {
+    const queryClient = useQueryClient()
     const form = useForm({
         resolver: zodResolver(createQuestionSchema),
         defaultValues
@@ -40,6 +41,11 @@ export default function useCreateQuestion(onSuccess: () => void, examId?: string
     const { isPending, mutate } = useMutation({
         mutationFn: ExamPortal.createQuestion,
         onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['list-questions'] })
+            queryClient.invalidateQueries({ queryKey: ['list-exams'] })
+            if (examId) {
+                queryClient.invalidateQueries({ queryKey: ['exam-questions', examId] })
+            }
             form.reset()
             toast.success('Question created successfully')
             onSuccess()

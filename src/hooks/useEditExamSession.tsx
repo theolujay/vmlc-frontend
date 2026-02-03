@@ -1,7 +1,7 @@
 import { ExamPortal } from '@/services/examPortal.service'
 import { UpdatedSessionQuestionType } from '@/types/Examtype'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useMutation } from '@tanstack/react-query'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { toast } from 'react-toastify'
@@ -33,6 +33,7 @@ const defaultValues = {
 type ValueType = z.infer<typeof editExamSessionSchema>;
 
 export default function useEditExamSession(exam_id: string, onSuccessCallback: () => void, data?: UpdatedSessionQuestionType) {
+    const queryClient = useQueryClient()
     const form = useForm<ValueType>({
         resolver: zodResolver(editExamSessionSchema),
         defaultValues
@@ -62,6 +63,7 @@ export default function useEditExamSession(exam_id: string, onSuccessCallback: (
             return ExamPortal.editExamSession(exam_id, formattedPayload as any);
         },
         onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['list-exams'] })
             onSuccessCallback()
             toast.success('Exam session updated successfully')
         }

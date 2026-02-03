@@ -1,13 +1,22 @@
 import { ExamPortal } from '@/services/examPortal.service'
 import { BulkPayloadType } from '@/types/Index'
-import { useMutation } from '@tanstack/react-query'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'react-toastify'
 
 export default function useBulkAddQuestionsToSession(onSuccessCallback: () => void) {
+    const queryClient = useQueryClient()
     const { isPending, mutate, isSuccess } = useMutation({
         mutationFn: ExamPortal.bulkAddQuestionToSession,
-        onSuccess: () => {
-           
+        onSuccess: (_, variables) => {
+            queryClient.invalidateQueries({ queryKey: ['list-questions'] })
+            queryClient.invalidateQueries({ queryKey: ['list-exams'] })
+            
+            if (variables.exam_ids) {
+                variables.exam_ids.forEach(id => {
+                    queryClient.invalidateQueries({ queryKey: ['exam-questions', id.toString()] })
+                })
+            }
+
             toast.success('Session added successfully')
             onSuccessCallback()
         },
