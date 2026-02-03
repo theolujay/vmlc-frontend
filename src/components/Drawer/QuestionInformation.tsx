@@ -13,7 +13,7 @@ export default function QuestionInformation({ open, setOpen, information }: Read
     const formattedDate = formatDate(information.created_at);
     const formattedTime = formatTimeToString(information.created_at)
     // const correct = options.find((val) => val.optionKey.endsWith(information.correct_answer.toLowerCase()));
-    const getName = getUserName(information.created_by?.user?.first_name || '', information.created_by?.user?.last_name || '')
+    const getName = information.created_by?.full_name || getUserName(information.created_by?.user?.first_name || '', information.created_by?.user?.last_name || '')
 
     return (
         <Drawer open={open} onClose={setOpen}>
