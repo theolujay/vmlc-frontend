@@ -8,7 +8,7 @@ interface PrimaryActionProps {
   candidateName: string;
 }
 
-const PrimaryAction: React.FC<PrimaryActionProps> = ({ exam, candidateName }) => {
+const PrimaryAction: React.FC<PrimaryActionProps> = ({ exam }) => {
   const [timeLeft, setTimeLeft] = useState<string>('');
   const [canStart, setCanStart] = useState(false);
   const router = useRouter();
@@ -72,7 +72,7 @@ const PrimaryAction: React.FC<PrimaryActionProps> = ({ exam, candidateName }) =>
 
   if (!exam) {
      return (
-        <section className="bg-white p-8 rounded-[24px] border border-[#E4E7EC] shadow-sm text-center">
+        <section className="font-sans bg-white p-8 rounded-[24px] border border-[#E4E7EC] shadow-sm text-center">
         <div className="max-w-md mx-auto">
           <span className="bg-[#F0F2F5] text-[#475367] px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide">
             Exam Status
@@ -97,21 +97,21 @@ const PrimaryAction: React.FC<PrimaryActionProps> = ({ exam, candidateName }) =>
         <h2 className="text-2xl font-bold text-slate-800 mt-3">
           {formatExamTitle(exam.title)}
         </h2>
-        <p className="text-[#667185] mt-2 text-sm leading-relaxed">
+        <p className="text-[#667185] mt-2 text-[11px] italic leading-relaxed">
           {isFinals 
             ? "This is an in-person examination. Please ensure you have reviewed the venue logistics and have your identification ready."
             : isAwaitingResults 
-              ? "The examination has concluded. We are currently processing the results. Please check back soon."
+              ? "Currently processing the results... Please check back soon."
               : !exam.is_eligible && isOngoing
-                ? "You are not eligible to take this examination. Please contact support if you believe this is an error."
+                ? "You're ineligible to take this examination. Please contact support if you believe this is a mistake."
                 : (exam.description || "Ensure you are in a quiet environment with a stable internet connection for this virtual exam.")}
         </p>
         
         <div className="mt-8 space-y-4">
           {hasParticipated ? (
-             <div className="p-4 bg-emerald-50 rounded-xl border border-emerald-200">
-              <p className="text-xs font-bold text-emerald-600 uppercase">Status</p>
-              <p className="text-lg font-bold text-emerald-800 mt-1">
+             <div className="p-4 bg-[#3E4095]/2 rounded-xl border border-[#3E4095]/20">
+              <p className="text-xs font-bold text-[#3E4095] uppercase">Status</p>
+              <p className="text-lg font-bold text-[#3E4095] mt-1">
                 {isAwaitingResults || exam.status === 'results_published' ? 'Exam Concluded' : 'Exam Submitted'}
               </p>
             </div>
@@ -153,7 +153,7 @@ const PrimaryAction: React.FC<PrimaryActionProps> = ({ exam, candidateName }) =>
              </p>
           )}
           {hasParticipated && (
-            <p className="text-xs text-emerald-600 italic font-medium">
+            <p className="text-xs text-[#3E4095] italic font-medium">
                 {isAwaitingResults ? 'Standings will be published shortly.' : 'You have successfully completed this examination.'}
             </p>
           )}

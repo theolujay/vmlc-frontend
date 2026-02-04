@@ -1,6 +1,6 @@
 
 "use client"
-import React, { useState, useEffect } from 'react';
+import React, { useState, useMemo } from 'react';
 import PageLayout from '../Layout/PageLayout';
 import withAuthentication from '@/hocs/withAuthentication';
 import useGetExamPortal from '@/hooks/useGetExamPortal';
@@ -17,7 +17,8 @@ import { AvailableExamType } from '@/types/Examtype';
 function ExamPortal() {
   const { isPending, data } = useGetExamPortal();
   const user = useGetCurrentUser();
-  const [infoMessage, setInfoMessage] = useState<string | undefined>("Stay sharp! The competition is about to begin.");
+  const [dismissedNotificationIds, setDismissedNotificationIds] = useState<number[]>([]);
+  const [isProfileNoticeDismissed, setIsProfileNoticeDismissed] = useState(false);
   const [isSupportOpen, setIsSupportOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
 
@@ -27,42 +28,34 @@ function ExamPortal() {
   const performanceSnapshot = data?.performance_snapshot;
   const examHistory = data?.exam_history;
 
-  useEffect(() => {
-    // Priority: 1. API Notifications, 2. Profile Setup Check (API or User Context)
-    
-    // Check Notifications first
-    const infoNotifications = candidateContext?.notifications?.info || [];
-    const errorNotifications = candidateContext?.notifications?.error || [];
-    const successNotifications = candidateContext?.notifications?.success || [];
+  // Notification Queue Logic: Priority ERROR > INFO > SUCCESS
+  const activeNotifications = useMemo(() => {
+    if (!candidateContext?.notifications) return [];
 
-    if (errorNotifications.length > 0) {
-      setInfoMessage(errorNotifications[0].message);
-      return;
-    }
+    const errorNotifications = (candidateContext.notifications.error || []).map(n => ({ ...n, type: 'error' as const }));
+    const infoNotifications = (candidateContext.notifications.info || []).map(n => ({ ...n, type: 'info' as const }));
+    const successNotifications = (candidateContext.notifications.success || []).map(n => ({ ...n, type: 'success' as const }));
     
-    if (successNotifications.length > 0) {
-      setInfoMessage(successNotifications[0].message);
-      return;
-    }
+    return [...errorNotifications, ...infoNotifications, ...successNotifications]
+      .filter(n => !dismissedNotificationIds.includes(n.id));
+  }, [candidateContext?.notifications, dismissedNotificationIds]);
 
-    if (infoNotifications.length > 0) {
-       setInfoMessage(infoNotifications[0].message);
-       return;
-    }
+  const showProfileNotice = !isProfileNoticeDismissed && 
+    (candidateContext?.is_setup_complete === false || user?.profile?.is_setup_complete === false);
 
-    // Check Setup status
-    const isSetupComplete = candidateContext?.is_setup_complete ?? user?.profile?.is_setup_complete;
-    
-    if (isSetupComplete === false) {
-      setInfoMessage("Your profile is incomplete. Please update your profile to ensure you don't miss any important updates.");
-    } else {
-       // Clear message if setup is complete and no notifications (and default message was shown)
-       if (infoMessage === "Stay sharp! The competition is about to begin." && isSetupComplete) {
-           // Optional: Keep the default welcome message or clear it. 
-           // setInfoMessage(undefined); 
-       }
+  const currentNotification = activeNotifications.length > 0 
+    ? { message: activeNotifications[0].message, type: activeNotifications[0].type, isProfile: false }
+    : showProfileNotice 
+      ? { message: "Your profile is incomplete. Please update your profile to ensure you don't miss any important updates.", type: 'info' as const, isProfile: true }
+      : null;
+
+  const handleDismissNotification = () => {
+    if (activeNotifications.length > 0) {
+      setDismissedNotificationIds(prev => [...prev, activeNotifications[0].id]);
+    } else if (showProfileNotice) {
+      setIsProfileNoticeDismissed(true);
     }
-  }, [user, candidateContext, infoMessage]);
+  };
 
   if (isPending) {
     return (
@@ -209,9 +202,10 @@ function ExamPortal() {
 
         {/* INFO BOARD */}
         <InfoBoard 
-          message={infoMessage} 
-          onDismiss={() => setInfoMessage(undefined)} 
-          actionLabel={candidateContext?.is_setup_complete === false || user?.profile?.is_setup_complete === false ? "Update Profile" : undefined}
+          message={currentNotification?.message} 
+          type={currentNotification?.type}
+          onDismiss={handleDismissNotification} 
+          actionLabel={currentNotification?.isProfile ? "Update Profile" : undefined}
           onAction={() => setIsProfileOpen(true)}
         />
 
