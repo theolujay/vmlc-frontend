@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import CompetitionDashboard from './CompetitionDashboard';
 import FullLeagueLeaderboard from './FullLeagueLeaderboard';
 import FullStandings from './FullStandings';
 import ViewCandidateDetails from '../Leaderboard/ViewCandidateDetails';
 import { useAuth } from '@/contexts/AuthProvider';
+import { useSearchParams } from 'next/navigation';
 
 type ViewState = 'dashboard' | 'leaderboard' | 'standings' | 'candidate-details';
 
@@ -18,6 +19,11 @@ interface DetailContext {
 
 const CompetitionWrapper: React.FC = () => {
   const { authState } = useAuth();
+  const searchParams = useSearchParams();
+  const viewParam = searchParams.get('view') as ViewState;
+  const idParam = searchParams.get('id');
+  const titleParam = searchParams.get('title');
+
   const userRole = authState?.user?.role;
   const isModeratorOrAbove = ['moderator', 'admin', 'manager', 'superadmin'].includes(userRole || '');
 
@@ -25,6 +31,16 @@ const CompetitionWrapper: React.FC = () => {
   const [selectedExamId, setSelectedExamId] = useState<string>('');
   const [selectedExamTitle, setSelectedExamTitle] = useState<string>('');
   const [detailContext, setDetailContext] = useState<DetailContext | null>(null);
+
+  useEffect(() => {
+    if (viewParam === 'standings' && idParam) {
+      setSelectedExamId(idParam);
+      setSelectedExamTitle(titleParam || 'Exam Standings');
+      setView('standings');
+    } else if (viewParam === 'leaderboard') {
+      setView('leaderboard');
+    }
+  }, [viewParam, idParam, titleParam]);
 
   const handleViewStandings = (id?: string, title?: string) => {
     if (!isModeratorOrAbove) return;

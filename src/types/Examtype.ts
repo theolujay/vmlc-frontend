@@ -61,6 +61,8 @@ export type ActiveExamType = {
   duration_minutes: number;
   status: string;
   has_participated: boolean;
+  is_eligible: boolean;
+  access_status: string | null;
 };
 
 export type AvailableExamType = {
@@ -76,12 +78,19 @@ export type AvailableExamType = {
   stage_display: string;
   has_participated: boolean;
   status: string;
+  is_eligible: boolean;
+  access_status: string | null;
 };
 
 export type LeaderboardRankingType = {
   current_rank?: number;
   position: number;
   total_candidates: number;
+  rank_change?: number;
+  exam_id?: string;
+  as_of_round?: number;
+  exam_title?: string;
+  is_active?: boolean;
 };
 
 export type PerformanceSnapshotType = {
@@ -90,6 +99,8 @@ export type PerformanceSnapshotType = {
     total_candidates: number;
     score: number;
     percentile: number;
+    exam_id: string;
+    exam_title: string;
   } | null;
   league_leaderboard: {
     overall_rank: number;
@@ -97,6 +108,15 @@ export type PerformanceSnapshotType = {
     total_score: number;
     rank_change: number;
     as_of_round: number;
+    is_active: boolean;
+  } | null;
+  final_standing?: {
+    rank: number;
+    total_candidates: number;
+    score: number;
+    percentile: number;
+    exam_id: string;
+    exam_title: string;
   } | null;
 };
 

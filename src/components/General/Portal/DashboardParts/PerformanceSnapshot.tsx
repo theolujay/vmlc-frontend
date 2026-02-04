@@ -9,30 +9,43 @@ type ExamStage = 'SCREENING' | 'LEAGUE' | 'FINAL';
 interface PerformanceSnapshotProps {
   leagueRanking?: LeaderboardRankingType | null;
   screeningRanking?: LeaderboardRankingType | null;
+  finalRanking?: LeaderboardRankingType | null;
   stage: ExamStage;
   currentWeek?: number; // Only for League stage (1-6)
   qualificationThreshold?: number;
+  cutoffDisplay?: string;
   hasTakenExam?: boolean;
   isQualified?: boolean;
+  isAwaitingResults?: boolean;
+  isActive?: boolean;
   qualificationMessage?: string;
 }
 
 const PerformanceSnapshot: React.FC<PerformanceSnapshotProps> = ({ 
   leagueRanking, 
   screeningRanking, 
+  finalRanking,
   stage,
   currentWeek = 1,
   qualificationThreshold,
+  cutoffDisplay,
   hasTakenExam = false,
   isQualified: isQualifiedFromApi,
+  isAwaitingResults = false,
+  isActive = true,
   qualificationMessage
 }) => {
-  const activeRanking = stage === 'SCREENING' ? screeningRanking : leagueRanking;
+  const activeRanking = stage === 'SCREENING' ? screeningRanking : stage === 'FINAL' ? finalRanking : leagueRanking;
   const rank = activeRanking?.position || 0;
   const totalCandidates = activeRanking?.total_candidates || 0;
+  
+  // For League, use isActive to determine if rank is finalized
+  const showRank = rank > 0 && (stage !== 'LEAGUE' || isActive);
 
   // Use API value if available, otherwise fallback to calculation
   const isQualified = isQualifiedFromApi !== undefined ? isQualifiedFromApi : (qualificationThreshold ? rank <= qualificationThreshold && rank > 0 : false);
+
+  const displayCutoff = cutoffDisplay || (qualificationThreshold ? `Top ${qualificationThreshold}` : '-');
 
   const stageConfig = {
     SCREENING: {
@@ -42,11 +55,14 @@ const PerformanceSnapshot: React.FC<PerformanceSnapshotProps> = ({
       pendingLabel: "Screening Upcoming",
       pendingSub: "The screening examination hasn't yet commenced. Please await updates.",
 
+      awaitingLabel: "Awaiting Results",
+      awaitingSub: "Your performance is being processed. Results will be available soon.",
+
       successLabel: "Screening Passed",
-      successSub: "You are eligible to proceed to the League stage once it begins.",
+      successSub: "You are eligible for promotion to the League stage.",
 
       failLabel: "Screening Not Passed",
-      failSub: "Your score did not meet the required cut-off for progression.",
+      failSub: "Your score did not meet the required cut-off for promotion.",
 
       accent: "#01ACEA"
     },
@@ -58,11 +74,14 @@ const PerformanceSnapshot: React.FC<PerformanceSnapshotProps> = ({
       pendingLabel: "Week Assessment Pending",
       pendingSub: `The assessment for Week ${currentWeek} has not started yet. Prepare well!`,
 
+      awaitingLabel: "Results Pending",
+      awaitingSub: "The leaderboard is currently being updated with the latest scores. Check back soon.",
+
       successLabel: "Within Qualification Range",
       successSub: "Maintaining this position keeps you eligible for the Final stage.",
 
       failLabel: "Outside Qualification Range",
-      failSub: "Improved performance is required in upcoming weeks to qualify.",
+      failSub: "Improved performance is advised in upcoming weeks to reach Final stage.",
 
       accent: "#3E4095"
     },
@@ -73,6 +92,9 @@ const PerformanceSnapshot: React.FC<PerformanceSnapshotProps> = ({
 
       pendingLabel: "Finals Upcoming",
       pendingSub: "The final examination schedule and details will be shared soon.",
+
+      awaitingLabel: "Under Review",
+      awaitingSub: "Final results are being verified. An official announcement will follow shortly.",
 
       successLabel: "Finalist Confirmed",
       successSub: "You are cleared to participate in the in-person final examination.",
@@ -86,6 +108,7 @@ const PerformanceSnapshot: React.FC<PerformanceSnapshotProps> = ({
 
 
   const currentContent = stageConfig[stage] || stageConfig.SCREENING;
+  const isLinkDisabled = !activeRanking || ((stage === 'SCREENING' || stage === 'FINAL') && !activeRanking.exam_id);
 
   return (
     <section className="bg-white p-6 rounded-[24px] border border-[#E4E7EC] shadow-sm h-full flex flex-col font-sans">
@@ -116,26 +139,42 @@ const PerformanceSnapshot: React.FC<PerformanceSnapshotProps> = ({
         <div className="grid grid-cols-2 gap-4 mt-2">
              <div className="flex flex-col gap-1">
                 <span className="text-[#475367] text-xs font-bold uppercase">Current Rank</span>
-                <span className="font-bold text-[#101828] text-3xl">
-                    {hasTakenExam && rank > 0 ? rank : '-'} <span className="text-base font-normal text-[#667185]">/ {totalCandidates}</span>
-                </span>
+                <div className="flex items-end gap-2">
+                    <span className="font-bold text-[#101828] text-3xl">
+                        {showRank ? rank : '-'} <span className="text-base font-normal text-[#667185]">/ {totalCandidates > 0 ? totalCandidates : '-'}</span>
+                    </span>
+                    {hasTakenExam && activeRanking?.rank_change !== undefined && activeRanking.rank_change !== 0 && showRank && (
+                        <div className={`flex items-center mb-1.5 text-xs font-bold ${activeRanking.rank_change > 0 ? 'text-emerald-600' : 'text-red-600'}`}>
+                             {activeRanking.rank_change > 0 ? (
+                                <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" viewBox="0 0 20 20" fill="currentColor">
+                                  <path fillRule="evenodd" d="M5.293 9.707a1 1 0 010-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 01-1.414 1.414L11 7.414V15a1 1 0 11-2 0V7.414L6.707 9.707a1 1 0 01-1.414 0z" clipRule="evenodd" />
+                                </svg>
+                             ) : (
+                                <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3" viewBox="0 0 20 20" fill="currentColor">
+                                  <path fillRule="evenodd" d="M14.707 10.293a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 111.414-1.414L9 12.586V5a1 1 0 012 0v7.586l2.293-2.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                                </svg>
+                             )}
+                             <span>{Math.abs(activeRanking.rank_change)}</span>
+                        </div>
+                    )}
+                </div>
             </div>
             <div className="flex flex-col gap-1 text-right">
                 <span className="text-[#475367] text-xs font-bold uppercase">
                     {currentContent.metricLabel}
                 </span>
-                <span className="font-bold text-[#101828] text-3xl">{qualificationThreshold ? `Top ${qualificationThreshold}` : '-'}</span>
+                <span className="font-bold text-[#101828] text-3xl">{displayCutoff}</span>
             </div>
         </div>
 
         {/* Status Banner */}
          <div className={`p-4 rounded-xl border flex items-center gap-3 mt-2 transition-all duration-300 ${
-            !hasTakenExam ? 'bg-gray-50 border-gray-200' : isQualified ? 'bg-[#CCEEFB]/30 border-[#01ACEA]/50' : 'bg-[#FBEAE9] border-[#CB1A14]/20'
+            !hasTakenExam ? 'bg-gray-50 border-gray-200' : isAwaitingResults ? 'bg-blue-50/50 border-blue-100' : isQualified ? 'bg-[#CCEEFB]/30 border-[#01ACEA]/50' : 'bg-[#FBEAE9] border-[#CB1A14]/20'
         }`}>
           <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${
-              !hasTakenExam ? 'bg-gray-400' : isQualified ? 'bg-[#01ACEA]' : 'bg-[#CB1A14]'
+              !hasTakenExam ? 'bg-gray-400' : isAwaitingResults ? 'bg-blue-500' : isQualified ? 'bg-[#01ACEA]' : 'bg-[#CB1A14]'
           }`}>
-            {!hasTakenExam ? (
+            {!hasTakenExam || isAwaitingResults ? (
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
@@ -151,22 +190,32 @@ const PerformanceSnapshot: React.FC<PerformanceSnapshotProps> = ({
           </div>
           <div>
             <p className={`text-xs font-bold uppercase tracking-wider ${
-                 !hasTakenExam ? 'text-gray-500' : isQualified ? 'text-[#018ABB]' : 'text-[#CB1A14]'
+                 !hasTakenExam ? 'text-gray-500' : isAwaitingResults ? 'text-blue-600' : isQualified ? 'text-[#018ABB]' : 'text-[#CB1A14]'
             }`}>
-                {!hasTakenExam ? currentContent.pendingLabel : isQualified ? currentContent.successLabel : currentContent.failLabel}
+                {!hasTakenExam ? currentContent.pendingLabel : isAwaitingResults ? currentContent.awaitingLabel : isQualified ? currentContent.successLabel : currentContent.failLabel}
             </p>
             <p className="text-[11px] text-[#475367] leading-tight mt-0.5">
-                {qualificationMessage || (!hasTakenExam ? currentContent.pendingSub : isQualified ? currentContent.successSub : currentContent.failSub)}
+                {!hasTakenExam ? currentContent.pendingSub : isAwaitingResults ? currentContent.awaitingSub : isQualified ? currentContent.successSub : currentContent.failSub}
             </p>
           </div>
         </div>
       </div>
 
       {/* Footer Link */}
-      <Link href="/exam-portal/leaderboard" className="mt-6 pt-4 border-t border-slate-100 text-sm font-bold text-[#3E4095] hover:opacity-80 flex items-center justify-between transition-all">
-        <span>{stage === 'SCREENING' ? 'Standings' : 'Leaderboard'}</span>
-        <GotoIcon />
-      </Link>
+      {!isLinkDisabled ? (
+        <Link 
+          href={activeRanking?.exam_id ? `/exam-portal/standings/${activeRanking.exam_id}` : "/exam-portal/leaderboard"} 
+          className="mt-6 pt-4 border-t border-slate-100 text-sm font-bold text-[#3E4095] hover:opacity-80 flex items-center justify-between transition-all"
+        >
+          <span>{stage === 'SCREENING' ? 'Standings' : 'Leaderboard'}</span>
+          <GotoIcon />
+        </Link>
+      ) : (
+        <div className="mt-6 pt-4 border-t border-slate-100 text-sm font-bold text-slate-300 flex items-center justify-between cursor-not-allowed grayscale">
+          <span>{stage === 'SCREENING' ? 'Standings' : 'Leaderboard'}</span>
+          <GotoIcon />
+        </div>
+      )}
     </section>
   );
 };

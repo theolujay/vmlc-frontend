@@ -19,7 +19,9 @@ export const DUMMY_AVAILABLE_EXAM: AvailableExamType = {
   stage: "League",
   stage_display: "League Week 3",
   has_participated: false,
-  status: 'scheduled'
+  status: 'scheduled',
+  is_eligible: true,
+  access_status: null
 };
 
 export const DUMMY_RECENT_RESULTS = [

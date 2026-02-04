@@ -1,14 +1,16 @@
 'use client';
 
-import React from 'react';
-import CompetitionDashboard from '@/components/Admin/Competition/CompetitionDashboard';
+import React, { Suspense } from 'react';
+import CompetitionWrapper from '@/components/Admin/Competition/CompetitionWrapper';
 import AdminLayout from '@/components/Admin/AdminLayout';
 
 const CompetitionPage: React.FC = () => {
   return (
     <AdminLayout>
       <div className="p-6">
-        <CompetitionDashboard />
+        <Suspense fallback={<div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#3E4095] mx-auto mt-20"></div>}>
+          <CompetitionWrapper />
+        </Suspense>
       </div>
     </AdminLayout>
   );

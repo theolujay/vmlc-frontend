@@ -14,6 +14,7 @@ export default function useDeleteExamSession(onSuccessCallback: () => void) {
             onSuccessCallback()
             toast.success('Exam session deleted successfully')
             queryClient.invalidateQueries({ queryKey: ['list-exams'] })
+            queryClient.invalidateQueries({ queryKey: ['exam-questions'] })
             router.back()
         }
     })

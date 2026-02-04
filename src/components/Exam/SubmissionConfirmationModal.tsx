@@ -11,7 +11,7 @@ export default function SubmissionConfirmationModal({ open, close, totalAnswered
 
     return (
         <AppDialog open={open} onOpenChange={handleClose}>
-            <div className="flex flex-col p-8 bg-white items-center text-center">
+            <div className="flex flex-col p-8 bg-white items-center text-center rounded-tr">
                 <div className="w-20 h-20 bg-[#3E4095]/5 rounded-[2rem] flex items-center justify-center text-[#3E4095] mb-8">
                     <i className="fas fa-paper-plane text-3xl"></i>
                 </div>

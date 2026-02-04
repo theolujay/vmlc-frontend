@@ -83,7 +83,7 @@ const UnifiedQuestionPreview: React.FC<UnifiedQuestionPreviewProps> = ({
               </span>
            </div>
            <div className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
-              VMLC Exam System • Standard MCQ
+              VMLC Engine
            </div>
         </div>
       </div>

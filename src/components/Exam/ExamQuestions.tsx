@@ -71,7 +71,7 @@ export default function Questions({ data, isPending, answers, setAnswers, handle
                             </span>
                             <div className="flex flex-col">
                                 <h3 className="text-[10px] font-black text-gray-400 uppercase tracking-widest leading-none">Question</h3>
-                                <span className="text-xs font-bold text-gray-800 mt-1">Difficulty: {currentQuestion.difficulty || 'Standard'}</span>
+                                {/* <span className="text-xs font-bold text-gray-800 mt-1">Difficulty: {currentQuestion.difficulty || 'Standard'}</span> */}
                             </div>
                         </div>
                         <div className="flex items-center space-x-2">
@@ -261,7 +261,7 @@ function EachQuestion({ question }: { question: string }) {
         <div className="px-10 py-12 flex flex-col gap-6">
             <div className="flex items-center space-x-3">
                 <div className="h-px flex-1 bg-gray-100"></div>
-                <span className="text-[10px] font-black text-gray-300 uppercase tracking-[0.3em]">Problem Statement</span>
+                <span className="text-[10px] font-black text-gray-600 uppercase tracking-[0.3em]">Problem Statement</span>
                 <div className="h-px flex-1 bg-gray-100"></div>
             </div>
             <div className="text-2xl font-semibold text-gray-800 leading-relaxed bg-gray-50/30 p-8 rounded-[2rem] border border-dashed border-gray-200">
