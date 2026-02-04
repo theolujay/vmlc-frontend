@@ -32,9 +32,7 @@ const PerformanceSnapshot: React.FC<PerformanceSnapshotProps> = ({
   hasTakenExam = false,
   isQualified: isQualifiedFromApi,
   isAwaitingResults = false,
-  isActive = true,
-  qualificationMessage
-}) => {
+  isActive = true}) => {
   const activeRanking = stage === 'SCREENING' ? screeningRanking : stage === 'FINAL' ? finalRanking : leagueRanking;
   const rank = activeRanking?.position || 0;
   const totalCandidates = activeRanking?.total_candidates || 0;
@@ -172,7 +170,7 @@ const PerformanceSnapshot: React.FC<PerformanceSnapshotProps> = ({
             !hasTakenExam ? 'bg-gray-50 border-gray-200' : isAwaitingResults ? 'bg-blue-50/50 border-blue-100' : isQualified ? 'bg-[#CCEEFB]/30 border-[#01ACEA]/50' : 'bg-[#FBEAE9] border-[#CB1A14]/20'
         }`}>
           <div className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 ${
-              !hasTakenExam ? 'bg-gray-400' : isAwaitingResults ? 'bg-blue-500' : isQualified ? 'bg-[#01ACEA]' : 'bg-[#CB1A14]'
+              !hasTakenExam ? 'bg-gray-400' : isAwaitingResults ? 'bg-emerald-800' : isQualified ? 'bg-[#01ACEA]' : 'bg-[#CB1A14]'
           }`}>
             {!hasTakenExam || isAwaitingResults ? (
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -190,7 +188,7 @@ const PerformanceSnapshot: React.FC<PerformanceSnapshotProps> = ({
           </div>
           <div>
             <p className={`text-xs font-bold uppercase tracking-wider ${
-                 !hasTakenExam ? 'text-gray-500' : isAwaitingResults ? 'text-blue-600' : isQualified ? 'text-[#018ABB]' : 'text-[#CB1A14]'
+                 !hasTakenExam ? 'text-gray-500' : isAwaitingResults ? 'text-emerald-800' : isQualified ? 'text-[#018ABB]' : 'text-[#CB1A14]'
             }`}>
                 {!hasTakenExam ? currentContent.pendingLabel : isAwaitingResults ? currentContent.awaitingLabel : isQualified ? currentContent.successLabel : currentContent.failLabel}
             </p>

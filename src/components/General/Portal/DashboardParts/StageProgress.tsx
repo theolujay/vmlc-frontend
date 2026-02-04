@@ -59,7 +59,7 @@ const StageProgress: React.FC<StageProgressProps> = ({ currentStage, leagueWeek 
     <section className="bg-white p-6 rounded-[24px] border border-[#E4E7EC] shadow-sm">
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-xs font-bold text-[#475367] uppercase tracking-widest">Competition Progress</h2>
-        <span className="text-[8px] text-[#3E4095] font-bold border border-[#3E4095] px-2 py-0.5 rounded uppercase">Current Stage</span>
+        {/* <span className="text-[8px] text-[#3E4095] font-bold border border-[#3E4095] px-2 py-0.5 rounded uppercase">Current Stage</span> */}
       </div>
       <div className="flex items-center justify-between relative px-4">
         <div className="absolute top-[20px] left-0 w-full h-[1px] bg-[#3E4095]/20 z-0"></div>
