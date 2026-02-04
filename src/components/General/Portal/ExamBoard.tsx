@@ -27,7 +27,9 @@ export default function ExamBoard() {
             ends_at: new Date(data.active_exam.ends_at),
             duration_minutes: data.active_exam.duration_minutes,
             status: data.active_exam.status,
-            has_participated: data.active_exam.has_participated
+            has_participated: data.active_exam.has_participated,
+            is_eligible: data.active_exam.is_eligible,
+            access_status: data.active_exam.access_status
         }];
     }
 

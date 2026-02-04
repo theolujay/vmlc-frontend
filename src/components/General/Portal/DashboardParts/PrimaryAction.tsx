@@ -59,14 +59,16 @@ const PrimaryAction: React.FC<PrimaryActionProps> = ({ exam, candidateName }) =>
   }, [exam]);
 
   const handleStartExam = () => {
-    if (exam && canStart && !isFinals && !exam.has_participated) {
+    if (exam && canStart && !isFinals && exam.is_eligible && exam.access_status !== 'submitted') {
       router.push(`/exam-portal/${exam.id}/exam`);
     }
   };
 
   const isFinals = exam?.stage?.toLowerCase() === 'final';
-  const hasParticipated = exam?.has_participated;
+  const hasParticipated = exam?.has_participated || exam?.access_status === 'submitted';
   const isAwaitingResults = exam?.status === 'awaiting_results';
+  const isOngoing = exam?.status === 'ongoing';
+  const canEnter = isOngoing && exam?.is_eligible && exam?.access_status !== 'submitted';
 
   if (!exam) {
      return (
@@ -100,7 +102,9 @@ const PrimaryAction: React.FC<PrimaryActionProps> = ({ exam, candidateName }) =>
             ? "This is an in-person examination. Please ensure you have reviewed the venue logistics and have your identification ready."
             : isAwaitingResults 
               ? "The examination has concluded. We are currently processing the results. Please check back soon."
-              : (exam.description || "Ensure you are in a quiet environment with a stable internet connection for this virtual exam.")}
+              : !exam.is_eligible && isOngoing
+                ? "You are not eligible to take this examination. Please contact support if you believe this is an error."
+                : (exam.description || "Ensure you are in a quiet environment with a stable internet connection for this virtual exam.")}
         </p>
         
         <div className="mt-8 space-y-4">
@@ -108,7 +112,7 @@ const PrimaryAction: React.FC<PrimaryActionProps> = ({ exam, candidateName }) =>
              <div className="p-4 bg-emerald-50 rounded-xl border border-emerald-200">
               <p className="text-xs font-bold text-emerald-600 uppercase">Status</p>
               <p className="text-lg font-bold text-emerald-800 mt-1">
-                {isAwaitingResults ? 'Awaiting Results' : 'Exam Completed'}
+                {isAwaitingResults || exam.status === 'results_published' ? 'Exam Concluded' : 'Exam Submitted'}
               </p>
             </div>
           ) : !canStart ? (
@@ -117,26 +121,30 @@ const PrimaryAction: React.FC<PrimaryActionProps> = ({ exam, candidateName }) =>
               <p className="text-lg font-bold text-[#3E4095] mt-1">Opens in: {timeLeft}</p>
             </div>
           ) : (
-             <div className="p-4 bg-emerald-50 rounded-xl border border-emerald-200">
-              <p className="text-xs font-bold text-emerald-600 uppercase">Status</p>
-              <p className="text-lg font-bold text-emerald-800 mt-1">
-                {isFinals ? 'Exam Session Active at Venue' : 'Exam is Open!'}
+             <div className={`p-4 rounded-xl border ${!exam.is_eligible ? 'bg-gray-50 border-gray-200' : 'bg-emerald-50 border-emerald-200'}`}>
+              <p className={`text-xs font-bold uppercase ${!exam.is_eligible ? 'text-gray-500' : 'text-emerald-600'}`}>Status</p>
+              <p className={`text-lg font-bold mt-1 ${!exam.is_eligible ? 'text-gray-700' : 'text-emerald-800'}`}>
+                {isFinals ? 'Exam Session Active at Venue' : !exam.is_eligible ? 'Not Eligible' : 'Exam is Open!'}
               </p>
             </div>
           )}
           
           <button 
-            disabled={!canStart || isFinals || hasParticipated}
+            disabled={!canEnter || isFinals}
             onClick={handleStartExam}
             className={`w-full py-4 rounded-xl font-bold transition-all uppercase tracking-wider ${
-              canStart && !isFinals && !hasParticipated
+              canEnter && !isFinals
                 ? 'bg-[#3E4095] text-white hover:bg-[#4A4DA8] shadow-lg transform hover:scale-[1.02] cursor-pointer' 
                 : 'bg-[#F0F2F5] text-[#98A2B3] cursor-not-allowed'
             }`}
           >
             {isFinals 
                ? 'View Venue Logistics' 
-               : hasParticipated ? (isAwaitingResults ? 'AWAITING RESULTS' : 'SUBMITTED') : canStart ? `START ${exam.stage_display || 'EXAM'}` : `START ${exam.stage_display || 'EXAM'}`}
+               : hasParticipated 
+                 ? 'SUBMITTED' 
+                 : exam.access_status === 'started'
+                   ? 'RESUME EXAM'
+                   : `START ${exam.stage_display || 'EXAM'}`}
           </button>
           
           {!canStart && !hasParticipated && !isAwaitingResults && (
@@ -147,6 +155,11 @@ const PrimaryAction: React.FC<PrimaryActionProps> = ({ exam, candidateName }) =>
           {hasParticipated && (
             <p className="text-xs text-emerald-600 italic font-medium">
                 {isAwaitingResults ? 'Standings will be published shortly.' : 'You have successfully completed this examination.'}
+            </p>
+          )}
+          {!exam.is_eligible && isOngoing && !hasParticipated && (
+            <p className="text-xs text-red-500 italic font-medium">
+                Eligibility criteria not met for this exam.
             </p>
           )}
         </div>

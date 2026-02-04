@@ -69,16 +69,27 @@ const tabs: TabType[] = [
 
 
 import { useEffect, useState } from 'react'
+import useGetRegistrationStatus from '@/hooks/useGetRegistrationStatus'
 
 export function OverviewTabs() {
     const { authState } = useAuth()
+    const { data: registrationStatus } = useGetRegistrationStatus();
     const [mounted, setMounted] = useState(false);
 
     useEffect(() => {
         setMounted(true);
     }, []);
 
-    const userTabs = getTabsForRole(authState?.user?.role ?? '')
+    let userTabs = getTabsForRole(authState?.user?.role ?? '')
+
+    if (registrationStatus?.candidate_registration?.is_open === false) {
+        const competitionTab = userTabs.find(tab => tab.value === 'competition');
+        const otherTabs = userTabs.filter(tab => tab.value !== 'competition');
+        
+        if (competitionTab) {
+            userTabs = [competitionTab, ...otherTabs];
+        }
+    }
 
     return (
         <AdminLayout>

@@ -13,13 +13,17 @@ interface FullStandingsProps {
   examId: string;
   examTitle: string;
   onViewDetails?: (candidateId: string) => void;
+  isPublicView?: boolean;
 }
 
-const FullStandings: React.FC<FullStandingsProps> = ({ onBack, examId, examTitle, onViewDetails }) => {
+const FullStandings: React.FC<FullStandingsProps> = ({ onBack, examId, examTitle, onViewDetails, isPublicView = false }) => {
   const [searchTerm, setSearchInput] = useState('');
   const { data, isLoading, error, refetch } = useGetStandings(examId);
 
   const standingsData = (data as unknown as StandingsResponse)?.entries || [];
+  const responseData = data as unknown as StandingsResponse;
+  
+  const displayTitle = examTitle || (responseData ? `${responseData.stage_display} ${responseData.round ? `- Round ${responseData.round}` : ''}` : 'Standings');
 
   const filteredData = standingsData.filter(item => 
     item.candidate_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -63,7 +67,7 @@ const FullStandings: React.FC<FullStandingsProps> = ({ onBack, examId, examTitle
           <div className="rotate-180"><AngleIcon width={8} height={14} /></div>
         </button>
         <div className="flex flex-col">
-          <h1 className="text-xl font-bold text-[#101828]">Standings: {examTitle}</h1>
+          <h1 className="text-xl font-bold text-[#101828]">Standings: {displayTitle}</h1>
           <p className="text-xs text-[#667185]">Detailed results for this round</p>
         </div>
       </div>
@@ -120,7 +124,7 @@ const FullStandings: React.FC<FullStandingsProps> = ({ onBack, examId, examTitle
                   </div>
                   <div className="flex flex-col">
                     <span className="font-bold text-[#101828] text-sm">{row.candidate_name}</span>
-                    <span className="text-[10px] text-[#667185]">{row.candidate_email}</span>
+                    {!isPublicView && <span className="text-[10px] text-[#667185]">{row.candidate_email}</span>}
                   </div>
                 </div>
               ),
@@ -147,7 +151,7 @@ const FullStandings: React.FC<FullStandingsProps> = ({ onBack, examId, examTitle
               ),
               align: 'center'
             },
-            ...(onViewDetails ? [{
+            ...(onViewDetails && !isPublicView ? [{
               key: 'action',
               header: 'Action',
               render: (_: any, row: StandingsEntry) => (

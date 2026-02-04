@@ -10,7 +10,13 @@ export default function usePublishStandings() {
       CompetitionService.publishStandings(exam_id, publish_now),
     onSuccess: (data, variables) => {
       toast.success(variables.publish_now ? 'Standings published successfully' : 'Standings generation started');
-      queryClient.invalidateQueries({ queryKey: ['exam-questions'] });
+      
+      // Delay invalidation to allow backend processing time
+      setTimeout(() => {
+        queryClient.invalidateQueries({ queryKey: ['exam-questions', variables.exam_id] });
+        queryClient.invalidateQueries({ queryKey: ['list-exams'] });
+        queryClient.invalidateQueries({ queryKey: ['competition-dashboard'] });
+      }, 2000);
     },
     onError: (error: any) => {
       toast.error(error?.response?.data?.message || 'Failed to process standings');

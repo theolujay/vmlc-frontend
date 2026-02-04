@@ -99,21 +99,25 @@ function ExamPortal() {
   const currentExam: AvailableExamType | null = activeExamData ? {
     id: activeExamData.id,
     title: activeExamData.title,
-    open_duration_hours: activeExamData.duration_minutes / 60,
-    countdown_minutes: 0,
+    open_duration_hours: activeExamData.starts_at && activeExamData.ends_at 
+      ? (new Date(activeExamData.ends_at).getTime() - new Date(activeExamData.starts_at).getTime()) / (1000 * 60 * 60)
+      : activeExamData.duration_minutes / 60,
+    countdown_minutes: activeExamData.duration_minutes || 0,
     question_count: activeExamData.question_count || 0, 
     round: activeExamData.round,
     scheduled_date: new Date(activeExamData.starts_at),
     stage: activeExamData.stage,
     stage_display: activeExamData.stage.toUpperCase(),
     has_participated: activeExamData.has_participated,
-    status: activeExamData.status
+    status: activeExamData.status,
+    is_eligible: activeExamData.is_eligible,
+    access_status: activeExamData.access_status
   } : null;
 
   // Map history
   const history = (examHistory || []).map(item => ({
     exam: item.exam_title,
-    score: item.percentage,
+    score: item.score, // Use score instead of percentage as per new API
     date: new Date(item.date),
     exam_stage: item.stage
   }));
@@ -122,27 +126,69 @@ function ExamPortal() {
   const leagueRanking = performanceSnapshot?.league_leaderboard ? {
       current_rank: performanceSnapshot.league_leaderboard.overall_rank,
       position: performanceSnapshot.league_leaderboard.overall_rank,
-      total_candidates: performanceSnapshot.league_leaderboard.total_candidates
+      total_candidates: performanceSnapshot.league_leaderboard.total_candidates,
+      rank_change: performanceSnapshot.league_leaderboard.rank_change,
+      as_of_round: performanceSnapshot.league_leaderboard.as_of_round,
+      is_active: performanceSnapshot.league_leaderboard.is_active
   } : null;
 
   const screeningRanking = performanceSnapshot?.screening_standing ? {
       current_rank: performanceSnapshot.screening_standing.rank,
       position: performanceSnapshot.screening_standing.rank,
-      total_candidates: performanceSnapshot.screening_standing.total_candidates
+      total_candidates: performanceSnapshot.screening_standing.total_candidates,
+      exam_id: performanceSnapshot.screening_standing.exam_id,
+      exam_title: performanceSnapshot.screening_standing.exam_title,
+      is_active: true
+  } : null;
+
+  const finalRanking = performanceSnapshot?.final_standing ? {
+      current_rank: performanceSnapshot.final_standing.rank,
+      position: performanceSnapshot.final_standing.rank,
+      total_candidates: performanceSnapshot.final_standing.total_candidates,
+      exam_id: performanceSnapshot.final_standing.exam_id,
+      exam_title: performanceSnapshot.final_standing.exam_title,
+      is_active: true
   } : null;
   
   // Qualification Threshold logic
   let qualificationThreshold = 0;
+  let cutoffDisplay = '-';
+  const activeRanking = currentStage === 'SCREENING' ? screeningRanking : currentStage === 'FINAL' ? finalRanking : leagueRanking;
+
   if (stageProgressData?.qualification_status?.advancement_policy) {
       const { mode, value } = stageProgressData.qualification_status.advancement_policy;
       if (mode === 'top_percent') {
-           const total = currentStage === 'SCREENING' ? screeningRanking?.total_candidates : leagueRanking?.total_candidates;
+           cutoffDisplay = `Top ${value * 100}%`;
+           const total = activeRanking?.total_candidates;
            if (total) {
                qualificationThreshold = Math.ceil(total * value);
            }
       } else {
           qualificationThreshold = value;
+          cutoffDisplay = `Top ${value}`;
       }
+  }
+  
+  // Update cutoffDisplay if we have a calculated threshold for top_percent but want to show the range
+  // Actually, keeping the percentage is often what's desired for a "Range" label.
+
+  // Determine if awaiting results
+  const hasTakenExam = stageProgressData?.has_taken_current_round || activeExamData?.has_participated || false;
+  let isAwaitingResults = false;
+  
+  if (hasTakenExam) {
+      if (currentStage === 'LEAGUE') {
+          // For League, if as_of_round is behind the current week, it's awaiting results for the current week
+          isAwaitingResults = !leagueRanking || (leagueRanking.as_of_round !== undefined && leagueRanking.as_of_round < leagueWeek);
+      } else {
+          // For Screening and Final, if no ranking exists yet, it's awaiting
+          isAwaitingResults = !activeRanking;
+      }
+  }
+
+  // Also check explicit awaiting status from active exam
+  if (activeExamData?.status === 'awaiting_results') {
+      isAwaitingResults = true;
   }
 
 
@@ -180,11 +226,15 @@ function ExamPortal() {
           <PerformanceSnapshot 
             leagueRanking={leagueRanking}
             screeningRanking={screeningRanking}
+            finalRanking={finalRanking}
             stage={currentStage}
             currentWeek={leagueWeek}
             qualificationThreshold={qualificationThreshold}
-            hasTakenExam={stageProgressData?.has_taken_current_round || false}
+            cutoffDisplay={cutoffDisplay}
+            hasTakenExam={hasTakenExam}
             isQualified={stageProgressData?.qualification_status?.is_qualified}
+            isAwaitingResults={isAwaitingResults}
+            isActive={activeRanking?.is_active}
             qualificationMessage={stageProgressData?.qualification_status?.message}
           />
 
