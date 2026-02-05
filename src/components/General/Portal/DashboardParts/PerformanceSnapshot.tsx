@@ -202,15 +202,15 @@ const PerformanceSnapshot: React.FC<PerformanceSnapshotProps> = ({
       {/* Footer Link */}
       {!isLinkDisabled ? (
         <Link 
-          href={activeRanking?.exam_id ? `/exam-portal/standings/${activeRanking.exam_id}` : "/exam-portal/leaderboard"} 
+          href={activeRanking?.exam_id ? `/exam-portal/rankings/${activeRanking.exam_id}` : "/exam-portal/leaderboard"} 
           className="mt-6 pt-4 border-t border-slate-100 text-sm font-bold text-[#3E4095] hover:opacity-80 flex items-center justify-between transition-all"
         >
-          <span>{stage === 'SCREENING' ? 'Standings' : 'Leaderboard'}</span>
+          <span>{stage === 'SCREENING' ? 'Ranking' : 'Leaderboard'}</span>
           <GotoIcon />
         </Link>
       ) : (
         <div className="mt-6 pt-4 border-t border-slate-100 text-sm font-bold text-slate-300 flex items-center justify-between cursor-not-allowed grayscale">
-          <span>{stage === 'SCREENING' ? 'Standings' : 'Leaderboard'}</span>
+          <span>{stage === 'SCREENING' ? 'Ranking' : 'Leaderboard'}</span>
           <GotoIcon />
         </div>
       )}

@@ -4,7 +4,7 @@ export type CompetitionExam = {
   id: string;
   title: string;
   status: 'scheduled' | 'ongoing' | 'concluded';
-  standings_status: 'pending'| 'ready' | 'published';
+  ranking_status: 'pending'| 'ready' | 'published';
   stats?: {
     candidates_sat: number;
     avg_score?: number;
@@ -28,7 +28,7 @@ const ExamResultRow: React.FC<ExamResultRowProps> = ({ exam, onView, canInteract
     }
   };
 
-  const canView = exam.standings_status === 'published' && canInteract;
+  const canView = exam.ranking_status === 'published' && canInteract;
 
   return (
     <div className={`border border-[#E4E7EC] rounded-lg p-4 bg-white transition-colors group font-sans ${canInteract ? 'hover:border-[#3E4095]' : ''}`}>
@@ -60,9 +60,9 @@ const ExamResultRow: React.FC<ExamResultRowProps> = ({ exam, onView, canInteract
                 )}
                 <span className="text-gray-300">|</span>
                 <span className="flex items-center gap-1">
-                  Standings: 
-                  <span className={`font-medium ${exam.standings_status === 'published' ? 'text-[#3E4095]' : 'text-black-100'}`}>
-                    {exam.standings_status === 'published' ? 'Published' : exam.standings_status === 'ready' ? 'Ready' : 'Pending'}
+                  Ranking: 
+                  <span className={`font-medium ${exam.ranking_status === 'published' ? 'text-[#3E4095]' : 'text-black-100'}`}>
+                    {exam.ranking_status === 'published' ? 'Published' : exam.ranking_status === 'ready' ? 'Ready' : 'Pending'}
                   </span>
                 </span>
               </div>

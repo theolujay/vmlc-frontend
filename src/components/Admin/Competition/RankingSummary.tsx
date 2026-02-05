@@ -2,17 +2,17 @@ import React from 'react';
 import ResponsiveContainer from '@/components/ui/ResponsiveContainer';
 import Image from "next/image"
 import RankMedal from './RankMedal';
-import { StandingsEntry } from '@/types/LeaderBoardType';
+import { RankingEntry } from '@/types/LeaderBoardType';
 
-interface StandingsSummaryProps {
+interface RankingSummaryProps {
   examTitle: string;
-  entries: StandingsEntry[];
+  entries: RankingEntry[];
   onViewFull?: () => void;
   onViewCandidate?: (id: string) => void;
   isLoading?: boolean;
 }
 
-const StandingsSummary: React.FC<StandingsSummaryProps> = ({ examTitle, entries, onViewFull, onViewCandidate, isLoading }) => {
+const RankingSummary: React.FC<RankingSummaryProps> = ({ examTitle, entries, onViewFull, onViewCandidate, isLoading }) => {
   if (isLoading) {
     return (
       <ResponsiveContainer className="flex flex-col gap-4 font-sans min-h-[200px] justify-center items-center">
@@ -25,7 +25,7 @@ const StandingsSummary: React.FC<StandingsSummaryProps> = ({ examTitle, entries,
     <ResponsiveContainer className="flex flex-col gap-4 font-sans">
       <div className="flex justify-between items-center mb-1 font-sans">
         <div>
-          <h2 className="text-xs font-bold text-[#475367] uppercase tracking-widest mb-1">Standings: {examTitle}</h2>
+          <h2 className="text-xs font-bold text-[#475367] uppercase tracking-widest mb-1">Ranking: {examTitle}</h2>
           <p className="text-[9px] text-[#667185]">Latest published</p>
         </div>
         {onViewFull && entries.length > 0 && (
@@ -98,7 +98,7 @@ const StandingsSummary: React.FC<StandingsSummaryProps> = ({ examTitle, entries,
           </div>
         ) : (
           <div className="p-6 text-center bg-white rounded-lg border border-dashed border-gray-200">
-            <p className="text-xs text-gray-400 italic">No standings available.</p>
+            <p className="text-xs text-gray-400 italic">No ranking available.</p>
           </div>
         )}
       </div>
@@ -106,4 +106,4 @@ const StandingsSummary: React.FC<StandingsSummaryProps> = ({ examTitle, entries,
   );
 };
 
-export default StandingsSummary;
+export default RankingSummary;

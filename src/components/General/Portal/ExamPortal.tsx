@@ -1,4 +1,3 @@
-
 "use client"
 import React, { useState, useMemo } from 'react';
 import PageLayout from '../Layout/PageLayout';
@@ -23,7 +22,7 @@ function ExamPortal() {
   const [isProfileOpen, setIsProfileOpen] = useState(false);
 
   const candidateContext = data?.candidate_context;
-  const stageProgressData = data?.stage_progress;
+  const stageProgressData = data?.enrollment_stage_progress;
   const activeExamData = data?.active_exam;
   const performanceSnapshot = data?.performance_snapshot;
   const examHistory = data?.exam_history;
@@ -125,21 +124,21 @@ function ExamPortal() {
       is_active: performanceSnapshot.league_leaderboard.is_active
   } : null;
 
-  const screeningRanking = performanceSnapshot?.screening_standing ? {
-      current_rank: performanceSnapshot.screening_standing.rank,
-      position: performanceSnapshot.screening_standing.rank,
-      total_candidates: performanceSnapshot.screening_standing.total_candidates,
-      exam_id: performanceSnapshot.screening_standing.exam_id,
-      exam_title: performanceSnapshot.screening_standing.exam_title,
+  const screeningRanking = performanceSnapshot?.screening_ranking ? {
+      current_rank: performanceSnapshot.screening_ranking.rank,
+      position: performanceSnapshot.screening_ranking.rank,
+      total_candidates: performanceSnapshot.screening_ranking.total_candidates,
+      exam_id: performanceSnapshot.screening_ranking.exam_id,
+      exam_title: performanceSnapshot.screening_ranking.exam_title,
       is_active: true
   } : null;
 
-  const finalRanking = performanceSnapshot?.final_standing ? {
-      current_rank: performanceSnapshot.final_standing.rank,
-      position: performanceSnapshot.final_standing.rank,
-      total_candidates: performanceSnapshot.final_standing.total_candidates,
-      exam_id: performanceSnapshot.final_standing.exam_id,
-      exam_title: performanceSnapshot.final_standing.exam_title,
+  const finalRanking = performanceSnapshot?.final_ranking ? {
+      current_rank: performanceSnapshot.final_ranking.rank,
+      position: performanceSnapshot.final_ranking.rank,
+      total_candidates: performanceSnapshot.final_ranking.total_candidates,
+      exam_id: performanceSnapshot.final_ranking.exam_id,
+      exam_title: performanceSnapshot.final_ranking.exam_title,
       is_active: true
   } : null;
   
@@ -179,8 +178,8 @@ function ExamPortal() {
       }
   }
 
-  // Also check explicit awaiting status from active exam
-  if (activeExamData?.status === 'awaiting_results') {
+  // Also check explicit awaiting status from active exam IF we don't have a ranking yet
+  if (activeExamData?.status === 'awaiting_results' && !activeRanking) {
       isAwaitingResults = true;
   }
 
@@ -213,6 +212,7 @@ function ExamPortal() {
         <PrimaryAction 
           exam={currentExam} 
           candidateName={candidateName}
+          isRankingAvailable={!!activeRanking}
         />
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

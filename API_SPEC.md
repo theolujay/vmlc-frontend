@@ -328,7 +328,7 @@ The structure below is optimized for the ExamPortal.tsx component.
     "has_taken_exam": false,
     "qualification_threshold_score": 70
   },
-  "screening_standings_ranking": {
+  "screening_ranking": {
       "current_rank": 5,
       "position": 5,
       "total_candidates": 200

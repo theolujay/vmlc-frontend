@@ -154,7 +154,7 @@ export type PaginatedType<T> = {
     results: T[]
 }
 
-export interface StandingsEntry {
+export interface RankingEntry {
   candidate: string;
   candidate_name: string;
   candidate_email: string;
@@ -166,7 +166,7 @@ export interface StandingsEntry {
   tie_break_reason?: string | null;
 }
 
-export interface StandingsResponse {
+export interface RankingResponse {
   id: number;
   competition: number;
   stage: string;
@@ -177,7 +177,7 @@ export interface StandingsResponse {
   is_published: boolean;
   published_at: string;
   created_at: string;
-  entries: StandingsEntry[];
+  entries: RankingEntry[];
 }
 
 export interface LeagueLeaderboardEntry {
@@ -219,7 +219,7 @@ export interface CompetitionDashboardResponse {
     title: string;
     stage: string;
     status: 'scheduled' | 'ongoing' | 'concluded';
-    standings_status: 'pending'| 'ready' | 'published';
+    ranking_status: 'pending'| 'ready' | 'published';
     stats: {
       candidates_sat: number;
       avg_score: number;
@@ -227,10 +227,9 @@ export interface CompetitionDashboardResponse {
     };
   }[];
   leaderboard_summary: LeagueLeaderboardEntry[];
-  latest_standings_summary: {
+  latest_ranking_summary: {
     exam_id: string;
     exam_title: string;
-    entries: StandingsEntry[];
+    entries: RankingEntry[];
   } | null;
 }
-

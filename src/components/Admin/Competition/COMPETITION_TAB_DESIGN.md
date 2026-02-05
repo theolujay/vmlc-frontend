@@ -22,12 +22,12 @@ The Competition Tab is designed to provide a high-level operational view for sta
     *   **Row Content:** Title, Status Badge, Stats (Candidates, Avg Score), and Action Buttons.
     *   **Actions:** 
         *   `Generate`: For completed exams needing result processing.
-        *   `Publish`: For concluded exams with draft standings.
+        *   `Publish`: For concluded exams with draft ranking.
         *   `View`: For any processed exam.
         *   `Edit Exam`: For draft exams.
 
 *   **Zone D: Leaderboard Summary (Bottom)**
-    *   **Purpose:** Quick sanity check for the "League" standings.
+    *   **Purpose:** Quick sanity check for the "League" ranking.
     *   **Elements:** Top 3 Candidates list (Rank, Name, Score) and a "View Full Leaderboard" link.
 
 ## 2. Component Structure
@@ -50,10 +50,10 @@ The implementation is housed in `src/components/Admin/Competition/`:
 
 *   **Actions:**
     *   **Generate Results:** Clicking `[Generate]` triggers a backend calculation (simulated). The UI updates from "Completed" to "Concluded".
-    *   **Publish Standings:** Clicking `[Publish]` triggers a confirmation prompt ("Are you sure... visible to candidates"). On confirmation, the status updates to "Published".
+    *   **Publish Ranking:** Clicking `[Publish]` triggers a confirmation prompt ("Are you sure... visible to candidates"). On confirmation, the status updates to "Published".
 
 ## 4. Assumptions
 
-*   **Data Model:** The backend provides a "Dashboard" endpoint returning the global status string, stats object, and a list of exams with a specific `standings_status` field.
+*   **Data Model:** The backend provides a "Dashboard" endpoint returning the global status string, stats object, and a list of exams with a specific `ranking_status` field.
 *   **Roles:** All staff roles (Admin, Manager, Moderator) have access to this view, though specific actions (like Publish) might be restricted in the future (currently enabled for all in UI).
 *   **State:** Publishing is treated as an atomic action for the UI prototype.

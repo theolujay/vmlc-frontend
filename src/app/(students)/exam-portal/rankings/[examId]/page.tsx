@@ -4,9 +4,9 @@ import PageLayout from '@/components/General/Layout/PageLayout';
 import withAuthentication from '@/hocs/withAuthentication';
 import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
-import FullStandings from '@/components/Admin/Competition/FullStandings';
+import FullRanking from '@/components/Admin/Competition/FullRanking';
 
-function StandingsPage() {
+function RankingPage() {
   const params = useParams();
   const router = useRouter();
   const examId = params?.examId as string;
@@ -21,7 +21,7 @@ function StandingsPage() {
                 Back to Dashboard
             </Link>
             <div className="bg-white rounded-[24px] shadow-sm border border-[#E4E7EC] p-6 min-h-[60vh]">
-                <FullStandings 
+                <FullRanking 
                     examId={examId} 
                     examTitle="" 
                     onBack={() => router.back()} 
@@ -33,4 +33,4 @@ function StandingsPage() {
   );
 }
 
-export default withAuthentication(StandingsPage);
+export default withAuthentication(RankingPage);

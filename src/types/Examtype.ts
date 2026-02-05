@@ -94,7 +94,7 @@ export type LeaderboardRankingType = {
 };
 
 export type PerformanceSnapshotType = {
-  screening_standing: {
+  screening_ranking: {
     rank: number;
     total_candidates: number;
     score: number;
@@ -110,7 +110,7 @@ export type PerformanceSnapshotType = {
     as_of_round: number;
     is_active: boolean;
   } | null;
-  final_standing?: {
+  final_ranking?: {
     rank: number;
     total_candidates: number;
     score: number;
@@ -153,7 +153,7 @@ export type ExamHistoryItem = {
 
 export type DashboardType = {
   candidate_context: CandidateContext;
-  stage_progress: DashboardStageProgress;
+  enrollment_stage_progress: DashboardStageProgress;
   active_exam: ActiveExamType | null;
   performance_snapshot: PerformanceSnapshotType;
   exam_history: ExamHistoryItem[];
@@ -217,7 +217,7 @@ export type ExamSessionType = {
   scheduled_date: string;
   concluded_at: string | null;
   created_at: string;
-  standings?: {
+  ranking?: {
     exists: boolean;
     is_published: boolean;
     created_at: string;
@@ -373,7 +373,7 @@ export type UpdatedSessionQuestionType = {
     };
   };
   updated_by: string | null;
-  standings?: {
+  ranking?: {
     exists: boolean;
     is_published: boolean;
     created_at: string;
@@ -399,40 +399,3 @@ type QuestionPoolDataType = {
   moderate_questions_count: number,
   easy_questions_count: number
 }
-// type MetaType = {
-//   total_count: number,
-//   hard_questions_count: number,
-//   moderate_questions_count: number,
-//   easy_questions_count: number
-// }
-
-// type QuestionItemType = {
-//   id: number,
-//   text: string,
-//   option_a: string,
-//   option_b: string,
-//   option_c: string,
-//   option_d: string,
-//   correct_answer: string,
-//   difficulty: string,
-//   related_exams_count: number,
-//   // related_exams: RelatedExamType,
-//   created_at: Date,
-
-
-// }
-
-
-
-// type RelatedExamType = {
-//   count: number,
-//   list: RelatedExamItemType[]
-// }
-
-// type RelatedExamItemType = {
-//   id: number,
-//   title: string,
-//   description: string,
-//   stage: string,
-//   exam_date: Date
-// }

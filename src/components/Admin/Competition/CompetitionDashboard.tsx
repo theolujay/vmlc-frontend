@@ -4,15 +4,17 @@ import CompetitionStats from './CompetitionStats';
 import StageBoard, { CompetitionStage } from './CompetitionProgress';
 import ExamStatus from './ExamStatus';
 import LeaderboardSummary from './LeaderboardSummary';
-import StandingsSummary from './StandingsSummary';
+import RankingSummary from './RankingSummary';
 import useGetCompetitionDashboard from '@/hooks/useGetCompetitionDashboard';
 import { useAuth } from '@/contexts/AuthProvider';
 import { capitalizeWord } from '@/utils/capitalizeWords';
+import PromoteCandidatesModal from '@/components/Modals/PromoteCandidatesModal';
+import { useState } from 'react';
 
 interface CompetitionDashboardProps {
   onViewFullLeaderboard?: () => void;
-  onViewFullStandings?: (id: string, title: string) => void;
-  onViewStandings?: (id: string, title: string) => void;
+  onViewFullRanking?: (id: string, title: string) => void;
+  onViewRanking?: (id: string, title: string) => void;
   onViewCandidateDetail?: (params: { 
     candidate_id: string, 
     exam_id?: string, 
@@ -24,22 +26,25 @@ interface CompetitionDashboardProps {
 
 const CompetitionDashboard: React.FC<CompetitionDashboardProps> = ({ 
   onViewFullLeaderboard, 
-  onViewFullStandings,
-  onViewStandings,
+  onViewFullRanking,
+  onViewRanking,
   onViewCandidateDetail 
 }) => {
   const { authState } = useAuth();
   const userRole = authState?.user?.role;
   const isVolunteer = userRole === 'volunteer';
   const isModeratorOrAbove = ['moderator', 'admin', 'manager', 'superadmin'].includes(userRole || '');
+  // const isAdminOrAbove = ['admin', 'manager', 'superadmin'].includes(userRole || '');
+  const isManagerOrAbove = ['manager', 'superadmin'].includes(userRole || '');
 
   const { data, isLoading, error, refetch } = useGetCompetitionDashboard();
+  const [openPromoteModal, setOpenPromoteModal] = useState(false);
 
   const handleView = (id: string) => {
     if (isVolunteer) return;
     const exam = data?.exams.find(e => e.id === id);
-    if (onViewStandings && exam && exam.standings_status === 'published') {
-      onViewStandings(id, exam.title);
+    if (onViewRanking && exam && exam.ranking_status === 'published') {
+      onViewRanking(id, exam.title);
     } else {
       // Fallback or handle operational navigation
       console.log(`Navigating to operational details for ${id}`);
@@ -98,7 +103,18 @@ const CompetitionDashboard: React.FC<CompetitionDashboardProps> = ({
       <div className="flex flex-col gap-2">
         <AdminHeader 
           label="Competition" 
-          actionButton={undefined} 
+          actionButton={[
+            isManagerOrAbove && (
+              <button 
+                key="promote-candidates"
+                onClick={() => setOpenPromoteModal(true)} 
+                className="inline-flex items-center gap-2.5 bg-white text-emerald-600 border border-emerald-600/20 px-6 py-3 rounded-xl font-black text-[10px] tracking-widest hover:bg-emerald-50 transition-all uppercase shadow-sm active:scale-95"
+              >
+                <i className="fas fa-users-cog text-xs"></i>
+                <span>PROMOTE</span>
+              </button>
+            )
+          ].filter(Boolean) as React.ReactNode[]} 
         />
 
           <div className="flex flex-col gap-3 sm:gap-4 mt-3 w-full sm:w-[96%] px-2 sm:px-0 sm:mx-auto">
@@ -137,21 +153,22 @@ const CompetitionDashboard: React.FC<CompetitionDashboardProps> = ({
                   isLeagueCumulative: true 
                 })) : undefined} 
               />
-              <StandingsSummary
-                examTitle={data.latest_standings_summary?.exam_title || "Latest Exam"}
-                entries={data.latest_standings_summary?.entries || []}
-                onViewFull={isModeratorOrAbove && onViewFullStandings && data.latest_standings_summary ? 
-                  (() => onViewFullStandings(data.latest_standings_summary!.exam_id, data.latest_standings_summary!.exam_title)) 
+              <RankingSummary
+                examTitle={data.latest_ranking_summary?.exam_title || "Latest Exam"}
+                entries={data.latest_ranking_summary?.entries || []}
+                onViewFull={isModeratorOrAbove && onViewFullRanking && data.latest_ranking_summary ? 
+                  (() => onViewFullRanking(data.latest_ranking_summary!.exam_id, data.latest_ranking_summary!.exam_title)) 
                   : undefined}
                 onViewCandidate={isModeratorOrAbove ? ((id) => onViewCandidateDetail?.({ 
                   candidate_id: id, 
-                  exam_id: data.latest_standings_summary?.exam_id,
+                  exam_id: data.latest_ranking_summary?.exam_id,
                   stage: data.progress.current_stage,
                   round: String(data.progress.current_round)
                 })) : undefined}
               />
             </div>
           </div>
+          <PromoteCandidatesModal open={openPromoteModal} close={setOpenPromoteModal} />
       </div>
   );
 };

@@ -257,21 +257,21 @@ The following fields are strictly read-only and will be ignored if included in a
 |                                                                                  |
 |  [ Stage Progress (league) ]                                                     |
 |  R1 ●─R2 ●─R3 ●─R4 ○─R5 ○─R6 ○                                                   |
-|  (● = published standings)                                                       |
+|  (● = published rankings)                                                       |
 |                                                                                  |
 +----------------------------------------------------------------------------------+
 | Available Results (select exam to view details)                                  |
 | 1) Screening Exam                     [Status: Completed]   [View] [Generate]    |
-|    - Candidates sat: 10,230           Standings: Published (screening_1)         | 
+|    - Candidates sat: 10,230           Ranking: Published (screening_1)           | 
 |                                                                                  |
 | 2) League - Round 1                   [Status: Concluded]  [View] [Generate]     |
-|    - Standings: Published (league_1)       Avg: 62.4  | Absent: 200              |
+|    - Ranking: Published (league_1)         Avg: 62.4  | Absent: 200              |
 |                                                                                  |
 | 3) League - Round 2                   [Status: Concluded]  [View] [Generate]     |
-|    - Standings: Published (league_2)       Avg: 64.1  | Absent: 190              |
+|    - Ranking: Published (league_2)         Avg: 64.1  | Absent: 190              |
 |                                                                                  |
 | 4) League - Round 3                   [Status: Completed]  [View] [Generate]     |
-|    - Standings: Draft (not published)  [Publish]                                 |
+|    - Ranking: Draft (not published)    [Publish]                                 |
 |                                                                                  |
 | 5) Final Exam                         [Status: Draft]      [Edit Exam]           |
 +----------------------------------------------------------------------------------+
@@ -322,7 +322,7 @@ This screen does **not**:
 * Create exams
 * Edit exams (except linking out)
 * Automatically publish anything
-* Show full standings tables inline
+* Show full rankings tables inline
 
 ---
 
@@ -353,21 +353,21 @@ You may refine spacing and hierarchy, but do not reinvent the structure.
 |                                                                                  |
 |  [ Stage Progress (league) ]                                                     |
 |  R1 ●─R2 ●─R3 ●─R4 ○─R5 ○─R6 ○                                                   |
-|  (● = published standings)                                                       |
+|  (● = published rankings)                                                       |
 |                                                                                  |
 +----------------------------------------------------------------------------------+
 | Available Results (select exam to view details)                                  |
 | 1) Screening Exam                     [Status: Completed]   [View] [Generate]    |
-|    - Candidates sat: 10,230           Standings: Published (screening_1)         | 
+|    - Candidates sat: 10,230           Ranking: Published (screening_1)           | 
 |                                                                                  |
 | 2) League - Round 1                   [Status: Concluded]  [View] [Generate]     |
-|    - Standings: Published (league_1)       Avg: 62.4  | Absent: 200              |
+|    - Ranking: Published (league_1)         Avg: 62.4  | Absent: 200              |
 |                                                                                  |
 | 3) League - Round 2                   [Status: Concluded]  [View] [Generate]     |
-|    - Standings: Published (league_2)       Avg: 64.1  | Absent: 190              |
+|    - Ranking: Published (league_2)         Avg: 64.1  | Absent: 190              |
 |                                                                                  |
 | 4) League - Round 3                   [Status: Completed]  [View] [Generate]     |
-|    - Standings: Draft (not published)  [Publish]                                 |
+|    - Ranking: Draft (not published)    [Publish]                                 |
 |                                                                                  |
 | 5) Final Exam                         [Status: Draft]      [Edit Exam]           |
 +----------------------------------------------------------------------------------+
