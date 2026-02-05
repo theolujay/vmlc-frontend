@@ -6,9 +6,10 @@ import { formatExamTitle } from '@/utils/generalUtils';
 interface PrimaryActionProps {
   exam: AvailableExamType | null;
   candidateName: string;
+  isRankingAvailable?: boolean;
 }
 
-const PrimaryAction: React.FC<PrimaryActionProps> = ({ exam }) => {
+const PrimaryAction: React.FC<PrimaryActionProps> = ({ exam, isRankingAvailable = false }) => {
   const [timeLeft, setTimeLeft] = useState<string>('');
   const [canStart, setCanStart] = useState(false);
   const router = useRouter();
@@ -66,7 +67,7 @@ const PrimaryAction: React.FC<PrimaryActionProps> = ({ exam }) => {
 
   const isFinals = exam?.stage?.toLowerCase() === 'final';
   const hasParticipated = exam?.has_participated || exam?.access_status === 'submitted';
-  const isAwaitingResults = exam?.status === 'awaiting_results';
+  const isAwaitingResults = exam?.status === 'awaiting_results' && !isRankingAvailable;
   const isOngoing = exam?.status === 'ongoing';
   const canEnter = isOngoing && exam?.is_eligible && exam?.access_status !== 'submitted';
 
@@ -104,7 +105,7 @@ const PrimaryAction: React.FC<PrimaryActionProps> = ({ exam }) => {
               ? "Currently processing the results... Please check back soon."
               : !exam.is_eligible && isOngoing
                 ? "You're ineligible to take this examination. Please contact support if you believe this is a mistake."
-                : (exam.description || "Ensure you are in a quiet environment with a stable internet connection for this virtual exam.")}
+                : (exam.description || "")}
         </p>
         
         <div className="mt-8 space-y-4">
@@ -154,7 +155,7 @@ const PrimaryAction: React.FC<PrimaryActionProps> = ({ exam }) => {
           )}
           {hasParticipated && (
             <p className="text-xs text-[#3E4095] italic font-medium">
-                {isAwaitingResults ? 'Standings will be published shortly.' : 'You have successfully completed this examination.'}
+                {isAwaitingResults ? 'Ranking will be published shortly.' : 'You have successfully completed this examination.'}
             </p>
           )}
           {!exam.is_eligible && isOngoing && !hasParticipated && (

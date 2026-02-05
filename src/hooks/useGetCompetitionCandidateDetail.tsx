@@ -17,7 +17,7 @@ export default function useGetCompetitionCandidateDetail({
         return CompetitionService.getCandidateLeagueDetail(candidate_id);
       }
       if (exam_id) {
-        return CompetitionService.getCandidateStandingDetail(exam_id, candidate_id);
+        return CompetitionService.getCandidateRankingDetail(exam_id, candidate_id);
       }
       throw new Error('Either exam_id or isLeagueCumulative must be provided');
     },

@@ -2,35 +2,35 @@ import client from "@/utils/axios";
 import { competitionUrls } from "@/constants/competitionUrls";
 
 export class CompetitionService {
-  static async publishStandings(exam_id: string, publish_now: boolean = true) {
+  static async publishRanking(exam_id: string, publish_now: boolean = true) {
     try {
-      const response = await client.post(competitionUrls.PUBLISH_STANDINGS, {
+      const response = await client.post(competitionUrls.PUBLISH_RANKING, {
         exam_id,
         publish_now,
       });
       return response.data;
     } catch (error) {
-      console.error('Error publishing standings:', error);
+      console.error('Error publishing ranking:', error);
       throw error;
     }
   }
 
-  static async getStandings(exam_id: string) {
+  static async getRanking(exam_id: string) {
     try {
-      const response = await client.get(competitionUrls.GET_STANDINGS(exam_id));
+      const response = await client.get(competitionUrls.GET_RANKING(exam_id));
       return response.data;
     } catch (error) {
-      console.error(`Error fetching standings for exam ${exam_id}:`, error);
+      console.error(`Error fetching ranking for exam ${exam_id}:`, error);
       throw error;
     }
   }
 
-  static async getCandidateStandingDetail(exam_id: string, candidate_id: string) {
+  static async getCandidateRankingDetail(exam_id: string, candidate_id: string) {
     try {
-      const response = await client.get(competitionUrls.GET_CANDIDATE_STANDING_DETAIL(exam_id, candidate_id));
+      const response = await client.get(competitionUrls.GET_CANDIDATE_RANKING_DETAIL(exam_id, candidate_id));
       return response.data;
     } catch (error) {
-      console.error(`Error fetching candidate standing detail for candidate ${candidate_id} in exam ${exam_id}:`, error);
+      console.error(`Error fetching candidate ranking detail for candidate ${candidate_id} in exam ${exam_id}:`, error);
       throw error;
     }
   }

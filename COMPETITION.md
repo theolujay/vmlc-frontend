@@ -6,19 +6,19 @@ This document provides detailed information on the response bodies for the compe
 
 | Method | Endpoint | Description |
 | :--- | :--- | :--- |
-| **POST** | `/competition/standings/publish/` | Trigger asynchronous generation/publishing of standings. |
-| **GET** | `/competition/standings/{exam_id}/` | Retrieve specific standings with detailed entries using Exam ID. |
-| **GET** | `/competition/standings/{exam_id}/candidate/{candidate_id}/` | Retrieve detailed performance for a specific candidate in an exam standing. |
+| **POST** | `/competition/rankings/publish/` | Trigger asynchronous generation/publishing of rankings. |
+| **GET** | `/competition/rankings/{exam_id}/` | Retrieve specific ranking with detailed entries using Exam ID. |
+| **GET** | `/competition/rankings/{exam_id}/candidate/{candidate_id}/` | Retrieve detailed performance for a specific candidate in an exam ranking. |
 | **GET** | `/competition/leaderboard/league/` | Retrieve the latest cumulative league leaderboard. |
 | **GET** | `/competition/leaderboard/league/candidate/{candidate_id}/` | Retrieve cumulative performance for a specific candidate in the league. |
 | **GET** | `/competition/dashboard/` | Retrieve aggregated data for the competition dashboard. |
 
 ---
 
-## 1. Publish Standings
-`POST /competition/standings/publish/`
+## 1. Publish Ranking
+`POST /competition/rankings/publish/`
 
-Used by administrators to trigger the calculation of standings for a specific exam round.
+Used by administrators to trigger the calculation of ranking for a specific exam round.
 
 ### Request Body
 ```json
@@ -31,16 +31,16 @@ Used by administrators to trigger the calculation of standings for a specific ex
 ### Response Body (`202 Accepted`)
 ```json
 {
-  "message": "Standings generation has been started."
+  "message": "Ranking generation has been started."
 }
 ```
 
 ---
 
-## 2. Retrieve Standings
-`GET /competition/standings/{exam_id}/`
+## 2. Retrieve Ranking
+`GET /competition/rankings/{exam_id}/`
 
-Retrieves a snapshot of standings for a specific stage and round using the Exam ID.
+Retrieves a snapshot of ranking for a specific stage and round using the Exam ID.
 
 ### Response Body (`200 OK`)
 ```json
@@ -73,10 +73,10 @@ Retrieves a snapshot of standings for a specific stage and round using the Exam 
 
 ---
 
-## 3. Candidate Standing Detail
-`GET /competition/standings/{exam_id}/candidate/{candidate_id}/`
+## 3. Candidate Ranking Detail
+`GET /competition/rankings/{exam_id}/candidate/{candidate_id}/`
 
-Retrieves detailed performance for a specific candidate in a specific exam standing, including their answers and the correct options.
+Retrieves detailed performance for a specific candidate in a specific exam ranking, including their answers and the correct options.
 
 ### Response Body (`200 OK`)
 ```json
@@ -177,7 +177,7 @@ Retrieves cumulative performance for a specific candidate in the latest league l
 ---
 
 ## 6. Competition Dashboard
-`GET /v1/competition/dashboard/`
+`GET /v1/competition/dashboard/staff`
 
 Provides an aggregated view of competition statistics, progress, exam statuses, and ranking summaries.
 
@@ -201,7 +201,7 @@ Provides an aggregated view of competition statistics, progress, exam statuses, 
       "title": "Screening Exam",
       "stage": "screening",
       "status": "concluded",
-      "standings_status": "published",
+      "ranking_status": "published",
       "stats": {
         "candidates_sat": 10230,
         "avg_score": 55.2
@@ -212,7 +212,7 @@ Provides an aggregated view of competition statistics, progress, exam statuses, 
       "title": "League - Round 1",
       "stage": "league",
       "status": "concluded",
-      "standings_status": "published",
+      "ranking_status": "published",
       "stats": {
         "candidates_sat": 850,
         "avg_score": 62.4,
@@ -231,7 +231,7 @@ Provides an aggregated view of competition statistics, progress, exam statuses, 
       "rank_change": 0
     }
   ],
-  "latest_standings_summary": {
+  "latest_ranking_summary": {
     // only top 3 rankings
     "exam_id": "league-r1-uuid",
     "exam_title": "League - Round 1",

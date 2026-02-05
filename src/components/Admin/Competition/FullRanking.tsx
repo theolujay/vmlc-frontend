@@ -5,10 +5,10 @@ import ResponsiveContainer from '@/components/ui/ResponsiveContainer';
 import { AngleIcon, FilterIcon, SortIcon } from '../AdminIcons';
 import Image from "next/image";
 import RankMedal from './RankMedal';
-import useGetStandings from '@/hooks/useGetStandings';
-import { StandingsEntry, StandingsResponse } from '@/types/LeaderBoardType';
+import useGetRanking from '@/hooks/useGetRanking';
+import { RankingEntry, RankingResponse } from '@/types/LeaderBoardType';
 
-interface FullStandingsProps {
+interface FullRankingProps {
   onBack: () => void;
   examId: string;
   examTitle: string;
@@ -16,16 +16,16 @@ interface FullStandingsProps {
   isPublicView?: boolean;
 }
 
-const FullStandings: React.FC<FullStandingsProps> = ({ onBack, examId, examTitle, onViewDetails, isPublicView = false }) => {
+const FullRanking: React.FC<FullRankingProps> = ({ onBack, examId, examTitle, onViewDetails, isPublicView = false }) => {
   const [searchTerm, setSearchInput] = useState('');
-  const { data, isLoading, error, refetch } = useGetStandings(examId);
+  const { data, isLoading, error, refetch } = useGetRanking(examId);
 
-  const standingsData = (data as unknown as StandingsResponse)?.entries || [];
-  const responseData = data as unknown as StandingsResponse;
+  const rankingData = (data as unknown as RankingResponse)?.entries || [];
+  const responseData = data as unknown as RankingResponse;
   
-  const displayTitle = examTitle || (responseData ? `${responseData.stage_display} ${responseData.round ? `- Round ${responseData.round}` : ''}` : 'Standings');
+  const displayTitle = examTitle || (responseData ? `${responseData.stage_display} ${responseData.round ? `- Round ${responseData.round}` : ''}` : 'Ranking');
 
-  const filteredData = standingsData.filter(item => 
+  const filteredData = rankingData.filter(item => 
     item.candidate_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
     item.school_name.toLowerCase().includes(searchTerm.toLowerCase())
   );
@@ -34,7 +34,7 @@ const FullStandings: React.FC<FullStandingsProps> = ({ onBack, examId, examTitle
     return (
       <div className="flex flex-col items-center justify-center p-20 w-full">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-cyan-600"></div>
-        <p className="mt-4 text-sm text-[#667185] font-medium animate-pulse">Loading Standings...</p>
+        <p className="mt-4 text-sm text-[#667185] font-medium animate-pulse">Loading Ranking...</p>
       </div>
     );
   }
@@ -45,7 +45,7 @@ const FullStandings: React.FC<FullStandingsProps> = ({ onBack, examId, examTitle
         <div className="w-16 h-16 bg-red-50 rounded-full flex items-center justify-center mb-4">
            <span className="text-red-500 text-2xl font-bold">!</span>
         </div>
-        <h2 className="text-lg font-bold text-[#101828]">Failed to load standings</h2>
+        <h2 className="text-lg font-bold text-[#101828]">Failed to load ranking</h2>
         <p className="text-sm text-[#667185] mt-1 max-w-xs mx-auto">There was an error retrieving the result data for this exam. Please try again.</p>
         <button 
           onClick={() => refetch()}
@@ -67,7 +67,7 @@ const FullStandings: React.FC<FullStandingsProps> = ({ onBack, examId, examTitle
           <div className="rotate-180"><AngleIcon width={8} height={14} /></div>
         </button>
         <div className="flex flex-col">
-          <h1 className="text-xl font-bold text-[#101828]">Standings: {displayTitle}</h1>
+          <h1 className="text-xl font-bold text-[#101828]">Ranking: {displayTitle}</h1>
           <p className="text-xs text-[#667185]">Detailed results for this round</p>
         </div>
       </div>
@@ -93,11 +93,11 @@ const FullStandings: React.FC<FullStandingsProps> = ({ onBack, examId, examTitle
           </div>
         </div>
 
-        <CustomTable<StandingsEntry>
+        <CustomTable<RankingEntry>
           data={filteredData}
           minWidth="900px"
           emptyLabel="Results Empty"
-          emptyDesc="No standings data has been processed for this exam yet."
+          emptyDesc="No ranking data has been processed for this exam yet."
           columns={[
             {
               key: 'rank',
@@ -154,7 +154,7 @@ const FullStandings: React.FC<FullStandingsProps> = ({ onBack, examId, examTitle
             ...(onViewDetails && !isPublicView ? [{
               key: 'action',
               header: 'Action',
-              render: (_: any, row: StandingsEntry) => (
+              render: (_: any, row: RankingEntry) => (
                 <button 
                   onClick={() => onViewDetails?.(row.candidate)}
                   className="text-cyan-600 font-bold hover:bg-cyan-600 hover:text-white text-xs bg-white px-3 py-1.5 rounded-full border border-cyan-600/40 transition-colors"
@@ -171,4 +171,4 @@ const FullStandings: React.FC<FullStandingsProps> = ({ onBack, examId, examTitle
   );
 };
 
-export default FullStandings;
+export default FullRanking;

@@ -4,15 +4,15 @@ import CompetitionStats from './CompetitionStats';
 import StageBoard, { CompetitionStage } from './CompetitionProgress';
 import ExamStatus from './ExamStatus';
 import LeaderboardSummary from './LeaderboardSummary';
-import StandingsSummary from './StandingsSummary';
+import RankingSummary from './RankingSummary';
 import useGetCompetitionDashboard from '@/hooks/useGetCompetitionDashboard';
 import { useAuth } from '@/contexts/AuthProvider';
 import { capitalizeWord } from '@/utils/capitalizeWords';
 
 interface CompetitionDashboardProps {
   onViewFullLeaderboard?: () => void;
-  onViewFullStandings?: (id: string, title: string) => void;
-  onViewStandings?: (id: string, title: string) => void;
+  onViewFullRanking?: (id: string, title: string) => void;
+  onViewRanking?: (id: string, title: string) => void;
   onViewCandidateDetail?: (params: { 
     candidate_id: string, 
     exam_id?: string, 
@@ -24,8 +24,8 @@ interface CompetitionDashboardProps {
 
 const CompetitionDashboard: React.FC<CompetitionDashboardProps> = ({ 
   onViewFullLeaderboard, 
-  onViewFullStandings,
-  onViewStandings,
+  onViewFullRanking,
+  onViewRanking,
   onViewCandidateDetail 
 }) => {
   const { authState } = useAuth();
@@ -38,8 +38,8 @@ const CompetitionDashboard: React.FC<CompetitionDashboardProps> = ({
   const handleView = (id: string) => {
     if (isVolunteer) return;
     const exam = data?.exams.find(e => e.id === id);
-    if (onViewStandings && exam && exam.standings_status === 'published') {
-      onViewStandings(id, exam.title);
+    if (onViewRanking && exam && exam.ranking_status === 'published') {
+      onViewRanking(id, exam.title);
     } else {
       // Fallback or handle operational navigation
       console.log(`Navigating to operational details for ${id}`);
@@ -137,15 +137,15 @@ const CompetitionDashboard: React.FC<CompetitionDashboardProps> = ({
                   isLeagueCumulative: true 
                 })) : undefined} 
               />
-              <StandingsSummary
-                examTitle={data.latest_standings_summary?.exam_title || "Latest Exam"}
-                entries={data.latest_standings_summary?.entries || []}
-                onViewFull={isModeratorOrAbove && onViewFullStandings && data.latest_standings_summary ? 
-                  (() => onViewFullStandings(data.latest_standings_summary!.exam_id, data.latest_standings_summary!.exam_title)) 
+              <RankingSummary
+                examTitle={data.latest_ranking_summary?.exam_title || "Latest Exam"}
+                entries={data.latest_ranking_summary?.entries || []}
+                onViewFull={isModeratorOrAbove && onViewFullRanking && data.latest_ranking_summary ? 
+                  (() => onViewFullRanking(data.latest_ranking_summary!.exam_id, data.latest_ranking_summary!.exam_title)) 
                   : undefined}
                 onViewCandidate={isModeratorOrAbove ? ((id) => onViewCandidateDetail?.({ 
                   candidate_id: id, 
-                  exam_id: data.latest_standings_summary?.exam_id,
+                  exam_id: data.latest_ranking_summary?.exam_id,
                   stage: data.progress.current_stage,
                   round: String(data.progress.current_round)
                 })) : undefined}

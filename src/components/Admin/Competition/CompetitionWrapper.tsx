@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import CompetitionDashboard from './CompetitionDashboard';
 import FullLeagueLeaderboard from './FullLeagueLeaderboard';
-import FullStandings from './FullStandings';
+import FullRanking from './FullRanking';
 import ViewCandidateDetails from '../Leaderboard/ViewCandidateDetails';
 import { useAuth } from '@/contexts/AuthProvider';
 import { useSearchParams } from 'next/navigation';
 
-type ViewState = 'dashboard' | 'leaderboard' | 'standings' | 'candidate-details';
+type ViewState = 'dashboard' | 'leaderboard' | 'ranking' | 'candidate-details';
 
 interface DetailContext {
     candidate_id: string;
@@ -33,20 +33,20 @@ const CompetitionWrapper: React.FC = () => {
   const [detailContext, setDetailContext] = useState<DetailContext | null>(null);
 
   useEffect(() => {
-    if (viewParam === 'standings' && idParam) {
+    if (viewParam === 'ranking' && idParam) {
       setSelectedExamId(idParam);
-      setSelectedExamTitle(titleParam || 'Exam Standings');
-      setView('standings');
+      setSelectedExamTitle(titleParam || 'Exam Ranking');
+      setView('ranking');
     } else if (viewParam === 'leaderboard') {
       setView('leaderboard');
     }
   }, [viewParam, idParam, titleParam]);
 
-  const handleViewStandings = (id?: string, title?: string) => {
+  const handleViewRanking = (id?: string, title?: string) => {
     if (!isModeratorOrAbove) return;
     if (id) setSelectedExamId(id);
     if (title) setSelectedExamTitle(title);
-    setView('standings');
+    setView('ranking');
   };
 
   const handleViewCandidateDetails = ({ 
@@ -79,8 +79,8 @@ const CompetitionWrapper: React.FC = () => {
       {currentView === 'dashboard' && (
         <CompetitionDashboard 
           onViewFullLeaderboard={isModeratorOrAbove ? () => setView('leaderboard') : undefined}
-          onViewFullStandings={isModeratorOrAbove ? (id, title) => handleViewStandings(id, title) : undefined}
-          onViewStandings={isModeratorOrAbove ? handleViewStandings : undefined}
+          onViewFullRanking={isModeratorOrAbove ? (id, title) => handleViewRanking(id, title) : undefined}
+          onViewRanking={isModeratorOrAbove ? handleViewRanking : undefined}
           onViewCandidateDetail={isModeratorOrAbove ? handleViewCandidateDetails : undefined}
         />
       )}
@@ -97,9 +97,9 @@ const CompetitionWrapper: React.FC = () => {
         </div>
       )}
 
-      {currentView === 'standings' && (
+      {currentView === 'ranking' && (
         <div className="p-4 sm:p-8">
-          <FullStandings 
+          <FullRanking 
             onBack={() => setView('dashboard')} 
             examId={selectedExamId}
             examTitle={selectedExamTitle}

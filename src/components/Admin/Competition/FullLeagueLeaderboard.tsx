@@ -68,7 +68,7 @@ const FullLeagueLeaderboard: React.FC<FullLeagueLeaderboardProps> = ({ onBack, o
         </button>
         <div className="flex flex-col">
           <h1 className="text-xl font-bold text-[#101828]">League Leaderboard</h1>
-          <p className="text-xs text-[#667185]">Cumulative scores across all published standings</p>
+          <p className="text-xs text-[#667185]">Cumulative scores across all published rankings</p>
         </div>
       </div>
 

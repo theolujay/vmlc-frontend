@@ -39,7 +39,7 @@ This document outlines the API endpoints related to exams, prioritizing V2 over 
       "scheduled_date": "2024-05-01T10:00:00Z",
       "concluded_at": "2024-05-01T22:00:00Z",
       "created_at": "2024-04-01T12:00:00Z",
-      "standings": {
+      "ranking": {
         "exists": true,
         "is_published": false,
         "created_at": "2024-05-02T08:00:00Z",
@@ -110,7 +110,7 @@ Returns the full exam object (see **Get Exam Details**).
   "created_at": "2024-04-01T12:00:00Z",
   "created_by": { "id": "uuid", "full_name": "Staff Name", "email": "staff@vmlc.com" },
   "updated_by": null,
-  "standings": {
+  "ranking": {
     "exists": true,
     "is_published": false,
     "created_at": "2024-05-02T08:00:00Z",
@@ -345,16 +345,16 @@ Fields same as **Create Exam** (all optional for PATCH).
 
 ---
 
-## 13. Publish Standings
-**Endpoint:** `POST /v1/competition/standings/publish/`  
-**Description:** Triggers the generation and optional immediate publishing of standings for an exam.  
+## 13. Publish Ranking
+**Endpoint:** `POST /v1/competition/rankings/publish/`  
+**Description:** Triggers the generation and optional immediate publishing of ranking for an exam.  
 **Permissions:** `ActiveAdminPermissions` (Staff only)
 
 ### Request Body
 | Field | Type | Description |
 | :--- | :--- | :--- |
-| `exam_id` | UUID | **Required.** UUID of the Exam to generate standings for. |
-| `publish_now` | Boolean | **Optional.** (Default: false) If true, immediately marks standings as published. |
+| `exam_id` | UUID | **Required.** UUID of the Exam to generate ranking for. |
+| `publish_now` | Boolean | **Optional.** (Default: false) If true, immediately marks ranking as published. |
 
 ```json
 {
@@ -366,15 +366,15 @@ Fields same as **Create Exam** (all optional for PATCH).
 ### Response Body
 ```json
 {
-    "message": "Standings generation has been started."
+    "message": "Ranking generation has been started."
 }
 ```
 
 ---
 
-## 14. Retrieve Standings
-**Endpoint:** `GET /v1/competition/standings/{exam_id}/`  
-**Description:** Retrieves the full standings for a specific exam, including all candidate entries.  
+## 14. Retrieve Ranking
+**Endpoint:** `GET /v1/competition/rankings/{exam_id}/`  
+**Description:** Retrieves the full ranking for a specific exam, including all candidate entries.  
 **Permissions:** `ActiveAdminPermissions` (Staff only)
 
 ### Response Body
@@ -408,9 +408,9 @@ Fields same as **Create Exam** (all optional for PATCH).
 
 ---
 
-## 15. Retrieve Candidate Standing Detail
-**Endpoint:** `GET /v1/competition/standings/{exam_id}/candidate/{candidate_id}/`  
-**Description:** Retrieves detailed performance for a specific candidate in a specific exam standing.  
+## 15. Retrieve Candidate Ranking Detail
+**Endpoint:** `GET /v1/competition/rankings/{exam_id}/candidate/{candidate_id}/`  
+**Description:** Retrieves detailed performance for a specific candidate in a specific exam ranking.  
 **Permissions:** `ActiveAdminPermissions` (Staff only)
 
 ### Response Body

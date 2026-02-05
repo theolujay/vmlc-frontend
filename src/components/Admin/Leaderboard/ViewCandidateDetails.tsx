@@ -48,7 +48,7 @@ export default function ViewCandidateDetails({ candidate_id, exam_id, isLeagueCu
         isLeagueCumulative 
     });
 
-    const isStanding = !!exam_id && !isLeagueCumulative;
+    const isRanking = !!exam_id && !isLeagueCumulative;
 
     if (isLoading) {
         return (
@@ -58,8 +58,8 @@ export default function ViewCandidateDetails({ candidate_id, exam_id, isLeagueCu
         );
     }
 
-    const performanceData = isStanding ? data?.candidate_performance : data;
-    const examDetails = isStanding ? data?.exam_details : null;
+    const performanceData = isRanking ? data?.candidate_performance : data;
+    const examDetails = isRanking ? data?.exam_details : null;
 
     return (
         <div className='flex flex-col gap-4 w-full animate-in fade-in slide-in-from-bottom-2 duration-500 font-sans'>
@@ -76,10 +76,10 @@ export default function ViewCandidateDetails({ candidate_id, exam_id, isLeagueCu
                     )}
                     <div className="flex flex-col">
                         <h1 className="text-xl font-bold text-[#101828]">
-                            {isStanding ? 'Candidate Answers' : 'League Performance'}
+                            {isRanking ? 'Candidate Answers' : 'League Performance'}
                         </h1>
                         <p className="text-xs text-[#667185] uppercase font-semibold tracking-wider">
-                            {isStanding ? `${examDetails?.title || stage} - Round ${examDetails?.round || round}` : 'Cumulative League Leaderboard'}
+                            {isRanking ? `${examDetails?.title || stage} - Round ${examDetails?.round || round}` : 'Cumulative League Leaderboard'}
                         </p>
                     </div>
                 </div>
@@ -100,7 +100,7 @@ export default function ViewCandidateDetails({ candidate_id, exam_id, isLeagueCu
                     rankChange={performanceData?.rank_change}
                 />
                 
-                {isStanding && performanceData?.submissions && (
+                {isRanking && performanceData?.submissions && (
                     <QuestionsTable questions={performanceData.submissions} />
                 )}
                 
@@ -113,7 +113,7 @@ export default function ViewCandidateDetails({ candidate_id, exam_id, isLeagueCu
                             <h3 className="text-lg font-bold text-[#101828]">Cumulative League View</h3>
                             <p className="text-sm text-[#667185] mt-1">
                                 You are viewing the cumulative performance of {performanceData?.candidate_name} across all published league rounds. 
-                                Detailed answer breakdowns are available in the specific round standings.
+                                Detailed answer breakdowns are available in the specific round ranking.
                             </p>
                         </div>
                    </ResponsiveContainer>

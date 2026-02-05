@@ -2,14 +2,14 @@ import { CompetitionService } from '@/services/Competition.service';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'react-toastify';
 
-export default function usePublishStandings() {
+export default function usePublishRanking() {
   const queryClient = useQueryClient();
 
   const { mutate, isPending } = useMutation({
     mutationFn: ({ exam_id, publish_now }: { exam_id: string; publish_now: boolean }) =>
-      CompetitionService.publishStandings(exam_id, publish_now),
+      CompetitionService.publishRanking(exam_id, publish_now),
     onSuccess: (data, variables) => {
-      toast.success(variables.publish_now ? 'Standings published successfully' : 'Standings generation started');
+      toast.success(variables.publish_now ? 'Ranking published successfully' : 'Ranking generation started');
       
       // Delay invalidation to allow backend processing time
       setTimeout(() => {
@@ -19,9 +19,9 @@ export default function usePublishStandings() {
       }, 2000);
     },
     onError: (error: any) => {
-      toast.error(error?.response?.data?.message || 'Failed to process standings');
+      toast.error(error?.response?.data?.message || 'Failed to process ranking');
     },
   });
 
-  return { publishStandings: mutate, isPending };
+  return { publishRanking: mutate, isPending };
 }

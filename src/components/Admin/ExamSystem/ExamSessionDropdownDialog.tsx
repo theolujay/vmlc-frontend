@@ -10,7 +10,7 @@ import DeleteExamSessionModal from '@/components/Modals/DeleteExamSessionModal';
 import EditSessionModal from '@/components/Modals/EditSession';
 import UploadExamSessionModal from '@/components/Modals/UploadExamSessionModal';
 import AppDropdownDialog from '@/components/ui/Dropdown/AppDropdownDialog';
-import usePublishStandings from '@/hooks/usePublishStandings';
+import usePublishRanking from '@/hooks/usePublishRanking';
 import { UpdatedSessionQuestionType } from '@/types/Examtype';
 import { SummaryIcon } from '../AdminIcons';
 
@@ -29,11 +29,11 @@ export default function ExamSessionDropdownDialog({ exam_id, data }: Props) {
     const [openAddQuestion,setAddQuestion]=useState(false)
     const [openUpload, setOpenUpload] = useState(false);
     
-    const { publishStandings, isPending: isPublishingStandings } = usePublishStandings();
+    const { publishRanking, isPending: isPublishingRanking } = usePublishRanking();
 
     const status = data?.status;
-    const hasStandings = data?.standings?.exists;
-    const isPublished = data?.standings?.is_published;
+    const hasRanking = data?.ranking?.exists;
+    const isPublished = data?.ranking?.is_published;
 
     function deleteExamSessionModal() {
         setOpenDeleteModal(true)
@@ -84,22 +84,22 @@ export default function ExamSessionDropdownDialog({ exam_id, data }: Props) {
             onClick: handleOpenEditModal,
             disabled: status !== 'draft' && status !== 'scheduled'
         },
-        // Standings actions
+        // Ranking actions
         {
             label: <div className='flex items-center gap-3 py-1'>
                 <div className="w-8 h-8 bg-blue-50 rounded-lg flex items-center justify-center text-[#3E4095]">
                     <SummaryIcon />
                 </div>
-                <span className="text-[10px] font-black uppercase tracking-widest">{hasStandings ? 'VIEW STANDINGS' : 'GENERATE STANDINGS'}</span>
+                <span className="text-[10px] font-black uppercase tracking-widest">{hasRanking ? 'VIEW RANKING' : 'GENERATE RANKING'}</span>
             </div>,
             onClick: () => {
-                if (hasStandings) {
-                    router.push(`/admin/competition?view=standings&id=${exam_id}&title=${encodeURIComponent(data?.title || '')}`);
+                if (hasRanking) {
+                    router.push(`/admin/competition?view=ranking&id=${exam_id}&title=${encodeURIComponent(data?.title || '')}`);
                 } else {
-                    publishStandings({ exam_id, publish_now: false });
+                    publishRanking({ exam_id, publish_now: false });
                 }
             },
-            disabled: !hasStandings && (status !== 'concluded' || isPublishingStandings)
+            disabled: !hasRanking && (status !== 'concluded' || isPublishingRanking)
         },
         {
             label: <div className='flex items-center gap-3 py-1'>
@@ -107,11 +107,11 @@ export default function ExamSessionDropdownDialog({ exam_id, data }: Props) {
                     <SummaryIcon />
                 </div>
                 <span className={clsx('text-[10px] font-black uppercase tracking-widest', isPublished ? 'text-gray-400' : 'text-green-600')}>
-                    {isPublished ? 'PUBLISHED' : 'PUBLISH STANDINGS'}
+                    {isPublished ? 'PUBLISHED' : 'PUBLISH RANKING'}
                 </span>
             </div>,
-            onClick: () => publishStandings({ exam_id, publish_now: true }),
-            disabled: isPublished || status !== 'concluded' || !hasStandings || isPublishingStandings
+            onClick: () => publishRanking({ exam_id, publish_now: true }),
+            disabled: isPublished || status !== 'concluded' || !hasRanking || isPublishingRanking
         },
         {
             label: <div className='flex items-center gap-3 py-1'>
