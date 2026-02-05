@@ -8,6 +8,8 @@ import RankingSummary from './RankingSummary';
 import useGetCompetitionDashboard from '@/hooks/useGetCompetitionDashboard';
 import { useAuth } from '@/contexts/AuthProvider';
 import { capitalizeWord } from '@/utils/capitalizeWords';
+import PromoteCandidatesModal from '@/components/Modals/PromoteCandidatesModal';
+import { useState } from 'react';
 
 interface CompetitionDashboardProps {
   onViewFullLeaderboard?: () => void;
@@ -32,8 +34,11 @@ const CompetitionDashboard: React.FC<CompetitionDashboardProps> = ({
   const userRole = authState?.user?.role;
   const isVolunteer = userRole === 'volunteer';
   const isModeratorOrAbove = ['moderator', 'admin', 'manager', 'superadmin'].includes(userRole || '');
+  // const isAdminOrAbove = ['admin', 'manager', 'superadmin'].includes(userRole || '');
+  const isManagerOrAbove = ['manager', 'superadmin'].includes(userRole || '');
 
   const { data, isLoading, error, refetch } = useGetCompetitionDashboard();
+  const [openPromoteModal, setOpenPromoteModal] = useState(false);
 
   const handleView = (id: string) => {
     if (isVolunteer) return;
@@ -98,7 +103,18 @@ const CompetitionDashboard: React.FC<CompetitionDashboardProps> = ({
       <div className="flex flex-col gap-2">
         <AdminHeader 
           label="Competition" 
-          actionButton={undefined} 
+          actionButton={[
+            isManagerOrAbove && (
+              <button 
+                key="promote-candidates"
+                onClick={() => setOpenPromoteModal(true)} 
+                className="inline-flex items-center gap-2.5 bg-white text-emerald-600 border border-emerald-600/20 px-6 py-3 rounded-xl font-black text-[10px] tracking-widest hover:bg-emerald-50 transition-all uppercase shadow-sm active:scale-95"
+              >
+                <i className="fas fa-users-cog text-xs"></i>
+                <span>PROMOTE</span>
+              </button>
+            )
+          ].filter(Boolean) as React.ReactNode[]} 
         />
 
           <div className="flex flex-col gap-3 sm:gap-4 mt-3 w-full sm:w-[96%] px-2 sm:px-0 sm:mx-auto">
@@ -152,6 +168,7 @@ const CompetitionDashboard: React.FC<CompetitionDashboardProps> = ({
               />
             </div>
           </div>
+          <PromoteCandidatesModal open={openPromoteModal} close={setOpenPromoteModal} />
       </div>
   );
 };

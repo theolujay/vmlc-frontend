@@ -19,23 +19,23 @@ const InfoBoard: React.FC<InfoBoardProps> = ({ message, onDismiss, actionLabel, 
       accent: 'text-red-600',
       iconBg: 'bg-red-100',
       button: 'bg-red-600 hover:bg-red-700',
-      title: 'Warning/Error'
+      title: 'Warning'
     },
     info: {
       bg: 'bg-green-50',
-      border: 'border-green-200',
-      text: 'text-[#3E4095]',
-      accent: 'text-[#3E4095]',
-      iconBg: 'bg-[#3E4095]/8',
-      button: 'bg-[#3E4095] hover:bg-[#4A4DA8]',
+      border: 'border-emerald-200',
+      text: 'text-emerald-700',
+      accent: 'text-emerald-700',
+      iconBg: 'bg-emerald-500/8',
+      button: 'bg-emerald-500 hover:bg-emerald-500/15',
       title: 'Important Update'
     },
     success: {
       bg: 'bg-[#3E4095]/5',
       border: 'border-[#3E4095]/20',
-      text: 'text-green-700',
-      accent: 'text-green-600',
-      iconBg: 'bg-green-100',
+      text: 'text-[#3E4095]',
+      accent: 'text-[#3E4095]',
+      iconBg: 'bg-[#3E4095]/15',
       button: 'bg-green-600 hover:bg-green-700',
       title: 'Success'
     }
