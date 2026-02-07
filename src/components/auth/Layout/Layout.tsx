@@ -11,12 +11,10 @@ export default function AuthLayout({ children }: Readonly<{ children: ReactNode 
   const { authState } = useAuth()
   
   useEffect(() => {
-    
     if (authState?.isAuthenticated) {
-      // router.push('/get-started')
       router.push(authState.homePath ?? '/')
     }
-  }, [authState])
+  }, [authState?.isAuthenticated, authState?.homePath, router])
   return (
     <div className='flex bg-[#E2E2EF] w-full flex-col '>
       <Header />

@@ -351,6 +351,21 @@ export function OTP({ className, label }: { className?: string; label: string })
     }
   };
 
+  const handlePaste = (e: React.ClipboardEvent<HTMLInputElement>) => {
+    e.preventDefault();
+    const pastedData = e.clipboardData.getData("text").slice(0, 6).split("");
+    const numericData = pastedData.filter(char => /^\d$/.test(char));
+    
+    if (numericData.length > 0) {
+      const newOtp = numericData.join("").slice(0, 6);
+      setValue("otp", newOtp, { shouldValidate: true });
+      
+      // Focus the appropriate input after paste
+      const nextIndex = Math.min(newOtp.length, 5);
+      inputs.current[nextIndex]?.focus();
+    }
+  };
+
   useEffect(() => {
     inputs.current[0]?.focus();
   }, []);
@@ -370,10 +385,13 @@ export function OTP({ className, label }: { className?: string; label: string })
           >
             <input
               type="text"
+              inputMode="numeric"
+              pattern="[0-9]*"
               maxLength={1}
               value={otp[index] || ""}
               onChange={(e) => handleChange(e, index)}
               onKeyDown={(e) => handleKeyDown(e, index)}
+              onPaste={handlePaste}
               ref={(el) => { inputs.current[index] = el }}
               className="border-0 w-full p-2 bg-white outline-0 text-center"
             />

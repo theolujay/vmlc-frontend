@@ -1,6 +1,5 @@
 import { useAuth } from "@/contexts/AuthProvider";
 import { AuthService } from "@/services/auth.service";
-import { isDev } from "@/utils/isDev";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
 import { AxiosError } from "axios";
@@ -9,14 +8,14 @@ import { toast } from "react-toastify";
 import z from "zod";
 
 const loginSchema = z.object({
-  email: z.email(),
+  email: z.string().email(),
   password: z.string()
 })
 
-const defaultValues = {
-  email: '',
-  password: ''
-}
+// const defaultValues = {
+//   email: '',
+//   password: ''
+// }
 
 type LoginType = z.infer<typeof loginSchema>;
 
@@ -26,7 +25,7 @@ export default function useLogin() {
   const { dispatch } = useAuth()
   const form = useForm({
     resolver: zodResolver(loginSchema),
-     defaultValues: isDev() ? { email: 'david@verboheit.org', password: 'zaq1wsxcde' } : defaultValues
+    //  defaultValues: isDev() ? { email: 'david@verboheit.org', password: 'zaq1wsxcde' } : defaultValues
     //  defaultValues: isDev() ? { email: 'afobajedavid@gmail.com', password: '@Medievaltimes123' } : defaultValues
     // defaultValues: isDev() ? { email: 'ikukoyidave@gmail.com', password: '@Marinashomolu12' } : defaultValues
   });
@@ -40,6 +39,7 @@ export default function useLogin() {
         dispatch({ type: 'loginSuccess', payload: value });
       }, 1000)
     },
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     onError:(error:AxiosError<any>)=>{
       
       toast.error(error?.response?.data.detail||'Encountered error logging in')
