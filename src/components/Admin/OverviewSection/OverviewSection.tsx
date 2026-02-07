@@ -92,7 +92,7 @@ export default function OverviewSection() {
   };
 
   return (
-    <div className="flex flex-col gap-1">
+    <div className="flex flex-col gap-1 font-sans">
       <AdminHeader
         label="Overview"
         actionButton={
