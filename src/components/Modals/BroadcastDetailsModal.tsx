@@ -29,10 +29,12 @@ export default function BroadcastDetailsModal({
 
   if (!broadcast) return null;
 
-  const userName = getUserName(
-    broadcast.created_by.user.first_name,
-    broadcast.created_by.user.last_name
-  );
+  const userName =
+    broadcast.created_by.full_name ||
+    getUserName(
+      broadcast.created_by.user?.first_name || '',
+      broadcast.created_by.user?.last_name || ''
+    );
   const createdDate = formatDate(broadcast.created_at);
   const createdTime = formatTimeToString(broadcast.created_at);
 

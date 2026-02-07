@@ -1,5 +1,5 @@
 "use client"
-import React, { useState, useEffect } from 'react';
+import React, { useState, useMemo } from 'react';
 import PageLayout from '../Layout/PageLayout';
 import withAuthentication from '@/hocs/withAuthentication';
 import useGetExamPortal from '@/hooks/useGetExamPortal';
@@ -11,19 +11,50 @@ import PerformanceSnapshot from './DashboardParts/PerformanceSnapshot';
 import ExamHistory from './DashboardParts/ExamHistory';
 import SupportChat from './DashboardParts/SupportChat';
 import ProfileModal from '@/components/Modals/ProfileModal';
+import { AvailableExamType } from '@/types/Examtype';
 
 function ExamPortal() {
   const { isPending, data } = useGetExamPortal();
   const user = useGetCurrentUser();
-  const [infoMessage, setInfoMessage] = useState<string | undefined>("Stay sharp! The competition is about to begin.");
+  const [dismissedNotificationIds, setDismissedNotificationIds] = useState<number[]>([]);
+  const [isProfileNoticeDismissed, setIsProfileNoticeDismissed] = useState(false);
   const [isSupportOpen, setIsSupportOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
 
-  useEffect(() => {
-    if (user && user.profile && user.profile.is_setup_complete === false) {
-      setInfoMessage("Your profile is incomplete. Please update your profile to ensure you don't miss any important updates.");
+  const candidateContext = data?.candidate_context;
+  const stageProgressData = data?.enrollment_stage_progress;
+  const activeExamData = data?.active_exam;
+  const performanceSnapshot = data?.performance_snapshot;
+  const examHistory = data?.exam_history;
+
+  // Notification Queue Logic: Priority ERROR > INFO > SUCCESS
+  const activeNotifications = useMemo(() => {
+    if (!candidateContext?.notifications) return [];
+
+    const errorNotifications = (candidateContext.notifications.error || []).map(n => ({ ...n, type: 'error' as const }));
+    const infoNotifications = (candidateContext.notifications.info || []).map(n => ({ ...n, type: 'info' as const }));
+    const successNotifications = (candidateContext.notifications.success || []).map(n => ({ ...n, type: 'success' as const }));
+    
+    return [...errorNotifications, ...infoNotifications, ...successNotifications]
+      .filter(n => !dismissedNotificationIds.includes(n.id));
+  }, [candidateContext?.notifications, dismissedNotificationIds]);
+
+  const showProfileNotice = !isProfileNoticeDismissed && 
+    (candidateContext?.is_setup_complete === false || user?.profile?.is_setup_complete === false);
+
+  const currentNotification = activeNotifications.length > 0 
+    ? { message: activeNotifications[0].message, type: activeNotifications[0].type, isProfile: false }
+    : showProfileNotice 
+      ? { message: "Your profile is incomplete. Please update your profile to ensure you don't miss any important updates.", type: 'info' as const, isProfile: true }
+      : null;
+
+  const handleDismissNotification = () => {
+    if (activeNotifications.length > 0) {
+      setDismissedNotificationIds(prev => [...prev, activeNotifications[0].id]);
+    } else if (showProfileNotice) {
+      setIsProfileNoticeDismissed(true);
     }
-  }, [user]);
+  };
 
   if (isPending) {
     return (
@@ -36,16 +67,12 @@ function ExamPortal() {
   }
 
   // Use login response or API data
-  const candidateName = user?.profile?.user 
-    ? `${user.profile.user.first_name} ${user.profile.user.last_name}` 
-    : data?.candidate_info 
-      ? `${data.candidate_info.first_name} ${data.candidate_info.last_name}` 
+  const candidateName = candidateContext?.full_name 
+    ? candidateContext.full_name
+    : user?.profile?.user 
+      ? `${user.profile.user.first_name} ${user.profile.user.last_name}` 
       : "Candidate";
   
-  const recentResults = data?.recent_results || [];
-  const leagueRanking = data?.league_leaderboard_ranking;
-  const screeningRanking = data?.screening_standings_ranking;
-  const stageProgress = data?.stage_progress;
 
   const determineStage = (stage: string): 'SCREENING' | 'LEAGUE' | 'FINAL' | null => {
     if (!stage) return null;
@@ -57,18 +84,105 @@ function ExamPortal() {
   };
 
   // Derive current stage from data
-  const currentStage: 'SCREENING' | 'LEAGUE' | 'FINAL' = determineStage(stageProgress?.current_stage || '') || 'SCREENING';
-  
-  const currentExam = data?.next_exam || null;
-  const leagueWeek = stageProgress?.current_round || currentExam?.round || 1; 
+  const currentStage: 'SCREENING' | 'LEAGUE' | 'FINAL' = determineStage(stageProgressData?.current_stage || '') || 'SCREENING';
+  const leagueWeek = stageProgressData?.current_round || activeExamData?.round || 1; 
+
+  // Map Active Exam to AvailableExamType for PrimaryAction component
+  const currentExam: AvailableExamType | null = activeExamData ? {
+    id: activeExamData.id,
+    title: activeExamData.title,
+    open_duration_hours: activeExamData.starts_at && activeExamData.ends_at 
+      ? (new Date(activeExamData.ends_at).getTime() - new Date(activeExamData.starts_at).getTime()) / (1000 * 60 * 60)
+      : activeExamData.duration_minutes / 60,
+    countdown_minutes: activeExamData.duration_minutes || 0,
+    question_count: activeExamData.question_count || 0, 
+    round: activeExamData.round,
+    scheduled_date: new Date(activeExamData.starts_at),
+    stage: activeExamData.stage,
+    stage_display: activeExamData.stage.toUpperCase(),
+    has_participated: activeExamData.has_participated,
+    status: activeExamData.status,
+    is_eligible: activeExamData.is_eligible,
+    access_status: activeExamData.access_status
+  } : null;
 
   // Map history
-  const history = recentResults.map(score => ({
-    exam: score.exam,
-    score: score.score,
-    date: score.date,
-    exam_stage: score.exam_stage
+  const history = (examHistory || []).map(item => ({
+    exam: item.exam_title,
+    score: item.score, // Use score instead of percentage as per new API
+    date: new Date(item.date),
+    exam_stage: item.stage
   }));
+
+  // Map Performance Snapshot
+  const leagueRanking = performanceSnapshot?.league_leaderboard ? {
+      current_rank: performanceSnapshot.league_leaderboard.overall_rank,
+      position: performanceSnapshot.league_leaderboard.overall_rank,
+      total_candidates: performanceSnapshot.league_leaderboard.total_candidates,
+      rank_change: performanceSnapshot.league_leaderboard.rank_change,
+      as_of_round: performanceSnapshot.league_leaderboard.as_of_round,
+      is_active: performanceSnapshot.league_leaderboard.is_active
+  } : null;
+
+  const screeningRanking = performanceSnapshot?.screening_ranking ? {
+      current_rank: performanceSnapshot.screening_ranking.rank,
+      position: performanceSnapshot.screening_ranking.rank,
+      total_candidates: performanceSnapshot.screening_ranking.total_candidates,
+      exam_id: performanceSnapshot.screening_ranking.exam_id,
+      exam_title: performanceSnapshot.screening_ranking.exam_title,
+      is_active: true
+  } : null;
+
+  const finalRanking = performanceSnapshot?.final_ranking ? {
+      current_rank: performanceSnapshot.final_ranking.rank,
+      position: performanceSnapshot.final_ranking.rank,
+      total_candidates: performanceSnapshot.final_ranking.total_candidates,
+      exam_id: performanceSnapshot.final_ranking.exam_id,
+      exam_title: performanceSnapshot.final_ranking.exam_title,
+      is_active: true
+  } : null;
+  
+  // Qualification Threshold logic
+  let qualificationThreshold = 0;
+  let cutoffDisplay = '-';
+  const activeRanking = currentStage === 'SCREENING' ? screeningRanking : currentStage === 'FINAL' ? finalRanking : leagueRanking;
+
+  if (stageProgressData?.qualification_status?.advancement_policy) {
+      const { mode, value } = stageProgressData.qualification_status.advancement_policy;
+      if (mode === 'top_percent') {
+           cutoffDisplay = `Top ${value * 100}%`;
+           const total = activeRanking?.total_candidates;
+           if (total) {
+               qualificationThreshold = Math.ceil(total * value);
+           }
+      } else {
+          qualificationThreshold = value;
+          cutoffDisplay = `Top ${value}`;
+      }
+  }
+  
+  // Update cutoffDisplay if we have a calculated threshold for top_percent but want to show the range
+  // Actually, keeping the percentage is often what's desired for a "Range" label.
+
+  // Determine if awaiting results
+  const hasTakenExam = stageProgressData?.has_taken_current_round || activeExamData?.has_participated || false;
+  let isAwaitingResults = false;
+  
+  if (hasTakenExam) {
+      if (currentStage === 'LEAGUE') {
+          // For League, if as_of_round is behind the current week, it's awaiting results for the current week
+          isAwaitingResults = !leagueRanking || (leagueRanking.as_of_round !== undefined && leagueRanking.as_of_round < leagueWeek);
+      } else {
+          // For Screening and Final, if no ranking exists yet, it's awaiting
+          isAwaitingResults = !activeRanking;
+      }
+  }
+
+  // Also check explicit awaiting status from active exam IF we don't have a ranking yet
+  if (activeExamData?.status === 'awaiting_results' && !activeRanking) {
+      isAwaitingResults = true;
+  }
+
 
   return (
     <PageLayout>
@@ -87,9 +201,10 @@ function ExamPortal() {
 
         {/* INFO BOARD */}
         <InfoBoard 
-          message={infoMessage} 
-          onDismiss={() => setInfoMessage(undefined)} 
-          actionLabel={user?.profile?.is_setup_complete === false ? "Update Profile" : undefined}
+          message={currentNotification?.message} 
+          type={currentNotification?.type}
+          onDismiss={handleDismissNotification} 
+          actionLabel={currentNotification?.isProfile ? "Update Profile" : undefined}
           onAction={() => setIsProfileOpen(true)}
         />
 
@@ -97,6 +212,7 @@ function ExamPortal() {
         <PrimaryAction 
           exam={currentExam} 
           candidateName={candidateName}
+          isRankingAvailable={!!activeRanking}
         />
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -104,10 +220,16 @@ function ExamPortal() {
           <PerformanceSnapshot 
             leagueRanking={leagueRanking}
             screeningRanking={screeningRanking}
+            finalRanking={finalRanking}
             stage={currentStage}
             currentWeek={leagueWeek}
-            qualificationThreshold={stageProgress?.qualification_threshold_score}
-            hasTakenExam={stageProgress?.has_taken_exam || false}
+            qualificationThreshold={qualificationThreshold}
+            cutoffDisplay={cutoffDisplay}
+            hasTakenExam={hasTakenExam}
+            isQualified={stageProgressData?.qualification_status?.is_qualified}
+            isAwaitingResults={isAwaitingResults}
+            isActive={activeRanking?.is_active}
+            qualificationMessage={stageProgressData?.qualification_status?.message}
           />
 
           {/* EXAM HISTORY */}

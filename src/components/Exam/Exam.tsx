@@ -20,17 +20,19 @@ export default function Exam() {
   useEffect(() => {
     if (!dashboardPending && dashboardData) {
       // Check if this specific exam is already done
-      const nextExam = dashboardData.next_exam;
-      if (nextExam && nextExam.id === examId && nextExam.participation === 'done') {
-        toast.info("You have already completed this examination.");
-        router.push('/exam-portal');
-        return;
+      const activeExam = dashboardData.active_exam;
+      if (activeExam && activeExam.id === examId && activeExam.has_participated) {
+          toast.info("You have already completed this examination.");
+          router.push('/exam-portal');
+          return;
       }
 
-      const isConcluded = dashboardData.concluded_exams?.some(e => e.id === examId);
-      if (isConcluded) {
+      // Check concluded exams
+      const isConcludedHistory = dashboardData.exam_history?.some(e => e.exam_id === examId);
+      if (isConcludedHistory) {
         toast.info("This examination has already been concluded.");
         router.push('/exam-portal');
+        return;
       }
     }
   }, [dashboardData, dashboardPending, examId, router]);
@@ -38,14 +40,14 @@ export default function Exam() {
 const formattedAnswers = {
     answers: Object.entries(answers).map(([questionId, selected_option]) => ({
       question: Number(questionId),
-      selected_option,
+      selected_option: selected_option.toLowerCase(),
     })),
   };
 
 
 
   function handleSubmit() {
-    onSubmit(formattedAnswers)
+    return onSubmit(formattedAnswers)
   }
 
   if (dashboardPending || isPending) {
@@ -57,7 +59,7 @@ const formattedAnswers = {
   }
 
   return (
-    <ExamLayout onTimeUp={handleSubmit} timer={data?.countdown_minutes}>
+    <ExamLayout onTimeUp={handleSubmit} timer={data?.countdown_minutes ?? 0} title={data?.title}>
       <Questions submitPending={submitPending} handleSubmit={handleSubmit} answers={answers} setAnswers={setAnswers} isPending={isPending} data={data} />
     </ExamLayout>
   )

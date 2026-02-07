@@ -9,30 +9,28 @@ import { PreRegisteredCandidate } from '@/types/UserMgtType';
 import { formatDate } from '@/utils/formatFileSize';
 import { getUserName } from '@/utils/generalUtils';
 import { getUserInitials } from '@/utils/capitalizeWords';
-import Link from 'next/link';
+// import Link from 'next/link';
 import Image from 'next/image';
 import { Dispatch, SetStateAction, useEffect, useState } from 'react';
-import Button from '../../ui/Button';
 import ResponsiveContainer from '../../ui/ResponsiveContainer';
 import AdminHeader from '../AdminHeader';
 import {
   ActiveIcon,
-  AngleIcon,
-  BroadcastIcon,
+  // AngleIcon,
+  // BroadcastIcon,
   FilterIcon,
-  ManageQuestionIcon,
+  // ManageQuestionIcon,
   PreRegisteredIcon,
   RegisteredIcon,
-  SortIcon,
-  ViewLeaderBoardIcon,
-  ExamSystemIcon
-} from '../AdminIcons';
+  SortIcon} from '../AdminIcons';
 import SendBulkMessageModal from '@/components/Modals/SendBulkMessageModal';
 import ProfileModal from '@/components/Modals/ProfileModal';
-import { useAuth } from '@/contexts/AuthProvider';
+// import { useAuth } from '@/contexts/AuthProvider';
 import useListPreRegisteredCandidates from '@/hooks/useListPreRegisteredCandidates';
 import PreRegisteredCandidatesTable from './PreRegisteredTable';
 import useGetStatOverview from '@/hooks/useGetStatOverview';
+import useGetRegistrationStatus from '@/hooks/useGetRegistrationStatus';
+import Countdown from './Countdown';
 import RegistrationFunnel from './RegistrationFunnel';
 import RegistrationTrends from './RegistrationTrends';
 import GeographicsSection from './GeographicsSection';
@@ -41,26 +39,29 @@ import useGetCurrentUser from '@/hooks/useGetCurrentUser';
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
 import clsx from 'clsx';
 
-function shouldShowHeaderButtons(role: string): boolean {
-  switch (role) {
-    case 'volunteer':
-    case 'moderator':
-      return false;
+// function shouldShowHeaderButtons(role: string): boolean {
+//   switch (role) {
+//     case 'sponsor':
+//     case 'volunteer':
+//     case 'moderator':
+//     case 'admin':
+//       return false;
 
-    case 'admin':
-    case 'manager':
-    case 'superadmin':
-    case 'sponsor':
-      return true;
+//     case 'manager':
+//     case 'superadmin':
+//       return true;
 
-    default:
-      return false;
-  }
-}
+//     default:
+//       return false;
+//   }
+// }
 
 export default function OverviewSection() {
-  const { authState } = useAuth();
+  // const { authState } = useAuth();
   const user = useGetCurrentUser();
+  const userRole = user?.profile?.role;
+  const isVolunteer = userRole === 'volunteer';
+
   const { page, setPage } = usePagination();
   const [open, setOpen] = useState(false);
   const [showPreRegistered, setShowPreRegistered] = useState(false)
@@ -80,34 +81,26 @@ export default function OverviewSection() {
     }
   }, [user]);
 
-  const { data } = useListUserMgt(page, filters);
+  const { data } = useListUserMgt(page, filters, !isVolunteer && !showPreRegistered);
+  const { data: preRegisteredData } = useListPreRegisteredCandidates(page, filters, !isVolunteer && showPreRegistered);
   const { data: statOverview } = useGetStatOverview();
-  const { data: preRegisteredData } = useListPreRegisteredCandidates(page, filters)
-
-  const showBroadcast = shouldShowHeaderButtons(authState?.user?.role ?? '');
-
-  const totalExams = statOverview?.exams?.total ?? ((statOverview?.exams?.upcoming ?? 0) + (statOverview?.exams?.active ?? 0));
-
+  const { data: registrationStatus } = useGetRegistrationStatus();
+  
   const handleViewProfile = (id: string) => {
     setSelectedUserId(id);
     setProfileOpen(true);
   };
 
   return (
-    <div className="flex flex-col gap-1">
+    <div className="flex flex-col gap-1 font-sans">
       <AdminHeader
-        isExport
         label="Overview"
         actionButton={
-          showBroadcast ? (
-            <Button
-              onClick={() => setOpen(true)}
-              className="inline-flex gap-2 border px-2 sm:px-4 items-center text-xs sm:text-sm whitespace-nowrap"
-            >
-              <span className="hidden sm:inline">SEND BROADCAST</span>
-              <span className="sm:hidden">BROADCAST</span>
-            </Button>
-          ) : undefined
+          <Countdown 
+            targetDate={registrationStatus?.candidate_registration?.closing_date || ''} 
+            isOpen={registrationStatus?.candidate_registration?.is_open}
+            label="Reg. Closes in:"
+          />
         }
       />
       <div className="flex flex-col gap-3 sm:gap-4 mt-3 w-full sm:w-[96%] px-2 sm:px-0 sm:mx-auto">
@@ -120,14 +113,12 @@ export default function OverviewSection() {
           />
         )}
         <OverviewSummaryCard
-          active={statOverview?.candidates?.active ?? 0}
+          has_logged_in={statOverview?.candidates?.has_logged_in ?? 0}
           activeChange={statOverview?.candidates?.active_change}
           preRegisteredStudents={statOverview?.candidates?.pre_registered ?? 0}
           preRegisteredChange={statOverview?.candidates?.pre_registered_change}
           registeredStudents={statOverview?.candidates?.registered ?? 0}
           registeredChange={statOverview?.candidates?.registered_change}
-          exams={totalExams}
-          examsChange={statOverview?.exams?.active_change} 
         />
         <RegistrationTrends />
         
@@ -142,33 +133,35 @@ export default function OverviewSection() {
           />
         </div>
         
-        <QuickActionsCard />
+        {/* <QuickActionsCard /> */}
 
-        {showPreRegistered ? (
-          <PreRegisteredCandidatesTable
-            page_count={preRegisteredData?.pagination.total_pages ?? 0}
-            currentPage={page}
-            onPageChange={setPage}
-            handleSearch={setFilters}
-            candidates={preRegisteredData?.results as PreRegisteredCandidate[] ?? []}
-            setFilters={setFilters}
-            showPreRegistered={showPreRegistered}
-            setShowPreRegistered={setShowPreRegistered}
-          />
-        ) : (
-          <RegisteredCandidatesTable
-            handleSearch={setFilters}
-            page_count={data?.pagination.total_pages ?? 0}
-            currentPage={page}
-            onPageChange={setPage}
-            data={(data?.results as RegisteredCandidatesType[]) ?? []}
-            onViewProfile={handleViewProfile}
-            filters={filters}
-            setFilters={setFilters}
-            showPreRegistered={showPreRegistered}
-            setShowPreRegistered={setShowPreRegistered}
-            setPage={setPage}
-          />
+        {!isVolunteer && (
+          showPreRegistered ? (
+            <PreRegisteredCandidatesTable
+              page_count={preRegisteredData?.pagination.total_pages ?? 0}
+              currentPage={page}
+              onPageChange={setPage}
+              handleSearch={setFilters}
+              candidates={preRegisteredData?.results as PreRegisteredCandidate[] ?? []}
+              setFilters={setFilters}
+              showPreRegistered={showPreRegistered}
+              setShowPreRegistered={setShowPreRegistered}
+            />
+          ) : (
+            <RegisteredCandidatesTable
+              handleSearch={setFilters}
+              page_count={data?.pagination.total_pages ?? 0}
+              currentPage={page}
+              onPageChange={setPage}
+              data={(data?.results as RegisteredCandidatesType[]) ?? []}
+              onViewProfile={handleViewProfile}
+              filters={filters}
+              setFilters={setFilters}
+              showPreRegistered={showPreRegistered}
+              setShowPreRegistered={setShowPreRegistered}
+              setPage={setPage}
+            />
+          )
         )}
       </div>
       <SendBulkMessageModal open={open} close={setOpen} />
@@ -460,76 +453,72 @@ function RegisteredCandidatesTable({
   );
 }
 
-function QuickActionsCard() {
-  return (
-    <ResponsiveContainer className="flex w-full gap-3 sm:gap-4 p-3 sm:p-4 flex-col mx-auto">
-      <h2 className="text-lg sm:text-xl font-bold">Quick Actions</h2>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <Link
-          href="/admin/overview?tab=Exam+System&page=1"
-          className="flex justify-between items-center p-4 rounded-xl border border-[#3E4095]/10 hover:bg-[#3E4095]/5 transition-all group"
-        >
-          <div className="flex gap-3 items-center">
-            <span className="flex-shrink-0">
-              <ManageQuestionIcon />
-            </span>
-            <p className="text-m text-gray-700 tracking-tight">Explore Questions</p>
-          </div>
-          <span className="flex-shrink-0 group-hover:translate-x-1 transition-transform">
-            <AngleIcon />
-          </span>
-        </Link>
-        <Link
-          href="/admin/overview?tab=Leaderboards"
-          className="flex justify-between items-center p-4 rounded-xl border border-[#3E4095]/10 hover:bg-[#3E4095]/5 transition-all group"
-        >
-          <div className="flex gap-3 items-center">
-            <span className="flex-shrink-0">
-              <ViewLeaderBoardIcon />
-            </span>
-            <p className="text-m text-gray-700 tracking-tight">View Leaderboard</p>
-          </div>
-          <span className="flex-shrink-0 group-hover:translate-x-1 transition-transform">
-            <AngleIcon />
-          </span>
-        </Link>
-        <Link
-          href="/admin/overview?tab=Announcement"
-          className="flex justify-between items-center p-4 rounded-xl border border-[#3E4095]/10 hover:bg-[#3E4095]/5 transition-all group"
-        >
-          <div className="flex gap-3 items-center">
-            <span className="flex-shrink-0">
-              <BroadcastIcon />
-            </span>
-            <p className="text-m text-gray-700 tracking-tight">Manage Broadcast</p>
-          </div>
-          <span className="flex-shrink-0 group-hover:translate-x-1 transition-transform">
-            <AngleIcon />
-          </span>
-        </Link>
-      </div>
-    </ResponsiveContainer>
-  );
-}
+// function QuickActionsCard() {
+//   return (
+//     <ResponsiveContainer className="flex w-full gap-3 sm:gap-4 p-3 sm:p-4 flex-col mx-auto">
+//       <h2 className="text-lg sm:text-xl font-bold">Quick Actions</h2>
+//       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+//         <Link
+//           href="/admin/overview?tab=Exam+Console&page=1"
+//           className="flex justify-between items-center p-4 rounded-xl border border-[#3E4095]/10 hover:bg-[#3E4095]/5 transition-all group"
+//         >
+//           <div className="flex gap-3 items-center">
+//             <span className="flex-shrink-0">
+//               <ManageQuestionIcon />
+//             </span>
+//             <p className="text-m text-gray-700 tracking-tight">Explore Questions</p>
+//           </div>
+//           <span className="flex-shrink-0 group-hover:translate-x-1 transition-transform">
+//             <AngleIcon />
+//           </span>
+//         </Link>
+//         <Link
+//           href="/admin/overview?tab=Competition"
+//           className="flex justify-between items-center p-4 rounded-xl border border-[#3E4095]/10 hover:bg-[#3E4095]/5 transition-all group"
+//         >
+//           <div className="flex gap-3 items-center">
+//             <span className="flex-shrink-0">
+//               <ViewLeaderBoardIcon />
+//             </span>
+//             <p className="text-m text-gray-700 tracking-tight">View Leaderboard</p>
+//           </div>
+//           <span className="flex-shrink-0 group-hover:translate-x-1 transition-transform">
+//             <AngleIcon />
+//           </span>
+//         </Link>
+//         <Link
+//           href="/admin/overview?tab=Announcements"
+//           className="flex justify-between items-center p-4 rounded-xl border border-[#3E4095]/10 hover:bg-[#3E4095]/5 transition-all group"
+//         >
+//           <div className="flex gap-3 items-center">
+//             <span className="flex-shrink-0">
+//               <BroadcastIcon />
+//             </span>
+//             <p className="text-m text-gray-700 tracking-tight">Manage Broadcast</p>
+//           </div>
+//           <span className="flex-shrink-0 group-hover:translate-x-1 transition-transform">
+//             <AngleIcon />
+//           </span>
+//         </Link>
+//       </div>
+//     </ResponsiveContainer>
+//   );
+// }
 
 function OverviewSummaryCard({
   registeredStudents,
   preRegisteredStudents,
-  active,
-  exams,
+  has_logged_in,
   registeredChange,
   preRegisteredChange,
   activeChange,
-  examsChange,
 }: {
   registeredStudents: number;
   preRegisteredStudents: number;
-  active: number;
-  exams: number;
+  has_logged_in: number;
   registeredChange?: string;
   preRegisteredChange?: string;
   activeChange?: string;
-  examsChange?: string;
 }) {
   const stats = [
     {
@@ -539,37 +528,41 @@ function OverviewSummaryCard({
       change: registeredChange
     },
     {
+      icon: <ActiveIcon />,
+      label: 'HOW MANY LOGGED IN',
+      value: has_logged_in,
+      change: activeChange
+    },
+    {
       icon: <PreRegisteredIcon />,
       label: 'PRE-REGISTERED CANDIDATES',
       value: preRegisteredStudents,
       change: preRegisteredChange
     },
-    {
-      icon: <ActiveIcon />,
-      label: 'ACTIVE CANDIDATES (7D)',
-      value: active,
-      change: activeChange
-    },
-    {
-      icon: <ExamSystemIcon />, 
-      label: 'UPCOMING/ACTIVE EXAMS',
-      value: exams,
-      change: examsChange
-    }
   ];
 
   return (
-    <ResponsiveContainer className="flex gap-3 sm:gap-4 px-2 sm:px-3 flex-col mx-auto">
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+    <ResponsiveContainer className="flex gap-3 sm:gap-4 px-2 sm:px-3 flex-col mx-auto justify-between font-sans">
+      <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-3 gap-3 sm:gap-4">
         {stats.map((stat, index) => (
-          <div key={index} className="flex gap-3 sm:gap-4 flex-col p-4 sm:p-0 bg-gray-50 sm:bg-transparent rounded-lg sm:rounded-none">
+          <div 
+            key={index} 
+            className="flex flex-col gap-3 sm:gap-4 p-4 sm:p-0 bg-gray-50 sm:bg-transparent rounded-lg sm:rounded-none sm:items-center"
+          >
+            {/* Header: Icon & Label */}
             <div className="flex gap-2 items-center">
-              <span className="flex-shrink-0">{stat.icon}</span>
-              <p className="text-xs sm:text-sm font-medium text-gray-700 leading-tight">{stat.label}</p>
+              {/* <span className="flex-shrink-0">{stat.icon}</span> */}
+              <p className="text-xs sm:text-sm font-medium text-gray-700 leading-tight">
+                {stat.label}
+              </p>
             </div>
-            <div className="flex gap-3 items-center">
-              <span className="font-bold text-xl sm:text-2xl">{stat.value}</span>
-              {stat.change && (
+
+            {/* Value & Change */}
+            <div className="flex gap-3 justify-between items-center sm:flex-col sm:gap-1">
+              <div className="font-bold text-xl sm:text-2xl">
+                {stat.value}
+              </div>
+              {typeof stat.change === 'string' && stat.change && (
                 <div className="flex">
                   <span className={`text-xs ${stat.change.startsWith('-') ? 'text-red-500' : 'text-[#0F973D]'}`}>
                     {stat.change}

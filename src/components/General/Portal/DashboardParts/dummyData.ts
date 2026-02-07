@@ -18,7 +18,10 @@ export const DUMMY_AVAILABLE_EXAM: AvailableExamType = {
   scheduled_date: new Date(Date.now() + 300), // Tomorrow
   stage: "League",
   stage_display: "League Week 3",
-  participation: "not_done"
+  has_participated: false,
+  status: 'scheduled',
+  is_eligible: true,
+  access_status: null
 };
 
 export const DUMMY_RECENT_RESULTS = [

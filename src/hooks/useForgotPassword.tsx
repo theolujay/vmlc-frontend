@@ -3,12 +3,13 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation } from '@tanstack/react-query'
 import { useState } from 'react'
 import { useForm } from 'react-hook-form'
+import { toast } from 'react-toastify'
 import z from 'zod'
 
 
 
 const sendEmailSchema = z.object({
-    email: z.email()
+    email: z.string().email()
 })
 
 
@@ -24,7 +25,11 @@ const setNewPasswordSchema = z.object({
 type setNewPasswordSchemaType = z.infer<typeof setNewPasswordSchema>
 type otpSchemaType = z.infer<typeof otpSchema>;
 type EmailSchemaType = z.infer<typeof sendEmailSchema>
-export default function useForgotPassword() {
+export default function useForgotPassword(callbacks?: {
+    onEmailSuccess?: () => void,
+    onOtpSuccess?: () => void,
+    onPasswordSuccess?: () => void
+}) {
     const [email, setEmail] = useState('')
     const [otpState, setOtpState] = useState('')
     const sendEmailForm = useForm({
@@ -47,7 +52,17 @@ export default function useForgotPassword() {
 
     const { isPending, mutate } = useMutation({
         mutationFn: AuthService.passwordChange,
-    
+        onSuccess: () => {
+            callbacks?.onEmailSuccess?.()
+        },
+        onError: (error: any) => {
+            const emailError = error?.response?.data?.email?.[0]
+            if (emailError === "No account found with this email address.") {
+                toast.error("Invalid email. Please confirm.")
+            } else {
+                toast.error(error?.response?.data?.message || "Failed to send reset instructions")
+            }
+        }
     })
 
 
@@ -60,13 +75,23 @@ export default function useForgotPassword() {
 
     const { isPending: otpPending, mutate: otpMutate } = useMutation({
         mutationFn: AuthService.sendOtpForForgotPassword,
-    
+        onSuccess: () => {
+            callbacks?.onOtpSuccess?.()
+        },
+        onError: (error: any) => {
+            toast.error(error?.response?.data?.message || "Invalid OTP code")
+        }
     })
 
 
     const { isPending: setNewPasswordPending, mutate: setNewPasswordMutate } = useMutation({
         mutationFn: AuthService.setNewPassword,
-        
+        onSuccess: () => {
+            callbacks?.onPasswordSuccess?.()
+        },
+        onError: (error: any) => {
+            toast.error(error?.response?.data?.message || "Failed to update password")
+        }
     })
 
 

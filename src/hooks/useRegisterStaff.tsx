@@ -7,7 +7,7 @@ import * as z from 'zod';
 
 
 const registerStaffSchema = z.object({
-    email: z.email({ message: 'Must be an email' }),
+    email: z.string().email({ message: 'Must be an email' }),
     password: z.string().min(8, "Password must be at least 8 characters"),
     password2: z.string(),
     // terms:z.boolean(),

@@ -1,10 +1,11 @@
 import { UserMgtService } from '@/services/UserMgt.service'
 import { useQuery } from '@tanstack/react-query'
 
-export default function useListUserMgt(page?:number,filters?:Record<string,string>) {
+export default function useListUserMgt(page?:number,filters?:Record<string,string>, enabled: boolean = true) {
   const {isPending,data}=useQuery({
     queryKey:['user-management',page,filters],
-    queryFn:()=>UserMgtService.getUserList(page,filters)
+    queryFn:()=>UserMgtService.getUserList(page,filters),
+    enabled
   })
   return {isPending,data}
 }

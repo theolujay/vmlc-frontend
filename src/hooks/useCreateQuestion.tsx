@@ -2,7 +2,7 @@
 import { ExamPortal } from '@/services/examPortal.service';
 import { CreateQuestionType } from '@/types/Examtype';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useMutation } from '@tanstack/react-query';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useForm } from 'react-hook-form';
 import { toast } from 'react-toastify';
 import z from 'zod';
@@ -29,7 +29,8 @@ const defaultValues = {
     difficulty: ''
 }
 
-export default function useCreateQuestion(onSuccess: () => void) {
+export default function useCreateQuestion(onSuccess: () => void, examId?: string) {
+    const queryClient = useQueryClient()
     const form = useForm({
         resolver: zodResolver(createQuestionSchema),
         defaultValues
@@ -40,15 +41,29 @@ export default function useCreateQuestion(onSuccess: () => void) {
     const { isPending, mutate } = useMutation({
         mutationFn: ExamPortal.createQuestion,
         onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['list-questions'] })
+            queryClient.invalidateQueries({ queryKey: ['list-exams'] })
+            if (examId) {
+                queryClient.invalidateQueries({ queryKey: ['exam-questions', examId] })
+            }
             form.reset()
             toast.success('Question created successfully')
             onSuccess()
+        },
+        onError: (error: any) => {
+            console.error('Question creation error:', error);
+            const errorMessage = error?.response?.data?.message || error?.message || 'Failed to create question';
+            toast.error(errorMessage);
         }
     })
 
 
 
     function onSubmit(payload: CreateQuestionType) {
+        console.log('Submitting question payload:', payload);
+        if (examId) {
+            payload.exam_ids = [examId];
+        }
         mutate(payload)
     }
     return { isPending, onSubmit, form }

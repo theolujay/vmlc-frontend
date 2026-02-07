@@ -1,11 +1,12 @@
 export const UserMgtUrls = {
-    getUserList: (query?: string) => query ? `/user/list/?${query}` : `/user/list/`,
-    getPreRegisteredCandidateList: (query: string) => `/user/list/?profile=pre_reg_candidate&${query}`,
+    getUserList: (query?: string) => query ? `/v1/user/list/?${query}` : `/v1/user/list/`,
+    getPreRegisteredCandidateList: (query: string) => `/v1/user/list/?profile=pre_reg_candidate&${query}`,
     // getUserList:`/staff/`,
-    inviteStaffMember: `/staff/invite/`,
-    STATISTICS_OVERVIEW: `/stats/overview/`,
-    REGISTRATION_TRENDS: (days: number) => `/stats/registration-trends/?days=${days}`,
-    ACCOUNT_MGT: `/account-management/`,
-    ACCOUNT_DETAILS: (user_id: string) => `/account-management/${user_id}/`,
-    HANDLE_VERIFICATION_STATUS: (user_id: string) => `/user/verification/action/${user_id}/`
+    inviteStaffMember: `/v1/staff/invite/`,
+    STATISTICS_OVERVIEW: `/v1/stats/overview/`,
+    REGISTRATION_TRENDS: (days: number) => `/v1/stats/registration-trends/?days=${days}`,
+    REGISTRATION_STATUS: `/v2/registration/`,
+    ACCOUNT_MGT: `/v1/account-management/`,
+    ACCOUNT_DETAILS: (user_id: string) => `/v1/account-management/${user_id}/`,
+    HANDLE_VERIFICATION_STATUS: (user_id: string) => `/v1/user/verification/action/${user_id}/`
 }

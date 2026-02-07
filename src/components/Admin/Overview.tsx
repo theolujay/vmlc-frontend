@@ -3,14 +3,14 @@ import { useAuth } from '@/contexts/AuthProvider'
 import withAuthentication from '@/hocs/withAuthentication'
 import {  TabType } from '@/types/TabType'
 import TabWrapper from '../ui/Tabs/TabWrapper'
-import { AnnouncementIcon, ExamSystemIcon, LeaderboardIcon, OverviewIcon, SupportIcon, UserManagementIcon } from './AdminIcons'
+import { AnnouncementIcon, ExamSystemIcon, OverviewIcon, SupportIcon, UserManagementIcon, CompetitionIcon } from './AdminIcons'
 import AdminLayout from './AdminLayout'
 import Announcement from './Announcement/Announcement'
 import ExamSectionWrapper from './ExamSystem/ExamSectionWrapper'
 import OverviewSectionWrapper from './OverviewSection/OverviewSectionWrapper'
 import StaffMgtWrapper from './UserManagement/StaffMgtWrapper'
-import LeaderBoardWrapper from './Leaderboard/LeaderBoardWrapper'
 import SupportSectionWrapper from './Support/SupportSectionWrapper'
+import CompetitionWrapper from './Competition/CompetitionWrapper'
 
 
 
@@ -18,12 +18,12 @@ import SupportSectionWrapper from './Support/SupportSectionWrapper'
 function getTabsForRole(role: string): TabType[] {
     switch (role) {
         case 'volunteer':
-            return tabs.slice(0, 3);
+            return tabs.slice(0, 2); // Registration, Competition
 
         case 'moderator':
-            return [...tabs.slice(0, 3), tabs[5]];
-
         case 'admin':
+            return [tabs[0], tabs[1], tabs[2], tabs[5]]; // Registration, Competition, Exams & Questions, Support
+
         case 'manager':
         case 'superadmin':
             return tabs;
@@ -34,36 +34,33 @@ function getTabsForRole(role: string): TabType[] {
 }
 const tabs: TabType[] = [
     {
-        value: 'Overview',
-        label: <OverViewLabel />,
+        value: 'registration',
+        label: <RegistrationLabel />,
         content: <OverviewSectionWrapper />
-        // content:<OverviewSection/>
     },
     {
-        value: 'Exam System',
-        label: <ExamSystemLabel />,
+        value: 'competition',
+        label: <CompetitionLabel />,
+        content: <CompetitionWrapper />
+    },
+    {
+        value: 'exams-questions',
+        label: <ExamConsoleLabel />,
         content: <ExamSectionWrapper />
 
     },
     {
-        value: 'Leaderboards',
-        label: <LeaderboardsLabel />,
-        // content: <LeaderBoardSection />
-        content:<LeaderBoardWrapper/>
-    },
-    {
-        value: 'User Management',
-        label: <UserManagementLabel />,
+        value: 'user-mgt',
+        label: <UserMgtLabel />,
         content: <StaffMgtWrapper />
-        // content:<UserManagement/>
     },
     {
-        value: 'Announcement',
-        label: <AnnouncementLabel />,
+        value: 'announcements',
+        label: <AnnouncementsLabel />,
         content: <Announcement />
     },
     {
-        value: 'Support',
+        value: 'support',
         label: <SupportLabel />,
         content: <SupportSectionWrapper />
     }
@@ -72,20 +69,31 @@ const tabs: TabType[] = [
 
 
 import { useEffect, useState } from 'react'
+import useGetRegistrationStatus from '@/hooks/useGetRegistrationStatus'
 
 export function OverviewTabs() {
     const { authState } = useAuth()
+    const { data: registrationStatus } = useGetRegistrationStatus();
     const [mounted, setMounted] = useState(false);
 
     useEffect(() => {
         setMounted(true);
     }, []);
 
-    const userTabs = getTabsForRole(authState?.user?.role ?? '')
+    let userTabs = getTabsForRole(authState?.user?.role ?? '')
+
+    if (registrationStatus?.candidate_registration?.is_open === false) {
+        const competitionTab = userTabs.find(tab => tab.value === 'competition');
+        const otherTabs = userTabs.filter(tab => tab.value !== 'competition');
+        
+        if (competitionTab) {
+            userTabs = [competitionTab, ...otherTabs];
+        }
+    }
 
     return (
         <AdminLayout>
-            {mounted && <TabWrapper tabListClassName='flex overflow-y-auto border-b  border-gray-300 gap-2 bg-white px-6' tabs={userTabs} />}
+            {mounted && <TabWrapper tabListClassName='flex overflow-y-auto border-b border-gray-300 gap-2 bg-white px-6 font-sans' tabs={userTabs} />}
         </AdminLayout>
     )
 }
@@ -93,29 +101,25 @@ export function OverviewTabs() {
 export default withAuthentication(OverviewTabs)
 
 
-function OverViewLabel() {
-    return <div className='flex gap-1 items-center'><span><OverviewIcon /></span><span>Overview</span></div>
+function RegistrationLabel() {
+    return <div className='flex gap-1 items-center'><span><OverviewIcon /></span><span>Registration</span></div>
+}
+
+function CompetitionLabel() {
+    return <div className='flex gap-1 items-center'><span><CompetitionIcon /></span><span>Competition</span></div>
+}
+
+function ExamConsoleLabel() {
+    return <div className='flex gap-1 items-center'><span><ExamSystemIcon /></span><span>Exams & Questions</span></div>
+}
+
+function UserMgtLabel() {
+    return <div className='flex gap-1 items-center'><span><UserManagementIcon /></span><span>User Mgt.</span></div>
 }
 
 
-function ExamSystemLabel() {
-    return <div className='flex gap-1 items-center'><span><ExamSystemIcon /></span><span>Exam System</span></div>
-}
-
-
-function LeaderboardsLabel() {
-    return <div className='flex gap-1 items-center'><span><LeaderboardIcon /></span><span>Leaderboards</span></div>
-}
-
-
-
-function UserManagementLabel() {
-    return <div className='flex gap-1 items-center'><span><UserManagementIcon /></span><span>User Management</span></div>
-}
-
-
-function AnnouncementLabel() {
-    return <div className='flex gap-1 items-center'><span><AnnouncementIcon /></span><span>Announcement</span></div>
+function AnnouncementsLabel() {
+    return <div className='flex gap-1 items-center'><span><AnnouncementIcon /></span><span>Announcements</span></div>
 }
 
 function SupportLabel() {

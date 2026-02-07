@@ -28,7 +28,12 @@ const MathFieldEditor: React.FC<MathFieldEditorProps> = ({
   // Initialize MathLive
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      import('mathlive').then(() => {
+      import('mathlive').then((mathlive) => {
+        // Configure font directory to use a reliable CDN
+        // This fixes issues with Next.js/Turbopack font path resolution
+        if (mathlive.MathfieldElement) {
+          mathlive.MathfieldElement.fontsDirectory = 'https://unpkg.com/mathlive/dist/fonts';
+        }
         setIsLoaded(true);
       });
     }

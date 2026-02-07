@@ -154,3 +154,82 @@ export type PaginatedType<T> = {
     results: T[]
 }
 
+export interface RankingEntry {
+  candidate: string;
+  candidate_name: string;
+  candidate_email: string;
+  school_name: string;
+  exam_score: string;
+  rank: number;
+  percentile: number;
+  profile_picture?: string | null;
+  tie_break_reason?: string | null;
+}
+
+export interface RankingResponse {
+  id: number;
+  competition: number;
+  stage: string;
+  stage_display: string;
+  round: number;
+  exam: string;
+  facilitator_system: string;
+  is_published: boolean;
+  published_at: string;
+  created_at: string;
+  entries: RankingEntry[];
+}
+
+export interface LeagueLeaderboardEntry {
+  candidate: string;
+  candidate_name: string;
+  candidate_email: string;
+  school_name: string;
+  total_score: string;
+  overall_rank: number;
+  rank_change: number;
+  profile_picture?: string | null;
+}
+
+export interface LeagueLeaderboardResponse {
+  id: number;
+  competition: number;
+  stage: string;
+  stage_display: string;
+  as_of_round: number;
+  created_at: string;
+  updated_at: string;
+  entries: LeagueLeaderboardEntry[];
+}
+
+export interface CompetitionDashboardResponse {
+  stats: {
+    enrolled: number;
+    active: number;
+    eliminated: number;
+  };
+  progress: {
+    current_stage: string;
+    current_round: number;
+    total_rounds: number;
+    published_rounds: number;
+  };
+  exams: {
+    id: string;
+    title: string;
+    stage: string;
+    status: 'scheduled' | 'ongoing' | 'concluded';
+    ranking_status: 'pending'| 'ready' | 'published';
+    stats: {
+      candidates_sat: number;
+      avg_score: number;
+      absent?: number;
+    };
+  }[];
+  leaderboard_summary: LeagueLeaderboardEntry[];
+  latest_ranking_summary: {
+    exam_id: string;
+    exam_title: string;
+    entries: RankingEntry[];
+  } | null;
+}

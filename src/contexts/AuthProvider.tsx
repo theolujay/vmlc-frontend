@@ -28,7 +28,7 @@ const reducer = (state: AuthState, action: Actions): AuthState => {
             sessionStorage.removeItem("returnURL"); 
             const payload = action.payload
             localStorage.setItem('session', JSON.stringify(payload));
-            if (!payload) {
+            if (!payload || !payload.profile) {
                 return {
                     homePath: '',
                     token: null,
@@ -117,7 +117,17 @@ const reducer = (state: AuthState, action: Actions): AuthState => {
 
 
 
-const AuthContext = createContext<{ authState?: AuthState, dispatch: Dispatch<Actions> }>({ authState: undefined, dispatch: () => { } })
+const AuthContext = createContext<{ authState: AuthState, dispatch: Dispatch<Actions> }>({
+    authState: {
+        homePath: '',
+        token: null,
+        refreshToken: null,
+        isAuthenticated: false,
+        userType: null,
+        user: null,
+        profile: null
+    }, dispatch: () => { }
+})
 export default function AuthProvider({ children }: Readonly<{ children: React.ReactNode }>) {
     const [state, dispatch] = useReducer(reducer, {
         homePath: '',

@@ -15,12 +15,23 @@ export function formatStorageSize(bytes: number=0, decimalPlaces: number = 2): s
 
 
 
-export function formatDate(date:Date):string{
+export function formatDate(date:Date | string):string{
  return new Date(date).toLocaleDateString('en-GB', {
   day: '2-digit',
   month: 'short',
   year: 'numeric',
 })
+}
+
+export function formatDateTime(date: Date | string): string {
+    return new Date(date).toLocaleString('en-GB', {
+        day: '2-digit',
+        month: 'short',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+        hour12: true
+    });
 }
 
 

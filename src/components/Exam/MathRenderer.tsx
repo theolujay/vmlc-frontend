@@ -1,8 +1,6 @@
 'use client';
 
 import React, { useEffect, useRef } from 'react';
-import katex from 'katex';
-import 'katex/dist/katex.min.css';
 
 interface MathRendererProps {
   content: string;
@@ -14,48 +12,43 @@ const MathRenderer: React.FC<MathRendererProps> = ({ content, className = "", in
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (containerRef.current) {
-      const processContent = (text: string) => {
-        if (!text) return "";
-
-        // Process display math ($$...$$)
-        let html = text.replace(/\$\$(.*?)\$\$/g, (match, p1) => {
-          try {
-            return katex.renderToString(p1, { displayMode: true, throwOnError: false });
-          } catch (error) {
-            console.error('KaTeX display math rendering error:', error);
-            return match;
-          }
+    const renderMath = () => {
+      if (typeof window !== 'undefined' && window.MathJax && window.MathJax.typesetPromise && containerRef.current) {
+        // MathJax 3/4 typesetting is promise-based
+        window.MathJax.typesetPromise([containerRef.current]).catch((err: any) => {
+          console.error('MathJax typeset failed:', err);
         });
+      }
+    };
 
-        // Process inline math ($...$)
-        html = html.replace(/\$(.*?)\$/g, (match, p1) => {
-          try {
-            return katex.renderToString(p1, { displayMode: false, throwOnError: false });
-          } catch (error) {
-            console.error('KaTeX inline math rendering error:', error);
-            return match;
-          }
-        });
+    renderMath();
 
-        // Replace newlines with breaks only if not inline and if the text has multiple lines
-        if (!inline && text.includes('\n')) {
-          return html.replace(/\n/g, '<br/>');
+    // If MathJax is not yet fully initialized (typesetPromise missing), 
+    // it might be loading. We poll for the presence of typesetPromise.
+    if (typeof window !== 'undefined' && (!window.MathJax || !window.MathJax.typesetPromise)) {
+      const interval = setInterval(() => {
+        if (window.MathJax && window.MathJax.typesetPromise) {
+          renderMath();
+          clearInterval(interval);
         }
-
-        return html;
-      };
-
-      containerRef.current.innerHTML = processContent(content);
+      }, 500);
+      return () => clearInterval(interval);
     }
-  }, [content, inline]);
+  }, [content]);
 
   const Tag = inline ? 'span' : 'div';
+
+  // Check if content looks like HTML to decide whether to use dangerouslySetInnerHTML
+  const hasHtml = /<[a-z][\s\S]*>/i.test(content || '');
 
   return (
     <Tag 
       ref={containerRef} 
-      className={`text-gray-800 ${className}`}
+      className={`mathjax-renderer-container whitespace-pre-wrap ${className}`}
+      {...(hasHtml 
+        ? { dangerouslySetInnerHTML: { __html: content || '' } }
+        : { children: content }
+      )}
     />
   );
 };

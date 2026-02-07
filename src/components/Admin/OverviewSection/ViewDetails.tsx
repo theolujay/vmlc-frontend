@@ -33,7 +33,7 @@ function ViewUserDetails({ id }: Readonly<{ id: string }>) {
     return (
 
         <div className='flex flex-col gap-1 '>
-            <AdminHeader isExport label='Exam System' actionButton={<Button className="inline-flex gap-2 border px-2 items-center text-sm"><span>SEND MESSAGE</span></Button>} />
+            <AdminHeader label='Candidate Details' backUrl='?tab=registration' />
             {isPending ? <div className='w-full h-full grid place-content-center'>
                 <Spinner />
             </div> :
@@ -127,7 +127,7 @@ function ActivityComponent({ results }: Readonly<{ results: ExamTakenType[] }>) 
             <div className="flex gap-2 flex-col">
                 <CustomTable columns={[
                     {
-                        key: 'Exams Taken', header: 'Exams Taken', render: (_, row) => <div className="flex  items-center gap-1">
+                        key: 'Exams Taken', header: 'Exams Taken', align: 'center', render: (_, row) => <div className="flex  items-center gap-1">
                             {row.exam_title}
                         </div>
                     },

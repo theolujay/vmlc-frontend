@@ -1,17 +1,15 @@
 "use client";
 import AppDialog from '@/components/ui/Modals/AppDialog'
 import ResponsiveContainer from '@/components/ui/ResponsiveContainer'
-import useEditExamSession from '@/hooks/useEditExamSession'
 import clsx from 'clsx'
 import { Controller, FormProvider } from 'react-hook-form'
 import SelectInput from '../ui/Select'
 import Spinner from '../ui/spinner/spinner'
 import useApprovalStatus from '@/hooks/useApprovalStatus'
-import { watch } from 'fs'
 
 export default function ApprovalStatusModal({ open, close, user_id }: Readonly<{ user_id: string, open: boolean, close: (close: boolean) => void, }>) {
     function handleClose() {
-        close(!open)
+        close(false)
     }
     const { form, onSubmit, isPending } = useApprovalStatus(user_id, handleClose)
     const { register } = form

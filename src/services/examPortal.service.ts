@@ -1,8 +1,7 @@
 import { candidateUrls } from "@/constants/candidateUrls";
 import { examUrls } from "@/constants/examUrls";
-import { CreateExamSessionType, CreateQuestionType, DashboardType, EditExamSession, QuestionPoolType, SessionQuestionType, SessionType, UpdatedSessionQuestionType } from "@/types/Examtype";
-import { BulkArchiveType, BulkPayloadType, CandidateSubmitAnswerType } from "@/types/Index";
-import { LeaderBoardResponse, LeaderBoardType } from "@/types/LeaderBoardType";
+import { CreateExamSessionType, CreateQuestionType, DashboardType, EditExamSession, QuestionPoolType, SessionType, TakeExamType, UpdatedSessionQuestionType } from "@/types/Examtype";
+import { BulkActionType, BulkArchiveType, BulkPayloadType, CandidateSubmitAnswerType } from "@/types/Index";
 import client from "@/utils/axios";
 
 export class ExamPortal {
@@ -48,10 +47,13 @@ export class ExamPortal {
         }
     }
 
-    static async viewExamQuestions(id: string): Promise<UpdatedSessionQuestionType> {
+    static async viewExamQuestions(id: string, page: number = 1, filters: Record<string, string> = {}): Promise<UpdatedSessionQuestionType> {
         try {
-
-            const response = await client.get(examUrls.VIEW_QUESTIONS(id))
+            const queryParams = new URLSearchParams({
+                page: page.toString(),
+                ...Object.fromEntries(Object.entries(filters).filter(([, value]) => value !== undefined && value !== ''))
+            });
+            const response = await client.get(`${examUrls.EXAM_DETAILS(id)}?${queryParams.toString()}`)
             return response.data;
         } catch (error) {
             console.error(error)
@@ -111,7 +113,7 @@ export class ExamPortal {
         try {
             const queryParams = new URLSearchParams({
                 page: page.toString(),
-                ...Object.fromEntries(Object.entries(filters).filter(([_, value]) => value !== undefined && value !== ''))
+                ...Object.fromEntries(Object.entries(filters).filter(([, value]) => value !== undefined && value !== ''))
             });
             console.log(queryParams.toString(), 'query params in service')
             const response = await client.get(examUrls.LIST_QUESTIONS(queryParams.toString()))
@@ -126,7 +128,10 @@ export class ExamPortal {
 
     static async bulkAddQuestionToSession(payload: BulkPayloadType) {
         try {
-            const response = await client.post(examUrls.BULK_ADD_QUESTION_TO_SESSION, payload);
+            const response = await client.post(examUrls.BULK_ACTION_QUESTIONS, {
+                action: 'assign',
+                ...payload
+            });
             return response.data;
         } catch (error) {
             console.error(error);
@@ -136,7 +141,20 @@ export class ExamPortal {
 
     static async bulkArchiveQuestions(payload: BulkArchiveType) {
         try {
-            const response = await client.post(examUrls.BULK_ARCHIVE_QUESTIONS, payload);
+            const response = await client.post(examUrls.BULK_ACTION_QUESTIONS, {
+                action: 'archive',
+                ...payload
+            });
+            return response.data;
+        } catch (error) {
+            console.error(error);
+            throw error;
+        }
+    }
+
+    static async bulkActionQuestions(payload: BulkActionType) {
+        try {
+            const response = await client.post(examUrls.BULK_ACTION_QUESTIONS, payload);
             return response.data;
         } catch (error) {
             console.error(error);
@@ -156,7 +174,7 @@ export class ExamPortal {
     }
 
 
-    static async candidateTakeExam(exam_id: string) {
+    static async candidateTakeExam(exam_id: string): Promise<TakeExamType> {
         try {
             const response = await client.get(examUrls.TAKE_EXAM(exam_id));
             return response.data;
@@ -177,4 +195,23 @@ export class ExamPortal {
         }
     }
 
+    static async getExamResults(exam_id: string) {
+        try {
+            const response = await client.get(examUrls.EXAM_RESULTS(exam_id));
+            return response.data;
+        } catch (error) {
+            console.error(error);
+            throw error;
+        }
+    }
+
+    static async getCandidateExamHistory(candidate_id: string) {
+        try {
+            const response = await client.get(examUrls.CANDIDATE_EXAM_HISTORY(candidate_id));
+            return response.data;
+        } catch (error) {
+            console.error(error);
+            throw error;
+        }
+    }
 }

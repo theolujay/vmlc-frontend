@@ -10,7 +10,7 @@ export function getUserInitials(userName:string){
 
 
 export function capitalizeWord(word: string):string {
-
+    if (!word) return "";
     return word
         .split(" ")
         .map((segment) =>

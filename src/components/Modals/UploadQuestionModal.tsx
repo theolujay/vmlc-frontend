@@ -15,10 +15,9 @@ export default function UploadQuestionModal({
   open,
   close,
 }: Readonly<{ open: boolean; close: (close: boolean) => void }>) {
-  function handleClose() {
-    close(!open)
-  }
-
+      function handleClose() {
+          close(false)
+      }
   // options state
   const [options, setOptions] = React.useState([
     { id: "1", label: "Option A", answer: "", type: "" },

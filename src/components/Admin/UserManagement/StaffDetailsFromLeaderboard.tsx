@@ -28,7 +28,7 @@ function ViewStaffDetailsFromLeaderboard({ id }: Readonly<{ id: string }>) {
     return (
 
         <div className='flex flex-col gap-1 '>
-            <AdminHeader isExport label='Exam System' actionButton={<Button className="inline-flex gap-2 border px-2 items-center text-sm"><span>SEND MESSAGE</span></Button>} />
+            <AdminHeader isExport label='Exams & Questions' actionButton={<Button className="inline-flex gap-2 border px-2 items-center text-sm"><span>SEND MESSAGE</span></Button>} />
             {isPending ? <div className='w-full h-full grid place-content-center'>
                 <Spinner />
             </div> :

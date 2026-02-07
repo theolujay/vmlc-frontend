@@ -8,10 +8,10 @@ import Spinner from '../ui/spinner/spinner'
 export default function DeleteExamSessionModal({ open, close ,session_id}:Readonly< { open: boolean, close: (close: boolean) => void ,session_id:string }>) {
     const {isPending,onSubmit}=useDeleteExamSession(handleClose)
      function handleClose() {
-        close(!open)
+        close(false)
     }
   return (
-    <AppDialog open={open}>
+    <AppDialog open={open} onOpenChange={close}>
         <div className="flex flex-col gap-3 p-4 bg-white items-center shadow-sm rounded-lg">
             <span><ModalDeleteIcon/></span>
             <h2 className='font-bold text-xl'>Delete exam session</h2>

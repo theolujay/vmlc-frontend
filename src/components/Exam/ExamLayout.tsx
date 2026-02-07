@@ -3,15 +3,15 @@ import React from 'react'
 import Header from '../General/Layout/Header'
 import HeaderTimer from './HeaderTimer'
 
-export default function ExamLayout({ children, timer, onTimeUp }: Readonly<{ children: React.ReactNode, timer: number, onTimeUp: () => void }>) {
+export default function ExamLayout({ children, timer, onTimeUp, title }: Readonly<{ children: React.ReactNode, timer: number, onTimeUp: () => void, title?: string }>) {
 
     return (
-        <div className='flex  w-full flex-col '>
+        <div className='flex min-h-screen w-full flex-col bg-[#F7F9FC]'>
             <Header />
             <ExamNavigationProvider>
-                <HeaderTimer onTimeUp={onTimeUp} timer={timer} />
-                <main className='h-[75vh]'>
-                    <div className="flex gap-2 flex-col  mx-auto">
+                <HeaderTimer onTimeUp={onTimeUp} timer={timer} title={title} />
+                <main className='flex-1 py-10'>
+                    <div className="max-w-[1400px] w-[95%] mx-auto">
                         {children}
                     </div>
                 </main>

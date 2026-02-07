@@ -34,10 +34,24 @@ export type AddStaffMemberFormProps<T extends FieldValues> = {
 };
 
 
+export type CompetitionStage = {
+  id: number;
+  name: string;
+  type: string;
+  rounds?: number[];
+};
+
+export type CompetitionData = {
+  active_competition: string;
+  active_competition_id: number;
+  stages: CompetitionStage[];
+};
+
 export type StatOverviewType = {
   candidates: OverviewType;
   staff: OverviewType;
   exams: ExamOverviewType;
+  competition: CompetitionData;
   funnel: {
     overall: FunnelData;
     candidate: FunnelData;
@@ -75,6 +89,7 @@ export type ExamOverviewType = {
 export type OverviewType = {
   registered: number;
   active: number;
+  has_logged_in: number;
   inactive: number;
   pre_registered: number;
   deactivated: number;
@@ -85,6 +100,17 @@ export type OverviewType = {
 };
 
 
+export type RegistrationStatusType = {
+  candidate_registration: {
+    is_open: boolean;
+    closing_date: string | null;
+  };
+  staff_registration: {
+    is_open: boolean;
+    closing_date: string | null;
+  };
+  support_email: string;
+};
 
 
 export type UserMgtType = {

@@ -1,20 +1,24 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { useExamContext } from "@/contexts/ExamNavigationProvider";
 import clsx from "clsx";
 import { Dispatch, SetStateAction, useState } from "react";
-import { BackIcon, GotoIcon } from "../General/GettingStarted/GettingStartedAssets";
 import Spinner from "../ui/spinner/spinner";
 import SubmissionConfirmationModal from "./SubmissionConfirmationModal";
+import MathRenderer from "./MathRenderer";
 
 export default function Questions({ data, isPending, answers, setAnswers, handleSubmit, submitPending }: { submitPending: boolean, handleSubmit: () => void, data: any, isPending: boolean, answers: Record<number, string>, setAnswers: Dispatch<SetStateAction<Record<number, string>>> }) {
     const { showNav } = useExamContext();
     const [open, setOpen] = useState(false);
-
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+
     if (isPending || !data) return (
-        <div className="w-full grid place-content-center">
-            <Spinner />
+        <div className="w-full flex items-center justify-center py-40 bg-white rounded-[2.5rem] border border-gray-100 shadow-sm">
+            <div className="flex flex-col items-center">
+                <Spinner />
+                <span className="mt-4 text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] animate-pulse">Assembling Examination...</span>
+            </div>
         </div>
     );
 
@@ -22,9 +26,12 @@ export default function Questions({ data, isPending, answers, setAnswers, handle
 
     if (questions.length === 0) {
         return (
-            <div className="w-full grid place-content-center p-20 text-center col-span-6">
-                <h2 className="text-2xl font-bold text-gray-800">No Questions Found</h2>
-                <p className="text-gray-600 mt-2">There are no questions assigned to this exam session yet.</p>
+            <div className="w-full py-40 bg-white rounded-[2.5rem] border border-gray-100 shadow-sm text-center">
+                <div className="w-20 h-20 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-6 text-gray-300">
+                    <i className="fas fa-folder-open text-3xl"></i>
+                </div>
+                <h2 className="text-2xl font-black text-gray-800 tracking-tight">No Questions Found</h2>
+                <p className="text-gray-400 mt-2 max-w-xs mx-auto text-sm font-medium">There are no questions assigned to this exam session yet. Please contact your administrator.</p>
             </div>
         );
     }
@@ -48,35 +55,113 @@ export default function Questions({ data, isPending, answers, setAnswers, handle
 
     const totalAnswered = Object.keys(answers).length;
 
-
-
-
     return (
-        <div className="grid grid-cols-6 h-[70vh]">
-            <div className={clsx("flex-col flex-1 transition-all duration-500 flex", showNav ? 'col-span-4' : 'col-span-6')}>
-                <div className={clsx("bg-[#f7f9fc] flex-1 transition-all duration-500 flex", showNav ? 'col-span-4' : 'col-span-6')}>
-                    <EachQuestion question={currentQuestion.text} index={currentQuestionIndex} total={questions.length} />
-                    <Options selected={answers[currentQuestion.id] || null} onSelect={handleSelectOption} question={currentQuestion} />
+        <div className="flex flex-col lg:flex-row gap-8 items-start">
+            {/* Main Question Area */}
+            <div className={clsx(
+                "flex-1 flex flex-col transition-all duration-500",
+                showNav ? "lg:w-[70%]" : "w-full"
+            )}>
+                <div className="bg-white rounded-[2.5rem] border border-gray-100 shadow-sm overflow-hidden flex flex-col min-h-[600px]">
+                    {/* Header */}
+                    <div className="px-10 py-6 border-b border-gray-50 flex justify-between items-center bg-gray-50/30">
+                        <div className="flex items-center space-x-3">
+                            <span className="w-10 h-10 flex items-center justify-center rounded-xl bg-[#3E4095] text-white font-black text-sm shadow-lg shadow-[#3E4095]/20">
+                                {currentQuestionIndex + 1}
+                            </span>
+                            <div className="flex flex-col">
+                                <h3 className="text-[10px] font-black text-gray-400 uppercase tracking-widest leading-none">Question</h3>
+                                {/* <span className="text-xs font-bold text-gray-800 mt-1">Difficulty: {currentQuestion.difficulty || 'Standard'}</span> */}
+                            </div>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                             <span className="text-[10px] font-black text-[#3E4095] uppercase tracking-widest">Progress:</span>
+                             <div className="w-32 h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                                <div 
+                                    className="h-full bg-[#3E4095] transition-all duration-500" 
+                                    style={{ width: `${((currentQuestionIndex + 1) / questions.length) * 100}%` }}
+                                ></div>
+                             </div>
+                             <span className="text-[10px] font-black text-gray-400">{currentQuestionIndex + 1}/{questions.length}</span>
+                        </div>
+                    </div>
+
+                    <div className="flex-1 flex flex-col">
+                        <EachQuestion question={currentQuestion.text} />
+                        <Options 
+                            selected={answers[currentQuestion.id] || null} 
+                            onSelect={handleSelectOption} 
+                            question={currentQuestion} 
+                        />
+                    </div>
+
+                    {/* Footer Controls */}
+                    <div className="px-10 py-8 bg-gray-50/50 border-t border-gray-100">
+                        <Toggle
+                            disableNext={currentQuestionIndex === questions.length - 1}
+                            disablePrev={currentQuestionIndex === 0}
+                            onNext={handleNext}
+                            onPrev={handlePrev}
+                            onSubmit={() => {
+                                setOpen(true);
+                            }}
+                        />
+                    </div>
                 </div>
-                <Toggle
-                    disableNext={currentQuestionIndex === questions.length - 1}
-                    disablePrev={currentQuestionIndex === 0}
-                    onNext={handleNext}
-                    onPrev={handlePrev}
-                    onSubmit={() => {
-                        setOpen(true);
-                    }}
-                />
             </div>
 
-            <NumberGrid
-                current={currentQuestionIndex}
-                onSelect={setCurrentQuestionIndex}
-                numberOfQuestions={questions.length}
-                showNav={showNav}
-                answers={answers}
-                questions={questions}
-            />
+            {/* Navigation Sidebar */}
+            {showNav && (
+                <div className="w-full lg:w-[350px] animate-in slide-in-from-right-4 duration-500 shrink-0">
+                    <div className="bg-white rounded-[2.5rem] border border-gray-100 shadow-sm overflow-hidden p-8 sticky top-32">
+                        <div className="flex items-center space-x-3 mb-8">
+                            <div className="w-8 h-8 rounded-lg bg-[#3E4095]/5 flex items-center justify-center text-[#3E4095]">
+                                <i className="fas fa-list-ol text-sm"></i>
+                            </div>
+                            <h3 className="text-sm font-black text-gray-800 uppercase tracking-tight">Quiz Navigation</h3>
+                        </div>
+
+                        <NumberGrid
+                            current={currentQuestionIndex}
+                            onSelect={setCurrentQuestionIndex}
+                            numberOfQuestions={questions.length}
+                            answers={answers}
+                            questions={questions}
+                        />
+
+                        <div className="mt-10 pt-8 border-t border-gray-50 flex flex-col space-y-4">
+                            <div className="flex items-center justify-between">
+                                <div className="flex items-center space-x-2">
+                                    <div className="w-3 h-3 rounded-full bg-green-500"></div>
+                                    <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Answered</span>
+                                </div>
+                                <span className="text-[10px] font-black text-gray-800">{totalAnswered}</span>
+                            </div>
+                            <div className="flex items-center justify-between">
+                                <div className="flex items-center space-x-2">
+                                    <div className="w-3 h-3 rounded-full bg-[#3E4095]"></div>
+                                    <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Current</span>
+                                </div>
+                                <span className="text-[10px] font-black text-gray-800">1</span>
+                            </div>
+                            <div className="flex items-center justify-between">
+                                <div className="flex items-center space-x-2">
+                                    <div className="w-3 h-3 rounded-full border border-gray-200 bg-white"></div>
+                                    <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Remaining</span>
+                                </div>
+                                <span className="text-[10px] font-black text-gray-800">{questions.length - totalAnswered}</span>
+                            </div>
+                        </div>
+
+                        <button 
+                            onClick={() => setOpen(true)}
+                            className="w-full mt-10 py-5 bg-[#3E4095] text-white rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] shadow-xl shadow-[#3E4095]/20 hover:bg-[#2d2f6e] hover:-translate-y-1 transition-all active:scale-95"
+                        >
+                            Final Submission
+                        </button>
+                    </div>
+                </div>
+            )}
 
             <SubmissionConfirmationModal
                 handleSubmit={handleSubmit}
@@ -84,7 +169,8 @@ export default function Questions({ data, isPending, answers, setAnswers, handle
                 totalQuestions={questions.length}
                 totalAnswered={totalAnswered}
                 open={open}
-                close={setOpen} />
+                close={setOpen} 
+            />
         </div>
     );
 }
@@ -104,31 +190,36 @@ function Toggle({
     onSubmit: () => void;
 }>) {
     return (
-        <div className="flex px-8 py-4 justify-between">
+        <div className="flex justify-between items-center">
             <button
                 disabled={disablePrev}
                 onClick={onPrev}
                 className={clsx(
-                    "inline-flex gap-3 border rounded-lg px-4 py-2 items-center cursor-pointer",
-                    disablePrev && "opacity-50 cursor-not-allowed"
+                    "flex items-center space-x-3 px-8 py-4 rounded-2xl font-black text-[10px] uppercase tracking-widest transition-all active:scale-95 border",
+                    disablePrev 
+                        ? "bg-gray-50 text-gray-300 border-gray-100 cursor-not-allowed" 
+                        : "bg-white text-[#3E4095] border-[#3E4095]/20 hover:bg-gray-50 shadow-sm"
                 )}
             >
-                <span><BackIcon /></span> <span>Previous Question</span>
+                <i className="fas fa-chevron-left text-xs"></i>
+                <span>Previous Question</span>
             </button>
 
             {disableNext ? (
                 <button
                     onClick={onSubmit}
-                    className="inline-flex gap-3 border bg-[#3E4095] cursor-pointer font-semibold text-white rounded-lg px-4 py-2 items-center"
+                    className="flex items-center space-x-3 px-12 py-4 bg-green-600 text-white rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] shadow-xl shadow-green-600/20 hover:bg-green-700 hover:-translate-y-1 transition-all active:scale-95"
                 >
-                    Submit Exam
+                    <i className="fas fa-paper-plane text-xs"></i>
+                    <span>Submit Exam</span>
                 </button>
             ) : (
                 <button
                     onClick={onNext}
-                    className="inline-flex cursor-pointer gap-3 border bg-[#3E4095] text-white rounded-lg px-4 py-2 items-center"
+                    className="flex items-center space-x-3 px-10 py-4 bg-[#3E4095] text-white rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] shadow-xl shadow-[#3E4095]/20 hover:bg-[#2d2f6e] hover:-translate-y-1 transition-all active:scale-95"
                 >
-                    <span>Next Question</span><span><GotoIcon /></span>
+                    <span>Next Question</span>
+                    <i className="fas fa-chevron-right text-xs"></i>
                 </button>
             )}
         </div>
@@ -136,43 +227,44 @@ function Toggle({
 }
 
 
-function NumberGrid({ showNav, numberOfQuestions, current, onSelect, answers, questions }: Readonly<{ showNav: boolean; numberOfQuestions: number; current: number; onSelect: (index: number) => void; answers: Record<number, string>; questions: any[] }>) {
+function NumberGrid({ numberOfQuestions, current, onSelect, answers, questions }: Readonly<{ numberOfQuestions: number; current: number; onSelect: (index: number) => void; answers: Record<number, string>; questions: any[] }>) {
     return (
-        <div className={clsx(showNav ? "block" : "hidden", "col-span-2 bg-white p-6 h-fit")}>
-            <div className="grid grid-cols-5 gap-4">
-                {Array.from({ length: numberOfQuestions }, (_, i) => {
-                    const questionId = questions[i].id;
-                    const isAnswered = !!answers[questionId];
+        <div className="grid grid-cols-5 sm:grid-cols-4 md:grid-cols-5 gap-3">
+            {Array.from({ length: numberOfQuestions }, (_, i) => {
+                const questionId = questions[i].id;
+                const isAnswered = !!answers[questionId];
+                const isCurrent = current === i;
 
-                    return (
-                        <button
-                            key={i}
-                            onClick={() => onSelect(i)}
-                            className={clsx(
-                                "w-10 h-10 flex items-center justify-center border rounded-lg cursor-pointer",
-                                isAnswered
-                                    ? "bg-green-500 text-white border-green-500"
-                                    : current === i
-                                        ? "bg-[#3E4095] text-white border-[#3E4095]"
-                                        : "border-gray-300 hover:bg-gray-100"
-                            )}
-                        >
-                            {i + 1}
-                        </button>
-                    );
-                })}
-            </div>
+                return (
+                    <button
+                        key={i}
+                        onClick={() => onSelect(i)}
+                        className={clsx(
+                            "w-11 h-11 flex items-center justify-center rounded-xl font-black text-xs transition-all duration-300 active:scale-90 border-2",
+                            isAnswered
+                                ? "bg-green-500 text-white border-green-500 shadow-lg shadow-green-500/20"
+                                : isCurrent
+                                    ? "bg-[#3E4095] text-white border-[#3E4095] shadow-lg shadow-[#3E4095]/20 scale-110"
+                                    : "bg-white text-gray-400 border-gray-100 hover:border-[#3E4095]/30 hover:text-[#3E4095]"
+                        )}
+                    >
+                        {i + 1}
+                    </button>
+                );
+            })}
         </div>
     );
 }
 
-import MathRenderer from "./MathRenderer";
-
-function EachQuestion({ question, index, total }: { question: string, index: number, total: number }) {
+function EachQuestion({ question }: { question: string }) {
     return (
-        <div className="flex m-6 flex-col flex-1 gap-5 p-6">
-            <h4 className="text-sm font-bold text-[#3E4095]">QUESTION {index + 1} OF {total}</h4>
-            <div className="text-2xl font-semibold mt-3">
+        <div className="px-10 py-12 flex flex-col gap-6">
+            <div className="flex items-center space-x-3">
+                <div className="h-px flex-1 bg-gray-100"></div>
+                <span className="text-[10px] font-black text-gray-600 uppercase tracking-[0.3em]">Problem Statement</span>
+                <div className="h-px flex-1 bg-gray-100"></div>
+            </div>
+            <div className="text-2xl font-semibold text-gray-800 leading-relaxed bg-gray-50/30 p-8 rounded-[2rem] border border-dashed border-gray-200">
                 <MathRenderer content={question} />
             </div>
         </div>
@@ -188,28 +280,40 @@ function Options({ question, selected, onSelect }: { question: any, selected: st
     };
 
     return (
-        <div className="flex-1 flex flex-col gap-3 p-6">
+        <div className="px-10 pb-12 grid grid-cols-1 md:grid-cols-2 gap-6">
             {Object.entries(optionMap).map(([key, value]) => (
-                <label
+                <button
                     key={key}
-                    className={`flex items-center p-3 gap-2 border bg-white rounded-md cursor-pointer transition group
-            ${selected === key ? "border-[#3E4095] ring-1 ring-[#3E4095]" : "border-gray-200 hover:bg-gray-50"}`}
+                    onClick={() => onSelect(question.id, key)}
+                    className={clsx(
+                        "flex items-start p-6 gap-5 rounded-[2rem] border-2 transition-all group relative text-left outline-none",
+                        selected === key 
+                            ? "bg-[#3E4095]/5 border-[#3E4095] shadow-xl shadow-[#3E4095]/5" 
+                            : "bg-white border-gray-50 hover:border-gray-200 hover:shadow-md"
+                    )}
                 >
-                    <div className="flex items-center h-full">
-                         <input
-                            type="radio"
-                            name={`question-${question.id}`}
-                            value={key}
-                            checked={selected === key}
-                            onChange={() => onSelect(question.id, key)}
-                            className="mr-3 w-4 h-4 text-[#3E4095] focus:ring-[#3E4095]"
-                        />
+                    <div className={clsx(
+                        "w-12 h-12 shrink-0 rounded-2xl flex items-center justify-center font-black text-sm transition-all duration-300",
+                        selected === key
+                            ? "bg-[#3E4095] text-white shadow-lg shadow-[#3E4095]/20"
+                            : "bg-gray-50 text-gray-400 group-hover:bg-white group-hover:text-[#3E4095] border border-transparent group-hover:border-[#3E4095]/10"
+                    )}>
+                        {key}
                     </div>
                    
-                    <span className="text-gray-800 flex-1">
+                    <div className={clsx(
+                        "pt-3 text-base font-bold transition-colors leading-relaxed",
+                        selected === key ? "text-[#3E4095]" : "text-gray-600 group-hover:text-gray-900"
+                    )}>
                         <MathRenderer content={value as string} inline />
-                    </span>
-                </label>
+                    </div>
+
+                    {selected === key && (
+                        <div className="absolute top-4 right-4 animate-in zoom-in duration-300">
+                            <i className="fas fa-check-circle text-[#3E4095] text-lg"></i>
+                        </div>
+                    )}
+                </button>
             ))}
         </div>
     );

@@ -9,19 +9,18 @@ import { z } from 'zod'
 
 
 const createExamSchema = z.object({
-  stage: z.enum(['screening', 'league', 'final', 'winner']).refine(val => !!val, {
-    message: "Stage is required",
-  }),
-  // stage:z.string({message:'Please pick a stage'}),
-  title: z.string().min(3, { message: 'Title must be at least 3 characters' }),
-  description: z.string().min(3, { message: 'Description must be at least 3 characters' }),
+  stage_id: z.number().optional(),
+  round: z.number().optional(),
+  description: z.string().optional(),
+  is_active: z.boolean(),
 })
 
 
 const defaultValues = {
-  stage: 'screening' as const,
-  title: '',
-  description: ''
+  stage_id: undefined,
+  round: undefined,
+  description: '',
+  is_active: true,
 }
 
 
@@ -37,7 +36,9 @@ export default function useCreateExamSession() {
     defaultValues
   })
   const { isPending, mutate, isSuccess } = useMutation({
-    mutationFn: ExamPortal.createExamSession,
+    mutationFn: (payload: ValueType) => {
+      return ExamPortal.createExamSession(payload as any);
+    },
     onSuccess: () => {
       toast.success('Exam session created successfully')
       queryClient.invalidateQueries({ queryKey: ['list-exams'] })
