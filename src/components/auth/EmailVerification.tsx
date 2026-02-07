@@ -1,4 +1,3 @@
-
 "use client"
 import useEmailCountdown from '@/hooks/useEmailCountdown'
 import useVerifyEmail from '@/hooks/useVerifyEmail'
@@ -33,34 +32,33 @@ export default function EmailVerification() {
 
     return (
         <AuthLayout>
-            <div className="flex flex-col items-center justify-center min-h-screen p-4 font-sans">
-                <div className="flex bg-[#F7F9FC] rounded-[2.5rem] flex-col overflow-hidden border border-white/20 shadow-2xl max-w-lg w-full mx-auto">
-                    <div className="header bg-white p-10 border-b border-gray-50 text-center">
-                        <div className="flex flex-col items-center mb-6">
-                            <div className="w-20 h-20 bg-[#3E4095]/5 rounded-[2rem] flex items-center justify-center text-[#3E4095] mb-4 shadow-inner">
-                                <i className="fas fa-envelope-open-text text-4xl"></i>
+            <div className="flex-1 flex flex-col items-center justify-center p-4 font-sans">
+                <div className="flex bg-[#F7F9FC] rounded-[2.5rem] flex-col overflow-hidden border border-white/20 shadow-2xl max-w-md w-full mx-auto">
+                    <div className="header bg-white p-8 border-b border-gray-50 text-center">
+                        <div className="flex flex-col items-center mb-4">
+                            <div className="w-16 h-16 bg-[#3E4095]/5 rounded-[1.5rem] flex items-center justify-center text-[#3E4095] mb-2 shadow-inner">
+                                <i className="fas fa-envelope-open-text text-3xl"></i>
                             </div>
-                            <p className='text-[10px] text-gray-400 font-black uppercase tracking-[0.3em] mb-2'>Verify Your Identity</p>
-                            <h2 className='text-3xl font-black text-gray-800 tracking-tight uppercase'>Verification</h2>
+                            <h2 className='text-2xl font-black text-gray-800 tracking-tight uppercase'>Verification</h2>
                         </div>
-                        <p className="text-[12px] text-gray-500 font-medium leading-relaxed max-w-[90%] mx-auto">
+                        <p className="text-[10px] text-gray-500 font-medium leading-relaxed max-w-[90%] mx-auto">
                             We have sent a secure code to <strong className="text-gray-800">{maskEmail(currentUserEmail ?? '')}</strong>. Please enter the code below to proceed.
                         </p>
                     </div>
 
-                    <div className="p-10">
+                    <div className="p-8">
                         <FormProvider {...form}>
-                            <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-8">
-                                <div className="flex justify-center py-4">
+                            <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-6">
+                                <div className="flex justify-center py-2">
                                     <OTP label='Enter OTP' className='border-[#D0D5DD]' />
                                 </div>
 
-                                <div className="flex flex-col gap-4">
+                                <div className="flex flex-col gap-3">
                                     <button
                                         type='submit'
                                         disabled={!isOtpComplete || isPending}
                                         className={clsx(
-                                            "w-full px-6 py-5 rounded-[1.5rem] font-black text-[11px] tracking-[0.2em] uppercase text-white bg-[#3E4095] shadow-xl shadow-[#3E4095]/20 hover:-translate-y-1 active:translate-y-0 transition-all cursor-pointer flex items-center justify-center gap-3",
+                                            "w-full px-6 py-4 rounded-2xl font-black text-[10px] tracking-[0.2em] uppercase text-white bg-[#3E4095] shadow-xl shadow-[#3E4095]/20 hover:-translate-y-1 active:translate-y-0 transition-all cursor-pointer flex items-center justify-center gap-3",
                                             (!isOtpComplete || isPending) && "opacity-70 cursor-not-allowed translate-y-0 shadow-none"
                                         )}
                                     >
@@ -72,7 +70,7 @@ export default function EmailVerification() {
                                         )}
                                     </button>
 
-                                    <div className="flex flex-col items-center gap-4 mt-2">
+                                    <div className="flex flex-col items-center gap-3 mt-1">
                                         {timer > 0 ? (
                                             <div className="flex items-center gap-2 px-4 py-2 bg-white rounded-lg border border-gray-100 shadow-sm">
                                                 <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Resend in</span>
