@@ -6,56 +6,54 @@ import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
 import { useState } from "react";
 import { CaretDropdown } from "../SvgAsset/GeneralAsset";
 
-
-
-
 const AppDropdown = () => {
-const [open,setOpen]=useState(false)
-const [profileOpen, setProfileOpen] = useState(false)
-const currentUser = useGetCurrentUser()
-	
+	const [open, setOpen] = useState(false)
+	const [profileOpen, setProfileOpen] = useState(false)
+	const currentUser = useGetCurrentUser()
 
 	return (
 		<DropdownMenu.Root>
 			<DropdownMenu.Trigger asChild>
 				<button
-					className="inline-flex size-[20px] items-center justify-center    outline-none cursor-pointer "
+					className="inline-flex items-center justify-center outline-none cursor-pointer transition-transform active:scale-95"
 					aria-label="Customise options"
 				>
-					<CaretDropdown/>
+					<CaretDropdown />
 				</button>
 			</DropdownMenu.Trigger>
 
 			<DropdownMenu.Portal>
 				<DropdownMenu.Content
-					className="z-50 min-w-[220px] rounded-lg bg-white p-[10px] shadow-[0px_10px_38px_-10px_rgba(22,_23,_24,_0.35),_0px_10px_20px_-15px_rgba(22,_23,_24,_0.2)] will-change-[opacity,transform] data-[side=bottom]:animate-slideUpAndFade data-[side=left]:animate-slideRightAndFade data-[side=right]:animate-slideLeftAndFade data-[side=top]:animate-slideDownAndFade"
-					sideOffset={5}
+					className="z-50 min-w-[200px] rounded-[1.5rem] bg-white p-2 shadow-2xl border border-gray-100 will-change-[opacity,transform] data-[side=bottom]:animate-slideUpAndFade data-[side=left]:animate-slideRightAndFade data-[side=right]:animate-slideLeftAndFade data-[side=top]:animate-slideDownAndFade font-sans"
+					sideOffset={8}
+					align="end"
 				>
-                    <DropdownMenu.Item onClick={() => setProfileOpen(true)} className="group relative flex cursor-pointer  h-[25px]  items-center   leading-none  outline-none  ">
-						<div className=" pr-5  ">
-							<ProfileIcon/>
+					<DropdownMenu.Item 
+						onClick={() => setProfileOpen(true)} 
+						className="group relative flex cursor-pointer items-center px-4 py-3 rounded-xl outline-none hover:bg-gray-50 transition-colors"
+					>
+						<div className="mr-3 text-gray-400 group-hover:text-[#3E4095] transition-colors">
+							<ProfileIcon className="w-4 h-4" />
 						</div>
-						View Profile{" "}
+						<span className="text-[10px] font-black text-gray-700 uppercase tracking-widest">View Profile</span>
 					</DropdownMenu.Item>
-					{/* <DropdownMenu.Item className="group relative flex h-[25px] select-none items-center rounded-[3px]  pr-[5px] text-[13px] leading-none text-violet11 outline-none data-[disabled]:pointer-events-none data-[highlighted]:bg-violet9 data-[disabled]:text-mauve8 data-[highlighted]:text-violet1">
-						<div className="mr-auto pr-5 text-mauve11 group-data-[disabled]:text-mauve8 group-data-[highlighted]:text-white">
-							<ProfileIcon/>
+
+					<DropdownMenu.Separator className="h-px bg-gray-50 my-1 mx-2" />
+
+					<DropdownMenu.Item 
+						onClick={() => setOpen(true)} 
+						className="group relative flex cursor-pointer items-center px-4 py-3 rounded-xl outline-none hover:bg-red-50 transition-colors"
+					>
+						<div className="mr-3 text-red-400 group-hover:text-red-600 transition-colors">
+							<LogOutIcon className="w-4 h-4" />
 						</div>
-                        View Profile{" "}
-						
-					</DropdownMenu.Item> */}
-                    <DropdownMenu.Separator className="m-[5px] h-px bg-violet6" />
-					<DropdownMenu.Item onClick={()=>{
-						
-						setOpen(true)}} className="group cursor-pointer relative flex text-[#D42620] h-[25px]  items-center   leading-none  outline-none  ">
-						<div className=" pr-5  ">
-							<LogOutIcon/>
-						</div>
-						Log out{" "}
+						<span className="text-[10px] font-black text-red-600 uppercase tracking-widest">Log out</span>
 					</DropdownMenu.Item>
 				</DropdownMenu.Content>
 			</DropdownMenu.Portal>
+			
 			<LogOutModal open={open} close={setOpen} />
+			
 			{currentUser?.profile?.user?.id && (
 				<ProfileModal 
 					id={currentUser.profile.user.id} 

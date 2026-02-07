@@ -1,63 +1,68 @@
 import { useAuth } from "@/contexts/AuthProvider";
 import { AuthService } from "@/services/auth.service";
-import { isDev } from "@/utils/isDev";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
 import { AxiosError } from "axios";
+import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "react-toastify";
 import z from "zod";
 
 const loginSchema = z.object({
-  email: z.email(),
-  password: z.string()
+  email: z.string().email(),
+  password: z.string(),
+  remember: z.boolean().optional()
 })
-
-const defaultValues = {
-  email: '',
-  password: ''
-}
 
 type LoginType = z.infer<typeof loginSchema>;
 
-
-
 export default function useLogin() {
   const { dispatch } = useAuth()
-  const form = useForm({
+  
+  const form = useForm<LoginType>({
     resolver: zodResolver(loginSchema),
-     defaultValues: isDev() ? { email: 'david@verboheit.org', password: 'zaq1wsxcde' } : defaultValues
-    //  defaultValues: isDev() ? { email: 'afobajedavid@gmail.com', password: '@Medievaltimes123' } : defaultValues
-    // defaultValues: isDev() ? { email: 'ikukoyidave@gmail.com', password: '@Marinashomolu12' } : defaultValues
+    defaultValues: {
+      email: '',
+      password: '',
+      remember: false
+    }
   });
 
-  const { isPending, mutate } = useMutation({
-    mutationFn: AuthService.login,
-    onSuccess: (value) => {
+  // Load remembered email on mount
+  useEffect(() => {
+    const rememberedEmail = localStorage.getItem('remembered_email');
+    if (rememberedEmail) {
+      form.setValue('email', rememberedEmail);
+      form.setValue('remember', true);
+    }
+  }, [form]);
 
+  const { isPending, mutate } = useMutation({
+    mutationFn: (variables: LoginType) => {
+      const { remember, ...loginData } = variables;
+      return AuthService.login(loginData);
+    },
+    onSuccess: (value, variables) => {
+      // Handle Remember Me logic
+      if (variables.remember) {
+        localStorage.setItem('remembered_email', variables.email);
+      } else {
+        localStorage.removeItem('remembered_email');
+      }
     
       setTimeout(() => {
         dispatch({ type: 'loginSuccess', payload: value });
       }, 1000)
     },
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     onError:(error:AxiosError<any>)=>{
-      
       toast.error(error?.response?.data.detail||'Encountered error logging in')
     }
-
   })
 
-
   function onSubmit(value: LoginType) {
-    // const payload = {
-    //   email: value.email,
-    //   password: value.password,
-    // }
-    // mutate(payload)
     mutate(value)
   }
 
-
   return { form, onSubmit, isPending }
-
 }
