@@ -10,5 +10,6 @@ export const authUrls={
     sendOtpForForgotPassword:'/v1/auth/password-change/confirm-otp/',
     setNewPassword:'/v1/auth/password-change/',
     passwordChangeResendOtp:'/v1/auth/password-change/resend-otp/',
-    logout:'/v1/auth/logout/'
+    logout:'/v1/auth/logout/',
+    tokenRefresh: '/v1/auth/token/refresh/'
 }
