@@ -31,8 +31,12 @@ export default function useLogin() {
   // Load remembered email on mount
   useEffect(() => {
     const rememberedEmail = localStorage.getItem('remembered_email');
+    const rememberMe = localStorage.getItem('remember_me') === 'true';
+    
     if (rememberedEmail) {
       form.setValue('email', rememberedEmail);
+    }
+    if (rememberMe) {
       form.setValue('remember', true);
     }
   }, [form]);
@@ -46,8 +50,10 @@ export default function useLogin() {
       // Handle Remember Me logic
       if (variables.remember) {
         localStorage.setItem('remembered_email', variables.email);
+        localStorage.setItem('remember_me', 'true');
       } else {
         localStorage.removeItem('remembered_email');
+        localStorage.removeItem('remember_me');
       }
     
       setTimeout(() => {
