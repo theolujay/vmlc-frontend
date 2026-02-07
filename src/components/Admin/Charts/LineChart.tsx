@@ -46,7 +46,16 @@ export default function LineChart({ data, options }: LineChartProps) {
     plugins: {
       legend: {
         position: 'top' as const,
-        display: false,
+        display: data.datasets.length > 1,
+        align: 'end',
+        labels: {
+          boxWidth: 10,
+          usePointStyle: true,
+          pointStyle: 'circle',
+          font: {
+            size: 11
+          }
+        }
       },
       title: {
         display: false,
@@ -54,6 +63,12 @@ export default function LineChart({ data, options }: LineChartProps) {
       tooltip: {
         mode: 'index',
         intersect: false,
+        padding: 10,
+        backgroundColor: 'rgba(255, 255, 255, 0.9)',
+        titleColor: '#101828',
+        bodyColor: '#475467',
+        borderColor: '#E4E7EC',
+        borderWidth: 1,
       },
     },
     scales: {
@@ -61,6 +76,9 @@ export default function LineChart({ data, options }: LineChartProps) {
         beginAtZero: true,
         ticks: {
           stepSize: 1,
+          font: {
+            size: 10
+          }
         },
         grid: {
           display: true,
@@ -68,17 +86,42 @@ export default function LineChart({ data, options }: LineChartProps) {
         }
       },
       x: {
+        ticks: {
+          font: {
+            size: 10
+          },
+          maxRotation: 0,
+          autoSkip: true,
+          maxTicksLimit: 10
+        },
         grid: {
           display: false,
         }
       }
     },
+  };
+
+  // Simple deep merge for options.plugins
+  const mergedOptions = {
+    ...defaultOptions,
     ...options,
+    plugins: {
+      ...defaultOptions.plugins,
+      ...options?.plugins,
+      legend: {
+        ...defaultOptions.plugins?.legend,
+        ...options?.plugins?.legend,
+      },
+      tooltip: {
+        ...defaultOptions.plugins?.tooltip,
+        ...options?.plugins?.tooltip,
+      }
+    }
   };
 
   return (
     <div className="h-[300px] w-full">
-      <Line data={data} options={defaultOptions} />
+      <Line data={data} options={mergedOptions as ChartOptions<'line'>} />
     </div>
   );
 }
