@@ -170,7 +170,7 @@ export default function QuestionsTable({
           minWidth="1000px"
           columns={[
             {
-              key: "sn", 
+              key: "id", 
               header: "S/N", 
               align: 'center',
               render: (_, __, index) => (
@@ -180,14 +180,21 @@ export default function QuestionsTable({
               )
             },
             {
-              key: 'data.text', 
+              key: 'text', 
               header: 'Question', 
               render: (_, row) => {
                 const options = getOptionAsArray(row)
                 return (
                   <div className="flex text-start flex-col gap-4 py-3 min-w-[450px]">
-                    <div className="text-sm font-bold text-gray-800 leading-relaxed bg-gray-50/50 p-4 rounded-[1.5rem] border border-gray-50">
-                      <MathRenderer content={row.text} />
+                    <div className="flex items-center gap-4 bg-gray-50/50 p-4 rounded-[1.5rem] border border-gray-50">
+                      <div className="text-sm font-bold text-gray-800 leading-relaxed flex-1">
+                        <MathRenderer content={row.text} />
+                      </div>
+                      {row.image && (
+                        <div className="shrink-0 w-8 h-8 rounded-xl bg-white border border-[#3E4095]/10 flex items-center justify-center text-[#3E4095] shadow-sm" title="This question contains an image">
+                          <i className="fas fa-image text-xs"></i>
+                        </div>
+                      )}
                     </div>
                     <div className="flex flex-wrap gap-x-8 gap-y-3 w-full px-2">
                       {options.map((val, index) => (

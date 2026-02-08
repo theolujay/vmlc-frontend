@@ -7,6 +7,7 @@ import { Dispatch, SetStateAction, useState } from "react";
 import Spinner from "../ui/spinner/spinner";
 import SubmissionConfirmationModal from "./SubmissionConfirmationModal";
 import MathRenderer from "./MathRenderer";
+import Image from "next/image";
 
 export default function Questions({ data, isPending, answers, setAnswers, handleSubmit, submitPending }: { submitPending: boolean, handleSubmit: () => void, data: any, isPending: boolean, answers: Record<number, string>, setAnswers: Dispatch<SetStateAction<Record<number, string>>> }) {
     const { showNav } = useExamContext();
@@ -87,7 +88,7 @@ export default function Questions({ data, isPending, answers, setAnswers, handle
                     </div>
 
                     <div className="flex-1 flex flex-col">
-                        <EachQuestion question={currentQuestion.text} />
+                        <EachQuestion question={currentQuestion.text} image={currentQuestion.image} />
                         <Options 
                             selected={answers[currentQuestion.id] || null} 
                             onSelect={handleSelectOption} 
@@ -256,7 +257,7 @@ function NumberGrid({ numberOfQuestions, current, onSelect, answers, questions }
     );
 }
 
-function EachQuestion({ question }: { question: string }) {
+function EachQuestion({ question, image }: { question: string, image?: string }) {
     return (
         <div className="px-10 py-12 flex flex-col gap-6">
             <div className="flex items-center space-x-3">
@@ -264,8 +265,22 @@ function EachQuestion({ question }: { question: string }) {
                 <span className="text-[10px] font-black text-gray-600 uppercase tracking-[0.3em]">Problem Statement</span>
                 <div className="h-px flex-1 bg-gray-100"></div>
             </div>
-            <div className="text-2xl font-semibold text-gray-800 leading-relaxed bg-gray-50/30 p-8 rounded-[2rem] border border-dashed border-gray-200">
-                <MathRenderer content={question} />
+            <div className="flex flex-col gap-8">
+                <div className="text-2xl font-semibold text-gray-800 leading-relaxed bg-gray-50/30 p-8 rounded-[2rem] border border-dashed border-gray-200">
+                    <MathRenderer content={question} />
+                </div>
+                
+                {image && (
+                    <div className="relative w-full aspect-video rounded-[2rem] overflow-hidden border border-gray-100 shadow-sm bg-gray-50/10">
+                        <Image
+                            src={image}
+                            alt="Question Diagram"
+                            fill
+                            className="object-contain"
+                            priority
+                        />
+                    </div>
+                )}
             </div>
         </div>
     );

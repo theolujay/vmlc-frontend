@@ -10,17 +10,17 @@ import z from 'zod';
 
 const createQuestionSchema = z.object({
     text: z.string().min(3, { message: 'Question text must be at least 3 characters' }),
+    image: z.any().optional(),
     option_a: z.string().min(1, { message: 'Option A is required' }),
     option_b: z.string().min(1, { message: 'Option B is required' }),
     option_c: z.string().min(1, { message: 'Option C is required' }),
     option_d: z.string().min(1, { message: 'Option D is required' }),
     correct_answer: z.string().min(1, { message: 'Correct answer is required' }),
     difficulty: z.string().min(1, { message: 'Difficulty is required' }),
-    // correct_answer:z.enum(['A','B','C','D'],{message:'Correct answer is required'}),
-    // difficulty:z.enum(['easy','medium','hard'],{message:'Difficulty is required'})  
 })
 const defaultValues = {
     text: '',
+    image: null,
     option_a: '',
     option_b: '',
     option_c: '',
@@ -34,8 +34,6 @@ export default function useCreateQuestion(onSuccess: () => void, examId?: string
     const form = useForm({
         resolver: zodResolver(createQuestionSchema),
         defaultValues
-
-
     });
 
     const { isPending, mutate } = useMutation({
@@ -57,14 +55,29 @@ export default function useCreateQuestion(onSuccess: () => void, examId?: string
         }
     })
 
-
-
     function onSubmit(payload: CreateQuestionType) {
-        console.log('Submitting question payload:', payload);
-        if (examId) {
-            payload.exam_ids = [examId];
+        const formData = new FormData();
+        formData.append('text', payload.text);
+        formData.append('option_a', payload.option_a);
+        formData.append('option_b', payload.option_b);
+        formData.append('option_c', payload.option_c);
+        formData.append('option_d', payload.option_d);
+        formData.append('correct_answer', payload.correct_answer);
+        formData.append('difficulty', payload.difficulty);
+        
+        if (payload.image instanceof File) {
+            formData.append('image', payload.image);
+        } else if (payload.image === null) {
+            formData.append('image', '');
         }
-        mutate(payload)
+
+        if (examId) {
+            formData.append('exam_ids', JSON.stringify([examId]));
+        } else if (payload.exam_ids) {
+            formData.append('exam_ids', JSON.stringify(payload.exam_ids));
+        }
+
+        mutate(formData as any);
     }
     return { isPending, onSubmit, form }
 }

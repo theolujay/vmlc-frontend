@@ -268,20 +268,27 @@ export default function QuestionPoolTable({
           isAdminOrAbove={isAdminOrAbove}
           columns={[
             {
-              key: "user",
+              key: "id",
               header: "S/N",
               align: 'center',
               render: (_, __, index) => <div className="flex justify-center"><span className="text-xs font-bold text-gray-400">{(currentPage - 1) * 10 + index + 1}</span></div>,
             },
             {
-              key: "data.text",
+              key: "text",
               header: "Question",
               render: (_, row) => {
                 const options = getOptionAsArray(row);
                 return (
                   <div className="flex text-start flex-col gap-3 py-2 min-w-[400px]">
-                    <div className="text-sm font-bold text-gray-800 leading-relaxed">
-                      <MathRenderer content={row.text} />
+                    <div className="flex items-center gap-3">
+                      <div className="text-sm font-bold text-gray-800 leading-relaxed">
+                        <MathRenderer content={row.text} />
+                      </div>
+                      {row.image && (
+                        <div className="shrink-0 w-6 h-6 rounded-lg bg-blue-50 flex items-center justify-center text-[#3E4095] shadow-sm" title="This question contains an image">
+                          <i className="fas fa-image text-[10px]"></i>
+                        </div>
+                      )}
                     </div>
                     <div className="flex flex-wrap gap-x-6 gap-y-2 w-full">
                       {options.map((val, index) => (

@@ -1,8 +1,9 @@
 'use client';
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import MathRenderer from '@/components/Exam/MathRenderer';
 import { QuestionData } from '@/types/question';
+import Image from 'next/image';
 
 interface UnifiedQuestionPreviewProps {
   data: QuestionData;
@@ -13,6 +14,22 @@ const UnifiedQuestionPreview: React.FC<UnifiedQuestionPreviewProps> = ({
   data,
   correctOptionId
 }) => {
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (data.image instanceof File) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreview(reader.result as string);
+      };
+      reader.readAsDataURL(data.image);
+    } else if (typeof data.image === 'string') {
+      setImagePreview(data.image);
+    } else {
+      setImagePreview(null);
+    }
+  }, [data.image]);
+
   return (
     <div className="bg-white rounded-[2.5rem] border border-gray-100 shadow-xl overflow-hidden max-w-4xl mx-auto">
       {/* Student View Header */}
@@ -37,6 +54,18 @@ const UnifiedQuestionPreview: React.FC<UnifiedQuestionPreviewProps> = ({
             <MathRenderer content={data.questionText || '<span class="text-gray-300 italic">No question text provided...</span>'} />
           </div>
         </div>
+
+        {/* Question Image if exists */}
+        {imagePreview && (
+          <div className="relative w-full aspect-video rounded-3xl overflow-hidden border border-gray-100 shadow-sm bg-gray-50/30">
+            <Image
+              src={imagePreview}
+              alt="Question Visual"
+              fill
+              className="object-contain"
+            />
+          </div>
+        )}
 
         {/* Options Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

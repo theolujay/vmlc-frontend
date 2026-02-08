@@ -274,6 +274,7 @@ export type EditExamSession = {
 
 export type CreateQuestionType = {
   text: string,
+  image?: File | string | null,
   option_a: string,
   option_b: string,
   option_c: string,
@@ -323,6 +324,7 @@ export type SessionQuestionType = {
 export type SessionQuestionItemType = {
   id: number,
   text: string,
+  image?: string | null,
   option_a: string,
   option_b: string,
   option_c: string,
