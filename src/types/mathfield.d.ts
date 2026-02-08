@@ -3,7 +3,9 @@ import type { MathfieldElement } from 'mathlive';
 
 declare global {
   interface Window {
-    MathJax: any;
+    MathJax: {
+      typesetPromise?: (elements: (HTMLElement | null)[]) => Promise<void>;
+    };
   }
   namespace JSX {
     interface IntrinsicElements {

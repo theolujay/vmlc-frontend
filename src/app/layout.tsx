@@ -10,6 +10,8 @@ import 'react-toastify/dist/ReactToastify.css';
 import {ToastContainer} from 'react-toastify'
 import AppErrorBoundary from "./AppErrorBoundary";
 import Spinner from "@/components/ui/spinner/spinner";
+import { Analytics } from '@vercel/analytics/next';
+import { SpeedInsights } from "@vercel/speed-insights/next"
 
 // const geistSans = Geist({
 //   variable: "--font-geist-sans",
@@ -89,7 +91,8 @@ export default function RootLayout({
             </NotificationProvider>
           </AuthProvider>
         </AppErrorBoundary>
-
+        <Analytics />
+        <SpeedInsights />
       </body>
     </html>
   );

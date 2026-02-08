@@ -25,6 +25,7 @@ const AddQuestionModal = dynamic(() => import("@/components/Modals/AddQuestionMo
 type ColumnType<T> = {
   key: keyof T | string;
   header: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   render?: (value: any, row: T, index: number) => React.ReactNode;
   align?: 'left' | 'center' | 'right';
 };
@@ -107,11 +108,9 @@ function CustomTable<T extends { id: number }>({
                       typeof col.key === "string" && col.key.includes(".")
                         ? col.key
                           .split(".")
-                          .reduce(
-                            (acc, k) => (acc && acc[k as keyof typeof acc]) || "",
-                            row as any
-                          )
-                        : (row as any)[col.key as keyof T];
+                          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                          .reduce((acc: any, k) => acc?.[k] ?? "", row)
+                        : (row as any)[col.key];
 
                     return (
                       <td key={ci} className={clsx("py-2 px-3", col.align === 'center' ? 'text-center' : col.align === 'right' ? 'text-right' : 'text-left')}>
@@ -145,7 +144,7 @@ function EmptyRecords({
   );
 }
 
-export default function QuestionPoolTable({
+export default function QuestionPoolTable<T extends { search?: string }>({
   questions,
   onPageChange,
   currentPage,
@@ -156,7 +155,7 @@ export default function QuestionPoolTable({
   onPageChange: Dispatch<SetStateAction<number>>;
   currentPage: number;
   page_count: number;
-  handleSearch: Dispatch<SetStateAction<any>>
+  handleSearch: Dispatch<SetStateAction<T>>
 }>) {
   const [selectedQuestions, setSelectedQuestions] = useState<number[]>([]);
   const [modalQuestionIds, setModalQuestionIds] = useState<number[]>([]);

@@ -13,6 +13,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import MathRenderer from '@/components/Exam/MathRenderer'
 import RankMedal from '../Competition/RankMedal'
+import { SubmissionItem } from '@/types/LeaderBoardType'
 
 interface ViewCandidateDetailsProps {
     candidate_id: string;
@@ -255,6 +256,7 @@ function CandidateInfoCard({
     </ResponsiveContainer>
 }
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 function QuestionsTable({ questions }: { questions: any[] }) {
     return <ResponsiveContainer className='flex gap-4 py-3 px-0 flex-col mx-auto'>
         <div className="flex justify-between px-4 pt-2">

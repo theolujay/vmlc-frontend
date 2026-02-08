@@ -17,7 +17,7 @@ export default function useGetValidDate(applicationDate: Date) {
 
 
 
-export function useSortedExams(exams: any[]) {
+export function useSortedExams<T extends { created_at: string | Date | number }>(exams: T[]) {
   return useMemo(() => {
      return [...exams].sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime())
     

@@ -1,5 +1,5 @@
 import { ExamPortal } from '@/services/examPortal.service'
-import { UpdatedSessionQuestionType } from '@/types/Examtype'
+import { EditExamSession, UpdatedSessionQuestionType } from '@/types/Examtype'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useEffect } from 'react'
@@ -60,7 +60,7 @@ export default function useEditExamSession(exam_id: string, onSuccessCallback: (
                 ...payload,
                 scheduled_date: payload.scheduled_date ? new Date(payload.scheduled_date).toISOString() : undefined
             };
-            return ExamPortal.editExamSession(exam_id, formattedPayload as any);
+            return ExamPortal.editExamSession(exam_id, formattedPayload as EditExamSession);
         },
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['list-exams'] })

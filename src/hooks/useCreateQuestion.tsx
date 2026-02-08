@@ -48,9 +48,9 @@ export default function useCreateQuestion(onSuccess: () => void, examId?: string
             toast.success('Question created successfully')
             onSuccess()
         },
-        onError: (error: any) => {
+        onError: (error: unknown) => {
             console.error('Question creation error:', error);
-            const errorMessage = error?.response?.data?.message || error?.message || 'Failed to create question';
+            const errorMessage = (error as any)?.response?.data?.message || (error as Error)?.message || 'Failed to create question';
             toast.error(errorMessage);
         }
     })
@@ -77,7 +77,7 @@ export default function useCreateQuestion(onSuccess: () => void, examId?: string
             formData.append('exam_ids', JSON.stringify(payload.exam_ids));
         }
 
-        mutate(formData as any);
+        mutate(formData);
     }
     return { isPending, onSubmit, form }
 }

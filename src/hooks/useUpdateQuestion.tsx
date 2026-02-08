@@ -48,9 +48,9 @@ export default function useUpdateQuestion(questionId: number, onSuccess: () => v
             toast.success('Question updated successfully')
             onSuccess()
         },
-        onError: (error: any) => {
+        onError: (error: unknown) => {
             console.error('Question update error:', error);
-            const errorMessage = error?.response?.data?.message || error?.message || 'Failed to update question';
+            const errorMessage = (error as any)?.response?.data?.message || (error as Error)?.message || 'Failed to update question';
             toast.error(errorMessage);
         }
     })

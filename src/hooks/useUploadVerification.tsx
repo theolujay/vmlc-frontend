@@ -19,7 +19,7 @@ export default function useUploadVerification() {
             toast.success('Verification documents uploaded successfully')
             router.push('/exam-portal')
         },
-        onError:(error:AxiosError<any>)=>{
+        onError:(error:AxiosError<{ detail?: string }>)=>{
             
             toast.error(error?.response?.data?.detail||'Failed to upload verification documents. Please try again.')
         }

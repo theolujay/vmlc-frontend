@@ -2,7 +2,7 @@
 import Spinner from '@/components/ui/spinner/spinner'
 import usePagination from '@/hooks/usePagination'
 import useViewExamQuestions from '@/hooks/useViewExamQuestions'
-import { SessionQuestionItemType } from '@/types/Examtype'
+import { SessionQuestionItemType, UpdatedSessionQuestionType } from '@/types/Examtype'
 import { formatExamTitle } from '@/utils/generalUtils'
 import { formatDateTime } from '@/utils/formatFileSize'
 import clsx from 'clsx'
@@ -42,7 +42,7 @@ export default function ExamSession() {
       </div> :
         <div className="flex flex-col gap-6 mt-4 w-full sm:w-[96%] px-2 sm:px-0 sm:mx-auto pb-20">
           <SessionDetails 
-            data={data}
+            data={data as UpdatedSessionQuestionType}
           />
           <QuestionPoolStats 
             title={data?.title}
@@ -72,7 +72,7 @@ export default function ExamSession() {
 }
 
 
-function SessionDetails({ data }: Readonly<{ data?: any }>) {
+function SessionDetails({ data }: Readonly<{ data?: UpdatedSessionQuestionType }>) {
   const title = formatExamTitle(data?.title);
   const description = data?.description;
 
@@ -98,7 +98,7 @@ function SessionDetails({ data }: Readonly<{ data?: any }>) {
                 <i className="fas fa-file-invoice text-lg"></i>
             </div>
             <div>
-                <p className='text-[9px] text-gray-400 font-black uppercase tracking-[0.2em] mb-0.5'>{data?.competition_title || `Edition ${data?.competition_edition}`}</p>
+                <p className='text-[9px] text-gray-400 font-black uppercase tracking-[0.2em] mb-0.5'>{data?.competition_title}</p>
                 <div className="flex items-center space-x-3">
                     <div className={clsx("flex items-center space-x-2 px-2.5 py-1 rounded-full border", currentStatus.bgColor, currentStatus.textColor, "border-current/10")}>
                         <span className={clsx("w-1.5 h-1.5 rounded-full", currentStatus.color)}></span>
@@ -161,7 +161,6 @@ function SessionDetails({ data }: Readonly<{ data?: any }>) {
                 <h3 className="text-[9px] font-black text-gray-400 uppercase tracking-[0.15em]">Timeline</h3>
             </div>
             <div className="bg-white rounded-[1.5rem] border border-gray-100 p-6 space-y-6 shadow-sm relative">
-                <div className="absolute left-[39px] top-10 bottom-10 w-[1.5px] bg-gradient-to-b from-gray-50 via-gray-100 to-gray-50"></div>
                 <TimelineEvent 
                     icon="fa-plus-circle"
                     label="Created On"
@@ -207,6 +206,9 @@ function ConfigMetric({ icon, label, value, sub }: { icon: string, label: string
 function TimelineEvent({ icon, label, date, color, isLast }: { icon: string, label: string, date: string, color: string, isLast: boolean }) {
     return (
         <div className="relative flex items-center space-x-4 group">
+            {!isLast && (
+                <div className="absolute left-[17px] top-10 bottom-[-28px] w-[1.5px] bg-gray-100 z-0"></div>
+            )}
             <div className={clsx(
                 "w-9 h-9 rounded-xl bg-white border border-gray-100 shadow-sm flex items-center justify-center shrink-0 z-10 transition-all duration-300 group-hover:scale-110", 
                 color
