@@ -61,9 +61,23 @@ export class ExamPortal {
         }
     }
 
-    static async createQuestion(payload: CreateQuestionType) {
+    static async createQuestion(payload: CreateQuestionType | FormData) {
         try {
-            const response = await client.post(examUrls.CREATE_QUESTION, payload)
+            const response = await client.post(examUrls.CREATE_QUESTION, payload, {
+                headers: payload instanceof FormData ? { 'Content-Type': 'multipart/form-data' } : {}
+            })
+            return response.data;
+        } catch (error) {
+            console.error(error)
+            throw error;
+        }
+    }
+
+    static async updateQuestion(id: number, payload: CreateQuestionType | FormData) {
+        try {
+            const response = await client.patch(examUrls.UPDATE_QUESTION(id), payload, {
+                headers: payload instanceof FormData ? { 'Content-Type': 'multipart/form-data' } : {}
+            })
             return response.data;
         } catch (error) {
             console.error(error)

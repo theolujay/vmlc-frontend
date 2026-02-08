@@ -16,6 +16,11 @@ import BulkRemoveQuestionsModal from "@/components/Modals/BulkRemoveQuestionsMod
 import { useDebouncedSearch } from "@/hooks/useDebouncedSearch";
 import MathRenderer from "@/components/Exam/MathRenderer";
 import useGetCurrentUser from "@/hooks/useGetCurrentUser";
+import dynamic from "next/dynamic";
+
+const AddQuestionModal = dynamic(() => import("@/components/Modals/AddQuestionModal"), {
+  ssr: false,
+});
 
 type ColumnType<T> = {
   key: keyof T | string;
@@ -161,6 +166,8 @@ export default function QuestionPoolTable({
   const [openDrawer, setOpenDrawer] = useState(false);
   const [selectedQuestionId, setSelectedQuestionId] = useState<number>(0);
   const [currentQuestion, setCurrentQuestion] = useState<SessionQuestionItemType | null>(null);
+  const [openEditQuestion, setOpenEditQuestion] = useState(false);
+  const [questionToEdit, setQuestionToEdit] = useState<SessionQuestionItemType | null>(null);
 
   const currentUser = useGetCurrentUser();
   const userRole = currentUser?.profile?.role || "";
@@ -261,20 +268,27 @@ export default function QuestionPoolTable({
           isAdminOrAbove={isAdminOrAbove}
           columns={[
             {
-              key: "user",
+              key: "id",
               header: "S/N",
               align: 'center',
               render: (_, __, index) => <div className="flex justify-center"><span className="text-xs font-bold text-gray-400">{(currentPage - 1) * 10 + index + 1}</span></div>,
             },
             {
-              key: "data.text",
+              key: "text",
               header: "Question",
               render: (_, row) => {
                 const options = getOptionAsArray(row);
                 return (
                   <div className="flex text-start flex-col gap-3 py-2 min-w-[400px]">
-                    <div className="text-sm font-bold text-gray-800 leading-relaxed">
-                      <MathRenderer content={row.text} />
+                    <div className="flex items-center gap-3">
+                      <div className="text-sm font-bold text-gray-800 leading-relaxed">
+                        <MathRenderer content={row.text} />
+                      </div>
+                      {row.image && (
+                        <div className="shrink-0 w-6 h-6 rounded-lg bg-blue-50 flex items-center justify-center text-[#3E4095] shadow-sm" title="This question contains an image">
+                          <i className="fas fa-image text-[10px]"></i>
+                        </div>
+                      )}
                     </div>
                     <div className="flex flex-wrap gap-x-6 gap-y-2 w-full">
                       {options.map((val, index) => (
@@ -336,6 +350,10 @@ export default function QuestionPoolTable({
                 <div className="flex justify-center items-center">
                   <QuestionPoolDropdown 
                     onAddToExam={() => handleOpenExamSessionModal([row.id])}
+                    onEdit={() => {
+                      setQuestionToEdit(row);
+                      setOpenEditQuestion(true);
+                    }}
                     information={row} 
                     question_id={row.id} 
                   />
@@ -372,6 +390,14 @@ export default function QuestionPoolTable({
         close={setOpenRemoveQuestion}
         open={openRemoveQuestion}
       />
+      {questionToEdit && (
+        <AddQuestionModal 
+          open={openEditQuestion} 
+          close={setOpenEditQuestion} 
+          initialData={questionToEdit} 
+          isEdit={true} 
+        />
+      )}
     </ResponsiveContainer>
   );
 }

@@ -50,18 +50,24 @@ export type DashboardStageProgress = {
   };
 };
 
+export type AttemptType = {
+  started_at: string;
+  deadline: string;
+  submitted_at: string | null;
+};
+
 export type ActiveExamType = {
   id: string;
   title: string;
+  description?: string;
   stage: string;
   round: number;
   question_count: number;
-  starts_at: Date;
-  ends_at: Date;
+  starts_at: string;
+  ends_at: string;
   duration_minutes: number;
   status: string;
-  has_participated: boolean;
-  is_eligible: boolean;
+  attempt: AttemptType | null;
   access_status: string | null;
 };
 
@@ -76,10 +82,9 @@ export type AvailableExamType = {
   scheduled_date: Date;
   stage: string;
   stage_display: string;
-  has_participated: boolean;
   status: string;
-  is_eligible: boolean;
   access_status: string | null;
+  attempt: AttemptType | null;
 };
 
 export type LeaderboardRankingType = {
@@ -123,6 +128,7 @@ export type PerformanceSnapshotType = {
 export type TakeExamQuestionType = {
   id: number;
   text: string;
+  image?: string;
   option_a: string;
   option_b: string;
   option_c: string;
@@ -133,6 +139,7 @@ export type TakeExamType = {
   id: string;
   title: string;
   description: string;
+  attempt?: AttemptType | null;
   open_duration_hours: number;
   scheduled_date: Date;
   countdown_minutes: number;
@@ -155,7 +162,7 @@ export type DashboardType = {
   candidate_context: CandidateContext;
   enrollment_stage_progress: DashboardStageProgress;
   active_exam: ActiveExamType | null;
-  performance_snapshot: PerformanceSnapshotType;
+  performance: PerformanceSnapshotType;
   exam_history: ExamHistoryItem[];
 }
 
@@ -274,6 +281,7 @@ export type EditExamSession = {
 
 export type CreateQuestionType = {
   text: string,
+  image?: File | string | null,
   option_a: string,
   option_b: string,
   option_c: string,
@@ -323,6 +331,7 @@ export type SessionQuestionType = {
 export type SessionQuestionItemType = {
   id: number,
   text: string,
+  image?: string | null,
   option_a: string,
   option_b: string,
   option_c: string,

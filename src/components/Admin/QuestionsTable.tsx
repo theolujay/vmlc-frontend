@@ -13,6 +13,11 @@ import QuestionInformation from "../Drawer/QuestionInformation"
 import MathRenderer from "@/components/Exam/MathRenderer"
 import { useDebouncedSearch } from "@/hooks/useDebouncedSearch"
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu'
+import dynamic from "next/dynamic"
+
+const AddQuestionModal = dynamic(() => import("@/components/Modals/AddQuestionModal"), {
+  ssr: false,
+});
 
 export default function QuestionsTable({ 
   questions, 
@@ -35,6 +40,8 @@ export default function QuestionsTable({
   const [openDrawer, setOpenDrawer] = useState(false)
   const [selectedQuestionId, setSelectedQuestionId] = useState<number>(0);
   const [currentQuestion, setCurrentQuestion] = useState<SessionQuestionItemType | null>(null)
+  const [openEditQuestion, setOpenEditQuestion] = useState(false);
+  const [questionToEdit, setQuestionToEdit] = useState<SessionQuestionItemType | null>(null);
 
   const isEditable = status === 'draft' || status === 'scheduled';
 
@@ -163,7 +170,7 @@ export default function QuestionsTable({
           minWidth="1000px"
           columns={[
             {
-              key: "sn", 
+              key: "id", 
               header: "S/N", 
               align: 'center',
               render: (_, __, index) => (
@@ -173,14 +180,21 @@ export default function QuestionsTable({
               )
             },
             {
-              key: 'data.text', 
+              key: 'text', 
               header: 'Question', 
               render: (_, row) => {
                 const options = getOptionAsArray(row)
                 return (
                   <div className="flex text-start flex-col gap-4 py-3 min-w-[450px]">
-                    <div className="text-sm font-bold text-gray-800 leading-relaxed bg-gray-50/50 p-4 rounded-[1.5rem] border border-gray-50">
-                      <MathRenderer content={row.text} />
+                    <div className="flex items-center gap-4 bg-gray-50/50 p-4 rounded-[1.5rem] border border-gray-50">
+                      <div className="text-sm font-bold text-gray-800 leading-relaxed flex-1">
+                        <MathRenderer content={row.text} />
+                      </div>
+                      {row.image && (
+                        <div className="shrink-0 w-8 h-8 rounded-xl bg-white border border-[#3E4095]/10 flex items-center justify-center text-[#3E4095] shadow-sm" title="This question contains an image">
+                          <i className="fas fa-image text-xs"></i>
+                        </div>
+                      )}
                     </div>
                     <div className="flex flex-wrap gap-x-8 gap-y-3 w-full px-2">
                       {options.map((val, index) => (
@@ -246,6 +260,15 @@ export default function QuestionsTable({
                   </button>
                   <button 
                     onClick={() => {
+                      setQuestionToEdit(row);
+                      setOpenEditQuestion(true);
+                    }} 
+                    className="px-5 py-2.5 rounded-xl bg-blue-50 text-[#3E4095] border border-[#3E4095]/10 font-black text-[10px] uppercase tracking-widest hover:bg-[#3E4095] hover:text-white hover:shadow-lg hover:shadow-[#3E4095]/20 transition-all cursor-pointer w-28 text-center active:scale-95"
+                  >
+                    Edit
+                  </button>
+                  <button 
+                    onClick={() => {
                       if (!isEditable) return;
                       setSelectedQuestionId(row.id);
                       handleOpenModal()
@@ -275,6 +298,14 @@ export default function QuestionsTable({
         <QuestionInformation information={currentQuestion} open={openDrawer} setOpen={setOpenDrawer} />
       }
       <RemoveQuestionModal question_id={selectedQuestionId} close={setOpenRemoveQuestion} open={openRemoveQuestion} />
+      {questionToEdit && (
+        <AddQuestionModal 
+          open={openEditQuestion} 
+          close={setOpenEditQuestion} 
+          initialData={questionToEdit} 
+          isEdit={true} 
+        />
+      )}
     </ResponsiveContainer>
   )
 }

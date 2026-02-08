@@ -3,15 +3,34 @@
 
 import { useExamContext } from "@/contexts/ExamNavigationProvider";
 import clsx from "clsx";
-import { Dispatch, SetStateAction, useState } from "react";
+import { Dispatch, SetStateAction, useState, useEffect } from "react";
 import Spinner from "../ui/spinner/spinner";
 import SubmissionConfirmationModal from "./SubmissionConfirmationModal";
 import MathRenderer from "./MathRenderer";
+import Image from "next/image";
+import { TakeExamQuestionType, TakeExamType } from "@/types/Examtype";
 
-export default function Questions({ data, isPending, answers, setAnswers, handleSubmit, submitPending }: { submitPending: boolean, handleSubmit: () => void, data: any, isPending: boolean, answers: Record<number, string>, setAnswers: Dispatch<SetStateAction<Record<number, string>>> }) {
+export default function Questions({ data, isPending, answers, setAnswers, handleSubmit, submitPending }: { submitPending: boolean, handleSubmit: () => void, data: TakeExamType | undefined, isPending: boolean, answers: Record<number, string>, setAnswers: Dispatch<SetStateAction<Record<number, string>>> }) {
     const { showNav } = useExamContext();
     const [open, setOpen] = useState(false);
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+    const [isLoaded, setIsLoaded] = useState(false);
+
+    useEffect(() => {
+        if (data?.id) {
+            const savedIndex = localStorage.getItem(`exam_current_question_${data.id}`);
+            if (savedIndex) {
+                setCurrentQuestionIndex(Number(savedIndex));
+            }
+            setIsLoaded(true);
+        }
+    }, [data?.id]);
+
+    useEffect(() => {
+        if (data?.id && isLoaded) {
+            localStorage.setItem(`exam_current_question_${data.id}`, String(currentQuestionIndex));
+        }
+    }, [currentQuestionIndex, data?.id, isLoaded]);
 
     if (isPending || !data) return (
         <div className="w-full flex items-center justify-center py-40 bg-white rounded-[2.5rem] border border-gray-100 shadow-sm">
@@ -22,7 +41,7 @@ export default function Questions({ data, isPending, answers, setAnswers, handle
         </div>
     );
 
-    const questions = Array.isArray(data.questions) ? data.questions : (data?.questions?.results || []);
+    const questions = data.questions || [];
 
     if (questions.length === 0) {
         return (
@@ -87,7 +106,7 @@ export default function Questions({ data, isPending, answers, setAnswers, handle
                     </div>
 
                     <div className="flex-1 flex flex-col">
-                        <EachQuestion question={currentQuestion.text} />
+                        <EachQuestion question={currentQuestion.text} image={currentQuestion.image} />
                         <Options 
                             selected={answers[currentQuestion.id] || null} 
                             onSelect={handleSelectOption} 
@@ -137,13 +156,13 @@ export default function Questions({ data, isPending, answers, setAnswers, handle
                                 </div>
                                 <span className="text-[10px] font-black text-gray-800">{totalAnswered}</span>
                             </div>
-                            <div className="flex items-center justify-between">
+                            {/* <div className="flex items-center justify-between">
                                 <div className="flex items-center space-x-2">
                                     <div className="w-3 h-3 rounded-full bg-[#3E4095]"></div>
                                     <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Current</span>
                                 </div>
                                 <span className="text-[10px] font-black text-gray-800">1</span>
-                            </div>
+                            </div> */}
                             <div className="flex items-center justify-between">
                                 <div className="flex items-center space-x-2">
                                     <div className="w-3 h-3 rounded-full border border-gray-200 bg-white"></div>
@@ -256,7 +275,7 @@ function NumberGrid({ numberOfQuestions, current, onSelect, answers, questions }
     );
 }
 
-function EachQuestion({ question }: { question: string }) {
+function EachQuestion({ question, image }: { question: string, image?: string }) {
     return (
         <div className="px-10 py-12 flex flex-col gap-6">
             <div className="flex items-center space-x-3">
@@ -264,14 +283,28 @@ function EachQuestion({ question }: { question: string }) {
                 <span className="text-[10px] font-black text-gray-600 uppercase tracking-[0.3em]">Problem Statement</span>
                 <div className="h-px flex-1 bg-gray-100"></div>
             </div>
-            <div className="text-2xl font-semibold text-gray-800 leading-relaxed bg-gray-50/30 p-8 rounded-[2rem] border border-dashed border-gray-200">
-                <MathRenderer content={question} />
+            <div className="flex flex-col gap-8">
+                <div className="text-2xl font-semibold text-gray-800 leading-relaxed bg-gray-50/30 p-8 rounded-[2rem] border border-dashed border-gray-200">
+                    <MathRenderer content={question} />
+                </div>
+                
+                {image && (
+                    <div className="relative w-full aspect-video rounded-3xl overflow-hidden border border-gray-100 shadow-sm bg-gray-50/30">
+                        <Image
+                            src={image}
+                            alt="Question Diagram"
+                            fill
+                            className="object-contain"
+                            priority
+                        />
+                    </div>
+                )}
             </div>
         </div>
     );
 }
 
-function Options({ question, selected, onSelect }: { question: any, selected: string | null, onSelect: (questionId: number, value: string) => void }) {
+function Options({ question, selected, onSelect }: { question: TakeExamQuestionType, selected: string | null, onSelect: (questionId: number, value: string) => void }) {
     const optionMap = {
         A: question.option_a,
         B: question.option_b,

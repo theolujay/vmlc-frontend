@@ -1,35 +1,75 @@
 'use client';
 
-import React, { useState, useEffect, useCallback, useMemo } from "react"
+import React, { useState, useEffect, useCallback, useMemo, useRef } from "react"
 import AppDialog from "@/components/ui/Modals/AppDialog"
 import useCreateQuestion from "@/hooks/useCreateQuestion"
+import useUpdateQuestion from "@/hooks/useUpdateQuestion"
 import MathInput from "./ui/MathInput"
 import { parseBulkQuestion } from "@/services/gemini.service"
 import { Difficulty, QuestionData } from "@/types/question"
 import { DIFFICULTY_OPTIONS } from "@/constants/math"
 
 import UnifiedQuestionPreview from "@/components/Admin/ExamSystem/UnifiedQuestionPreview"
+import { SessionQuestionItemType } from "@/types/Examtype"
+import Image from "next/image"
 
 export default function AddQuestionModal({
   open,
   close,
   examId,
-}: Readonly<{ open: boolean; close: (close: boolean) => void; examId?: string }>) {
-  const { onSubmit, isPending, form } = useCreateQuestion(() => {
+  initialData,
+  isEdit = false,
+}: Readonly<{ 
+  open: boolean; 
+  close: (close: boolean) => void; 
+  examId?: string;
+  initialData?: SessionQuestionItemType;
+  isEdit?: boolean;
+}>) {
+  const onSuccess = () => {
     setHasChanges(false);
     handleClose(true);
-  }, examId);
+  };
 
-  const initialFormData: QuestionData = useMemo(() => ({
-    questionText: '',
-    options: [
-      { id: '1', label: 'Option A', text: '', type: 'wrong' },
-      { id: '2', label: 'Option B', text: '', type: 'wrong' },
-      { id: '3', label: 'Option C', text: '', type: 'wrong' },
-      { id: '4', label: 'Option D', text: '', type: 'wrong' },
-    ],
-    difficulty: Difficulty.EASY,
-  }), []);
+  const { onSubmit: onCreateSubmit, isPending: isCreatePending, form: createForm } = useCreateQuestion(onSuccess, examId);
+  const { onSubmit: onUpdateSubmit, isPending: isUpdatePending, form: updateForm } = useUpdateQuestion(initialData?.id || 0, onSuccess, examId);
+
+  const onSubmit = isEdit ? onUpdateSubmit : onCreateSubmit;
+  const isPending = isEdit ? isUpdatePending : isCreatePending;
+  const form = isEdit ? updateForm : createForm;
+
+  const initialFormData: QuestionData = useMemo(() => {
+    if (isEdit && initialData) {
+      const difficultyMap: Record<string, Difficulty> = {
+        'easy': Difficulty.EASY,
+        'moderate': Difficulty.MODERATE,
+        'hard': Difficulty.HARD
+      };
+      
+      return {
+        questionText: initialData.text,
+        image: initialData.image,
+        options: [
+          { id: '1', label: 'Option A', text: initialData.option_a, type: initialData.correct_answer === 'A' ? 'correct' : 'wrong' },
+          { id: '2', label: 'Option B', text: initialData.option_b, type: initialData.correct_answer === 'B' ? 'correct' : 'wrong' },
+          { id: '3', label: 'Option C', text: initialData.option_c, type: initialData.correct_answer === 'C' ? 'correct' : 'wrong' },
+          { id: '4', label: 'Option D', text: initialData.option_d, type: initialData.correct_answer === 'D' ? 'correct' : 'wrong' },
+        ],
+        difficulty: difficultyMap[initialData.difficulty.toLowerCase()] || Difficulty.EASY,
+      };
+    }
+    return {
+      questionText: '',
+      image: null,
+      options: [
+        { id: '1', label: 'Option A', text: '', type: 'wrong' },
+        { id: '2', label: 'Option B', text: '', type: 'wrong' },
+        { id: '3', label: 'Option C', text: '', type: 'wrong' },
+        { id: '4', label: 'Option D', text: '', type: 'wrong' },
+      ],
+      difficulty: Difficulty.EASY,
+    };
+  }, [isEdit, initialData]);
 
   // Local state for the rich UI
   const [formData, setFormData] = useState<QuestionData>(initialFormData);
@@ -40,6 +80,50 @@ export default function AddQuestionModal({
   const [hasChanges, setHasChanges] = useState(false);
   const [showCloseConfirm, setShowCloseConfirm] = useState(false);
   const [tempParsedData, setTempParsedData] = useState<QuestionData | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Sync with initialData when it changes or when modal opens
+  useEffect(() => {
+    if (open) {
+      setFormData(initialFormData);
+      if (isEdit && initialData) {
+        const correctId = ['A', 'B', 'C', 'D'].indexOf(initialData.correct_answer) + 1;
+        setCorrectOptionId(String(correctId));
+        setImagePreview(initialData.image || null);
+        
+        // Also sync react-hook-form
+        form.setValue("text", initialData.text);
+        form.setValue("image", initialData.image);
+        form.setValue("option_a", initialData.option_a);
+        form.setValue("option_b", initialData.option_b);
+        form.setValue("option_c", initialData.option_c);
+        form.setValue("option_d", initialData.option_d);
+        form.setValue("difficulty", initialData.difficulty.toLowerCase());
+        form.setValue("correct_answer", initialData.correct_answer);
+      }
+    }
+  }, [open, isEdit, initialData, initialFormData, form]);
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      form.setValue("image", file);
+      setFormData(prev => ({ ...prev, image: file }));
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImagePreview(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const removeImage = () => {
+    form.setValue("image", null);
+    setFormData(prev => ({ ...prev, image: null }));
+    setImagePreview(null);
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  };
 
   const isFormValid = useMemo(() => {
     return (
@@ -147,6 +231,7 @@ export default function AddQuestionModal({
   const handleSubmit = () => {
     const payload = {
       text: formData.questionText,
+      image: formData.image,
       option_a: formData.options[0]?.text || '',
       option_b: formData.options[1]?.text || '',
       option_c: formData.options[2]?.text || '',
@@ -156,6 +241,7 @@ export default function AddQuestionModal({
     };
     
     form.setValue("text", payload.text);
+    form.setValue("image", payload.image);
     form.setValue("option_a", payload.option_a);
     form.setValue("option_b", payload.option_b);
     form.setValue("option_c", payload.option_c);
@@ -210,7 +296,7 @@ export default function AddQuestionModal({
                 <i className="fas fa-plus-circle text-xl"></i>
             </div>
             <div>
-              <h1 className="text-2xl font-black text-gray-800 tracking-tight">Add New Question</h1>
+              <h1 className="text-2xl font-black text-gray-800 tracking-tight">{isEdit ? 'Edit Question' : 'Add New Question'}</h1>
               <div className="flex items-center space-x-3 mt-1">
                  <div className={`px-2 py-0.5 rounded-full text-[8px] font-black uppercase tracking-widest ${
                    view === 'edit' ? 'bg-[#3E4095] text-white' : 'bg-gray-100 text-gray-400'
@@ -381,13 +467,65 @@ D) 1/2"
                 </div>
               </section>
 
+              {/* Image Section */}
+              <section className="space-y-6">
+                <div className="flex items-center space-x-4">
+                  <div className="w-10 h-10 flex items-center justify-center rounded-2xl bg-[#3E4095] text-white font-black shadow-lg shadow-[#3E4095]/20">
+                    <i className="fas fa-image"></i>
+                  </div>
+                  <div>
+                    <h3 className="text-base font-black text-gray-800 tracking-tight">Question Image (Optional)</h3>
+                    <p className="text-[10px] text-gray-400 font-bold tracking-widest">Add a diagram or illustration</p>
+                  </div>
+                </div>
+
+                <div className="flex flex-col items-center justify-center border-2 border-dashed border-gray-200 rounded-[2.5rem] p-8 bg-white/50 hover:bg-white hover:border-[#3E4095]/30 transition-all group">
+                  {imagePreview ? (
+                    <div className="relative w-full max-w-md aspect-video rounded-2xl overflow-hidden shadow-xl">
+                      <Image
+                        src={imagePreview}
+                        alt="Question Preview"
+                        fill
+                        className="object-contain"
+                      />
+                      <button
+                        onClick={removeImage}
+                        className="absolute top-4 right-4 w-10 h-10 bg-white/90 backdrop-blur-sm text-red-500 rounded-xl flex items-center justify-center shadow-lg hover:bg-red-500 hover:text-white transition-all"
+                      >
+                        <i className="fas fa-trash"></i>
+                      </button>
+                    </div>
+                  ) : (
+                    <button
+                      onClick={() => fileInputRef.current?.click()}
+                      className="flex flex-col items-center gap-4 py-8 w-full cursor-pointer"
+                    >
+                      <div className="w-16 h-16 rounded-2xl bg-gray-50 flex items-center justify-center text-gray-400 group-hover:bg-[#3E4095]/5 group-hover:text-[#3E4095] transition-all">
+                        <i className="fas fa-cloud-upload-alt text-2xl"></i>
+                      </div>
+                      <div className="text-center">
+                        <p className="text-sm font-bold text-gray-700">Click to upload image</p>
+                        <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest mt-1">PNG, JPG, JPEG up to 5MB</p>
+                      </div>
+                    </button>
+                  )}
+                  <input
+                    type="file"
+                    ref={fileInputRef}
+                    onChange={handleImageChange}
+                    accept="image/*"
+                    className="hidden"
+                  />
+                </div>
+              </section>
+
               {/* Options Section */}
               <section className="space-y-8">
                 <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-4">
                         <div className="w-10 h-10 flex items-center justify-center rounded-2xl bg-[#3E4095] text-white font-black shadow-lg shadow-[#3E4095]/20">2</div>
                         <div>
-                            <h3 className="text-base font-black text-gray-800 tracking-tight">Answers</h3>
+                            <h3 className="text-base font-black text-gray-800 tracking-tight">Answers Options</h3>
                         </div>
                     </div>
                     {form.formState.errors.correct_answer && (
@@ -507,12 +645,12 @@ D) 1/2"
                   {isPending ? (
                       <>
                       <i className="fas fa-circle-notch animate-spin mr-3 text-lg"></i>
-                      Publishing...
+                      {isEdit ? 'Updating...' : 'Publishing...'}
                       </>
                   ) : (
                       <>
                       <i className="fas fa-paper-plane mr-2"></i>
-                      Add Question
+                      {isEdit ? 'Update Question' : 'Add Question'}
                       </>
                   )}
                   </button>

@@ -8,7 +8,7 @@ import { toast } from 'react-toastify';
 import z from 'zod';
 
 
-const createQuestionSchema = z.object({
+const updateQuestionSchema = z.object({
     text: z.string().min(3, { message: 'Question text must be at least 3 characters' }),
     image: z.any().optional(),
     option_a: z.string().min(1, { message: 'Option A is required' }),
@@ -18,6 +18,7 @@ const createQuestionSchema = z.object({
     correct_answer: z.string().min(1, { message: 'Correct answer is required' }),
     difficulty: z.string().min(1, { message: 'Difficulty is required' }),
 })
+
 const defaultValues = {
     text: '',
     image: null,
@@ -29,28 +30,27 @@ const defaultValues = {
     difficulty: ''
 }
 
-export default function useCreateQuestion(onSuccess: () => void, examId?: string) {
+export default function useUpdateQuestion(questionId: number, onSuccess: () => void, examId?: string) {
     const queryClient = useQueryClient()
     const form = useForm({
-        resolver: zodResolver(createQuestionSchema),
+        resolver: zodResolver(updateQuestionSchema),
         defaultValues
     });
 
     const { isPending, mutate } = useMutation({
-        mutationFn: ExamPortal.createQuestion,
+        mutationFn: (payload: FormData) => ExamPortal.updateQuestion(questionId, payload),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['list-questions'] })
             queryClient.invalidateQueries({ queryKey: ['list-exams'] })
             if (examId) {
                 queryClient.invalidateQueries({ queryKey: ['exam-questions', examId] })
             }
-            form.reset()
-            toast.success('Question created successfully')
+            toast.success('Question updated successfully')
             onSuccess()
         },
         onError: (error: any) => {
-            console.error('Question creation error:', error);
-            const errorMessage = error?.response?.data?.message || error?.message || 'Failed to create question';
+            console.error('Question update error:', error);
+            const errorMessage = error?.response?.data?.message || error?.message || 'Failed to update question';
             toast.error(errorMessage);
         }
     })
@@ -76,11 +76,8 @@ export default function useCreateQuestion(onSuccess: () => void, examId?: string
         } else if (payload.exam_ids) {
             formData.append('exam_ids', JSON.stringify(payload.exam_ids));
         }
-
-        mutate(formData as any);
+        mutate(formData);
     }
+
     return { isPending, onSubmit, form }
 }
-
-
-

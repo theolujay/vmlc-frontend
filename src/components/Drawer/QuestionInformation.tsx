@@ -5,6 +5,7 @@ import { formatDate, formatTimeToString, getAppropriateColor } from '@/utils/for
 import clsx from 'clsx'
 import { useMemo } from 'react'
 import MathRenderer from '@/components/Exam/MathRenderer'
+import Image from 'next/image'
 
 
 export default function QuestionInformation({ open, setOpen, information }: Readonly<{ open: boolean, setOpen: (open: boolean) => void, information: SessionQuestionItemType }>) {
@@ -65,6 +66,24 @@ export default function QuestionInformation({ open, setOpen, information }: Read
                             <MathRenderer content={information.text} />
                         </div>
                     </div>
+
+                    {/* Question Image */}
+                    {information.image && (
+                        <div className="flex flex-col gap-3">
+                            <div className="flex items-center gap-2">
+                                <i className="fas fa-image text-[#3E4095] text-[10px]"></i>
+                                <span className='text-[9px] font-black text-gray-400 uppercase tracking-widest'>Question Image</span>
+                            </div>
+                            <div className="relative w-full aspect-video rounded-[2rem] overflow-hidden border border-gray-100 shadow-sm bg-gray-50/30">
+                                <Image
+                                    src={information.image}
+                                    alt="Question Visual"
+                                    fill
+                                    className="object-contain"
+                                />
+                            </div>
+                        </div>
+                    )}
 
                     {/* Options List */}
                     <div className="flex flex-col gap-4">

@@ -208,6 +208,11 @@ Fields same as **Create Exam** (all optional for PATCH).
   "id": "uuid",
   "title": "League Round 1",
   "description": "...",
+  "attempt": {
+    "started_at": "2024-05-01T10:05:00Z",
+    "deadline": "2024-05-01T11:05:00Z",
+    "submitted_at": null
+  },
   "open_duration_hours": 12,
   "scheduled_date": "...",
   "countdown_minutes": 60,
@@ -215,6 +220,7 @@ Fields same as **Create Exam** (all optional for PATCH).
     {
       "id": 1,
       "text": "...",
+      "image": "http://example.com/media/question_images/img.png",
       "option_a": "...",
       "option_b": "...",
       "option_c": "...",
@@ -227,7 +233,7 @@ Fields same as **Create Exam** (all optional for PATCH).
 ---
 
 ## 9. Submit Exam Answers
-**Endpoint:** `POST /v1/exams/{exam_id}/submit-exam-answers/`  
+**Endpoint:** `POST /v2/exams/{exam_id}/submit/`  
 **Description:** Submits a candidate's answers for an exam. Prevents re-submission and validates exam window.  
 **Permissions:** `CandidatePermissions`
 
@@ -264,7 +270,7 @@ Fields same as **Create Exam** (all optional for PATCH).
 
 ## 10. Candidate Exam History
 **Endpoint:** `GET /v2/candidates/{candidate_id}/exam-history/`  
-**Description:** Retrieves the list of exams taken by a specific candidate and their outcomes.  
+**Description:** Retrieves the list of exams taken by a specific candidate and their outcomes, including a breakdown of their answers.  
 **Permissions:** `ActiveAdminPermissions` OR the candidate themselves.
 
 ### Response Body
@@ -273,9 +279,23 @@ Fields same as **Create Exam** (all optional for PATCH).
   {
     "exam_id": "uuid",
     "exam_title": "Screening 2024",
+    "exam_stage": "screening",
+    "round": null,
+    "scheduled_date": "2024-05-01T10:00:00Z",
     "score": 70.00,
-    "status": "completed",
-    "recorded_at": "..."
+    "recorded_at": "2024-05-01T11:30:00Z",
+    "submission": [
+      {
+        "question_id": 1,
+        "question_text": "...",
+        "option_a": "...",
+        "option_b": "...",
+        "option_c": "...",
+        "option_d": "...",
+        "selected_option": "A",
+        "answered_at": "2024-05-01T11:05:00Z"
+      }
+    ]
   }
 ]
 ```
@@ -500,3 +520,27 @@ Fields same as **Create Exam** (all optional for PATCH).
     "rank_change": 0
 }
 ```
+
+---
+
+## Frontend Client Logic & Visibility
+
+This section describes the internal logic used to determine which exams are visible to candidates and how the dashboard behaves in edge cases.
+
+### 1. Visibility Toggle (`StageExam.is_active`)
+Visibility on the candidate dashboard is primarily controlled by the `is_active` flag on the `StageExam` (competition slot).
+- **Draft State:** When an exam is created but not yet scheduled, `StageExam.is_active` is `false`. It will not appear on the dashboard.
+- **Published/Scheduled State:** When an admin sets a `scheduled_date` on an exam, the system automatically flips the linked `StageExam.is_active` to `true`.
+- **Deactivation:** If an exam is marked `is_active = false` on the `Exam` model, the competition slot visibility is also revoked.
+
+### 2. Graceful Visibility (Leniency)
+To prevent issues where an exam is live but the visibility flag was manually unset or missed, the **Candidate Dashboard** applies a leniency rule:
+- If an exam's status is `ONGOING` (current time is within the scheduled window), it will be visible to eligible candidates **even if** `StageExam.is_active` is `false`.
+
+### 3. Candidate Enrollment Fallback
+The dashboard requires a `Enrollment` record to determine a candidate's "Current Stage."
+- **Enrolled Candidates:** The dashboard uses `enrollment.current_stage`.
+- **Unenrolled Candidates:** If a candidate has no enrollment record for the active competition, the dashboard falls back to using the candidate's `role` (e.g., `screening`, `league`) to infer their current stage. This ensures that new registrants see the screening exam immediately even if the background enrollment task hasn't completed.
+
+### 4. Awaiting Results
+Once an exam is `CONCLUDED` and the candidate has participated, the exam remains visible in the "Active Exam" section with a status of `awaiting_results` until the official **RankingSnapshot** are published by an admin.

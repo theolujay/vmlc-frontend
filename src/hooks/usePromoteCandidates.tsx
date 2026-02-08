@@ -23,6 +23,7 @@ export default function usePromoteCandidates() {
       queryClient.invalidateQueries({ queryKey: ["competition-dashboard"] });
       queryClient.invalidateQueries({ queryKey: ["statistics-overview"] });
     },
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     onError: (error: any) => {
       const errorMessage = error?.response?.data?.message || "Failed to promote candidates. Please try again.";
       toast.error(errorMessage);

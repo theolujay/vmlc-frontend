@@ -111,7 +111,7 @@ const CompetitionDashboard: React.FC<CompetitionDashboardProps> = ({
                 className="inline-flex items-center gap-2.5 bg-white text-emerald-600 border border-emerald-600/20 px-6 py-3 rounded-xl font-black text-[10px] tracking-widest hover:bg-emerald-50 transition-all uppercase shadow-sm active:scale-95"
               >
                 <i className="fas fa-users-cog text-xs"></i>
-                <span>PROMOTE</span>
+                <span>Promote Candidates</span>
               </button>
             )
           ].filter(Boolean) as React.ReactNode[]} 

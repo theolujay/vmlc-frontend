@@ -13,6 +13,7 @@ export enum Difficulty {
   
   export interface QuestionData {
     questionText: string;
+    image?: File | string | null;
     options: QuestionOption[];
     difficulty: Difficulty;
   }

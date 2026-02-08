@@ -8,6 +8,7 @@ export const examUrls = {
     LIST_QUESTIONS: (query: string) => `/v2/questions/?${query}`,
     DELETE_EXAM_SESSION: (exam_id: string) => `/v2/exams/${exam_id}/`,
     DELETE_QUESTION: (question_id: number) => `/v2/questions/${question_id}/`,
+    UPDATE_QUESTION: (question_id: number) => `/v2/questions/${question_id}/`,
     BULK_ADD_QUESTION_TO_SESSION: `/v2/questions/bulk-action/`,
     BULK_ARCHIVE_QUESTIONS: `/v2/questions/bulk-action/`,
     BULK_ACTION_QUESTIONS: `/v2/questions/bulk-action/`,

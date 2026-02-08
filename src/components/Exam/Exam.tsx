@@ -16,12 +16,13 @@ export default function Exam() {
   const { data: dashboardData, isPending: dashboardPending } = useGetExamPortal();
   const [answers, setAnswers] = useState<Record<number, string>>({});
   const { onSubmit, isPending: submitPending } = useSubmitAnswers(examId)
+  const [isLoaded, setIsLoaded] = useState(false);
 
   useEffect(() => {
     if (!dashboardPending && dashboardData) {
       // Check if this specific exam is already done
       const activeExam = dashboardData.active_exam;
-      if (activeExam && activeExam.id === examId && activeExam.has_participated) {
+      if (activeExam && activeExam.id === examId && activeExam.attempt?.submitted_at) {
           toast.info("You have already completed this examination.");
           router.push('/exam-portal');
           return;
@@ -46,8 +47,30 @@ const formattedAnswers = {
 
 
 
-  function handleSubmit() {
-    return onSubmit(formattedAnswers)
+  useEffect(() => {
+    if (examId) {
+      const savedAnswers = localStorage.getItem(`exam_answers_${examId}`);
+      if (savedAnswers) {
+        setAnswers(JSON.parse(savedAnswers));
+      }
+      setIsLoaded(true);
+    }
+  }, [examId]);
+
+  useEffect(() => {
+    if (examId && isLoaded) {
+      localStorage.setItem(`exam_answers_${examId}`, JSON.stringify(answers));
+    }
+  }, [answers, examId, isLoaded]);
+
+  async function handleSubmit() {
+    try {
+      await onSubmit(formattedAnswers);
+      localStorage.removeItem(`exam_answers_${examId}`);
+      localStorage.removeItem(`exam_current_question_${examId}`);
+    } catch (error) {
+      console.error("Submission failed", error);
+    }
   }
 
   if (dashboardPending || isPending) {
@@ -59,7 +82,12 @@ const formattedAnswers = {
   }
 
   return (
-    <ExamLayout onTimeUp={handleSubmit} timer={data?.countdown_minutes ?? 0} title={data?.title}>
+    <ExamLayout 
+      onTimeUp={handleSubmit} 
+      timer={data?.countdown_minutes ?? 0} 
+      deadline={data?.attempt?.deadline}
+      title={data?.title}
+    >
       <Questions submitPending={submitPending} handleSubmit={handleSubmit} answers={answers} setAnswers={setAnswers} isPending={isPending} data={data} />
     </ExamLayout>
   )

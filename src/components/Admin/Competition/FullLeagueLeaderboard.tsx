@@ -17,9 +17,10 @@ const RankChangeIndicator = ({ change }: { change: number }) => {
 interface FullLeagueLeaderboardProps {
   onBack: () => void;
   onViewDetails?: (candidateId: string) => void;
+  isPublicView?: boolean;
 }
 
-const FullLeagueLeaderboard: React.FC<FullLeagueLeaderboardProps> = ({ onBack, onViewDetails }) => {
+const FullLeagueLeaderboard: React.FC<FullLeagueLeaderboardProps> = ({ onBack, onViewDetails, isPublicView = false }) => {
   const [searchTerm, setSearchInput] = useState('');
   const { data, isLoading, error, refetch } = useGetLeagueLeaderboard();
 
@@ -130,7 +131,7 @@ const FullLeagueLeaderboard: React.FC<FullLeagueLeaderboardProps> = ({ onBack, o
                   </div>
                   <div className="flex flex-col">
                     <span className="font-bold text-[#101828] text-sm">{row.candidate_name}</span>
-                    <span className="text-[10px] text-[#667185]">{row.candidate_email}</span>
+                    {!isPublicView && <span className="text-[10px] text-[#667185]">{row.candidate_email}</span>}
                   </div>
                 </div>
               )
