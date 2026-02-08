@@ -8,8 +8,9 @@ import Spinner from "../ui/spinner/spinner";
 import SubmissionConfirmationModal from "./SubmissionConfirmationModal";
 import MathRenderer from "./MathRenderer";
 import Image from "next/image";
+import { TakeExamQuestionType, TakeExamType } from "@/types/Examtype";
 
-export default function Questions({ data, isPending, answers, setAnswers, handleSubmit, submitPending }: { submitPending: boolean, handleSubmit: () => void, data: any, isPending: boolean, answers: Record<number, string>, setAnswers: Dispatch<SetStateAction<Record<number, string>>> }) {
+export default function Questions({ data, isPending, answers, setAnswers, handleSubmit, submitPending }: { submitPending: boolean, handleSubmit: () => void, data: TakeExamType | undefined, isPending: boolean, answers: Record<number, string>, setAnswers: Dispatch<SetStateAction<Record<number, string>>> }) {
     const { showNav } = useExamContext();
     const [open, setOpen] = useState(false);
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
@@ -23,7 +24,7 @@ export default function Questions({ data, isPending, answers, setAnswers, handle
         </div>
     );
 
-    const questions = Array.isArray(data.questions) ? data.questions : (data?.questions?.results || []);
+    const questions = data.questions || [];
 
     if (questions.length === 0) {
         return (
@@ -271,7 +272,7 @@ function EachQuestion({ question, image }: { question: string, image?: string })
                 </div>
                 
                 {image && (
-                    <div className="relative w-full aspect-video rounded-[2rem] overflow-hidden border border-gray-100 shadow-sm bg-gray-50/10">
+                    <div className="relative w-full aspect-video rounded-3xl overflow-hidden border border-gray-100 shadow-sm bg-gray-50/30">
                         <Image
                             src={image}
                             alt="Question Diagram"
@@ -286,7 +287,7 @@ function EachQuestion({ question, image }: { question: string, image?: string })
     );
 }
 
-function Options({ question, selected, onSelect }: { question: any, selected: string | null, onSelect: (questionId: number, value: string) => void }) {
+function Options({ question, selected, onSelect }: { question: TakeExamQuestionType, selected: string | null, onSelect: (questionId: number, value: string) => void }) {
     const optionMap = {
         A: question.option_a,
         B: question.option_b,

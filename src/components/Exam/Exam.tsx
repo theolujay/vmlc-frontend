@@ -21,7 +21,7 @@ export default function Exam() {
     if (!dashboardPending && dashboardData) {
       // Check if this specific exam is already done
       const activeExam = dashboardData.active_exam;
-      if (activeExam && activeExam.id === examId && activeExam.has_participated) {
+      if (activeExam && activeExam.id === examId && activeExam.attempt?.submitted_at) {
           toast.info("You have already completed this examination.");
           router.push('/exam-portal');
           return;

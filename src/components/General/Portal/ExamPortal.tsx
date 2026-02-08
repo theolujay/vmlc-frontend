@@ -100,10 +100,9 @@ function ExamPortal() {
     scheduled_date: new Date(activeExamData.starts_at),
     stage: activeExamData.stage,
     stage_display: activeExamData.stage.toUpperCase(),
-    has_participated: activeExamData.has_participated,
     status: activeExamData.status,
-    is_eligible: activeExamData.is_eligible,
-    access_status: activeExamData.access_status
+    access_status: activeExamData.access_status,
+    attempt: activeExamData.attempt
   } : null;
 
   // Map history
@@ -165,7 +164,7 @@ function ExamPortal() {
   // Actually, keeping the percentage is often what's desired for a "Range" label.
 
   // Determine if awaiting results
-  const hasTakenExam = stageProgressData?.has_taken_current_round || activeExamData?.has_participated || false;
+  const hasTakenExam = stageProgressData?.has_taken_current_round || activeExamData?.access_status === 'submitted' || false;
   let isAwaitingResults = false;
   
   if (hasTakenExam) {
