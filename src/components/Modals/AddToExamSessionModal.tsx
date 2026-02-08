@@ -28,7 +28,11 @@ export default function AddToExamSessionModal({
 
     const selectedSessionIds = selected.map((val) => val.id)
     const payload = { question_ids: selectedQuestionIds, exam_ids: selectedSessionIds };
-    const sessionItems: SelectItem[] = data?.results.map((val) => ({ id: val.id, label: formatExamTitle(val.title) })) ?? [];
+    const sessionItems: SelectItem[] = data?.results
+        ? data.results
+            .filter((val) => val.status.toLowerCase() === 'draft')
+            .map((val) => ({ id: val.id, label: formatExamTitle(val.title) }))
+        : [];
 
     useEffect(() => {
         if (isSuccess) {

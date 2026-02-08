@@ -1,6 +1,6 @@
 "use client";
 import AppDialog from '@/components/ui/Modals/AppDialog'
-import usePromoteCandidates from '@/hooks/usePromoteCandidates'
+import usePromoteCandidates, { PromoteCandidatesPayload } from '@/hooks/usePromoteCandidates'
 import useGetStatOverview from '@/hooks/useGetStatOverview'
 import useGetCompetitionDashboard from '@/hooks/useGetCompetitionDashboard'
 import clsx from 'clsx'
@@ -38,8 +38,23 @@ export default function PromoteCandidatesModal({ open, close }: Readonly<{ open:
 
     const { data: statOverview } = useGetStatOverview()
 
-    const fromStageOptions = ['screening', 'league']
-    const toStageOptions = ['league', 'final']
+    const fromStageOptions = ['Screening', 'League']
+    
+    const toStageOptions = useMemo(() => {
+        if (selectedFromStage === 'Screening') return ['League']
+        if (selectedFromStage === 'League') return ['Final']
+        return []
+    }, [selectedFromStage])
+
+    useEffect(() => {
+        if (selectedFromStage === 'Screening') {
+            setValue('to_stage', 'League')
+        } else if (selectedFromStage === 'League') {
+            setValue('to_stage', 'Final')
+        } else {
+            setValue('to_stage', '')
+        }
+    }, [selectedFromStage, setValue])
 
     const isStageValid = useMemo(() => {
         if (!selectedFromStage || !dashboardData) return true;
@@ -57,7 +72,19 @@ export default function PromoteCandidatesModal({ open, close }: Readonly<{ open:
             toast.error(`Cannot promote from ${values.from_stage} because rankings haven't been published for any exams in this stage yet.`);
             return;
         }
-        promoteCandidates(values)
+        
+        // Construct payload, ensuring stages are lowercase
+        const payload: PromoteCandidatesPayload = {
+            from_stage: values.from_stage.toLowerCase(),
+            to_stage: values.to_stage.toLowerCase()
+        };
+
+        // Only include cutoff_rank if it is a valid number
+        if (values.cutoff_rank !== undefined && values.cutoff_rank !== null && !isNaN(values.cutoff_rank)) {
+            payload.cutoff_rank = values.cutoff_rank;
+        }
+
+        promoteCandidates(payload)
     }
 
     useEffect(() => {
@@ -128,6 +155,7 @@ export default function PromoteCandidatesModal({ open, close }: Readonly<{ open:
                                             value={field.value}
                                             onValueChange={field.onChange}
                                             placeholder="Select Target"
+                                            disabled={toStageOptions.length <= 1 && !!selectedFromStage}
                                         />
                                     )}
                                 />

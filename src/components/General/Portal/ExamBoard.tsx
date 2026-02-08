@@ -20,15 +20,15 @@ export default function ExamBoard() {
         examList = [{
             id: data.active_exam.id,
             title: data.active_exam.title,
+            description: data.active_exam.description,
             stage: data.active_exam.stage,
             round: data.active_exam.round,
             question_count: data.active_exam.question_count,
-            starts_at: new Date(data.active_exam.starts_at),
-            ends_at: new Date(data.active_exam.ends_at),
+            starts_at: new Date(data.active_exam.starts_at).toISOString(),
+            ends_at: new Date(data.active_exam.ends_at).toISOString(),
             duration_minutes: data.active_exam.duration_minutes,
             status: data.active_exam.status,
-            has_participated: data.active_exam.has_participated,
-            is_eligible: data.active_exam.is_eligible,
+            attempt: data.active_exam.attempt,
             access_status: data.active_exam.access_status
         }];
     }
@@ -79,7 +79,7 @@ export default function ExamBoard() {
 function ExamCard({ details }: { details: ActiveExamType }) {
 
     const [examNotWritten] = useState(true)
-    return <Link href={`/exam-portal/${details.id}/exam`} className='flex relative mt-8 justify-center flex-col'>
+    return <Link href={`/exam-portal/${details.id}/exam`} prefetch={false} className='flex relative mt-8 justify-center flex-col'>
         <div className={clsx('pt-2 pb-7 p-2 absolute w-full -top-8   text-white rounded-t-2xl', examNotWritten && 'bg-[#00455E]')}>
             <div className="flex justify-between">
                 {/* <span className='text-sm'>12 Days to exam</span> */}
@@ -97,7 +97,6 @@ function ExamCard({ details }: { details: ActiveExamType }) {
                     <div className={clsx('flex justify-between', examNotWritten && 'text-[#CB1A14]')}>
                         <span>END TIME</span>
                         <span>{formatEndTimeToStringForCandidate(details.starts_at, details.duration_minutes)}</span>
-                        {/* <span>09:00am</span> */}
                     </div>
                 </div>
                 <p className='font-bold text-[2.5rem] '>{details.question_count}</p>

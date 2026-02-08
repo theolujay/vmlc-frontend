@@ -59,6 +59,7 @@ export type AttemptType = {
 export type ActiveExamType = {
   id: string;
   title: string;
+  description?: string;
   stage: string;
   round: number;
   question_count: number;
@@ -161,7 +162,7 @@ export type DashboardType = {
   candidate_context: CandidateContext;
   enrollment_stage_progress: DashboardStageProgress;
   active_exam: ActiveExamType | null;
-  performance_snapshot: PerformanceSnapshotType;
+  performance: PerformanceSnapshotType;
   exam_history: ExamHistoryItem[];
 }
 

@@ -19,9 +19,10 @@ interface PerformanceSnapshotProps {
   isAwaitingResults?: boolean;
   isActive?: boolean;
   qualificationMessage?: string;
+  onViewLeaderboard?: () => void;
 }
 
-const PerformanceSnapshot: React.FC<PerformanceSnapshotProps> = ({ 
+const Performance: React.FC<PerformanceSnapshotProps> = ({ 
   leagueRanking, 
   screeningRanking, 
   finalRanking,
@@ -32,7 +33,8 @@ const PerformanceSnapshot: React.FC<PerformanceSnapshotProps> = ({
   hasTakenExam = false,
   isQualified: isQualifiedFromApi,
   isAwaitingResults = false,
-  isActive = true}) => {
+  isActive = true,
+  onViewLeaderboard}) => {
   const activeRanking = stage === 'SCREENING' ? screeningRanking : stage === 'FINAL' ? finalRanking : leagueRanking;
   const rank = activeRanking?.position || 0;
   const totalCandidates = activeRanking?.total_candidates || 0;
@@ -201,13 +203,23 @@ const PerformanceSnapshot: React.FC<PerformanceSnapshotProps> = ({
 
       {/* Footer Link */}
       {!isLinkDisabled ? (
-        <Link 
-          href={activeRanking?.exam_id ? `/exam-portal/rankings/${activeRanking.exam_id}` : "/exam-portal/leaderboard"} 
-          className="mt-6 pt-4 border-t border-slate-100 text-sm font-bold text-[#3E4095] hover:opacity-80 flex items-center justify-between transition-all"
-        >
-          <span>{stage === 'SCREENING' ? 'Ranking' : 'Leaderboard'}</span>
-          <GotoIcon />
-        </Link>
+        stage === 'LEAGUE' && onViewLeaderboard ? (
+          <button 
+            onClick={onViewLeaderboard}
+            className="mt-6 pt-4 border-t border-slate-100 text-sm font-bold text-[#3E4095] hover:opacity-80 flex items-center justify-between transition-all w-full text-left"
+          >
+            <span>Leaderboard</span>
+            <GotoIcon />
+          </button>
+        ) : (
+          <Link 
+            href={activeRanking?.exam_id ? `/exam-portal/rankings/${activeRanking.exam_id}` : "/exam-portal/leaderboard"} 
+            className="mt-6 pt-4 border-t border-slate-100 text-sm font-bold text-[#3E4095] hover:opacity-80 flex items-center justify-between transition-all"
+          >
+            <span>{stage === 'SCREENING' ? 'Ranking' : 'Leaderboard'}</span>
+            <GotoIcon />
+          </Link>
+        )
       ) : (
         <div className="mt-6 pt-4 border-t border-slate-100 text-sm font-bold text-slate-300 flex items-center justify-between cursor-not-allowed grayscale">
           <span>{stage === 'SCREENING' ? 'Ranking' : 'Leaderboard'}</span>
@@ -218,4 +230,4 @@ const PerformanceSnapshot: React.FC<PerformanceSnapshotProps> = ({
   );
 };
 
-export default PerformanceSnapshot;
+export default Performance;

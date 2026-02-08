@@ -156,13 +156,13 @@ export default function Questions({ data, isPending, answers, setAnswers, handle
                                 </div>
                                 <span className="text-[10px] font-black text-gray-800">{totalAnswered}</span>
                             </div>
-                            <div className="flex items-center justify-between">
+                            {/* <div className="flex items-center justify-between">
                                 <div className="flex items-center space-x-2">
                                     <div className="w-3 h-3 rounded-full bg-[#3E4095]"></div>
                                     <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Current</span>
                                 </div>
                                 <span className="text-[10px] font-black text-gray-800">1</span>
-                            </div>
+                            </div> */}
                             <div className="flex items-center justify-between">
                                 <div className="flex items-center space-x-2">
                                     <div className="w-3 h-3 rounded-full border border-gray-200 bg-white"></div>

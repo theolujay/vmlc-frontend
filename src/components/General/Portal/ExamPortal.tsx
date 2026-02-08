@@ -7,24 +7,26 @@ import useGetCurrentUser from '@/hooks/useGetCurrentUser';
 import StageProgress, { CompetitionStage } from './DashboardParts/StageProgress';
 import InfoBoard from './DashboardParts/InfoBoard';
 import PrimaryAction from './DashboardParts/PrimaryAction';
-import PerformanceSnapshot from './DashboardParts/PerformanceSnapshot';
+import Performance from './DashboardParts/Performance';
 import ExamHistory from './DashboardParts/ExamHistory';
 import SupportChat from './DashboardParts/SupportChat';
 import ProfileModal from '@/components/Modals/ProfileModal';
 import { AvailableExamType } from '@/types/Examtype';
+import FullLeagueLeaderboard from '@/components/Admin/Competition/FullLeagueLeaderboard';
 
 function ExamPortal() {
-  const { isPending, data } = useGetExamPortal();
+  const { isPending, data, refetch } = useGetExamPortal();
   const user = useGetCurrentUser();
   const [dismissedNotificationIds, setDismissedNotificationIds] = useState<number[]>([]);
   const [isProfileNoticeDismissed, setIsProfileNoticeDismissed] = useState(false);
   const [isSupportOpen, setIsSupportOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const [showLeaderboard, setShowLeaderboard] = useState(false);
 
   const candidateContext = data?.candidate_context;
   const stageProgressData = data?.enrollment_stage_progress;
   const activeExamData = data?.active_exam;
-  const performanceSnapshot = data?.performance_snapshot;
+  const performance = data?.performance;
   const examHistory = data?.exam_history;
 
   // Notification Queue Logic: Priority ERROR > INFO > SUCCESS
@@ -91,6 +93,7 @@ function ExamPortal() {
   const currentExam: AvailableExamType | null = activeExamData ? {
     id: activeExamData.id,
     title: activeExamData.title,
+    description: activeExamData.description,
     open_duration_hours: activeExamData.starts_at && activeExamData.ends_at 
       ? (new Date(activeExamData.ends_at).getTime() - new Date(activeExamData.starts_at).getTime()) / (1000 * 60 * 60)
       : activeExamData.duration_minutes / 60,
@@ -114,30 +117,30 @@ function ExamPortal() {
   }));
 
   // Map Performance Snapshot
-  const leagueRanking = performanceSnapshot?.league_leaderboard ? {
-      current_rank: performanceSnapshot.league_leaderboard.overall_rank,
-      position: performanceSnapshot.league_leaderboard.overall_rank,
-      total_candidates: performanceSnapshot.league_leaderboard.total_candidates,
-      rank_change: performanceSnapshot.league_leaderboard.rank_change,
-      as_of_round: performanceSnapshot.league_leaderboard.as_of_round,
-      is_active: performanceSnapshot.league_leaderboard.is_active
+  const leagueRanking = performance?.league_leaderboard ? {
+      current_rank: performance.league_leaderboard.overall_rank,
+      position: performance.league_leaderboard.overall_rank,
+      total_candidates: performance.league_leaderboard.total_candidates,
+      rank_change: performance.league_leaderboard.rank_change,
+      as_of_round: performance.league_leaderboard.as_of_round,
+      is_active: performance.league_leaderboard.is_active
   } : null;
 
-  const screeningRanking = performanceSnapshot?.screening_ranking ? {
-      current_rank: performanceSnapshot.screening_ranking.rank,
-      position: performanceSnapshot.screening_ranking.rank,
-      total_candidates: performanceSnapshot.screening_ranking.total_candidates,
-      exam_id: performanceSnapshot.screening_ranking.exam_id,
-      exam_title: performanceSnapshot.screening_ranking.exam_title,
+  const screeningRanking = performance?.screening_ranking ? {
+      current_rank: performance.screening_ranking.rank,
+      position: performance.screening_ranking.rank,
+      total_candidates: performance.screening_ranking.total_candidates,
+      exam_id: performance.screening_ranking.exam_id,
+      exam_title: performance.screening_ranking.exam_title,
       is_active: true
   } : null;
 
-  const finalRanking = performanceSnapshot?.final_ranking ? {
-      current_rank: performanceSnapshot.final_ranking.rank,
-      position: performanceSnapshot.final_ranking.rank,
-      total_candidates: performanceSnapshot.final_ranking.total_candidates,
-      exam_id: performanceSnapshot.final_ranking.exam_id,
-      exam_title: performanceSnapshot.final_ranking.exam_title,
+  const finalRanking = performance?.final_ranking ? {
+      current_rank: performance.final_ranking.rank,
+      position: performance.final_ranking.rank,
+      total_candidates: performance.final_ranking.total_candidates,
+      exam_id: performance.final_ranking.exam_id,
+      exam_title: performance.final_ranking.exam_title,
       is_active: true
   } : null;
   
@@ -169,8 +172,9 @@ function ExamPortal() {
   
   if (hasTakenExam) {
       if (currentStage === 'LEAGUE') {
-          // For League, if as_of_round is behind the current week, it's awaiting results for the current week
-          isAwaitingResults = !leagueRanking || (leagueRanking.as_of_round !== undefined && leagueRanking.as_of_round < leagueWeek);
+          const roundsPublished = stageProgressData?.published_rounds || 0;
+          // Use published_rounds as the primary indicator for awaiting results
+          isAwaitingResults = !leagueRanking || roundsPublished < leagueWeek;
       } else {
           // For Screening and Final, if no ranking exists yet, it's awaiting
           isAwaitingResults = !activeRanking;
@@ -187,53 +191,61 @@ function ExamPortal() {
     <PageLayout>
       <div className="relative space-y-6 max-w-6xl mx-auto w-full animate-in fade-in slide-in-from-bottom-2 duration-700 pb-10 font-sans">
         <br></br>
-        <div className="mb-8 border-b border-[#E4E7EC] pb-6">
-          <h1 className="text-3xl font-bold text-[#101828]">Welcome</h1>
-          <p className="text-[#667185] mt-1 text-base">You&apos;re now in the exam portal. Wishing you success ahead!</p>
-        </div>
+        {showLeaderboard ? (
+          <FullLeagueLeaderboard isPublicView={true} onBack={() => setShowLeaderboard(false)} />
+        ) : (
+          <>
+            <div className="mb-8 border-b border-[#E4E7EC] pb-6">
+              <h1 className="text-3xl font-bold text-[#101828]">Welcome</h1>
+              <p className="text-[#667185] mt-1 text-base">You&apos;re now in the exam portal. Wishing you success ahead!</p>
+            </div>
 
-        {/* STAGE PROGRESS */}
-        <StageProgress 
-          currentStage={currentStage === 'SCREENING' ? CompetitionStage.SCREENING : currentStage === 'LEAGUE' ? CompetitionStage.LEAGUE : CompetitionStage.FINAL} 
-          leagueWeek={leagueWeek} 
-        />
+            {/* STAGE PROGRESS */}
+            <StageProgress 
+              currentStage={currentStage === 'SCREENING' ? CompetitionStage.SCREENING : currentStage === 'LEAGUE' ? CompetitionStage.LEAGUE : CompetitionStage.FINAL} 
+              leagueWeek={leagueWeek} 
+            />
 
-        {/* INFO BOARD */}
-        <InfoBoard 
-          message={currentNotification?.message} 
-          type={currentNotification?.type}
-          onDismiss={handleDismissNotification} 
-          actionLabel={currentNotification?.isProfile ? "Update Profile" : undefined}
-          onAction={() => setIsProfileOpen(true)}
-        />
+            {/* INFO BOARD */}
+            <InfoBoard 
+              message={currentNotification?.message} 
+              type={currentNotification?.type}
+              onDismiss={handleDismissNotification} 
+              actionLabel={currentNotification?.isProfile ? "Update Profile" : undefined}
+              onAction={() => setIsProfileOpen(true)}
+            />
 
-        {/* PRIMARY ACTION */}
-        <PrimaryAction 
-          exam={currentExam} 
-          candidateName={candidateName}
-          isRankingAvailable={!!activeRanking}
-        />
+            {/* PRIMARY ACTION */}
+            <PrimaryAction 
+              exam={currentExam} 
+              candidateName={candidateName}
+              isRankingAvailable={!!activeRanking}
+              onCountdownEnd={refetch}
+            />
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* PERFORMANCE SNAPSHOT */}
-          <PerformanceSnapshot 
-            leagueRanking={leagueRanking}
-            screeningRanking={screeningRanking}
-            finalRanking={finalRanking}
-            stage={currentStage}
-            currentWeek={leagueWeek}
-            qualificationThreshold={qualificationThreshold}
-            cutoffDisplay={cutoffDisplay}
-            hasTakenExam={hasTakenExam}
-            isQualified={stageProgressData?.qualification_status?.is_qualified}
-            isAwaitingResults={isAwaitingResults}
-            isActive={activeRanking?.is_active}
-            qualificationMessage={stageProgressData?.qualification_status?.message}
-          />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {/* PERFORMANCE SNAPSHOT */}
+              <Performance 
+                leagueRanking={leagueRanking}
+                screeningRanking={screeningRanking}
+                finalRanking={finalRanking}
+                stage={currentStage}
+                currentWeek={leagueWeek}
+                qualificationThreshold={qualificationThreshold}
+                cutoffDisplay={cutoffDisplay}
+                hasTakenExam={hasTakenExam}
+                isQualified={stageProgressData?.qualification_status?.is_qualified}
+                isAwaitingResults={isAwaitingResults}
+                isActive={activeRanking?.is_active}
+                qualificationMessage={stageProgressData?.qualification_status?.message}
+                onViewLeaderboard={() => setShowLeaderboard(true)}
+              />
 
-          {/* EXAM HISTORY */}
-          <ExamHistory history={history} />
-        </div>
+              {/* EXAM HISTORY */}
+              <ExamHistory history={history} />
+            </div>
+          </>
+        )}
 
         {/* PERSISTENT ACTIONS - SUPPORT CHAT */}
         <div className="fixed bottom-4 right-4 z-50 flex flex-col items-end gap-4">

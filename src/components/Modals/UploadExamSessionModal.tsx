@@ -8,7 +8,7 @@ import clsx from 'clsx'
 import { Controller, FormProvider } from 'react-hook-form';
 import SelectInput from '../ui/Select'
 import Spinner from '../ui/spinner/spinner';
-import { useMemo } from 'react'
+import { useMemo, useEffect } from 'react'
 import { UpdatedSessionQuestionType } from '@/types/Examtype';
 
 export default function UploadExamSessionModal({ open, close, exam_id, title, data }: Readonly<{ open: boolean, close: (close: boolean) => void, exam_id: string, title?: string, data?: UpdatedSessionQuestionType }>) {
@@ -17,7 +17,7 @@ export default function UploadExamSessionModal({ open, close, exam_id, title, da
     }
 
     const { onSubmit, isPending, form } = useUploadSession(exam_id, handleClose, data);
-    const { control, watch, formState: { errors } } = form;
+    const { control, watch, setValue, formState: { errors } } = form;
 
     const { data: statOverview } = useGetStatOverview()
     const stages = useMemo(() => statOverview?.competition?.stages || [], [statOverview])
@@ -28,8 +28,54 @@ export default function UploadExamSessionModal({ open, close, exam_id, title, da
 
     const roundOptions = useMemo(() => {
         if (!isLeague || !selectedStage) return []
-        return Array.from({ length: 6 }, (_, i) => (i + 1).toString())
-    }, [isLeague, selectedStage])
+        const unavailableRounds = selectedStage.rounds || []
+        const currentRound = data?.round
+
+        // Max round taken by OTHER exams
+        const otherRounds = unavailableRounds.filter(r => r !== currentRound)
+        const maxOther = otherRounds.length > 0 ? Math.max(...otherRounds) : 0
+        const startRound = maxOther + 1
+
+        const options: number[] = []
+        // Include current round if it exists and is before the next available round
+        if (currentRound && currentRound < startRound) {
+            options.push(currentRound)
+        }
+
+        // Include all available future rounds up to 6
+        for (let r = startRound; r <= 6; r++) {
+            options.push(r)
+        }
+
+        return options.map(r => r.toString())
+    }, [isLeague, selectedStage, data?.round])
+
+    useEffect(() => {
+        // Prevent clearing or changing values until stage data is available
+        if (selectedStageId && stages.length === 0) return;
+
+        if (!isLeague) {
+            // Only clear round if we are in a non-league stage and it's not already undefined
+            if (selectedStageId && watch('round') != null) {
+                setValue('round', undefined)
+            }
+        } else if (roundOptions.length > 0) {
+            const currentRoundValue = watch('round')
+            
+            // If the current value is missing, OR it's not in the valid options for this stage
+            if (currentRoundValue == null || !roundOptions.includes(currentRoundValue.toString())) {
+                const originalRound = data?.round
+                
+                // Prefer the exam's existing round if it's available in the current options
+                if (originalRound != null && roundOptions.includes(originalRound.toString())) {
+                    setValue('round', originalRound)
+                } else {
+                    // Otherwise default to the first available one
+                    setValue('round', parseInt(roundOptions[0]))
+                }
+            }
+        }
+    }, [isLeague, roundOptions, setValue, watch, selectedStageId, data?.round, stages.length])
 
     return (
         <AppDialog open={open} onOpenChange={close}>

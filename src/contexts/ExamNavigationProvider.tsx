@@ -5,7 +5,7 @@ import React, { createContext, useContext, useState } from 'react'
 const ExamContext = createContext<ExamContextType | null>(null)
 
 export default function ExamNavigationProvider({ children }: Readonly<{ children: React.ReactNode }>) {
-    const [showNav, setShowNav] = useState(false)
+    const [showNav, setShowNav] = useState(true)
     return (
         <ExamContext.Provider value={{ showNav, setShowNav }}>
             {children}

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { AvailableExamType } from '@/types/Examtype';
 import { useRouter } from 'next/navigation';
 import { formatExamTitle } from '@/utils/generalUtils';
@@ -7,19 +7,32 @@ interface PrimaryActionProps {
   exam: AvailableExamType | null;
   candidateName: string;
   isRankingAvailable?: boolean;
+  onCountdownEnd?: () => void;
 }
 
-const PrimaryAction: React.FC<PrimaryActionProps> = ({ exam, isRankingAvailable = false }) => {
-  const [timeLeft, setTimeLeft] = useState<string>('');
+const TimeUnit: React.FC<{ value: number; unit: string }> = ({ value, unit }) => (
+  <div className="flex items-baseline space-x-0.5">
+    <span className="font-mono text-lg font-bold text-[#3E4095]">
+      {value.toString().padStart(2, '0')}
+    </span>
+    <span className="text-[10px] uppercase tracking-tighter text-[#98A2B3] font-bold">
+      {unit.charAt(0)}
+    </span>
+  </div>
+);
+
+const PrimaryAction: React.FC<PrimaryActionProps> = ({ exam, isRankingAvailable = false, onCountdownEnd }) => {
+  const [timeLeft, setTimeLeft] = useState<{ days: number; hours: number; minutes: number; seconds: number } | null>(null);
   const [canStart, setCanStart] = useState(false);
   const router = useRouter();
+  const hasRefetchedFor = useRef<string | null>(null);
 
   useEffect(() => {
     if (!exam || !exam.scheduled_date) return;
 
     if (exam.status === 'ongoing') {
       setCanStart(true);
-      setTimeLeft('Now');
+      setTimeLeft(null);
       return;
     }
 
@@ -36,28 +49,35 @@ const PrimaryAction: React.FC<PrimaryActionProps> = ({ exam, isRankingAvailable 
 
       if (diff <= 0) {
         setCanStart(true);
-        setTimeLeft('Now');
-        return;
+        setTimeLeft(null);
+        if (onCountdownEnd && hasRefetchedFor.current !== exam.id) {
+          hasRefetchedFor.current = exam.id;
+          setTimeout(onCountdownEnd, 2000);
+        }
+        return true; 
       }
 
       const days = Math.floor(diff / (1000 * 60 * 60 * 24));
       const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
       const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((diff % (1000 * 60)) / 1000);
 
-      if (days > 0) {
-        setTimeLeft(`${days} day${days > 1 ? 's' : ''} ${hours} hour${hours > 1 ? 's' : ''}`);
-      } else if (hours > 0) {
-        setTimeLeft(`${hours} hour${hours > 1 ? 's' : ''} ${minutes} min${minutes > 1 ? 's' : ''}`);
-      } else {
-        setTimeLeft(`${minutes} minute${minutes > 1 ? 's' : ''}`);
-      }
+      setTimeLeft({ days, hours, minutes, seconds });
+      return false;
     };
 
-    updateTimer();
-    const timer = setInterval(updateTimer, 60000); 
+    const finished = updateTimer();
+    if (finished) return;
+
+    const timer = setInterval(() => {
+      const isFinished = updateTimer();
+      if (isFinished) {
+        clearInterval(timer);
+      }
+    }, 1000); 
 
     return () => clearInterval(timer);
-  }, [exam]);
+  }, [exam, onCountdownEnd]);
 
   const handleStartExam = () => {
     if (exam && canEnter && !isFinals) {
@@ -116,9 +136,25 @@ const PrimaryAction: React.FC<PrimaryActionProps> = ({ exam, isRankingAvailable 
               </p>
             </div>
           ) : !canEnter ? (
-            <div className="p-4 bg-[#] rounded-xl border border-[#3E4095]">
-              <p className="text-xs font-bold text-[#475367] uppercase">Countdown</p>
-              <p className="text-lg font-bold text-[#3E4095] mt-1">Opens in: {timeLeft}</p>
+            <div className="p-4 bg-[#F8F9FA] rounded-xl border border-[#E4E7EC] flex flex-col items-center">
+              <p className="text-[10px] font-bold text-[#98A2B3] uppercase tracking-widest mb-2">Opens in</p>
+              <div className="flex items-center gap-3">
+                {timeLeft ? (
+                  <>
+                    <TimeUnit value={timeLeft.days} unit="Days" />
+                    <div className="text-[#3E4095] font-bold self-start mt-[-2px]">:</div>
+                    <TimeUnit value={timeLeft.hours} unit="Hrs" />
+                    <div className="text-[#3E4095] font-bold self-start mt-[-2px]">:</div>
+                    <TimeUnit value={timeLeft.minutes} unit="Mins" />
+                    <div className="text-[#3E4095] font-bold self-start mt-[-2px]">:</div>
+                    <TimeUnit value={timeLeft.seconds} unit="Secs" />
+                  </>
+                ) : (
+                  <div className="flex items-baseline space-x-1 animate-pulse">
+                    <span className="text-sm font-bold text-[#3E4095]">Processing...</span>
+                  </div>
+                )}
+              </div>
             </div>
           ) : (
              <div className={`p-4 rounded-xl border bg-emerald-50 border-emerald-200`}>
