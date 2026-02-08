@@ -3,7 +3,7 @@
 
 import { useExamContext } from "@/contexts/ExamNavigationProvider";
 import clsx from "clsx";
-import { Dispatch, SetStateAction, useState } from "react";
+import { Dispatch, SetStateAction, useState, useEffect } from "react";
 import Spinner from "../ui/spinner/spinner";
 import SubmissionConfirmationModal from "./SubmissionConfirmationModal";
 import MathRenderer from "./MathRenderer";
@@ -14,6 +14,23 @@ export default function Questions({ data, isPending, answers, setAnswers, handle
     const { showNav } = useExamContext();
     const [open, setOpen] = useState(false);
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
+    const [isLoaded, setIsLoaded] = useState(false);
+
+    useEffect(() => {
+        if (data?.id) {
+            const savedIndex = localStorage.getItem(`exam_current_question_${data.id}`);
+            if (savedIndex) {
+                setCurrentQuestionIndex(Number(savedIndex));
+            }
+            setIsLoaded(true);
+        }
+    }, [data?.id]);
+
+    useEffect(() => {
+        if (data?.id && isLoaded) {
+            localStorage.setItem(`exam_current_question_${data.id}`, String(currentQuestionIndex));
+        }
+    }, [currentQuestionIndex, data?.id, isLoaded]);
 
     if (isPending || !data) return (
         <div className="w-full flex items-center justify-center py-40 bg-white rounded-[2.5rem] border border-gray-100 shadow-sm">

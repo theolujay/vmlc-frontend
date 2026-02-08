@@ -16,6 +16,7 @@ export default function Exam() {
   const { data: dashboardData, isPending: dashboardPending } = useGetExamPortal();
   const [answers, setAnswers] = useState<Record<number, string>>({});
   const { onSubmit, isPending: submitPending } = useSubmitAnswers(examId)
+  const [isLoaded, setIsLoaded] = useState(false);
 
   useEffect(() => {
     if (!dashboardPending && dashboardData) {
@@ -46,8 +47,30 @@ const formattedAnswers = {
 
 
 
-  function handleSubmit() {
-    return onSubmit(formattedAnswers)
+  useEffect(() => {
+    if (examId) {
+      const savedAnswers = localStorage.getItem(`exam_answers_${examId}`);
+      if (savedAnswers) {
+        setAnswers(JSON.parse(savedAnswers));
+      }
+      setIsLoaded(true);
+    }
+  }, [examId]);
+
+  useEffect(() => {
+    if (examId && isLoaded) {
+      localStorage.setItem(`exam_answers_${examId}`, JSON.stringify(answers));
+    }
+  }, [answers, examId, isLoaded]);
+
+  async function handleSubmit() {
+    try {
+      await onSubmit(formattedAnswers);
+      localStorage.removeItem(`exam_answers_${examId}`);
+      localStorage.removeItem(`exam_current_question_${examId}`);
+    } catch (error) {
+      console.error("Submission failed", error);
+    }
   }
 
   if (dashboardPending || isPending) {
