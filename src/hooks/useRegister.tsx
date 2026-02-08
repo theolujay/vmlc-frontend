@@ -96,8 +96,8 @@ export default function useRegister() {
             form.reset()
             router.push('/login')
         },
-        onError:(error:AxiosError<any>)=>{
-          toast.error(error?.response?.data.detail||'Registration was not successful')
+        onError: (error: AxiosError<{ detail?: string }>) => {
+          toast.error(error?.response?.data?.detail || 'Registration was not successful')
         }
         
 

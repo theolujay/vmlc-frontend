@@ -188,33 +188,33 @@ function ActionsLabel() {
 function ActionsComponent(
     // { results }: Readonly<{ results: ExamTakenType[] }>
 ) {
-    const results: any[] = []
+    const results: unknown[] = []
 
     return <div className="flex flex-col">
         {results.length > 0 ?
             <div className="flex gap-2 flex-col">
                 <CustomTable columns={[
                     {
-                        key: 'Exams Taken', header: 'Exams Taken', render: (_, row) => <div className="flex  items-center gap-1">
+                        key: 'Exams Taken', header: 'Exams Taken', render: (_, row: any) => <div className="flex  items-center gap-1">
                             {row.exam_title}
                         </div>
                     },
                     {
-                        key: 'Stage', header: 'Stage', render: (_, row) => <div className="flex  items-center gap-1">
+                        key: 'Stage', header: 'Stage', render: (_, row: any) => <div className="flex  items-center gap-1">
                             {row.exam_stage}
                         </div>
                     },
                     {
-                        key: 'Score', header: 'Score', render: (_, row) => <div className="flex  items-center gap-1">
+                        key: 'Score', header: 'Score', render: (_, row: any) => <div className="flex  items-center gap-1">
                             {row.score}
                         </div>
                     },
                     {
-                        key: 'Date Taken', header: 'Date Taken', render: (_, row) => <div className="flex  items-center gap-1">
+                        key: 'Date Taken', header: 'Date Taken', render: (_, row: any) => <div className="flex  items-center gap-1">
                             {formatDate(row.recorded_at)}
                         </div>
                     },
-                ]} data={results} />
+                ]} data={results as any[]} />
                 {/* <Table data={[]} columns={['Activity', 'Date', 'Time']} /> */}
             </div> : <EmptySession desc="Activities done on this platform by this user would appear here " label='No actions yet' />}
     </div>
@@ -225,7 +225,7 @@ function ProfileComponentReuse(
     // {scoresData}:{scoresData:RecordsType}
 ) {
 
-    const scoresData: any = {}
+    const scoresData: Record<string, unknown> = {}
     return <div className="flex gap-2 p-3 flex-col">
         {/* <AverageScore position={scoresData.performance.stats.leaderboard_ranking} percentage={scoresData.performance.stats.average_score} /> */}
         {/* <ScreeningScore screening={null} /> */}

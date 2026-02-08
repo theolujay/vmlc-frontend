@@ -55,12 +55,12 @@ export default function useForgotPassword(callbacks?: {
         onSuccess: () => {
             callbacks?.onEmailSuccess?.()
         },
-        onError: (error: any) => {
-            const emailError = error?.response?.data?.email?.[0]
+        onError: (error: unknown) => {
+            const emailError = (error as any)?.response?.data?.email?.[0]
             if (emailError === "No account found with this email address.") {
                 toast.error("Invalid email. Please confirm.")
             } else {
-                toast.error(error?.response?.data?.message || "Failed to send reset instructions")
+                toast.error((error as any)?.response?.data?.message || "Failed to send reset instructions")
             }
         }
     })
@@ -78,8 +78,8 @@ export default function useForgotPassword(callbacks?: {
         onSuccess: () => {
             callbacks?.onOtpSuccess?.()
         },
-        onError: (error: any) => {
-            toast.error(error?.response?.data?.message || "Invalid OTP code")
+        onError: (error: unknown) => {
+            toast.error((error as any)?.response?.data?.message || "Invalid OTP code")
         }
     })
 
@@ -89,8 +89,8 @@ export default function useForgotPassword(callbacks?: {
         onSuccess: () => {
             callbacks?.onPasswordSuccess?.()
         },
-        onError: (error: any) => {
-            toast.error(error?.response?.data?.message || "Failed to update password")
+        onError: (error: unknown) => {
+            toast.error((error as any)?.response?.data?.message || "Failed to update password")
         }
     })
 

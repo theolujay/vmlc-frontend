@@ -45,7 +45,7 @@ export default function useUploadSession(exam_id: string,onSuccessCallback:()=>v
       
       // If stage_id is missing, try to find it by matching stage name or status
       if (!stageId && stages.length > 0) {
-        const stageName = (data as any).stage || data.status;
+        const stageName = (data as UpdatedSessionQuestionType).stage_id?.toString() || data.status;
         if (stageName) {
           const matchedStage = stages.find(s => 
             s.name.toLowerCase() === stageName.toLowerCase()
@@ -69,7 +69,7 @@ export default function useUploadSession(exam_id: string,onSuccessCallback:()=>v
   }, [data, form, stages])
 
   const { isPending, mutate } = useMutation({
-    mutationFn: (payload: any) => ExamPortal.updateExamSession(exam_id, payload),
+    mutationFn: (payload: Record<string, unknown>) => ExamPortal.updateExamSession(exam_id, payload),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['list-exams'] })
       queryClient.invalidateQueries({ queryKey: ['exam-questions', exam_id] })

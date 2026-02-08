@@ -44,8 +44,8 @@ export default function useVerifyEmail() {
       toast.success(value.message || 'Email verified successfully');
       router.push('/login')
     },
-    onError: (error: any) => {
-      toast.error(error?.response?.data?.message || 'An error occurred. Please try again.');
+    onError: (error: unknown) => {
+      toast.error((error as any)?.response?.data?.message || 'An error occurred. Please try again.');
     }
   })
 

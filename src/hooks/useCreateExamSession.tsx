@@ -1,4 +1,5 @@
 import { ExamPortal } from '@/services/examPortal.service'
+import { CreateExamSessionType } from '@/types/Examtype'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useForm } from 'react-hook-form'
@@ -37,7 +38,7 @@ export default function useCreateExamSession() {
   })
   const { isPending, mutate, isSuccess } = useMutation({
     mutationFn: (payload: ValueType) => {
-      return ExamPortal.createExamSession(payload as any);
+      return ExamPortal.createExamSession(payload as CreateExamSessionType);
     },
     onSuccess: () => {
       toast.success('Exam session created successfully')

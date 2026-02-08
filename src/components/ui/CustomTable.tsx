@@ -6,6 +6,7 @@ import clsx from "clsx";
 type ColumnType<T> = {
   key: keyof T | string;
   header: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   render?: (value: any, row: T, index: number) => React.ReactNode;
   align?: 'left' | 'center' | 'right';
 };
@@ -67,11 +68,9 @@ export default function CustomTable<T>({
                     typeof col.key === "string" && col.key.includes(".")
                       ? col.key
                           .split(".")
-                          .reduce(
-                            (acc, k) => (acc && acc[k as keyof typeof acc]) || "",
-                            row as any
-                          )
-                      : (row as any)[col.key as keyof T];
+                          // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                          .reduce((acc: any, k) => acc?.[k] ?? "", row)
+                      : (row as any)[col.key];
 
                   return (
                     <td 

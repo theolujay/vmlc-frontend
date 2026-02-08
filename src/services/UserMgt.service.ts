@@ -185,7 +185,7 @@ export class UserMgtService {
         }
     }
 
-    static async updateOwnProfile(payload: any) {
+    static async updateOwnProfile(payload: FormData | Record<string, unknown>) {
         try {
             const headers: Record<string, string> = {};
             if (payload instanceof FormData) {

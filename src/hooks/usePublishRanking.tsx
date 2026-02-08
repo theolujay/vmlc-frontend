@@ -18,8 +18,8 @@ export default function usePublishRanking() {
         queryClient.invalidateQueries({ queryKey: ['competition-dashboard'] });
       }, 2000);
     },
-    onError: (error: any) => {
-      toast.error(error?.response?.data?.message || 'Failed to process ranking');
+    onError: (error: unknown) => {
+      toast.error((error as any)?.response?.data?.message || 'Failed to process ranking');
     },
   });
 

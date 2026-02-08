@@ -15,7 +15,7 @@ const MathRenderer: React.FC<MathRendererProps> = ({ content, className = "", in
     const renderMath = () => {
       if (typeof window !== 'undefined' && window.MathJax && window.MathJax.typesetPromise && containerRef.current) {
         // MathJax 3/4 typesetting is promise-based
-        window.MathJax.typesetPromise([containerRef.current]).catch((err: any) => {
+        window.MathJax.typesetPromise([containerRef.current]).catch((err: unknown) => {
           console.error('MathJax typeset failed:', err);
         });
       }

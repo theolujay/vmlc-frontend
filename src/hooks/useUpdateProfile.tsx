@@ -6,14 +6,14 @@ export default function useUpdateProfile() {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: (payload: any) => UserMgtService.updateOwnProfile(payload),
+    mutationFn: (payload: FormData | Record<string, unknown>) => UserMgtService.updateOwnProfile(payload),
     onSuccess: () => {
       toast.success('Profile updated successfully')
       queryClient.invalidateQueries({ queryKey: ['account-details'] })
       queryClient.invalidateQueries({ queryKey: ['candidate-details'] })
     },
-    onError: (error: any) => {
-      const message = error.response?.data?.message || 'Failed to update profile'
+    onError: (error: unknown) => {
+      const message = (error as any).response?.data?.message || (error as Error).message || 'Failed to update profile'
       toast.error(message)
     }
   })

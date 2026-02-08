@@ -177,7 +177,7 @@ export class ExamPortal {
     }
 
 
-    static async updateExamSession(exam_id: string, payload: any) {
+    static async updateExamSession(exam_id: string, payload: Record<string, unknown>) {
         try {
             const response = await client.put(examUrls.UPDATE_EXAM(exam_id), payload);
             return response.data;
