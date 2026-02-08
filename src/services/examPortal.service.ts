@@ -71,6 +71,16 @@ export class ExamPortal {
         }
     }
 
+    static async updateQuestion(id: number, payload: CreateQuestionType) {
+        try {
+            const response = await client.patch(examUrls.UPDATE_QUESTION(id), payload)
+            return response.data;
+        } catch (error) {
+            console.error(error)
+            throw error;
+        }
+    }
+
 
 
     static async deleteExamSession(id: string) {

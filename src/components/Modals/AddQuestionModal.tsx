@@ -3,33 +3,64 @@
 import React, { useState, useEffect, useCallback, useMemo } from "react"
 import AppDialog from "@/components/ui/Modals/AppDialog"
 import useCreateQuestion from "@/hooks/useCreateQuestion"
+import useUpdateQuestion from "@/hooks/useUpdateQuestion"
 import MathInput from "./ui/MathInput"
 import { parseBulkQuestion } from "@/services/gemini.service"
 import { Difficulty, QuestionData } from "@/types/question"
 import { DIFFICULTY_OPTIONS } from "@/constants/math"
 
 import UnifiedQuestionPreview from "@/components/Admin/ExamSystem/UnifiedQuestionPreview"
+import { SessionQuestionItemType } from "@/types/Examtype"
 
 export default function AddQuestionModal({
   open,
   close,
   examId,
-}: Readonly<{ open: boolean; close: (close: boolean) => void; examId?: string }>) {
-  const { onSubmit, isPending, form } = useCreateQuestion(() => {
+  initialData,
+  isEdit = false,
+}: Readonly<{ 
+  open: boolean; 
+  close: (close: boolean) => void; 
+  examId?: string;
+  initialData?: SessionQuestionItemType;
+  isEdit?: boolean;
+}>) {
+  const onSuccess = () => {
     setHasChanges(false);
     handleClose(true);
-  }, examId);
+  };
 
-  const initialFormData: QuestionData = useMemo(() => ({
-    questionText: '',
-    options: [
-      { id: '1', label: 'Option A', text: '', type: 'wrong' },
-      { id: '2', label: 'Option B', text: '', type: 'wrong' },
-      { id: '3', label: 'Option C', text: '', type: 'wrong' },
-      { id: '4', label: 'Option D', text: '', type: 'wrong' },
-    ],
-    difficulty: Difficulty.EASY,
-  }), []);
+  const { onSubmit: onCreateSubmit, isPending: isCreatePending, form: createForm } = useCreateQuestion(onSuccess, examId);
+  const { onSubmit: onUpdateSubmit, isPending: isUpdatePending, form: updateForm } = useUpdateQuestion(initialData?.id || 0, onSuccess, examId);
+
+  const onSubmit = isEdit ? onUpdateSubmit : onCreateSubmit;
+  const isPending = isEdit ? isUpdatePending : isCreatePending;
+  const form = isEdit ? updateForm : createForm;
+
+  const initialFormData: QuestionData = useMemo(() => {
+    if (isEdit && initialData) {
+      return {
+        questionText: initialData.text,
+        options: [
+          { id: '1', label: 'Option A', text: initialData.option_a, type: initialData.correct_answer === 'A' ? 'correct' : 'wrong' },
+          { id: '2', label: 'Option B', text: initialData.option_b, type: initialData.correct_answer === 'B' ? 'correct' : 'wrong' },
+          { id: '3', label: 'Option C', text: initialData.option_c, type: initialData.correct_answer === 'C' ? 'correct' : 'wrong' },
+          { id: '4', label: 'Option D', text: initialData.option_d, type: initialData.correct_answer === 'D' ? 'correct' : 'wrong' },
+        ],
+        difficulty: (initialData.difficulty.toUpperCase() as Difficulty) || Difficulty.EASY,
+      };
+    }
+    return {
+      questionText: '',
+      options: [
+        { id: '1', label: 'Option A', text: '', type: 'wrong' },
+        { id: '2', label: 'Option B', text: '', type: 'wrong' },
+        { id: '3', label: 'Option C', text: '', type: 'wrong' },
+        { id: '4', label: 'Option D', text: '', type: 'wrong' },
+      ],
+      difficulty: Difficulty.EASY,
+    };
+  }, [isEdit, initialData]);
 
   // Local state for the rich UI
   const [formData, setFormData] = useState<QuestionData>(initialFormData);
@@ -40,6 +71,26 @@ export default function AddQuestionModal({
   const [hasChanges, setHasChanges] = useState(false);
   const [showCloseConfirm, setShowCloseConfirm] = useState(false);
   const [tempParsedData, setTempParsedData] = useState<QuestionData | null>(null);
+
+  // Sync with initialData when it changes or when modal opens
+  useEffect(() => {
+    if (open) {
+      setFormData(initialFormData);
+      if (isEdit && initialData) {
+        const correctId = ['A', 'B', 'C', 'D'].indexOf(initialData.correct_answer) + 1;
+        setCorrectOptionId(String(correctId));
+        
+        // Also sync react-hook-form
+        form.setValue("text", initialData.text);
+        form.setValue("option_a", initialData.option_a);
+        form.setValue("option_b", initialData.option_b);
+        form.setValue("option_c", initialData.option_c);
+        form.setValue("option_d", initialData.option_d);
+        form.setValue("difficulty", initialData.difficulty.toLowerCase());
+        form.setValue("correct_answer", initialData.correct_answer);
+      }
+    }
+  }, [open, isEdit, initialData, initialFormData, form]);
 
   const isFormValid = useMemo(() => {
     return (
@@ -210,7 +261,7 @@ export default function AddQuestionModal({
                 <i className="fas fa-plus-circle text-xl"></i>
             </div>
             <div>
-              <h1 className="text-2xl font-black text-gray-800 tracking-tight">Add New Question</h1>
+              <h1 className="text-2xl font-black text-gray-800 tracking-tight">{isEdit ? 'Edit Question' : 'Add New Question'}</h1>
               <div className="flex items-center space-x-3 mt-1">
                  <div className={`px-2 py-0.5 rounded-full text-[8px] font-black uppercase tracking-widest ${
                    view === 'edit' ? 'bg-[#3E4095] text-white' : 'bg-gray-100 text-gray-400'
@@ -507,12 +558,12 @@ D) 1/2"
                   {isPending ? (
                       <>
                       <i className="fas fa-circle-notch animate-spin mr-3 text-lg"></i>
-                      Publishing...
+                      {isEdit ? 'Updating...' : 'Publishing...'}
                       </>
                   ) : (
                       <>
                       <i className="fas fa-paper-plane mr-2"></i>
-                      Add Question
+                      {isEdit ? 'Update Question' : 'Add Question'}
                       </>
                   )}
                   </button>

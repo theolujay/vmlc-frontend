@@ -13,6 +13,11 @@ import QuestionInformation from "../Drawer/QuestionInformation"
 import MathRenderer from "@/components/Exam/MathRenderer"
 import { useDebouncedSearch } from "@/hooks/useDebouncedSearch"
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu'
+import dynamic from "next/dynamic"
+
+const AddQuestionModal = dynamic(() => import("@/components/Modals/AddQuestionModal"), {
+  ssr: false,
+});
 
 export default function QuestionsTable({ 
   questions, 
@@ -35,6 +40,8 @@ export default function QuestionsTable({
   const [openDrawer, setOpenDrawer] = useState(false)
   const [selectedQuestionId, setSelectedQuestionId] = useState<number>(0);
   const [currentQuestion, setCurrentQuestion] = useState<SessionQuestionItemType | null>(null)
+  const [openEditQuestion, setOpenEditQuestion] = useState(false);
+  const [questionToEdit, setQuestionToEdit] = useState<SessionQuestionItemType | null>(null);
 
   const isEditable = status === 'draft' || status === 'scheduled';
 
@@ -246,6 +253,15 @@ export default function QuestionsTable({
                   </button>
                   <button 
                     onClick={() => {
+                      setQuestionToEdit(row);
+                      setOpenEditQuestion(true);
+                    }} 
+                    className="px-5 py-2.5 rounded-xl bg-blue-50 text-[#3E4095] border border-[#3E4095]/10 font-black text-[10px] uppercase tracking-widest hover:bg-[#3E4095] hover:text-white hover:shadow-lg hover:shadow-[#3E4095]/20 transition-all cursor-pointer w-28 text-center active:scale-95"
+                  >
+                    Edit
+                  </button>
+                  <button 
+                    onClick={() => {
                       if (!isEditable) return;
                       setSelectedQuestionId(row.id);
                       handleOpenModal()
@@ -275,6 +291,14 @@ export default function QuestionsTable({
         <QuestionInformation information={currentQuestion} open={openDrawer} setOpen={setOpenDrawer} />
       }
       <RemoveQuestionModal question_id={selectedQuestionId} close={setOpenRemoveQuestion} open={openRemoveQuestion} />
+      {questionToEdit && (
+        <AddQuestionModal 
+          open={openEditQuestion} 
+          close={setOpenEditQuestion} 
+          initialData={questionToEdit} 
+          isEdit={true} 
+        />
+      )}
     </ResponsiveContainer>
   )
 }

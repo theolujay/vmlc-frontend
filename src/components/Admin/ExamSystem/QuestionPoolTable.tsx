@@ -16,6 +16,11 @@ import BulkRemoveQuestionsModal from "@/components/Modals/BulkRemoveQuestionsMod
 import { useDebouncedSearch } from "@/hooks/useDebouncedSearch";
 import MathRenderer from "@/components/Exam/MathRenderer";
 import useGetCurrentUser from "@/hooks/useGetCurrentUser";
+import dynamic from "next/dynamic";
+
+const AddQuestionModal = dynamic(() => import("@/components/Modals/AddQuestionModal"), {
+  ssr: false,
+});
 
 type ColumnType<T> = {
   key: keyof T | string;
@@ -161,6 +166,8 @@ export default function QuestionPoolTable({
   const [openDrawer, setOpenDrawer] = useState(false);
   const [selectedQuestionId, setSelectedQuestionId] = useState<number>(0);
   const [currentQuestion, setCurrentQuestion] = useState<SessionQuestionItemType | null>(null);
+  const [openEditQuestion, setOpenEditQuestion] = useState(false);
+  const [questionToEdit, setQuestionToEdit] = useState<SessionQuestionItemType | null>(null);
 
   const currentUser = useGetCurrentUser();
   const userRole = currentUser?.profile?.role || "";
@@ -336,6 +343,10 @@ export default function QuestionPoolTable({
                 <div className="flex justify-center items-center">
                   <QuestionPoolDropdown 
                     onAddToExam={() => handleOpenExamSessionModal([row.id])}
+                    onEdit={() => {
+                      setQuestionToEdit(row);
+                      setOpenEditQuestion(true);
+                    }}
                     information={row} 
                     question_id={row.id} 
                   />
@@ -372,6 +383,14 @@ export default function QuestionPoolTable({
         close={setOpenRemoveQuestion}
         open={openRemoveQuestion}
       />
+      {questionToEdit && (
+        <AddQuestionModal 
+          open={openEditQuestion} 
+          close={setOpenEditQuestion} 
+          initialData={questionToEdit} 
+          isEdit={true} 
+        />
+      )}
     </ResponsiveContainer>
   );
 }

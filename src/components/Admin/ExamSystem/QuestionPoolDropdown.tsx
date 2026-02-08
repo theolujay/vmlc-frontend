@@ -11,10 +11,11 @@ import useGetCurrentUser from '@/hooks/useGetCurrentUser';
 type Props = Readonly<{ 
     question_id: number, 
     information: SessionQuestionItemType,
-    onAddToExam?: () => void 
+    onAddToExam?: () => void,
+    onEdit?: () => void
 }>
 
-export default function QuestionPoolDropdown({ question_id, information, onAddToExam }: Props) {
+export default function QuestionPoolDropdown({ question_id, information, onAddToExam, onEdit }: Props) {
     const [openViewModal, setOpenViewModal] = useState(false)
     const [openDeleteModal, setOpenDeleteModal] = useState(false)
 
@@ -44,6 +45,20 @@ export default function QuestionPoolDropdown({ question_id, information, onAddTo
                     </div>
                 ),
                 onClick: onAddToExam
+            });
+        }
+
+        if (isAdminOrAbove) {
+            items.push({
+                label: (
+                    <div className='flex items-center gap-3 py-1'>
+                        <div className="w-8 h-8 bg-blue-50 rounded-lg flex items-center justify-center text-[#3E4095]">
+                            <i className="fas fa-edit text-xs"></i>
+                        </div>
+                        <span className="text-[10px] font-black uppercase tracking-widest text-gray-700">Edit Question</span>
+                    </div>
+                ),
+                onClick: onEdit
             });
         }
 
