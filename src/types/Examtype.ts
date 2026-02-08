@@ -138,6 +138,7 @@ export type TakeExamType = {
   id: string;
   title: string;
   description: string;
+  attempt?: AttemptType | null;
   open_duration_hours: number;
   scheduled_date: Date;
   countdown_minutes: number;

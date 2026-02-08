@@ -2,26 +2,37 @@
 import { useExamContext } from "@/contexts/ExamNavigationProvider"
 import { formatExamTitle } from "@/utils/generalUtils"
 import { useRouter } from "next/navigation"
-import { useEffect, useRef, useState } from "react"
+import { useCallback, useEffect, useRef, useState } from "react"
 import clsx from 'clsx'
 
 export default function HeaderTimer({
   timer,
+  deadline,
   onTimeUp,
   title
 }: {
   timer: number
+  deadline?: string
   onTimeUp?: () => Promise<void> | void
   title?: string
 }) {
   const router = useRouter()
   const { showNav, setShowNav } = useExamContext()
-  const [timeLeft, setTimeLeft] = useState<number>(timer * 60)
+  
+  const calculateInitialTime = useCallback(() => {
+    if (deadline) {
+      const remaining = Math.floor((new Date(deadline).getTime() - new Date().getTime()) / 1000);
+      return Math.max(0, remaining);
+    }
+    return timer * 60;
+  }, [timer, deadline]);
+
+  const [timeLeft, setTimeLeft] = useState<number>(calculateInitialTime);
   const hasSubmitted = useRef(false)
 
   useEffect(() => {
-    setTimeLeft(timer * 60)
-  }, [timer])
+    setTimeLeft(calculateInitialTime());
+  }, [calculateInitialTime])
 
   useEffect(() => {
     const interval = setInterval(() => {
