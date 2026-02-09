@@ -1,4 +1,5 @@
 import useGetStatOverview from '@/hooks/useGetStatOverview'
+import useGetCompetitionDashboard from '@/hooks/useGetCompetitionDashboard'
 import { ExamPortal } from '@/services/examPortal.service'
 import { UpdatedSessionQuestionType } from '@/types/Examtype'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -32,7 +33,7 @@ const defaultValues: ValueType = {
 export default function useUploadSession(exam_id: string,onSuccessCallback:()=>void, data?: UpdatedSessionQuestionType) {
   const queryClient = useQueryClient()
   const { data: statOverview } = useGetStatOverview()
-  const stages = statOverview?.competition?.stages || []
+  const { data: dashboard } = useGetCompetitionDashboard()
 
   const form = useForm({
     resolver: zodResolver(uploadExamSchema),
@@ -41,9 +42,25 @@ export default function useUploadSession(exam_id: string,onSuccessCallback:()=>v
 
   useEffect(() => {
     if (data) {
+      const stages = statOverview?.competition?.stages || []
       let stageId = data.stage_id;
+      let round = data.round;
       
-      // If stage_id is missing, try to find it by matching stage name or status
+      // If stage_id is missing, try to find it from dashboard focus stage
+      if (!stageId && dashboard?.progress?.current_stage && stages.length > 0) {
+        const matchedStage = stages.find(s => 
+          s.name.toLowerCase() === dashboard.progress.current_stage.toLowerCase()
+        );
+        if (matchedStage) {
+          stageId = matchedStage.id;
+          // Also default round if it's a league stage
+          if (!round && matchedStage.type === 'league') {
+            round = dashboard.progress.current_round;
+          }
+        }
+      }
+
+      // If still missing, try to find it by matching stage name or status
       if (!stageId && stages.length > 0) {
         const stageName = (data as UpdatedSessionQuestionType).stage_id?.toString() || data.status;
         if (stageName) {
@@ -59,14 +76,14 @@ export default function useUploadSession(exam_id: string,onSuccessCallback:()=>v
       form.reset({
         ...defaultValues,
         stage_id: stageId ?? undefined,
-        round: data.round ?? undefined,
+        round: round ?? undefined,
         scheduled_date: data.scheduled_date ? data.scheduled_date.split('T')[0] : '',
         scheduled_exam_time: data.scheduled_date ? data.scheduled_date.split('T')[1].substring(0, 5) : '',
         countdown_minutes: data.countdown_minutes?.toString() || '',
         open_duration_hours: data.open_duration_hours?.toString() || '',
       })
     }
-  }, [data, form, stages])
+  }, [data, form, statOverview, dashboard])
 
   const { isPending, mutate } = useMutation({
     mutationFn: (payload: Record<string, unknown>) => ExamPortal.updateExamSession(exam_id, payload),

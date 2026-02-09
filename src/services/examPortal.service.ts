@@ -99,11 +99,20 @@ export class ExamPortal {
     }
 
 
-
     static async deleteQuestion(id: number) {
         try {
 
             const response = await client.delete(examUrls.DELETE_QUESTION(id))
+            return response.data;
+        } catch (error) {
+            console.error(error)
+            throw error;
+        }
+    }
+
+    static async retractExam(id: string) {
+        try {
+            const response = await client.post(examUrls.RETRACT_EXAM(id))
             return response.data;
         } catch (error) {
             console.error(error)

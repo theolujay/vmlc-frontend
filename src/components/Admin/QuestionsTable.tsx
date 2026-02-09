@@ -26,7 +26,8 @@ export default function QuestionsTable({
   page_count,
   filters,
   setFilters,
-  status
+  status,
+  exam_id
 }: Readonly<{
   questions: SessionQuestionItemType[]
   onPageChange: Dispatch<SetStateAction<number>>, 
@@ -34,7 +35,8 @@ export default function QuestionsTable({
   page_count: number,
   filters: Record<string, string>,
   setFilters: Dispatch<SetStateAction<Record<string, string>>>,
-  status?: string
+  status?: string,
+  exam_id?: string | number
 }>) {
   const [openRemoveQuestion, setOpenRemoveQuestion] = useState(false);
   const [openDrawer, setOpenDrawer] = useState(false)
@@ -297,7 +299,7 @@ export default function QuestionsTable({
       {currentQuestion &&
         <QuestionInformation information={currentQuestion} open={openDrawer} setOpen={setOpenDrawer} />
       }
-      <RemoveQuestionModal question_id={selectedQuestionId} close={setOpenRemoveQuestion} open={openRemoveQuestion} />
+      <RemoveQuestionModal question_id={selectedQuestionId} close={setOpenRemoveQuestion} open={openRemoveQuestion} exam_id={exam_id} />
       {questionToEdit && (
         <AddQuestionModal 
           open={openEditQuestion} 
