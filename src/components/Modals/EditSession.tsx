@@ -60,14 +60,14 @@ export default function EditSessionModal({ open, close, exam_id, data }: Props) 
                             <div className="flex flex-col gap-1.5">
                                 <label className='text-[9px] font-black text-gray-400 uppercase tracking-widest flex items-center gap-2'>
                                     <i className="fas fa-font text-[#3E4095]"></i>
-                                    Exam Session Title <span className="text-red-500">*</span>
+                                    Exam Session Title
                                 </label>
                                 <input 
                                     {...register('title')} 
                                     placeholder='Enter session title' 
-                                    required 
+                                    readOnly 
                                     type="text" 
-                                    className='w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold text-gray-800 focus:ring-4 focus:ring-[#3E4095]/5 focus:border-[#3E4095] outline-none transition-all' 
+                                    className='w-full bg-gray-100 border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold text-gray-400 cursor-not-allowed outline-none transition-all' 
                                 />
                                 {errors.title && <p className="text-[10px] font-bold text-red-500 mt-1 uppercase tracking-tight">{errors.title.message}</p>}
                             </div>
@@ -124,12 +124,12 @@ export default function EditSessionModal({ open, close, exam_id, data }: Props) 
                             <div className="flex flex-col gap-1.5">
                                 <label className='text-[9px] font-black text-gray-400 uppercase tracking-widest flex items-center gap-2'>
                                     <i className="fas fa-align-left text-[#3E4095]"></i>
-                                    Description <span className="text-red-500">*</span>
+                                    Description
                                 </label>
                                 <textarea  
                                     {...register('description')} 
                                     placeholder='Enter session description' 
-                                    required 
+                                    readOnly 
                                     className='w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold text-gray-800 focus:ring-4 focus:ring-[#3E4095]/5 focus:border-[#3E4095] outline-none transition-all h-32 resize-none' 
                                 />
                                 {errors.description && <p className="text-[10px] font-bold text-red-500 mt-1 uppercase tracking-tight">{errors.description.message}</p>}

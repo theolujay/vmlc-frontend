@@ -13,6 +13,7 @@ import AppDropdownDialog from '@/components/ui/Dropdown/AppDropdownDialog';
 import usePublishRanking from '@/hooks/usePublishRanking';
 import { UpdatedSessionQuestionType } from '@/types/Examtype';
 import { SummaryIcon } from '../AdminIcons';
+import useRetractExam from '@/hooks/useRetractExam';
 
 const AddQuestionModal = dynamic(() => import('@/components/Modals/AddQuestionModal'), {
   ssr: false,
@@ -30,6 +31,7 @@ export default function ExamSessionDropdownDialog({ exam_id, data }: Props) {
     const [openUpload, setOpenUpload] = useState(false);
     
     const { publishRanking, isPending: isPublishingRanking } = usePublishRanking();
+    const { onSubmit: retractExam, isPending: isRetracting } = useRetractExam();
 
     const status = data?.status;
     const hasRanking = data?.ranking?.exists;
@@ -72,7 +74,7 @@ export default function ExamSessionDropdownDialog({ exam_id, data }: Props) {
                 <span className="text-[10px] font-black uppercase tracking-widest">Add Question</span>
             </div>,
             onClick: addExamSessionModal,
-            disabled: status !== 'draft' && status !== 'scheduled'
+            disabled: status !== 'draft'
         },
         {
             label: <div className='flex items-center gap-3 py-1'>
@@ -82,7 +84,7 @@ export default function ExamSessionDropdownDialog({ exam_id, data }: Props) {
                 <span className="text-[10px] font-black uppercase tracking-widest">Edit Session</span>
             </div>,
             onClick: handleOpenEditModal,
-            disabled: status !== 'draft' && status !== 'scheduled'
+            disabled: status !== 'draft'
         },
         // Ranking actions
         {
@@ -113,7 +115,16 @@ export default function ExamSessionDropdownDialog({ exam_id, data }: Props) {
             onClick: () => publishRanking({ exam_id, publish_now: true }),
             disabled: isPublished || status !== 'concluded' || !hasRanking || isPublishingRanking
         },
-        {
+        status === 'scheduled' ? {
+            label: <div className='flex items-center gap-3 py-1'>
+                <div className="w-8 h-8 bg-red-50 rounded-lg flex items-center justify-center text-[#D42620]">
+                    <i className="fas fa-undo-alt text-xs"></i>
+                </div>
+                <span className='text-[10px] font-black uppercase tracking-widest text-[#D42620]'>Retract Exam</span>
+            </div>,
+            onClick: () => retractExam(exam_id),
+            disabled: isRetracting
+        } : {
             label: <div className='flex items-center gap-3 py-1'>
                 <div className="w-8 h-8 bg-red-50 rounded-lg flex items-center justify-center text-[#D42620]">
                     <DeleteIcon />
@@ -121,7 +132,7 @@ export default function ExamSessionDropdownDialog({ exam_id, data }: Props) {
                 <span className='text-[10px] font-black uppercase tracking-widest text-[#D42620]'>Delete Session</span>
             </div>,
             onClick: deleteExamSessionModal,
-            disabled: status !== 'draft' && status !== 'scheduled'
+            disabled: status !== 'draft'
         },
     ];
 

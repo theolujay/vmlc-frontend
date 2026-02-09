@@ -36,7 +36,7 @@ export type BulkArchiveType={
 }
 
 export type BulkActionType = {
-  action: 'archive' | 'assign' | 'unassign';
+action: 'archive' | 'assign' | 'unassign';
   question_ids: number[];
   exam_ids?: (number | string)[];
 }

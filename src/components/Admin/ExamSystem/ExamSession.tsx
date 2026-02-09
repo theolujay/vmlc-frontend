@@ -64,6 +64,7 @@ export default function ExamSession() {
             filters={filters}
             setFilters={setFilters}
             status={data?.status}
+            exam_id={id}
           />
         </div>
       }

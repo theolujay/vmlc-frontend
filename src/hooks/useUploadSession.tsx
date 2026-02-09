@@ -1,4 +1,5 @@
 import useGetStatOverview from '@/hooks/useGetStatOverview'
+import useGetCompetitionDashboard from '@/hooks/useGetCompetitionDashboard'
 import { ExamPortal } from '@/services/examPortal.service'
 import { UpdatedSessionQuestionType } from '@/types/Examtype'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -32,7 +33,7 @@ const defaultValues: ValueType = {
 export default function useUploadSession(exam_id: string,onSuccessCallback:()=>void, data?: UpdatedSessionQuestionType) {
   const queryClient = useQueryClient()
   const { data: statOverview } = useGetStatOverview()
-  const stages = statOverview?.competition?.stages || []
+  const { data: dashboard } = useGetCompetitionDashboard()
 
   const form = useForm({
     resolver: zodResolver(uploadExamSchema),
@@ -41,32 +42,50 @@ export default function useUploadSession(exam_id: string,onSuccessCallback:()=>v
 
   useEffect(() => {
     if (data) {
+      const stages = statOverview?.competition?.stages || []
       let stageId = data.stage_id;
+      let round = data.round;
       
-      // If stage_id is missing, try to find it by matching stage name or status
-      if (!stageId && stages.length > 0) {
-        const stageName = (data as UpdatedSessionQuestionType).stage_id?.toString() || data.status;
-        if (stageName) {
-          const matchedStage = stages.find(s => 
-            s.name.toLowerCase() === stageName.toLowerCase()
-          );
-          if (matchedStage) {
-            stageId = matchedStage.id;
-          }
+      // Try to resolve stageId from exam's own stage property (string) if stage_id is missing
+      if (!stageId && data.stage && stages.length > 0) {
+        const matchedStage = stages.find(s => 
+          s.name.toLowerCase() === data.stage!.toLowerCase()
+        );
+        if (matchedStage) {
+          stageId = matchedStage.id;
+        }
+      }
+
+      // If still missing, fallback to competition focus stage from dashboard
+      if (!stageId && dashboard?.progress?.current_stage && stages.length > 0) {
+        const matchedStage = stages.find(s => 
+          s.name.toLowerCase() === dashboard.progress.current_stage.toLowerCase()
+        );
+        if (matchedStage) {
+          stageId = matchedStage.id;
+        }
+      }
+
+      // Handle round pre-selection for league stages
+      const currentStageObj = stages.find(s => s.id === stageId);
+      if (currentStageObj?.type === 'league' && !round) {
+        // Default to competition focus round if exam round is missing
+        if (dashboard?.progress?.current_round) {
+          round = dashboard.progress.current_round;
         }
       }
 
       form.reset({
         ...defaultValues,
         stage_id: stageId ?? undefined,
-        round: data.round ?? undefined,
+        round: round ?? undefined,
         scheduled_date: data.scheduled_date ? data.scheduled_date.split('T')[0] : '',
         scheduled_exam_time: data.scheduled_date ? data.scheduled_date.split('T')[1].substring(0, 5) : '',
         countdown_minutes: data.countdown_minutes?.toString() || '',
         open_duration_hours: data.open_duration_hours?.toString() || '',
       })
     }
-  }, [data, form, stages])
+  }, [data, form, statOverview, dashboard])
 
   const { isPending, mutate } = useMutation({
     mutationFn: (payload: Record<string, unknown>) => ExamPortal.updateExamSession(exam_id, payload),

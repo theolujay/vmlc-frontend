@@ -72,9 +72,9 @@ export default function useCreateQuestion(onSuccess: () => void, examId?: string
         }
 
         if (examId) {
-            formData.append('exam_ids', JSON.stringify([examId]));
+            formData.append('exam_ids', examId);
         } else if (payload.exam_ids) {
-            formData.append('exam_ids', JSON.stringify(payload.exam_ids));
+            payload.exam_ids.forEach(id => formData.append('exam_ids', id));
         }
 
         mutate(formData);
