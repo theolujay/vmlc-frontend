@@ -372,6 +372,8 @@ export type UpdatedSessionQuestionType = {
   scheduled_date: string;
   concluded_at: string | null;
   created_at: string;
+  stage?: string;
+  stage_display?: string;
   stage_id?: number;
   round?: number;
   created_by: {

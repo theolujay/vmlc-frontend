@@ -46,30 +46,32 @@ export default function useUploadSession(exam_id: string,onSuccessCallback:()=>v
       let stageId = data.stage_id;
       let round = data.round;
       
-      // If stage_id is missing, try to find it from dashboard focus stage
+      // Try to resolve stageId from exam's own stage property (string) if stage_id is missing
+      if (!stageId && data.stage && stages.length > 0) {
+        const matchedStage = stages.find(s => 
+          s.name.toLowerCase() === data.stage!.toLowerCase()
+        );
+        if (matchedStage) {
+          stageId = matchedStage.id;
+        }
+      }
+
+      // If still missing, fallback to competition focus stage from dashboard
       if (!stageId && dashboard?.progress?.current_stage && stages.length > 0) {
         const matchedStage = stages.find(s => 
           s.name.toLowerCase() === dashboard.progress.current_stage.toLowerCase()
         );
         if (matchedStage) {
           stageId = matchedStage.id;
-          // Also default round if it's a league stage
-          if (!round && matchedStage.type === 'league') {
-            round = dashboard.progress.current_round;
-          }
         }
       }
 
-      // If still missing, try to find it by matching stage name or status
-      if (!stageId && stages.length > 0) {
-        const stageName = (data as UpdatedSessionQuestionType).stage_id?.toString() || data.status;
-        if (stageName) {
-          const matchedStage = stages.find(s => 
-            s.name.toLowerCase() === stageName.toLowerCase()
-          );
-          if (matchedStage) {
-            stageId = matchedStage.id;
-          }
+      // Handle round pre-selection for league stages
+      const currentStageObj = stages.find(s => s.id === stageId);
+      if (currentStageObj?.type === 'league' && !round) {
+        // Default to competition focus round if exam round is missing
+        if (dashboard?.progress?.current_round) {
+          round = dashboard.progress.current_round;
         }
       }
 
