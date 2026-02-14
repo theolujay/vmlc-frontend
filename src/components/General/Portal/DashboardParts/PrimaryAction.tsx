@@ -2,6 +2,8 @@ import React, { useState, useEffect, useRef } from 'react';
 import { AvailableExamType } from '@/types/Examtype';
 import { useRouter } from 'next/navigation';
 import { formatExamTitle } from '@/utils/generalUtils';
+import CaptureDialog from '@/components/General/BioVerification/CaptureDialog';
+import useUploadExamFaceCapture from '@/hooks/useUploadExamFaceCapture';
 
 interface PrimaryActionProps {
   exam: AvailableExamType | null;
@@ -79,9 +81,28 @@ const PrimaryAction: React.FC<PrimaryActionProps> = ({ exam, isRankingAvailable 
     return () => clearInterval(timer);
   }, [exam, onCountdownEnd]);
 
+  const [isCaptureOpen, setIsCaptureOpen] = useState(false);
+  const { uploadFace, isPending: isUploading, isSuccess: isUploadSuccess } = useUploadExamFaceCapture();
+
+  useEffect(() => {
+    if (isUploadSuccess && exam) {
+      router.push(`/exam-portal/${exam.id}/exam`);
+    }
+  }, [isUploadSuccess, exam, router]);
+
   const handleStartExam = () => {
     if (exam && canEnter && !isFinals) {
-      router.push(`/exam-portal/${exam.id}/exam`);
+      if (exam.access_status === 'started') {
+        router.push(`/exam-portal/${exam.id}/exam`);
+      } else {
+        setIsCaptureOpen(true);
+      }
+    }
+  };
+
+  const handleCaptureFile = (file: File) => {
+    if (exam) {
+      uploadFace({ examId: exam.id, file });
     }
   };
 
@@ -195,6 +216,15 @@ const PrimaryAction: React.FC<PrimaryActionProps> = ({ exam, isRankingAvailable 
           )}
         </div>
       </div>
+
+      {exam && (
+        <CaptureDialog
+          open={isCaptureOpen}
+          close={setIsCaptureOpen}
+          onCaptureFile={handleCaptureFile}
+          isPending={isUploading}
+        />
+      )}
     </section>
   );
 };

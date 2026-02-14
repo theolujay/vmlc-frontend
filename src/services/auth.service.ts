@@ -1,7 +1,7 @@
 import { authUrls } from "@/constants/authUrls";
 // import { ValueType } from "@/hooks/useRegister";
 import { StaffValueType } from "@/hooks/useRegisterStaff";
-import { AuthLoginResponse, AuthRegisterResponse, LoginRequest, LogoutRequest, RegAvailableType, RegisterRequestValueType, RegisterStaffRequestValueType, SetNewPasswordType, VerifyRequest, } from "@/types/auth";
+import { AuthLoginResponse, AuthRegisterResponse, DirectAccessLoginResponse, LoginRequest, LogoutRequest, RegAvailableType, RegisterRequestValueType, RegisterStaffRequestValueType, SetNewPasswordType, VerifyRequest, } from "@/types/auth";
 import client from "@/utils/axios";
 
 export class AuthService {
@@ -50,6 +50,16 @@ export class AuthService {
             throw error;
         }
 
+    }
+
+    static async directAccessLogin(passcode: string): Promise<DirectAccessLoginResponse> {
+        try {
+            const response = await client.post(authUrls.directAccess, { passcode });
+            return response.data;
+        } catch (error) {
+            console.error(error);
+            throw error;
+        }
     }
 
     static async logout(payload: LogoutRequest) {
