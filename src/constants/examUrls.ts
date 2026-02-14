@@ -14,6 +14,7 @@ export const examUrls = {
     BULK_ACTION_QUESTIONS: `/v2/questions/bulk-action/`,
     UPDATE_EXAM: (exam_id: string) => `/v2/exams/${exam_id}/`,
     RETRACT_EXAM: (exam_id: string) => `/v2/exams/${exam_id}/retract/`,
+    FACE_CAPTURE: (exam_id: string) => `/v2/exams/${exam_id}/face-capture/`,
     TAKE_EXAM: (exam_id: string) => `/v2/exams/${exam_id}/take-exam/`,
     CANDIDATE_SUBMIT_ANSWERS: (exam_id: string) => `/v2/exams/${exam_id}/submit/`,
     EXAM_RESULTS: (exam_id: string) => `/v2/exams/${exam_id}/results/`,

@@ -1,5 +1,6 @@
 "use client"
 import useLogin from '@/hooks/useLogin'
+import useDirectAccessLogin from '@/hooks/useDirectAccessLogin'
 import Link from 'next/link'
 import { FormProvider } from 'react-hook-form'
 import { NeutralInput, OrdinaryPasswordInput } from '../ui/Input'
@@ -8,11 +9,39 @@ import { MailIcon, PasswordIcon } from '../ui/SvgAsset/GeneralAsset'
 import AuthLayout from './Layout/Layout'
 import config from '../../../config'
 import clsx from 'clsx'
+import { useSearchParams } from 'next/navigation'
+import { useEffect, useState } from 'react'
 
 const landingUrl = config.LANDING_URL
 
 export default function Login() {
   const { form, onSubmit, isPending } = useLogin()
+  const { login: directLogin, isPending: isDirectPending } = useDirectAccessLogin()
+  const searchParams = useSearchParams()
+  const passcode = searchParams.get('passcode')
+  const [hasAttemptedDirect, setHasAttemptedDirect] = useState(false)
+
+  useEffect(() => {
+    if (passcode && !hasAttemptedDirect) {
+      setHasAttemptedDirect(true)
+      directLogin(passcode)
+    }
+  }, [passcode, directLogin, hasAttemptedDirect])
+
+  if (isDirectPending) {
+    return (
+      <AuthLayout>
+        <div className="flex-1 flex flex-col items-center justify-center p-4 font-sans">
+          <div className="flex bg-[#F7F9FC] rounded-[2.5rem] flex-col items-center justify-center p-12 border border-white/20 shadow-2xl max-w-md w-full mx-auto">
+             <Spinner size={48} color="#3E4095" />
+             <p className="mt-6 text-sm font-bold text-gray-500 uppercase tracking-widest animate-pulse">
+               Authenticating your direct access...
+             </p>
+          </div>
+        </div>
+      </AuthLayout>
+    )
+  }
   
   return (
     <AuthLayout>

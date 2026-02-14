@@ -49,6 +49,14 @@ export type AuthLoginResponse = {
     profile: UserProfileType;
 }
 
+export type DirectAccessLoginResponse = {
+  refresh: string;
+  access: string;
+  user_id: string;
+  email: string;
+  full_name: string;
+}
+
 type User = RequestUserType & {
     role: string,
     school_name: string

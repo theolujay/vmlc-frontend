@@ -121,6 +121,21 @@ export class ExamPortal {
     }
 
 
+    static async uploadExamFaceCapture(exam_id: string, file: File) {
+        try {
+            const formData = new FormData();
+            formData.append('face_capture', file);
+            const response = await client.post(examUrls.FACE_CAPTURE(exam_id), formData, {
+                headers: { 'Content-Type': 'multipart/form-data' }
+            });
+            return response.data;
+        } catch (error) {
+            console.error(error);
+            throw error;
+        }
+    }
+
+
     static async editExamSession(examId: string, payload: EditExamSession) {
         try {
             const response = await client.put(examUrls.EDIT_SESSION(examId), payload);
