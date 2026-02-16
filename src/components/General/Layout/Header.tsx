@@ -30,7 +30,6 @@ export default function Header() {
     const userInitials=getUserInitials(userName)
     const { 
         notifications, 
-        unreadCount, 
         markAsRead, 
         markAllAsRead, 
         clearAll, 
@@ -38,6 +37,12 @@ export default function Header() {
         toggleInAppNotifications,
         isLoading
     } = useNotifications();
+
+    const filteredUnreadCount = notifications.filter(n => {
+        const type = (n.type || '').toLowerCase();
+        return !n.is_read_by_recipient && type !== 'info' && type !== 'success';
+    }).length;
+
     const [showNotifications, setShowNotifications] = useState(false);
     const [profileOpen, setProfileOpen] = useState(false);
 
@@ -59,9 +64,9 @@ export default function Header() {
                         className="relative p-1 text-gray-400 hover:text-gray-600 transition-colors bg-gray-50 rounded-full min-w-[4px] cursor-pointer"
                     >
                         <NotificationIcon />
-                        {unreadCount > 0 && (
+                        {filteredUnreadCount > 0 && (
                             <span className="absolute top-0.5 right-0.5 bg-red-500 text-white text-[8px] font-bold px-1 py-0 rounded-full border border-white min-w-[16px] h-4 flex items-center justify-center">
-                            {unreadCount > 5 ? '5+' : unreadCount}
+                            {filteredUnreadCount > 5 ? '5+' : filteredUnreadCount}
                             </span>
                         )}
                     </button>

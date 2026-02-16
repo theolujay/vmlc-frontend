@@ -4,6 +4,7 @@ import PageLayout from '../Layout/PageLayout';
 import withAuthentication from '@/hocs/withAuthentication';
 import useGetExamPortal from '@/hooks/useGetExamPortal';
 import useGetCurrentUser from '@/hooks/useGetCurrentUser';
+import { useNotifications } from '@/contexts/NotificationProvider';
 import StageProgress, { CompetitionStage } from './DashboardParts/StageProgress';
 import InfoBoard from './DashboardParts/InfoBoard';
 import PrimaryAction from './DashboardParts/PrimaryAction';
@@ -16,8 +17,8 @@ import FullLeagueLeaderboard from '@/components/Admin/Competition/FullLeagueLead
 
 function ExamPortal() {
   const { isPending, data, refetch } = useGetExamPortal();
+  const { notifications, markAsRead } = useNotifications();
   const user = useGetCurrentUser();
-  const [dismissedNotificationIds, setDismissedNotificationIds] = useState<number[]>([]);
   const [isProfileNoticeDismissed, setIsProfileNoticeDismissed] = useState(false);
   const [isSupportOpen, setIsSupportOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
@@ -29,30 +30,34 @@ function ExamPortal() {
   const performance = data?.performance;
   const examHistory = data?.exam_history;
 
-  // Notification Queue Logic: Priority ERROR > INFO > SUCCESS
+  // Notification Queue Logic: INFO and SUCCESS go to InfoBoard
+  // Only show notifications that are NOT read
   const activeNotifications = useMemo(() => {
-    if (!candidateContext?.notifications) return [];
+    return notifications
+      .filter(n => !n.is_read_by_recipient)
+      .filter(n => {
+        const type = (n.type || '').toLowerCase();
+        return type === 'info' || type === 'success';
+      })
+      .map(n => ({
+        ...n,
+        type: (n.type || 'info').toLowerCase() as 'info' | 'success' | 'error'
+      }));
+  }, [notifications]);
 
-    const errorNotifications = (candidateContext.notifications.error || []).map(n => ({ ...n, type: 'error' as const }));
-    const infoNotifications = (candidateContext.notifications.info || []).map(n => ({ ...n, type: 'info' as const }));
-    const successNotifications = (candidateContext.notifications.success || []).map(n => ({ ...n, type: 'success' as const }));
-    
-    return [...errorNotifications, ...infoNotifications, ...successNotifications]
-      .filter(n => !dismissedNotificationIds.includes(n.id));
-  }, [candidateContext?.notifications, dismissedNotificationIds]);
-
-  const showProfileNotice = !isProfileNoticeDismissed && 
+  const showProfileNotice = !isProfileNoticeDismissed &&
     (candidateContext?.is_setup_complete === false || user?.profile?.is_setup_complete === false);
 
-  const currentNotification = activeNotifications.length > 0 
+  const currentNotification = activeNotifications.length > 0
     ? { message: activeNotifications[0].message, type: activeNotifications[0].type, isProfile: false }
-    : showProfileNotice 
+    : showProfileNotice
       ? { message: "Your profile is incomplete. Please update your profile to ensure you don't miss any important updates.", type: 'info' as const, isProfile: true }
       : null;
 
   const handleDismissNotification = () => {
     if (activeNotifications.length > 0) {
-      setDismissedNotificationIds(prev => [...prev, activeNotifications[0].id]);
+      const notificationId = activeNotifications[0].id;
+      markAsRead(notificationId);
     } else if (showProfileNotice) {
       setIsProfileNoticeDismissed(true);
     }
@@ -69,12 +74,12 @@ function ExamPortal() {
   }
 
   // Use login response or API data
-  const candidateName = candidateContext?.full_name 
+  const candidateName = candidateContext?.full_name
     ? candidateContext.full_name
-    : user?.profile?.user 
-      ? `${user.profile.user.first_name} ${user.profile.user.last_name}` 
+    : user?.profile?.user
+      ? `${user.profile.user.first_name} ${user.profile.user.last_name}`
       : "Candidate";
-  
+
 
   const determineStage = (stage: string): 'SCREENING' | 'LEAGUE' | 'FINAL' | null => {
     if (!stage) return null;
@@ -87,18 +92,18 @@ function ExamPortal() {
 
   // Derive current stage from data
   const currentStage: 'SCREENING' | 'LEAGUE' | 'FINAL' = determineStage(stageProgressData?.current_stage || '') || 'SCREENING';
-  const leagueWeek = stageProgressData?.current_round || activeExamData?.round || 1; 
+  const leagueWeek = stageProgressData?.current_round || activeExamData?.round || 1;
 
   // Map Active Exam to AvailableExamType for PrimaryAction component
   const currentExam: AvailableExamType | null = activeExamData ? {
     id: activeExamData.id,
     title: activeExamData.title,
     description: activeExamData.description,
-    open_duration_hours: activeExamData.starts_at && activeExamData.ends_at 
+    open_duration_hours: activeExamData.starts_at && activeExamData.ends_at
       ? (new Date(activeExamData.ends_at).getTime() - new Date(activeExamData.starts_at).getTime()) / (1000 * 60 * 60)
       : activeExamData.duration_minutes / 60,
     countdown_minutes: activeExamData.duration_minutes || 0,
-    question_count: activeExamData.question_count || 0, 
+    question_count: activeExamData.question_count || 0,
     round: activeExamData.round,
     scheduled_date: new Date(activeExamData.starts_at),
     stage: activeExamData.stage,
@@ -143,7 +148,7 @@ function ExamPortal() {
       exam_title: performance.final_ranking.exam_title,
       is_active: true
   } : null;
-  
+
   // Qualification Threshold logic
   let qualificationThreshold = 0;
   let cutoffDisplay = '-';
@@ -162,14 +167,14 @@ function ExamPortal() {
           cutoffDisplay = `Top ${value}`;
       }
   }
-  
+
   // Update cutoffDisplay if we have a calculated threshold for top_percent but want to show the range
   // Actually, keeping the percentage is often what's desired for a "Range" label.
 
   // Determine if awaiting results
   const hasTakenExam = stageProgressData?.has_taken_current_round || activeExamData?.access_status === 'submitted' || false;
   let isAwaitingResults = false;
-  
+
   if (hasTakenExam) {
       if (currentStage === 'LEAGUE') {
           const roundsPublished = stageProgressData?.published_rounds || 0;
@@ -200,24 +205,25 @@ function ExamPortal() {
               <p className="text-[#667185] mt-1 text-base">You&apos;re now in the exam portal. Wishing you success ahead!</p>
             </div>
 
-            {/* STAGE PROGRESS */}
-            <StageProgress 
-              currentStage={currentStage === 'SCREENING' ? CompetitionStage.SCREENING : currentStage === 'LEAGUE' ? CompetitionStage.LEAGUE : CompetitionStage.FINAL} 
-              leagueWeek={leagueWeek} 
-            />
 
             {/* INFO BOARD */}
-            <InfoBoard 
-              message={currentNotification?.message} 
+            <InfoBoard
+              message={currentNotification?.message}
               type={currentNotification?.type}
-              onDismiss={handleDismissNotification} 
+              onDismiss={handleDismissNotification}
               actionLabel={currentNotification?.isProfile ? "Update Profile" : undefined}
               onAction={() => setIsProfileOpen(true)}
             />
 
+            {/* STAGE PROGRESS */}
+            <StageProgress
+              currentStage={currentStage === 'SCREENING' ? CompetitionStage.SCREENING : currentStage === 'LEAGUE' ? CompetitionStage.LEAGUE : CompetitionStage.FINAL}
+              leagueWeek={leagueWeek}
+            />
+            
             {/* PRIMARY ACTION */}
-            <PrimaryAction 
-              exam={currentExam} 
+            <PrimaryAction
+              exam={currentExam}
               candidateName={candidateName}
               isRankingAvailable={!!activeRanking}
               onCountdownEnd={refetch}
@@ -225,7 +231,7 @@ function ExamPortal() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* PERFORMANCE SNAPSHOT */}
-              <Performance 
+              <Performance
                 leagueRanking={leagueRanking}
                 screeningRanking={screeningRanking}
                 finalRanking={finalRanking}
@@ -251,14 +257,14 @@ function ExamPortal() {
         <div className="fixed bottom-4 right-4 z-50 flex flex-col items-end gap-4">
             {isSupportOpen && (
                 <div className="w-[350px] h-[500px] bg-white rounded-[24px] shadow-2xl border border-[#E4E7EC] flex flex-col overflow-hidden animate-in slide-in-from-bottom-5 duration-300">
-                    <SupportChat 
-                        currentStage={currentStage} 
+                    <SupportChat
+                        currentStage={currentStage}
                         candidateName={candidateName}
-                        onClose={() => setIsSupportOpen(false)} 
+                        onClose={() => setIsSupportOpen(false)}
                     />
                 </div>
             )}
-            <button 
+            <button
                 onClick={() => setIsSupportOpen(!isSupportOpen)}
                 className={`flex items-center gap-2 px-6 py-3.5 rounded-full shadow-lg transition-all transform hover:scale-105 active:scale-95 ${
                     isSupportOpen ? 'bg-[#4A4DA8] text-gray-300' : 'bg-[#3E4095] text-white'
@@ -277,9 +283,9 @@ function ExamPortal() {
             </button>
         </div>
       </div>
-      
+
       {user && (
-        <ProfileModal 
+        <ProfileModal
           id={user.profile.user.id}
           open={isProfileOpen}
           close={setIsProfileOpen}

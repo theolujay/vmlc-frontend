@@ -3,8 +3,9 @@ export interface Notification {
   id: number;
   subject: string;
   message: string;
-  read: boolean;
+  is_read_by_recipient: boolean;
   created_at: string;
+  type?: 'info' | 'success' | 'alert' | 'error' | 'warning';
 }
 
 export interface NotificationHistoryResponse {

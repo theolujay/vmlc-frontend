@@ -37,18 +37,18 @@ const Trash2 = ({ className }: { className?: string }) => (
     <line x1="14" x2="14" y1="11" y2="17" />
   </svg>
 );
-const ToggleLeft = ({ className }: { className?: string }) => (
-  <svg className={className} width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <rect width="20" height="12" x="2" y="6" rx="6" ry="6" />
-    <circle cx="8" cy="12" r="2" />
-  </svg>
-);
-const ToggleRight = ({ className }: { className?: string }) => (
-  <svg className={className} width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <rect width="20" height="12" x="2" y="6" rx="6" ry="6" />
-    <circle cx="16" cy="12" r="2" />
-  </svg>
-);
+// const ToggleLeft = ({ className }: { className?: string }) => (
+//   <svg className={className} width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+//     <rect width="20" height="12" x="2" y="6" rx="6" ry="6" />
+//     <circle cx="8" cy="12" r="2" />
+//   </svg>
+// );
+// const ToggleRight = ({ className }: { className?: string }) => (
+//   <svg className={className} width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+//     <rect width="20" height="12" x="2" y="6" rx="6" ry="6" />
+//     <circle cx="16" cy="12" r="2" />
+//   </svg>
+// );
 
 interface NotificationModalProps {
   notifications: Notification[];
@@ -56,8 +56,8 @@ interface NotificationModalProps {
   onMarkAllRead: () => void;
   onMarkSingleRead: (id: number) => void;
   onClearAll: () => void;
-  inAppEnabled: boolean;
-  onToggleInApp: () => void;
+  // inAppEnabled: boolean;
+  // onToggleInApp: () => void;
   isLoading?: boolean;
 }
 
@@ -66,13 +66,23 @@ const NotificationModal: React.FC<NotificationModalProps> = ({
   onMarkAllRead,
   onMarkSingleRead,
   onClearAll,
-  inAppEnabled,
-  onToggleInApp,
+  // inAppEnabled,
+  // onToggleInApp,
   isLoading = false
 }) => {
   const [settingsOpen, setSettingsOpen] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 5;
+
+  // const startIndex = (currentPage - 1) * itemsPerPage;
+
+  // const filteredNotifications = notifications.filter(n => {
+  //   const type = (n.type || '').toLowerCase();
+  //   return type !== 'info' && type !== 'success';
+  // });
+
+  // const totalPages = Math.ceil(filteredNotifications.length / itemsPerPage);
+  // const currentItems = filteredNotifications.slice(startIndex, startIndex + itemsPerPage);
 
   const totalPages = Math.ceil(notifications.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
@@ -103,7 +113,7 @@ const NotificationModal: React.FC<NotificationModalProps> = ({
   };
 
   return (
-    <div 
+    <div
       className="absolute right-0 left-0 mx-auto md:left-auto md:right-8 top-[80px] w-[95vw] md:w-[560px] bg-white rounded-2xl shadow-2xl border border-gray-100 z-50 animate-in fade-in slide-in-from-top-4 duration-300 font-sans"
       onClick={(e) => e.stopPropagation()}
     >
@@ -111,7 +121,7 @@ const NotificationModal: React.FC<NotificationModalProps> = ({
       <div className="flex items-center justify-between p-6 border-b border-gray-50">
         <h2 className="text-xl font-bold text-gray-800 tracking-tight">Notifications</h2>
         <div className="flex items-center gap-3">
-          <button 
+          <button
             onClick={onMarkAllRead}
             className="flex items-center gap-2 px-4 py-2 text-[10px] font-black uppercase tracking-widest text-gray-500 hover:text-gray-800 border border-gray-200 rounded-lg transition-all hover:bg-gray-50"
           >
@@ -119,7 +129,7 @@ const NotificationModal: React.FC<NotificationModalProps> = ({
             Mark all as read
           </button>
           <div className="relative">
-            <button 
+            <button
               onClick={() => setSettingsOpen(!settingsOpen)}
               className="p-2 text-gray-400 hover:text-gray-600 border border-gray-200 rounded-lg transition-all hover:bg-gray-50"
             >
@@ -128,13 +138,13 @@ const NotificationModal: React.FC<NotificationModalProps> = ({
 
             {settingsOpen && (
               <div className="absolute right-0 mt-2 w-64 bg-white rounded-xl shadow-xl border border-gray-100 py-2 z-50">
-                <div className="px-4 py-3 flex items-center justify-between border-b border-gray-50">
+                {/* <div className="px-4 py-3 flex items-center justify-between border-b border-gray-50">
                   <span className="text-[10px] font-black uppercase tracking-widest text-gray-600">In-App Alerts</span>
                   <button onClick={onToggleInApp} className="text-[#3E4095]">
                     {inAppEnabled ? <ToggleRight className="w-8 h-8" /> : <ToggleLeft className="w-8 h-8 text-gray-300" />}
                   </button>
-                </div>
-                <button 
+                </div> */}
+                <button
                   onClick={() => { onClearAll(); setSettingsOpen(false); }}
                   className="w-full px-4 py-3 flex items-center gap-3 text-red-500 hover:bg-red-50 transition-colors text-[10px] font-black uppercase tracking-widest"
                 >
@@ -167,13 +177,13 @@ const NotificationModal: React.FC<NotificationModalProps> = ({
               Today
             </div>
             {currentItems.map((item) => (
-              <div 
-                key={item.id} 
-                onClick={() => !item.read && onMarkSingleRead(item.id)}
-                className={`flex items-start justify-between px-6 py-4 hover:bg-gray-50 cursor-pointer transition-colors border-b border-gray-50 ${!item.read ? 'bg-[#3E4095]/5' : ''}`}
+              <div
+                key={item.id}
+                onClick={() => !item.is_read_by_recipient && onMarkSingleRead(item.id)}
+                className={`flex items-start justify-between px-6 py-4 hover:bg-gray-50 cursor-pointer transition-colors border-b border-gray-50 ${!item.is_read_by_recipient ? 'bg-[#3E4095]/5' : ''}`}
               >
                 <div className="flex-1">
-                  <p className={`text-sm ${!item.read ? 'font-bold text-gray-800' : 'text-gray-600'}`}>
+                  <p className={`text-sm ${!item.is_read_by_recipient ? 'font-bold text-gray-800' : 'text-gray-600'}`}>
                     {item.message}
                   </p>
                   <p className="text-[10px] font-bold text-gray-400 mt-1 uppercase tracking-tight">{formatTimestamp(item.created_at)}</p>
@@ -191,7 +201,7 @@ const NotificationModal: React.FC<NotificationModalProps> = ({
       {/* Pagination */}
       {!isLoading && notifications.length > 0 && (
         <div className="p-6 border-t border-gray-50 flex items-center justify-between">
-          <button 
+          <button
             disabled={currentPage === 1}
             onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
             className="flex items-center gap-2 px-4 py-2 text-[10px] font-black uppercase tracking-widest text-gray-400 hover:text-gray-600 disabled:opacity-40 border border-gray-200 rounded-lg transition-all"
@@ -199,7 +209,7 @@ const NotificationModal: React.FC<NotificationModalProps> = ({
             <ChevronLeft className="w-4 h-4" />
             Previous
           </button>
-          
+
           <div className="flex items-center gap-1">
             {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
               <button
@@ -212,7 +222,7 @@ const NotificationModal: React.FC<NotificationModalProps> = ({
             ))}
           </div>
 
-          <button 
+          <button
             disabled={currentPage === totalPages}
             onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
             className="flex items-center gap-2 px-4 py-2 text-[10px] font-black uppercase tracking-widest text-gray-600 hover:text-gray-800 border border-gray-200 rounded-lg transition-all"

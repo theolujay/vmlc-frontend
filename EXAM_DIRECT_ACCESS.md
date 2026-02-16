@@ -4,7 +4,7 @@ The Exam Direct Access system allows eligible candidates to access their exams d
 
 ## How it Works
 
-1.  **Generation**: When an exam is scheduled (transitions from `DRAFT` to `SCHEDULED`), a unique passcode is generated for every eligible candidate and stored in the `ExamAccessPasscode` model.
+1.  **Generation**: When an exam is scheduled (transitions from `DRAFT` to `SCHEDULED`), a unique passcode is generated for every eligible candidate and stored in a database table.
 2.  **Notification**: An email is sent to each candidate containing a unique URL.
     *   URL Format: `https://portal.verboheit.org/?passcode=<UNIQUE_PASSCODE>`
 3.  **Authentication**:
@@ -94,10 +94,3 @@ The Exam Direct Access system allows eligible candidates to access their exams d
     *   Provide an option to log in normally using email and password.
 7.  **Status Check**: Remember that direct access is only valid while the exam status is `ONGOING`. If a candidate clicks the link too early (when it's still `SCHEDULED`), they will be informed that the access is not yet valid.
 
-## Admin Management
-
-Staff with Admin access can manually trigger the generation and sending of passcodes for one or more exams via the Django Admin interface:
-1.  Go to **VMLC > Exams**.
-2.  Select the desired exams.
-3.  Choose the action **"Generate and Send Direct Access Passcodes"** from the dropdown.
-4.  Click **Go**.

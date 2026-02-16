@@ -79,10 +79,10 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
     // Optimistic update
     setNotifications(prev => {
         const notification = prev.find(n => n.id === id);
-        if (notification && !notification.read) {
+        if (notification && !notification.is_read_by_recipient) {
             setUnreadCount(count => Math.max(0, count - 1));
         }
-        return prev.map(n => n.id === id ? { ...n, read: true } : n);
+        return prev.map(n => n.id === id ? { ...n, is_read_by_recipient: true } : n);
     });
     
     try {
@@ -96,7 +96,7 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
 
   const markAllAsRead = async () => {
     // Optimistic update
-    setNotifications(prev => prev.map(n => ({ ...n, read: true })));
+    setNotifications(prev => prev.map(n => ({ ...n, is_read_by_recipient: true })));
     setUnreadCount(0);
     
     try {
