@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo, useState } from 'react';
 import AdminHeader from '@/components/Admin/AdminHeader';
 import CompetitionStats from './CompetitionStats';
 import StageBoard, { CompetitionStage } from './CompetitionProgress';
@@ -9,7 +9,8 @@ import useGetCompetitionDashboard from '@/hooks/useGetCompetitionDashboard';
 import { useAuth } from '@/contexts/AuthProvider';
 import { capitalizeWord } from '@/utils/capitalizeWords';
 import PromoteCandidatesModal from '@/components/Modals/PromoteCandidatesModal';
-import { useState } from 'react';
+import InfoBoard from '@/components/General/Portal/DashboardParts/InfoBoard';
+import { useNotifications } from '@/contexts/NotificationProvider';
 
 interface CompetitionDashboardProps {
   onViewFullLeaderboard?: () => void;
@@ -38,7 +39,32 @@ const CompetitionDashboard: React.FC<CompetitionDashboardProps> = ({
   const isManagerOrAbove = ['manager', 'superadmin'].includes(userRole || '');
 
   const { data, isLoading, error, refetch } = useGetCompetitionDashboard();
+  const { notifications, markAsRead } = useNotifications();
   const [openPromoteModal, setOpenPromoteModal] = useState(false);
+
+  // Notification Queue Logic: info and success go to InfoBoard
+  const activeNotifications = useMemo(() => {
+    return notifications
+      .filter(n => !n.is_read_by_recipient)
+      .filter(n => {
+        const type = (n.type || '').toLowerCase();
+        return type === 'info' || type === 'success';
+      })
+      .map(n => ({
+        ...n,
+        type: (n.type || 'info').toLowerCase() as 'info' | 'success' | 'error'
+      }));
+  }, [notifications]);
+
+  const currentNotification = activeNotifications.length > 0 
+    ? { message: activeNotifications[0].message, type: activeNotifications[0].type }
+    : null;
+
+  const handleDismissNotification = () => {
+    if (activeNotifications.length > 0) {
+      markAsRead(activeNotifications[0].id);
+    }
+  };
 
   const handleView = (id: string) => {
     if (isVolunteer) return;
@@ -118,6 +144,12 @@ const CompetitionDashboard: React.FC<CompetitionDashboardProps> = ({
         />
 
           <div className="flex flex-col gap-3 sm:gap-4 mt-3 w-full sm:w-[96%] px-2 sm:px-0 sm:mx-auto">
+            <InfoBoard 
+              message={currentNotification?.message} 
+              type={currentNotification?.type}
+              onDismiss={handleDismissNotification} 
+            />
+            
             <CompetitionStats 
               candidatesStats={{
                 enrolled: data.stats.enrolled,

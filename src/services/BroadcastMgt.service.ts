@@ -7,9 +7,16 @@ import {
 import client from '@/utils/axios';
 
 export class BroadcastMgtService {
-  static async getBroadcastList(): Promise<BroadcastType | undefined> {
+  static async getBroadcastList(params?: {
+    page?: number;
+    search?: string;
+    status?: string;
+    medium?: string;
+  }): Promise<BroadcastType | undefined> {
     try {
-      const response = await client.get(BroadcastUrls.get_broadcast_list);
+      const response = await client.get(BroadcastUrls.get_broadcast_list, {
+        params,
+      });
       return response.data;
     } catch (error) {
       console.error(error);

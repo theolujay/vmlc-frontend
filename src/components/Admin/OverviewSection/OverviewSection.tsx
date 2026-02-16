@@ -173,7 +173,7 @@ export default function OverviewSection() {
           isOwnProfile={false}
         />
       )}
-      {user && (
+      {user?.profile && (
         <ProfileModal 
           id={user.profile.user.id}
           open={isOwnProfileOpen}
@@ -487,12 +487,12 @@ function RegisteredCandidatesTable({
 //           </span>
 //         </Link>
 //         <Link
-//           href="/admin/overview?tab=Announcements"
+//           href="/admin/overview?tab=Broadcasts"
 //           className="flex justify-between items-center p-4 rounded-xl border border-[#3E4095]/10 hover:bg-[#3E4095]/5 transition-all group"
 //         >
 //           <div className="flex gap-3 items-center">
 //             <span className="flex-shrink-0">
-//               <BroadcastIcon />
+//               <BroadcastActionIcon />
 //             </span>
 //             <p className="text-m text-gray-700 tracking-tight">Manage Broadcast</p>
 //           </div>

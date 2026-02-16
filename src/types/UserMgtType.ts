@@ -155,6 +155,7 @@ export type UserProfileType = {
   role: string,
   profile_type: string,
   is_active: boolean,
+  status: string,
   verification_document: string | null,
   verification_document_type: string | null,
   created_at: Date,

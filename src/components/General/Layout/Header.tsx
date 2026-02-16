@@ -10,7 +10,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { useEffect, useState } from 'react'
 import { useNotifications } from '@/contexts/NotificationProvider'
-import NotificationModal from '@/components/Admin/Announcement/NotificationModal'
+import NotificationModal from '@/components/Admin/Broadcast/NotificationModal'
 import ProfileModal from '@/components/Modals/ProfileModal'
 
 export default function Header() {
@@ -20,28 +20,34 @@ export default function Header() {
     }, []);
 
     const currentUser=useGetCurrentUser()
-    
-    const userName = currentUser?.profile.user?.first_name 
-        ? [currentUser?.profile.user?.first_name, currentUser?.profile?.user?.last_name].join(' ')
+
+    const userName = currentUser?.profile?.user?.first_name
+        ? [currentUser?.profile?.user?.first_name, currentUser?.profile?.user?.last_name].join(' ')
         : '';
 
     const {authState}=useAuth()
-   
+
     const userInitials=getUserInitials(userName)
-    const { 
-        notifications, 
-        unreadCount, 
-        markAsRead, 
-        markAllAsRead, 
-        clearAll, 
-        inAppNotificationsEnabled, 
+    const {
+        notifications,
+        markAsRead,
+        markAllAsRead,
+        clearAll,
+        inAppNotificationsEnabled,
         toggleInAppNotifications,
         isLoading
     } = useNotifications();
+
+    const filteredUnreadCount = notifications.filter(n => {
+        // const type = (n.type || '').toLowerCase();
+        return !n.is_read_by_recipient;
+        // return !n.is_read_by_recipient && type !== 'info' && type !== 'success';
+    }).length;
+
     const [showNotifications, setShowNotifications] = useState(false);
     const [profileOpen, setProfileOpen] = useState(false);
 
-    
+
     return (
         <header className="flex bg-white px-6 items-center relative z-40">
             <div className="flex mx-auto justify-between w-full py-4">
@@ -59,9 +65,9 @@ export default function Header() {
                         className="relative p-1 text-gray-400 hover:text-gray-600 transition-colors bg-gray-50 rounded-full min-w-[4px] cursor-pointer"
                     >
                         <NotificationIcon />
-                        {unreadCount > 0 && (
-                            <span className="absolute top-0.5 right-0.5 bg-red-500 text-white text-[8px] font-bold px-1 py-0 rounded-full border border-white min-w-[16px] h-4 flex items-center justify-center">
-                            {unreadCount > 5 ? '5+' : unreadCount}
+                        {filteredUnreadCount > 0 && (
+                            <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[12px] font-bold rounded-full min-w-[16px] h-5 w-5 flex items-center justify-center">
+                            {filteredUnreadCount > 10 ? '10+' : filteredUnreadCount}
                             </span>
                         )}
                     </button>
@@ -70,7 +76,7 @@ export default function Header() {
                             <span className="font-medium">{mounted ? userName : ''}</span>
                             <span className="text-xs text-gray-500">{mounted ? authState?.user?.role : ''}</span>
                         </div>
-                        <button 
+                        <button
                             onClick={() => setProfileOpen(true)}
                             className="bg-[#CCEEFB] flex items-center justify-center w-[44px] h-[44px] rounded-full relative overflow-hidden cursor-pointer outline-none hover:ring-2 hover:ring-[#CCEEFB] transition-all"
                         >
@@ -108,10 +114,10 @@ export default function Header() {
             )}
 
             {currentUser?.profile?.user?.id && (
-                <ProfileModal 
-                    id={currentUser.profile.user.id} 
-                    open={profileOpen} 
-                    close={setProfileOpen} 
+                <ProfileModal
+                    id={currentUser.profile.user.id}
+                    open={profileOpen}
+                    close={setProfileOpen}
                     isOwnProfile={true}
                 />
             )}

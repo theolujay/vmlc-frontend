@@ -3,9 +3,9 @@ import { useAuth } from '@/contexts/AuthProvider'
 import withAuthentication from '@/hocs/withAuthentication'
 import {  TabType } from '@/types/TabType'
 import TabWrapper from '../ui/Tabs/TabWrapper'
-import { AnnouncementIcon, ExamSystemIcon, OverviewIcon, SupportIcon, UserManagementIcon, CompetitionIcon } from './AdminIcons'
+import { BroadcastIcon, ExamSystemIcon, OverviewIcon, SupportIcon, UserManagementIcon, CompetitionIcon } from './AdminIcons'
 import AdminLayout from './AdminLayout'
-import Announcement from './Announcement/Announcement'
+import Broadcast from './Broadcast/Broadcast'
 import ExamSectionWrapper from './ExamSystem/ExamSectionWrapper'
 import OverviewSectionWrapper from './OverviewSection/OverviewSectionWrapper'
 import StaffMgtWrapper from './UserManagement/StaffMgtWrapper'
@@ -55,9 +55,9 @@ const tabs: TabType[] = [
         content: <StaffMgtWrapper />
     },
     {
-        value: 'announcements',
-        label: <AnnouncementsLabel />,
-        content: <Announcement />
+        value: 'broadcasts',
+        label: <BroadcastsLabel />,
+        content: <Broadcast />
     },
     {
         value: 'support',
@@ -118,8 +118,8 @@ function UserMgtLabel() {
 }
 
 
-function AnnouncementsLabel() {
-    return <div className='flex gap-1 items-center'><span><AnnouncementIcon /></span><span>Announcements</span></div>
+function BroadcastsLabel() {
+    return <div className='flex gap-1 items-center'><span><BroadcastIcon /></span><span>Broadcasts</span></div>
 }
 
 function SupportLabel() {

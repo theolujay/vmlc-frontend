@@ -20,8 +20,8 @@ const StageItem: React.FC<StageItemProps> = ({ stage, activeStage, completed, su
   return (
     <div className="flex flex-col items-center z-10 bg-white px-2">
       <div className={`w-10 h-10 rounded-full flex items-center justify-center border-2 transition-all duration-300 ${
-        isCompleted ? 'bg-[#EBEBF5] border-[#3E4095] text-[#3E4095]' : 
-        isActive ? 'bg-[#EBEBF5] border-[#3E4095] text-[#3E4095]' : 
+        isCompleted ? 'bg-[#EBEBF5] border-[#3E4095] text-[#3E4095]' :
+        isActive ? 'bg-[#EBEBF5] border-[#3E4095] text-[#3E4095]' :
         'bg-white border-[#F0F2F5] text-[#98A2B3]'
       }`}>
         {isCompleted ? (
@@ -42,18 +42,23 @@ const StageItem: React.FC<StageItemProps> = ({ stage, activeStage, completed, su
 
 interface StageProgressProps {
   currentStage: string;
-  leagueWeek?: number;
+  leagueRound?: number;
+  totalRounds?: number;
 }
 
-const StageProgress: React.FC<StageProgressProps> = ({ currentStage, leagueWeek }) => {
+const StageProgress: React.FC<StageProgressProps> = ({ currentStage, leagueRound, totalRounds }) => {
   const getStageStatus = (stage: CompetitionStage) => {
     const stages = [CompetitionStage.SCREENING, CompetitionStage.LEAGUE, CompetitionStage.FINAL];
     const currentIndex = stages.indexOf(currentStage as CompetitionStage);
     const stageIndex = stages.indexOf(stage);
 
-    if (currentIndex === -1) return false; 
+    if (currentIndex === -1) return false;
     return currentIndex > stageIndex;
   };
+
+  const leagueSubLabel = currentStage === CompetitionStage.LEAGUE && leagueRound
+    ? `Round ${leagueRound} of ${totalRounds || 6}`
+    : undefined;
 
   return (
     <section className="bg-white p-6 rounded-[24px] border border-[#E4E7EC] shadow-sm">
@@ -63,22 +68,22 @@ const StageProgress: React.FC<StageProgressProps> = ({ currentStage, leagueWeek 
       </div>
       <div className="flex items-center justify-between relative px-4">
         <div className="absolute top-[20px] left-0 w-full h-[1px] bg-[#3E4095]/20 z-0"></div>
-        
-        <StageItem 
-          stage={CompetitionStage.SCREENING} 
-          activeStage={currentStage} 
-          completed={getStageStatus(CompetitionStage.SCREENING)} 
+
+        <StageItem
+          stage={CompetitionStage.SCREENING}
+          activeStage={currentStage}
+          completed={getStageStatus(CompetitionStage.SCREENING)}
         />
-        <StageItem 
-          stage={CompetitionStage.LEAGUE} 
-          activeStage={currentStage} 
-          subLabel={currentStage === CompetitionStage.LEAGUE && leagueWeek ? `Week ${leagueWeek} of 6` : undefined}
-          completed={getStageStatus(CompetitionStage.LEAGUE)} 
+        <StageItem
+          stage={CompetitionStage.LEAGUE}
+          activeStage={currentStage}
+          subLabel={leagueSubLabel}
+          completed={getStageStatus(CompetitionStage.LEAGUE)}
         />
-        <StageItem 
-          stage={CompetitionStage.FINAL} 
-          activeStage={currentStage} 
-          completed={getStageStatus(CompetitionStage.FINAL)} 
+        <StageItem
+          stage={CompetitionStage.FINAL}
+          activeStage={currentStage}
+          completed={getStageStatus(CompetitionStage.FINAL)}
         />
       </div>
     </section>

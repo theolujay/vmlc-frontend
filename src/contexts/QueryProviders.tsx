@@ -1,27 +1,20 @@
 "use client"
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { useState } from 'react';
-// const queryClient = new QueryClient();
+import useProfile from '@/hooks/useProfile';
 
-
-
-// declare global {
-//   interface Window {
-//     __TANSTACK_QUERY_CLIENT__:
-//     import("@tanstack/query-core").QueryClient;
-//   }
-// }
-
-// This code is for all users
+function ProfileSync() {
+  useProfile();
+  return null;
+}
 
 export default function QueryProvider({ children }: Readonly<{ children: React.ReactNode }>) {
   const [queryClient] = useState(() => new QueryClient());
 
-  // useEffect(() => {
-  //   window.__TANSTACK_QUERY_CLIENT__ = queryClient;
-
-  // }, [])
-  return <QueryClientProvider client={queryClient}>
-    {children}
-  </QueryClientProvider>
+  return (
+    <QueryClientProvider client={queryClient}>
+      <ProfileSync />
+      {children}
+    </QueryClientProvider>
+  );
 }

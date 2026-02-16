@@ -13,15 +13,11 @@ export default function useGetAccountDetails(id: string, enabled: boolean = true
   return useMemo(() => ({ isPending, data }), [isPending, data])
 }
 
-export function useGetOwnAccountDetails(enabled: boolean = true) {
+export function useGetOwnAccountDetails() {
   const { authState } = useAuth()
   
-  const data = useMemo(() => {
-    return authState?.profile ? { profile: authState.profile } : null
-  }, [authState?.profile])
-
   return useMemo(() => ({ 
-    isPending: !authState?.profile && enabled, 
-    data: data
-  }), [authState?.profile, enabled, data])
+    isPending: !authState?.profile, 
+    data: authState?.profile ? { profile: authState.profile } : null
+  }), [authState?.profile])
 }

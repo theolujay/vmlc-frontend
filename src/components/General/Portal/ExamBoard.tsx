@@ -2,6 +2,7 @@
 import ResponsiveContainer from '@/components/ui/ResponsiveContainer'
 import Spinner from '@/components/ui/spinner/spinner'
 import useGetExamPortal from '@/hooks/useGetExamPortal'
+import useGetCurrentUser from '@/hooks/useGetCurrentUser'
 import { ActiveExamType } from '@/types/Examtype'
 import { formatDate } from '@/utils/formatFileSize'
 import { formatEndTimeToStringForCandidate, formatTimeToStringForCandidate } from '@/utils/formatTime'
@@ -13,6 +14,7 @@ import { formatExamTitle } from '@/utils/generalUtils'
 
 export default function ExamBoard() {
     const { data, isPending } = useGetExamPortal()
+    const user = useGetCurrentUser()
 
     let examList: ActiveExamType[] = [];
     if (data?.active_exam) {
@@ -33,7 +35,7 @@ export default function ExamBoard() {
         }];
     }
 
-    const examType = data?.candidate_context?.role || '';
+    const examType = user?.profile?.role || '';
 
 
     
