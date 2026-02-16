@@ -1,9 +1,8 @@
 "use client";
 import React from "react";
 import AppDialog from "@/components/ui/Modals/AppDialog";
-import ResponsiveContainer from "@/components/ui/ResponsiveContainer";
 import useGetBroadcastDetail from "@/hooks/useGetBroadcastDetail";
-import { BroadcastItemType } from "@/types/BroadCastType";
+import { BroadcastItemType, DeliveryLogType } from "@/types/BroadCastType";
 import { formatDate, formatTimeToString, formatDateTime } from "@/utils/formatFileSize";
 import { getUserName } from "@/utils/generalUtils";
 import clsx from "clsx";
@@ -61,9 +60,9 @@ export default function BroadcastDetailsModal({
       : [];
 
   return (
-    <AppDialog open={open} onOpenChange={close} className="!max-w-5xl !w-auto !p-0 bg-transparent shadow-none">
+    <AppDialog open={open} onOpenChange={close} className="!max-w-none !max-h-none !w-auto !p-0 bg-transparent shadow-none flex items-center justify-center">
       <div className="flex flex-col bg-[#F7F9FC] w-[95vw] md:w-[85vw] lg:w-[75vw] xl:w-[65vw] h-[90vh] rounded-3xl overflow-hidden shadow-2xl relative font-sans border border-white/20">
-        
+
         {/* Header */}
         <div className="px-10 py-8 border-b border-gray-100 flex justify-between items-center bg-white sticky top-0 z-30 shadow-sm">
           <div className="flex items-center space-x-4">
@@ -92,7 +91,7 @@ export default function BroadcastDetailsModal({
         {/* Main Content Area */}
         <div className="flex-1 overflow-y-auto custom-scrollbar p-10 space-y-10">
           <div className="grid grid-cols-1 xl:grid-cols-3 gap-8">
-            
+
             {/* Left Column: Details & Content */}
             <div className="xl:col-span-2 space-y-8">
               {/* Subject Section */}
@@ -122,18 +121,18 @@ export default function BroadcastDetailsModal({
 
               {/* Delivery Metrics */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <ConfigMetric 
-                  icon="fa-paper-plane" 
-                  label="Delivery Status" 
+                <ConfigMetric
+                  icon="fa-paper-plane"
+                  label="Delivery Status"
                   value={currentStatus.label}
                   sub={`Attempted on ${broadcast.mediums.length} channels`}
                   bg={currentStatus.bgColor}
                   color={currentStatus.textColor}
                 />
-                <ConfigMetric 
-                  icon="fa-users" 
-                  label="Target Audience" 
-                  value={`${(staffRoles?.length || 0) + (candidateRoles?.length || 0)} Roles`} 
+                <ConfigMetric
+                  icon="fa-users"
+                  label="Target Audience"
+                  value={`${(staffRoles?.length || 0) + (candidateRoles?.length || 0)} Roles`}
                   sub={`${staffRoles?.length || 0} Staff, ${candidateRoles?.length || 0} Candidates`}
                 />
               </div>
@@ -192,7 +191,7 @@ export default function BroadcastDetailsModal({
                 </div>
                 <div className="bg-white rounded-[2rem] border border-gray-100 p-8 space-y-8 shadow-sm relative overflow-hidden">
                   <div className="absolute top-0 right-0 w-32 h-32 bg-gray-50 rounded-full -mr-16 -mt-16 blur-3xl opacity-50"></div>
-                  <TimelineEvent 
+                  <TimelineEvent
                     icon="fa-clock"
                     label="Created At"
                     date={`${createdDate}, ${createdTime}`}
@@ -200,7 +199,7 @@ export default function BroadcastDetailsModal({
                     isLast={!broadcast.last_attempt}
                   />
                   {broadcast.last_attempt && (
-                    <TimelineEvent 
+                    <TimelineEvent
                       icon="fa-paper-plane"
                       label="Last Attempt"
                       date={formatDateTime(broadcast.last_attempt)}
@@ -255,7 +254,7 @@ export default function BroadcastDetailsModal({
                   {broadcast.logs.length} Total Logs
                 </div>
               </div>
-              
+
               <div className="bg-white rounded-[2rem] border border-gray-100 shadow-sm overflow-hidden">
                 <table className="w-full text-left">
                   <thead>
@@ -268,7 +267,7 @@ export default function BroadcastDetailsModal({
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-50">
-                    {broadcast.logs.map((log: any, idx: number) => (
+                    {broadcast.logs.map((log: DeliveryLogType, idx: number) => (
                       <tr key={idx} className="hover:bg-gray-50 transition-colors">
                         <td className="px-6 py-4">
                           <div className={clsx("inline-flex items-center gap-2 px-3 py-1 rounded-full text-[8px] font-black uppercase tracking-widest border border-current/10", getMediumStyles(log.medium))}>
@@ -283,7 +282,7 @@ export default function BroadcastDetailsModal({
                            </div>
                         </td>
                         <td className="px-6 py-4">
-                           <div className={clsx("px-3 py-1 rounded-full text-[8px] font-black uppercase tracking-widest inline-flex items-center gap-1.5", 
+                           <div className={clsx("px-3 py-1 rounded-full text-[8px] font-black uppercase tracking-widest inline-flex items-center gap-1.5",
                              log.status === 'sent' ? 'bg-emerald-50 text-emerald-600' : 'bg-rose-50 text-rose-600'
                            )}>
                              <span className={clsx("w-1 h-1 rounded-full", log.status === 'sent' ? 'bg-emerald-500' : 'bg-rose-500')}></span>
@@ -323,8 +322,8 @@ export default function BroadcastDetailsModal({
 function ConfigMetric({ icon, label, value, sub, bg, color }: { icon: string, label: string, value: string, sub: string, bg?: string, color?: string }) {
   return (
     <div className="flex items-center space-x-4 p-5 bg-white rounded-[1.5rem] border border-gray-100 shadow-sm hover:shadow-md transition-all duration-300 group">
-      <div className={clsx("w-11 h-11 rounded-xl flex items-center justify-center transition-all duration-300 shadow-inner", 
-        bg || "bg-gray-50", 
+      <div className={clsx("w-11 h-11 rounded-xl flex items-center justify-center transition-all duration-300 shadow-inner",
+        bg || "bg-gray-50",
         color || "text-[#3E4095]"
       )}>
         <i className={`fas ${icon} text-lg`}></i>
@@ -345,7 +344,7 @@ function TimelineEvent({ icon, label, date, color, isLast }: { icon: string, lab
         <div className="absolute left-[17px] top-10 bottom-[-32px] w-[1.5px] bg-gray-100 z-0"></div>
       )}
       <div className={clsx(
-        "w-9 h-9 rounded-xl bg-white border border-gray-100 shadow-sm flex items-center justify-center shrink-0 z-10 transition-all duration-300 group-hover:scale-110", 
+        "w-9 h-9 rounded-xl bg-white border border-gray-100 shadow-sm flex items-center justify-center shrink-0 z-10 transition-all duration-300 group-hover:scale-110",
         color
       )}>
         <i className={`fas ${icon} text-xs`}></i>

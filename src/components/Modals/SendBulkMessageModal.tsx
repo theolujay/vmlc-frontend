@@ -100,7 +100,7 @@ export default function SendBulkMessageModal({
     <AppDialog
       open={open}
       onOpenChange={() => handleClose()}
-      className="!max-w-5xl !w-auto !p-0 bg-transparent shadow-none"
+      className="!max-w-none !max-h-none !w-auto !p-0 bg-transparent shadow-none flex items-center justify-center"
     >
       <div className="flex flex-col bg-[#F7F9FC] w-[95vw] md:w-[80vw] lg:w-[70vw] xl:w-[60vw] h-[90vh] rounded-3xl overflow-hidden shadow-2xl relative font-sans border border-white/20">
 
