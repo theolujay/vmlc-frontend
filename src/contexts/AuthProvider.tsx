@@ -19,8 +19,8 @@ type Actions =
 const INIT_SESSION = 'loginSuccess';
 const DESTROY_SESSION = 'logout';
 const UPDATE_PROFILE = 'updateProfile';
-const studentRoles = new Set(['screening', 'league', 'final', 'winner']);
-const staffRoles = new Set(['volunteer', 'moderator', 'admin', 'manager', 'superadmin', 'sponsor']);
+export const studentRoles = new Set(['screening', 'league', 'final', 'winner']);
+export const staffRoles = new Set(['volunteer', 'moderator', 'admin', 'manager', 'superadmin', 'sponsor']);
 
 const reducer = (state: AuthState, action: Actions): AuthState => {
     switch (action.type) {
@@ -28,7 +28,8 @@ const reducer = (state: AuthState, action: Actions): AuthState => {
             sessionStorage.removeItem("returnURL"); 
             const payload = action.payload
             localStorage.setItem('session', JSON.stringify(payload));
-            if (!payload || !payload.profile) {
+            
+            if (!payload || !payload.access) {
                 return {
                     homePath: '',
                     token: null,
@@ -42,11 +43,13 @@ const reducer = (state: AuthState, action: Actions): AuthState => {
             
             const isStudent = studentRoles.has(payload?.profile?.role ?? '');
             const isStaff = staffRoles.has(payload?.profile?.role ?? '')
-            const user = {
+            
+            const user = payload.profile ? {
                 ...payload.profile.user,
                 role: payload.profile.role,
                 school_name: payload.profile.school_name || ''
-            }
+            } : null;
+
             const returnUrl = sessionStorage.getItem("returnURL");
             
             let homePath = '/login';
@@ -61,10 +64,10 @@ const reducer = (state: AuthState, action: Actions): AuthState => {
             return {
                 token: payload.access,
                 refreshToken: payload.refresh,
-                userType: isStudent ? 'candidate' : 'staff',
+                userType: isStudent ? 'candidate' : payload.profile ? 'staff' : null,
                 homePath,
                 user,
-                profile: payload.profile,
+                profile: payload.profile || null,
                 isAuthenticated: true
             }
         }

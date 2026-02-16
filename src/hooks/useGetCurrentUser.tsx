@@ -1,19 +1,6 @@
-import { AuthLoginResponse } from '@/types/auth';
-import { useState, useEffect } from 'react';
+import { useAuth } from '@/contexts/AuthProvider';
 
 export default function useGetCurrentUser() {
-  const [user, setUser] = useState<AuthLoginResponse|null>(null);
-
-  useEffect(() => {
-    try {
-      const storedSession = localStorage.getItem('session');
-      if (storedSession) {
-        setUser(JSON.parse(storedSession));
-      }
-    } catch (error) {
-      console.error('Failed to parse session:', error);
-    }
-  }, []);
-
-  return user;
+  const { authState } = useAuth();
+  return authState;
 }
