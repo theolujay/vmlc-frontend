@@ -27,6 +27,8 @@ export type CandidateContext = {
   profile_picture: string | null;
   is_setup_complete: boolean;
   status: string;
+  school_name?: string;
+  current_class?: string;
   notifications: {
     info: NotificationItem[];
     success: NotificationItem[];
@@ -96,6 +98,8 @@ export type LeaderboardRankingType = {
   as_of_round?: number;
   exam_title?: string;
   is_active?: boolean;
+  score?: number;
+  percentile?: number;
 };
 
 export type PerformanceSnapshotType = {
@@ -159,7 +163,6 @@ export type ExamHistoryItem = {
 };
 
 export type DashboardType = {
-  candidate_context: CandidateContext;
   enrollment_stage_progress: DashboardStageProgress;
   active_exam: ActiveExamType | null;
   performance: PerformanceSnapshotType;

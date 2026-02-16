@@ -6,12 +6,55 @@ import { LeaderboardRankingType } from '@/types/Examtype';
 
 type ExamStage = 'SCREENING' | 'LEAGUE' | 'FINAL';
 
+const STAGE_CONFIG = {
+  SCREENING: {
+    title: "Screening Performance",
+    metricLabel: "Screening Cut-off Range",
+    pendingLabel: "Screening Upcoming",
+    pendingSub: "The screening examination hasn't yet commenced. Please await updates.",
+    awaitingLabel: "Awaiting Results",
+    awaitingSub: "Your performance is being processed. Results will be available soon.",
+    successLabel: "Screening Passed",
+    successSub: "You are eligible for promotion to the League stage.",
+    failLabel: "Screening Not Passed",
+    failSub: "Your score did not meet the required cut-off for promotion.",
+    accent: "#01ACEA"
+  },
+  LEAGUE: {
+    title: (round: number, total: number) => `League Performance • Round ${round} of ${total}`,
+    metricLabel: "Finalist Qualification Cut-off",
+    pendingLabel: "Round Assessment Pending",
+    pendingSub: (round: number) => `The assessment for Round ${round} has not started yet. Prepare well!`,
+    awaitingLabel: "Results Pending",
+    awaitingSub: "The leaderboard is currently being updated with the latest scores. Check back soon.",
+    successLabel: "Within Qualification Range",
+    successSub: "Maintaining this position keeps you eligible for the Final stage.",
+    failLabel: "Outside Qualification Range",
+    failSub: "Improved performance is advised in upcoming rounds to reach Final stage.",
+    accent: "#3E4095"
+  },
+  FINAL: {
+    title: "Final Stage",
+    metricLabel: "Finalist Status",
+    pendingLabel: "Finals Upcoming",
+    pendingSub: "The final examination schedule and details will be shared soon.",
+    awaitingLabel: "Under Review",
+    awaitingSub: "Final results are being verified. An official announcement will follow shortly.",
+    successLabel: "Finalist Confirmed",
+    successSub: "You are cleared to participate in the in-person final examination.",
+    failLabel: "Final Status Pending",
+    failSub: "Your participation requires further review by the organizers.",
+    accent: "#099137"
+  }
+};
+
 interface PerformanceSnapshotProps {
   leagueRanking?: LeaderboardRankingType | null;
   screeningRanking?: LeaderboardRankingType | null;
   finalRanking?: LeaderboardRankingType | null;
   stage: ExamStage;
-  currentWeek?: number; // Only for League stage (1-6)
+  leagueRound?: number; // Current round in League stage
+  totalRounds?: number; // Total rounds in League stage
   qualificationThreshold?: number;
   cutoffDisplay?: string;
   hasTakenExam?: boolean;
@@ -27,7 +70,8 @@ const Performance: React.FC<PerformanceSnapshotProps> = ({
   screeningRanking, 
   finalRanking,
   stage,
-  currentWeek = 1,
+  leagueRound = 1,
+  totalRounds = 6,
   qualificationThreshold,
   cutoffDisplay,
   hasTakenExam = false,
@@ -47,68 +91,16 @@ const Performance: React.FC<PerformanceSnapshotProps> = ({
 
   const displayCutoff = cutoffDisplay || (qualificationThreshold ? `Top ${qualificationThreshold}` : '-');
 
-  const stageConfig = {
-    SCREENING: {
-      title: "Screening Performance",
-      metricLabel: "Screening Cut-off Range",
-
-      pendingLabel: "Screening Upcoming",
-      pendingSub: "The screening examination hasn't yet commenced. Please await updates.",
-
-      awaitingLabel: "Awaiting Results",
-      awaitingSub: "Your performance is being processed. Results will be available soon.",
-
-      successLabel: "Screening Passed",
-      successSub: "You are eligible for promotion to the League stage.",
-
-      failLabel: "Screening Not Passed",
-      failSub: "Your score did not meet the required cut-off for promotion.",
-
-      accent: "#01ACEA"
-    },
-
-    LEAGUE: {
-      title: `League Performance • Week ${currentWeek} of 6`,
-      metricLabel: "Finalist Qualification Cut-off",
-
-      pendingLabel: "Week Assessment Pending",
-      pendingSub: `The assessment for Week ${currentWeek} has not started yet. Prepare well!`,
-
-      awaitingLabel: "Results Pending",
-      awaitingSub: "The leaderboard is currently being updated with the latest scores. Check back soon.",
-
-      successLabel: "Within Qualification Range",
-      successSub: "Maintaining this position keeps you eligible for the Final stage.",
-
-      failLabel: "Outside Qualification Range",
-      failSub: "Improved performance is advised in upcoming weeks to reach Final stage.",
-
-      accent: "#3E4095"
-    },
-
-    FINAL: {
-      title: "Final Stage",
-      metricLabel: "Finalist Status",
-
-      pendingLabel: "Finals Upcoming",
-      pendingSub: "The final examination schedule and details will be shared soon.",
-
-      awaitingLabel: "Under Review",
-      awaitingSub: "Final results are being verified. An official announcement will follow shortly.",
-
-      successLabel: "Finalist Confirmed",
-      successSub: "You are cleared to participate in the in-person final examination.",
-
-      failLabel: "Final Status Pending",
-      failSub: "Your participation requires further review by the organizers.",
-
-      accent: "#099137"
-    }
-  };
-
-
-  const currentContent = stageConfig[stage] || stageConfig.SCREENING;
+  const currentContent = STAGE_CONFIG[stage];
   const isLinkDisabled = !activeRanking || ((stage === 'SCREENING' || stage === 'FINAL') && !activeRanking.exam_id);
+
+  const title = stage === 'LEAGUE' 
+    ? STAGE_CONFIG.LEAGUE.title(leagueRound, totalRounds)
+    : currentContent.title;
+
+  const pendingSub = stage === 'LEAGUE'
+    ? STAGE_CONFIG.LEAGUE.pendingSub(leagueRound)
+    : currentContent.pendingSub;
 
   return (
     <section className="bg-white p-6 rounded-[24px] border border-[#E4E7EC] shadow-sm h-full flex flex-col font-sans">
@@ -120,17 +112,20 @@ const Performance: React.FC<PerformanceSnapshotProps> = ({
                     <CandidatePerformanceIcon />
                 </span>
                 <span className='text-[#475367] text-sm font-bold uppercase tracking-wide'>
-                    {currentContent.title}
+                    {title}
                 </span>
             </div>
             {stage === 'LEAGUE' && (
                 <div className="flex gap-1">
-                    {[1, 2, 3, 4, 5, 6].map((w) => (
-                        <div 
-                            key={w} 
-                            className={`w-1.5 h-1.5 rounded-full ${w < currentWeek ? 'bg-emerald-500' : w === currentWeek ? 'bg-[#3E4095] animate-pulse' : 'bg-slate-200'}`}
-                        />
-                    ))}
+                    {Array.from({ length: totalRounds }).map((_, i) => {
+                        const w = i + 1;
+                        return (
+                            <div 
+                                key={w} 
+                                className={`w-1.5 h-1.5 rounded-full ${w < leagueRound ? 'bg-emerald-500' : w === leagueRound ? 'bg-[#3E4095] animate-pulse' : 'bg-slate-200'}`}
+                            />
+                        );
+                    })}
                 </div>
             )}
         </div>
@@ -167,6 +162,24 @@ const Performance: React.FC<PerformanceSnapshotProps> = ({
             </div>
         </div>
 
+        {/* Secondary Statistics (Score/Percentile) */}
+        {hasTakenExam && (activeRanking?.score !== undefined || activeRanking?.percentile !== undefined) && (
+            <div className="flex items-center gap-6 mt-1 pb-2 border-b border-slate-50">
+                {activeRanking?.score !== undefined && (
+                    <div className="flex flex-col">
+                        <span className="text-[10px] text-[#98A2B3] font-bold uppercase tracking-tight">Total Score</span>
+                        <span className="text-sm font-bold text-[#475367]">{activeRanking.score.toLocaleString()} pts</span>
+                    </div>
+                )}
+                {activeRanking?.percentile !== undefined && (
+                    <div className="flex flex-col">
+                        <span className="text-[10px] text-[#98A2B3] font-bold uppercase tracking-tight">Percentile</span>
+                        <span className="text-sm font-bold text-[#475367]">{activeRanking.percentile.toFixed(1)}%</span>
+                    </div>
+                )}
+            </div>
+        )}
+
         {/* Status Banner */}
          <div className={`p-4 rounded-xl border flex items-center gap-3 mt-2 transition-all duration-300 ${
             !hasTakenExam ? 'bg-gray-50 border-gray-200' : isAwaitingResults ? 'bg-blue-50/50 border-blue-100' : isQualified ? 'bg-[#CCEEFB]/30 border-[#01ACEA]/50' : 'bg-[#FBEAE9] border-[#CB1A14]/20'
@@ -195,7 +208,7 @@ const Performance: React.FC<PerformanceSnapshotProps> = ({
                 {!hasTakenExam ? currentContent.pendingLabel : isAwaitingResults ? currentContent.awaitingLabel : isQualified ? currentContent.successLabel : currentContent.failLabel}
             </p>
             <p className="text-[11px] text-[#475367] leading-tight mt-0.5">
-                {!hasTakenExam ? currentContent.pendingSub : isAwaitingResults ? currentContent.awaitingSub : isQualified ? currentContent.successSub : currentContent.failSub}
+                {!hasTakenExam ? pendingSub : isAwaitingResults ? currentContent.awaitingSub : isQualified ? currentContent.successSub : currentContent.failSub}
             </p>
           </div>
         </div>

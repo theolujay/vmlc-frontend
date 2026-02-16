@@ -13,6 +13,7 @@ import { formatExamTitle } from '@/utils/generalUtils'
 
 export default function ExamBoard() {
     const { data, isPending } = useGetExamPortal()
+    const user = useGetCurrentUser()
 
     let examList: ActiveExamType[] = [];
     if (data?.active_exam) {
@@ -33,7 +34,7 @@ export default function ExamBoard() {
         }];
     }
 
-    const examType = data?.candidate_context?.role || '';
+    const examType = user?.profile?.role || '';
 
 
     
