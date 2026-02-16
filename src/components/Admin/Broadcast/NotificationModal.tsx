@@ -37,18 +37,18 @@ const Trash2 = ({ className }: { className?: string }) => (
     <line x1="14" x2="14" y1="11" y2="17" />
   </svg>
 );
-// const ToggleLeft = ({ className }: { className?: string }) => (
-//   <svg className={className} width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-//     <rect width="20" height="12" x="2" y="6" rx="6" ry="6" />
-//     <circle cx="8" cy="12" r="2" />
-//   </svg>
-// );
-// const ToggleRight = ({ className }: { className?: string }) => (
-//   <svg className={className} width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-//     <rect width="20" height="12" x="2" y="6" rx="6" ry="6" />
-//     <circle cx="16" cy="12" r="2" />
-//   </svg>
-// );
+const ToggleLeft = ({ className }: { className?: string }) => (
+  <svg className={className} width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <rect width="20" height="12" x="2" y="6" rx="6" ry="6" />
+    <circle cx="8" cy="12" r="2" />
+  </svg>
+);
+const ToggleRight = ({ className }: { className?: string }) => (
+  <svg className={className} width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <rect width="20" height="12" x="2" y="6" rx="6" ry="6" />
+    <circle cx="16" cy="12" r="2" />
+  </svg>
+);
 
 interface NotificationModalProps {
   notifications: Notification[];
@@ -56,8 +56,8 @@ interface NotificationModalProps {
   onMarkAllRead: () => void;
   onMarkSingleRead: (id: number) => void;
   onClearAll: () => void;
-  // inAppEnabled: boolean;
-  // onToggleInApp: () => void;
+  inAppEnabled: boolean;
+  onToggleInApp: () => void;
   isLoading?: boolean;
 }
 
@@ -66,8 +66,8 @@ const NotificationModal: React.FC<NotificationModalProps> = ({
   onMarkAllRead,
   onMarkSingleRead,
   onClearAll,
-  // inAppEnabled,
-  // onToggleInApp,
+  inAppEnabled,
+  onToggleInApp,
   isLoading = false
 }) => {
   const [settingsOpen, setSettingsOpen] = useState(false);
@@ -138,12 +138,12 @@ const NotificationModal: React.FC<NotificationModalProps> = ({
 
             {settingsOpen && (
               <div className="absolute right-0 mt-2 w-64 bg-white rounded-xl shadow-xl border border-gray-100 py-2 z-50">
-                {/* <div className="px-4 py-3 flex items-center justify-between border-b border-gray-50">
+                <div className="px-4 py-3 flex items-center justify-between border-b border-gray-50">
                   <span className="text-[10px] font-black uppercase tracking-widest text-gray-600">In-App Alerts</span>
                   <button onClick={onToggleInApp} className="text-[#3E4095]">
                     {inAppEnabled ? <ToggleRight className="w-8 h-8" /> : <ToggleLeft className="w-8 h-8 text-gray-300" />}
                   </button>
-                </div> */}
+                </div>
                 <button
                   onClick={() => { onClearAll(); setSettingsOpen(false); }}
                   className="w-full px-4 py-3 flex items-center gap-3 text-red-500 hover:bg-red-50 transition-colors text-[10px] font-black uppercase tracking-widest"

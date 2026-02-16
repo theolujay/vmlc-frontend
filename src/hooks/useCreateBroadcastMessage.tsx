@@ -23,7 +23,7 @@ const createBroadcastSchema = z.object({
     .string()
     .min(3, { message: 'Message must have minimum of 3 characters' }),
   mediums: z
-    .array(z.enum(['email', 'platform']))
+    .array(z.enum(['email', 'platform', 'sms', 'whatsapp']))
     .min(1, { message: 'At least one medium is required' }),
   target_roles: z
     .object({

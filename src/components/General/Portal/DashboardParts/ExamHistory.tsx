@@ -24,7 +24,7 @@ const getScoreStatus = (score: number | null, isPublished?: boolean) => {
 
 const ExamHistory: React.FC<ExamHistoryProps> = ({ history }) => {
   return (
-    <section className="bg-white p-6 rounded-[24px] border border-[#E4E7EC] shadow-sm h-[300px] flex flex-col overflow-hidden">
+    <section className="bg-white p-6 rounded-[24px] border border-[#E4E7EC] shadow-sm h-[310px] flex flex-col overflow-hidden">
       {/* Header Section */}
       <div className="flex justify-between items-center mb-6 shrink-0">
         <h2 className="text-xs font-bold text-[#475367] uppercase tracking-widest">Your Results</h2>

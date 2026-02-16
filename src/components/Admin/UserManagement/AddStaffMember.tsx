@@ -111,7 +111,7 @@ const roles: Role[] = [
   //         { name: "examSystem", label: "Exam System" },
   //         { name: "leaderboards", label: "Leaderboards" },
   //         { name: "userManagement", label: "User Management" },
-  //         { name: "announcement", label: "Announcement" },
+  //         { name: "broadcast", label: "Broadcast" },
   //     ],
   // },
   {
@@ -122,7 +122,7 @@ const roles: Role[] = [
       { name: "examSystem", label: "Exams & Questions" },
       { name: "leaderboards", label: "Leaderboards" },
       { name: "userManagement", label: "User Management" },
-      { name: "announcement", label: "Announcement" },
+      { name: "broadcast", label: "Broadcast" },
     ],
   },
   {

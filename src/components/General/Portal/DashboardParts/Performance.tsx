@@ -39,7 +39,7 @@ const STAGE_CONFIG = {
     pendingLabel: "Finals Upcoming",
     pendingSub: "The final examination schedule and details will be shared soon.",
     awaitingLabel: "Under Review",
-    awaitingSub: "Final results are being verified. An official announcement will follow shortly.",
+    awaitingSub: "Final results are being verified. An official broadcast will follow shortly.",
     successLabel: "Finalist Confirmed",
     successSub: "You are cleared to participate in the in-person final examination.",
     failLabel: "Final Status Pending",
@@ -65,9 +65,9 @@ interface PerformanceSnapshotProps {
   onViewLeaderboard?: () => void;
 }
 
-const Performance: React.FC<PerformanceSnapshotProps> = ({ 
-  leagueRanking, 
-  screeningRanking, 
+const Performance: React.FC<PerformanceSnapshotProps> = ({
+  leagueRanking,
+  screeningRanking,
   finalRanking,
   stage,
   leagueRound = 1,
@@ -82,7 +82,7 @@ const Performance: React.FC<PerformanceSnapshotProps> = ({
   const activeRanking = stage === 'SCREENING' ? screeningRanking : stage === 'FINAL' ? finalRanking : leagueRanking;
   const rank = activeRanking?.position || 0;
   const totalCandidates = activeRanking?.total_candidates || 0;
-  
+
   // For League, use isActive to determine if rank is finalized
   const showRank = rank > 0 && (stage !== 'LEAGUE' || isActive);
 
@@ -91,19 +91,18 @@ const Performance: React.FC<PerformanceSnapshotProps> = ({
 
   const displayCutoff = cutoffDisplay || (qualificationThreshold ? `Top ${qualificationThreshold}` : '-');
 
-  const currentContent = STAGE_CONFIG[stage];
-  const isLinkDisabled = !activeRanking || ((stage === 'SCREENING' || stage === 'FINAL') && !activeRanking.exam_id);
-
-  const title = stage === 'LEAGUE' 
-    ? STAGE_CONFIG.LEAGUE.title(leagueRound, totalRounds)
-    : currentContent.title;
-
-  const pendingSub = stage === 'LEAGUE'
-    ? STAGE_CONFIG.LEAGUE.pendingSub(leagueRound)
-    : currentContent.pendingSub;
-
-  return (
-    <section className="bg-white p-6 rounded-[24px] border border-[#E4E7EC] shadow-sm h-full flex flex-col font-sans">
+    const currentContent = STAGE_CONFIG[stage];
+    const isLinkDisabled = !activeRanking || ((stage === 'SCREENING' || stage === 'FINAL') && !activeRanking.exam_id);
+  
+    const title = stage === 'LEAGUE' 
+      ? STAGE_CONFIG.LEAGUE.title(leagueRound, totalRounds)
+      : (currentContent.title as string);
+  
+    const pendingSub = stage === 'LEAGUE'
+      ? STAGE_CONFIG.LEAGUE.pendingSub(leagueRound)
+      : (currentContent.pendingSub as string);
+  
+    return (    <section className="bg-white p-6 rounded-[24px] border border-[#E4E7EC] shadow-sm h-[310px] flex flex-col font-sans overflow-hidden">
       <div className="flex flex-col gap-4 flex-1">
         {/* Header */}
         <div className='flex justify-between items-center'>
@@ -120,8 +119,8 @@ const Performance: React.FC<PerformanceSnapshotProps> = ({
                     {Array.from({ length: totalRounds }).map((_, i) => {
                         const w = i + 1;
                         return (
-                            <div 
-                                key={w} 
+                            <div
+                                key={w}
                                 className={`w-1.5 h-1.5 rounded-full ${w < leagueRound ? 'bg-emerald-500' : w === leagueRound ? 'bg-[#3E4095] animate-pulse' : 'bg-slate-200'}`}
                             />
                         );
@@ -129,7 +128,7 @@ const Performance: React.FC<PerformanceSnapshotProps> = ({
                 </div>
             )}
         </div>
-        
+
         {/* Statistics Grid */}
         <div className="grid grid-cols-2 gap-4 mt-2">
              <div className="flex flex-col gap-1">
@@ -217,7 +216,7 @@ const Performance: React.FC<PerformanceSnapshotProps> = ({
       {/* Footer Link */}
       {!isLinkDisabled ? (
         stage === 'LEAGUE' && onViewLeaderboard ? (
-          <button 
+          <button
             onClick={onViewLeaderboard}
             className="mt-6 pt-4 border-t border-slate-100 text-sm font-bold text-[#3E4095] hover:opacity-80 flex items-center justify-between transition-all w-full text-left"
           >
@@ -225,8 +224,8 @@ const Performance: React.FC<PerformanceSnapshotProps> = ({
             <GotoIcon />
           </button>
         ) : (
-          <Link 
-            href={activeRanking?.exam_id ? `/exam-portal/rankings/${activeRanking.exam_id}` : "/exam-portal/leaderboard"} 
+          <Link
+            href={activeRanking?.exam_id ? `/exam-portal/rankings/${activeRanking.exam_id}` : "/exam-portal/leaderboard"}
             className="mt-6 pt-4 border-t border-slate-100 text-sm font-bold text-[#3E4095] hover:opacity-80 flex items-center justify-between transition-all"
           >
             <span>{stage === 'SCREENING' ? 'Ranking' : 'Leaderboard'}</span>

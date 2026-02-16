@@ -2,6 +2,7 @@
 import ResponsiveContainer from '@/components/ui/ResponsiveContainer'
 import Spinner from '@/components/ui/spinner/spinner'
 import useGetExamPortal from '@/hooks/useGetExamPortal'
+import useGetCurrentUser from '@/hooks/useGetCurrentUser'
 import { ActiveExamType } from '@/types/Examtype'
 import { formatDate } from '@/utils/formatFileSize'
 import { formatEndTimeToStringForCandidate, formatTimeToStringForCandidate } from '@/utils/formatTime'

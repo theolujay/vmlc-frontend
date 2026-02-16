@@ -44,7 +44,7 @@ import ProfileModal from '@/components/Modals/ProfileModal';
         </div>
       </div>
 
-      {user && (
+      {user?.profile && (
         <ProfileModal 
           id={user.profile.user.id}
           open={isProfileOpen}

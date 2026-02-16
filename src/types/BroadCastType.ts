@@ -6,18 +6,33 @@ export type TargetRolesType = {
   candidate?: ('screening' | 'league' | 'final' | 'winner')[];
 };
 
-export type BroadcastStatus = 'pending' | 'completed' | 'failed';
+export type BroadcastStatus = 'pending' | 'in_progress' | 'sent' | 'partial' | 'failed' | 'completed';
 
 export type DeliveryLogType = {
-  user_id: number;
-  user_email: string;
+  id: number;
   medium: string;
-  status: 'success' | 'failed';
-  error_message?: string;
-  sent_at: string;
+  target_role: string;
+  role_type: string;
+  status: string;
+  message: string;
+  attempted_at: string;
+  user_email?: string;
+};
+
+export type BroadcastSummaryDataType = {
+  total_broadcasts: number;
+  sent_count: number;
+  pending_count: number;
+  failed_count: number;
+  partial_count: number;
+  email_count: number;
+  sms_count: number;
+  whatsapp_count: number;
+  platform_count: number;
 };
 
 export type BroadcastType = {
+  broadcast_summary_data: BroadcastSummaryDataType;
   count: number;
   total_pages: number;
   next: string | null;
@@ -30,18 +45,20 @@ export type BroadcastItemType = {
   subject: string;
   message: string;
   created_by: CreatedByType;
-  created_at: Date;
+  created_at: string;
   mediums: string[];
   target_roles: TargetRolesType;
   status?: BroadcastStatus;
+  last_attempt?: string;
+  logs?: DeliveryLogType[];
   task_id?: string;
   delivery_attempts?: number;
-  delivery_logs?: DeliveryLogType[];
+  delivery_logs?: any[]; // For backward compatibility if needed
 };
 
 export type CreateBroadCastType = {
   subject: string;
   message: string;
-  mediums: ('email' | 'platform')[];
+  mediums: ('email' | 'platform' | 'sms' | 'whatsapp')[];
   target_roles: TargetRolesType;
 };
