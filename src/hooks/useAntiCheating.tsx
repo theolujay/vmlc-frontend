@@ -1,9 +1,14 @@
 import { useEffect } from 'react';
-import { toast } from 'react-toastify';
+import { toast, ToastOptions } from 'react-toastify';
+
+interface AntiCheatingWindow extends Window {
+  lastBlurTime?: number;
+}
 
 export const useAntiCheating = () => {
   useEffect(() => {
     let wasInactive = false;
+    const acWindow = window as AntiCheatingWindow;
 
     const handleContextMenu = (e: MouseEvent) => {
       e.preventDefault();
@@ -13,7 +18,9 @@ export const useAntiCheating = () => {
       // Prevent PrintScreen
       if (e.key === 'PrintScreen') {
         try {
-          navigator.clipboard.writeText("");
+          if (navigator.clipboard && navigator.clipboard.writeText) {
+             navigator.clipboard.writeText("");
+          }
         } catch (err) {
           console.error("Failed to clear clipboard", err);
         }
@@ -44,17 +51,17 @@ export const useAntiCheating = () => {
       }
     };
 
-    const handleCopy = (e: ClipboardEvent) => {
+    const handleCopy = (e: Event) => {
       e.preventDefault();
       toast.warn("Copying is disabled during the exam.");
     };
 
-    const handlePaste = (e: ClipboardEvent) => {
+    const handlePaste = (e: Event) => {
       e.preventDefault();
       toast.warn("Pasting is disabled during the exam.");
     };
 
-    const handleCut = (e: ClipboardEvent) => {
+    const handleCut = (e: Event) => {
       e.preventDefault();
       toast.warn("Cutting is disabled during the exam.");
     };
@@ -62,16 +69,40 @@ export const useAntiCheating = () => {
     const handleInactive = () => {
       document.body.style.filter = "blur(15px)";
       wasInactive = true;
+      acWindow.lastBlurTime = Date.now();
     };
 
     const handleActive = () => {
       document.body.style.filter = "none";
+      const now = Date.now();
+
       if (wasInactive) {
-        toast.error("WARNING: You switched tabs/windows. This suspicious activity has been recorded.", {
-          position: "top-center",
-          autoClose: 10000,
-          // theme: "colored",
-        });
+        const timeInactive = now - (acWindow.lastBlurTime || 0);
+
+        // If the window was blurred and refocused in less than 2 seconds,
+        // it's highly likely a screenshot or app switch gesture.
+        if (timeInactive > 0 && timeInactive < 2000) {
+          toast.error("SCREENSHOT DETECTED: Screen captures are strictly prohibited. This incident has been logged with your student ID.", {
+            position: "top-center",
+            autoClose: 15000,
+            theme: "dark",
+          } as ToastOptions);
+        } else {
+          toast.error("WARNING: You switched tabs/windows. This suspicious activity has been recorded.", {
+            position: "top-center",
+            autoClose: 10000,
+          });
+        }
+
+        // Attempt to clear clipboard as a secondary measure
+        try {
+          if (navigator.clipboard && navigator.clipboard.writeText) {
+             navigator.clipboard.writeText(" ");
+          }
+        } catch (e) {
+          // Clipboard API might fail if not focused
+        }
+
         wasInactive = false;
       }
     };
