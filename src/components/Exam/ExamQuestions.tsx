@@ -9,12 +9,16 @@ import SubmissionConfirmationModal from "./SubmissionConfirmationModal";
 import MathRenderer from "./MathRenderer";
 import Image from "next/image";
 import { TakeExamQuestionType, TakeExamType } from "@/types/Examtype";
+import useGetCurrentUser from "@/hooks/useGetCurrentUser";
 
 export default function Questions({ data, isPending, answers, setAnswers, handleSubmit, submitPending }: { submitPending: boolean, handleSubmit: () => void, data: TakeExamType | undefined, isPending: boolean, answers: Record<number, string>, setAnswers: Dispatch<SetStateAction<Record<number, string>>> }) {
     const { showNav } = useExamContext();
+    const { user } = useGetCurrentUser();
     const [open, setOpen] = useState(false);
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
     const [isLoaded, setIsLoaded] = useState(false);
+
+    const watermarkText = user ? `${user.first_name} ${user.last_name} (${user.email})` : "VMLC CANDIDATE";
 
     useEffect(() => {
         if (data?.id) {
@@ -75,13 +79,54 @@ export default function Questions({ data, isPending, answers, setAnswers, handle
     const totalAnswered = Object.keys(answers).length;
 
     return (
-        <div className="flex flex-col lg:flex-row gap-6 items-start w-full overflow-x-hidden">
+        <div className="flex flex-col lg:flex-row gap-6 items-start w-full overflow-x-hidden relative">
+            <style jsx global>{`
+                .watermark-overlay {
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    width: 100%;
+                    height: 100%;
+                    pointer-events: none;
+                    z-index: 50;
+                    opacity: 0.05;
+                    overflow: hidden;
+                    user-select: none;
+                }
+                .watermark-text {
+                    position: absolute;
+                    width: 200%;
+                    height: 200%;
+                    top: -50%;
+                    left: -50%;
+                    display: flex;
+                    flex-wrap: wrap;
+                    align-content: flex-start;
+                    transform: rotate(-25deg);
+                }
+                .watermark-item {
+                    padding: 40px;
+                    font-size: 14px;
+                    font-weight: 900;
+                    white-space: nowrap;
+                    color: #000;
+                    text-transform: uppercase;
+                }
+            `}</style>
+
             {/* Main Question Area */}
             <div className={clsx(
-                "w-full transition-all duration-500",
+                "w-full transition-all duration-500 relative",
                 showNav ? "lg:w-[70%]" : "w-full"
             )}>
-                <div className="bg-white rounded-2xl md:rounded-[2.5rem] border border-gray-100 shadow-sm overflow-hidden flex flex-col min-h-[500px] md:min-h-[600px]">
+                <div className="bg-white rounded-2xl md:rounded-[2.5rem] border border-gray-100 shadow-sm overflow-hidden flex flex-col min-h-[500px] md:min-h-[600px] relative">
+                    <div className="watermark-overlay">
+                        <div className="watermark-text">
+                            {Array.from({ length: 100 }).map((_, i) => (
+                                <div key={i} className="watermark-item">{watermarkText}</div>
+                            ))}
+                        </div>
+                    </div>
                     {/* Header */}
                     <div className="px-4 md:px-10 py-4 md:py-6 border-b border-gray-50 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-gray-50/30">
                         <div className="flex items-center space-x-3">
