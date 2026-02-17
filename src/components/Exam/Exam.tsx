@@ -7,6 +7,7 @@ import { useState, useEffect } from 'react';
 import useSubmitAnswers from '@/hooks/useSubmitAnswers';
 import useGetExamPortal from '@/hooks/useGetExamPortal';
 import { toast } from 'react-toastify';
+import { useAntiCheating } from '@/hooks/useAntiCheating';
 
 
 export default function Exam() {
@@ -17,6 +18,8 @@ export default function Exam() {
   const [answers, setAnswers] = useState<Record<number, string>>({});
   const { onSubmit, isPending: submitPending } = useSubmitAnswers(examId)
   const [isLoaded, setIsLoaded] = useState(false);
+
+  useAntiCheating();
 
   useEffect(() => {
     if (!dashboardPending && dashboardData) {
