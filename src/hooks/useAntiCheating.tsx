@@ -106,6 +106,10 @@ export const useAntiCheating = () => {
       }
     };
 
+    const handleSelectStart = (e: Event) => {
+      e.preventDefault();
+    };
+
     // Add CSS to disable text selection and print
     const style = document.createElement('style');
     style.id = 'anti-cheating-style';
@@ -115,12 +119,19 @@ export const useAntiCheating = () => {
           display: none !important;
         }
       }
-      body {
+      *, *::before, *::after {
         -webkit-user-select: none !important;
         -moz-user-select: none !important;
         -ms-user-select: none !important;
         user-select: none !important;
-        -webkit-touch-callout: none !important; /* Disable iOS long-press callout */
+        -webkit-touch-callout: none !important;
+        -webkit-user-drag: none !important;
+      }
+      input, textarea {
+        -webkit-user-select: text !important;
+        -moz-user-select: text !important;
+        -ms-user-select: text !important;
+        user-select: text !important;
       }
     `;
     document.head.appendChild(style);
@@ -132,6 +143,7 @@ export const useAntiCheating = () => {
     document.addEventListener('cut', handleCut);
     document.addEventListener('visibilitychange', handleVisibilityChange);
     document.addEventListener('touchstart', handleTouchStart, { passive: true });
+    document.addEventListener('selectstart', handleSelectStart);
     window.addEventListener('blur', handleWindowBlur);
     window.addEventListener('focus', handleWindowFocus);
     window.addEventListener('resize', handleResize);
@@ -144,6 +156,7 @@ export const useAntiCheating = () => {
       document.removeEventListener('cut', handleCut);
       document.removeEventListener('visibilitychange', handleVisibilityChange);
       document.removeEventListener('touchstart', handleTouchStart);
+      document.removeEventListener('selectstart', handleSelectStart);
       window.removeEventListener('blur', handleWindowBlur);
       window.removeEventListener('focus', handleWindowFocus);
       window.removeEventListener('resize', handleResize);

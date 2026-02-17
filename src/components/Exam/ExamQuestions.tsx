@@ -75,33 +75,32 @@ export default function Questions({ data, isPending, answers, setAnswers, handle
     const totalAnswered = Object.keys(answers).length;
 
     return (
-        <div className="flex flex-col lg:flex-row gap-8 items-start">
+        <div className="flex flex-col lg:flex-row gap-6 items-start w-full overflow-x-hidden">
             {/* Main Question Area */}
             <div className={clsx(
-                "flex-1 flex flex-col transition-all duration-500",
+                "w-full transition-all duration-500",
                 showNav ? "lg:w-[70%]" : "w-full"
             )}>
-                <div className="bg-white rounded-[2.5rem] border border-gray-100 shadow-sm overflow-hidden flex flex-col min-h-[600px]">
+                <div className="bg-white rounded-2xl md:rounded-[2.5rem] border border-gray-100 shadow-sm overflow-hidden flex flex-col min-h-[500px] md:min-h-[600px]">
                     {/* Header */}
-                    <div className="px-10 py-6 border-b border-gray-50 flex justify-between items-center bg-gray-50/30">
+                    <div className="px-4 md:px-10 py-4 md:py-6 border-b border-gray-50 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-gray-50/30">
                         <div className="flex items-center space-x-3">
-                            <span className="w-10 h-10 flex items-center justify-center rounded-xl bg-[#3E4095] text-white font-black text-sm shadow-lg shadow-[#3E4095]/20">
+                            <span className="w-8 h-8 md:w-10 md:h-10 flex items-center justify-center rounded-lg md:xl bg-[#3E4095] text-white font-black text-xs md:text-sm shadow-lg shadow-[#3E4095]/20">
                                 {currentQuestionIndex + 1}
                             </span>
                             <div className="flex flex-col">
                                 <h3 className="text-[10px] font-black text-gray-400 uppercase tracking-widest leading-none">Question</h3>
-                                {/* <span className="text-xs font-bold text-gray-800 mt-1">Difficulty: {currentQuestion.difficulty || 'Standard'}</span> */}
                             </div>
                         </div>
-                        <div className="flex items-center space-x-2">
-                             <span className="text-[10px] font-black text-[#3E4095] uppercase tracking-widest">Progress:</span>
-                             <div className="w-32 h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                        <div className="flex items-center space-x-2 w-full sm:w-auto">
+                             <span className="text-[10px] font-black text-[#3E4095] uppercase tracking-widest whitespace-nowrap">Progress:</span>
+                             <div className="flex-1 sm:w-32 h-1.5 bg-gray-100 rounded-full overflow-hidden">
                                 <div 
                                     className="h-full bg-[#3E4095] transition-all duration-500" 
                                     style={{ width: `${((currentQuestionIndex + 1) / questions.length) * 100}%` }}
                                 ></div>
                              </div>
-                             <span className="text-[10px] font-black text-gray-400">{currentQuestionIndex + 1}/{questions.length}</span>
+                             <span className="text-[10px] font-black text-gray-400 whitespace-nowrap">{currentQuestionIndex + 1}/{questions.length}</span>
                         </div>
                     </div>
 
@@ -115,7 +114,7 @@ export default function Questions({ data, isPending, answers, setAnswers, handle
                     </div>
 
                     {/* Footer Controls */}
-                    <div className="px-10 py-8 bg-gray-50/50 border-t border-gray-100">
+                    <div className="px-4 md:px-10 py-6 md:py-8 bg-gray-50/50 border-t border-gray-100">
                         <Toggle
                             disableNext={currentQuestionIndex === questions.length - 1}
                             disablePrev={currentQuestionIndex === 0}
@@ -209,25 +208,25 @@ function Toggle({
     onSubmit: () => void;
 }>) {
     return (
-        <div className="flex justify-between items-center">
+        <div className="flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-4">
             <button
                 disabled={disablePrev}
                 onClick={onPrev}
                 className={clsx(
-                    "flex items-center space-x-3 px-8 py-4 rounded-2xl font-black text-[10px] uppercase tracking-widest transition-all active:scale-95 border",
+                    "flex items-center justify-center space-x-3 px-6 md:px-8 py-3.5 md:py-4 rounded-xl md:2xl font-black text-[10px] uppercase tracking-widest transition-all active:scale-95 border",
                     disablePrev 
                         ? "bg-gray-50 text-gray-300 border-gray-100 cursor-not-allowed" 
                         : "bg-white text-[#3E4095] border-[#3E4095]/20 hover:bg-gray-50 shadow-sm"
                 )}
             >
                 <i className="fas fa-chevron-left text-xs"></i>
-                <span>Previous Question</span>
+                <span>Previous</span>
             </button>
 
             {disableNext ? (
                 <button
                     onClick={onSubmit}
-                    className="flex items-center space-x-3 px-12 py-4 bg-green-600 text-white rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] shadow-xl shadow-green-600/20 hover:bg-green-700 hover:-translate-y-1 transition-all active:scale-95"
+                    className="flex items-center justify-center space-x-3 px-10 md:px-12 py-3.5 md:py-4 bg-green-600 text-white rounded-xl md:2xl font-black text-[10px] uppercase tracking-[0.2em] shadow-xl shadow-green-600/20 hover:bg-green-700 hover:-translate-y-1 transition-all active:scale-95"
                 >
                     <i className="fas fa-paper-plane text-xs"></i>
                     <span>Submit Exam</span>
@@ -235,7 +234,7 @@ function Toggle({
             ) : (
                 <button
                     onClick={onNext}
-                    className="flex items-center space-x-3 px-10 py-4 bg-[#3E4095] text-white rounded-2xl font-black text-[10px] uppercase tracking-[0.2em] shadow-xl shadow-[#3E4095]/20 hover:bg-[#2d2f6e] hover:-translate-y-1 transition-all active:scale-95"
+                    className="flex items-center justify-center space-x-3 px-8 md:px-10 py-3.5 md:py-4 bg-[#3E4095] text-white rounded-xl md:2xl font-black text-[10px] uppercase tracking-[0.2em] shadow-xl shadow-[#3E4095]/20 hover:bg-[#2d2f6e] hover:-translate-y-1 transition-all active:scale-95"
                 >
                     <span>Next Question</span>
                     <i className="fas fa-chevron-right text-xs"></i>
@@ -277,19 +276,19 @@ function NumberGrid({ numberOfQuestions, current, onSelect, answers, questions }
 
 function EachQuestion({ question, image }: { question: string, image?: string }) {
     return (
-        <div className="px-10 py-12 flex flex-col gap-6">
+        <div className="px-4 md:px-10 py-6 md:py-12 flex flex-col gap-6 w-full overflow-x-hidden">
             <div className="flex items-center space-x-3">
                 <div className="h-px flex-1 bg-gray-100"></div>
                 <span className="text-[10px] font-black text-gray-600 uppercase tracking-[0.3em]">Problem Statement</span>
                 <div className="h-px flex-1 bg-gray-100"></div>
             </div>
-            <div className="flex flex-col gap-8">
-                <div className="text-2xl font-semibold text-gray-800 leading-relaxed bg-gray-50/30 p-8 rounded-[2rem] border border-dashed border-gray-200">
+            <div className="flex flex-col gap-6 md:gap-8 w-full overflow-hidden">
+                <div className="text-lg md:text-2xl font-semibold text-gray-800 leading-relaxed bg-gray-50/30 p-5 md:p-8 rounded-xl md:rounded-[2rem] border border-dashed border-gray-200 w-full overflow-x-auto">
                     <MathRenderer content={question} />
                 </div>
                 
                 {image && (
-                    <div className="relative w-full aspect-video rounded-3xl overflow-hidden border border-gray-100 shadow-sm bg-gray-50/30">
+                    <div className="relative w-full aspect-video rounded-xl md:rounded-3xl overflow-hidden border border-gray-100 shadow-sm bg-gray-50/30">
                         <Image
                             src={image}
                             alt="Question Diagram"
@@ -313,20 +312,20 @@ function Options({ question, selected, onSelect }: { question: TakeExamQuestionT
     };
 
     return (
-        <div className="px-10 pb-12 grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="px-4 md:px-10 pb-8 md:pb-12 grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 w-full">
             {Object.entries(optionMap).map(([key, value]) => (
                 <button
                     key={key}
                     onClick={() => onSelect(question.id, key)}
                     className={clsx(
-                        "flex items-start p-6 gap-5 rounded-[2rem] border-2 transition-all group relative text-left outline-none",
+                        "flex items-start p-4 md:p-6 gap-3 md:gap-5 rounded-xl md:rounded-[2rem] border-2 transition-all group relative text-left outline-none min-h-[80px] md:min-h-auto",
                         selected === key 
                             ? "bg-[#3E4095]/5 border-[#3E4095] shadow-xl shadow-[#3E4095]/5" 
                             : "bg-white border-gray-50 hover:border-gray-200 hover:shadow-md"
                     )}
                 >
                     <div className={clsx(
-                        "w-12 h-12 shrink-0 rounded-2xl flex items-center justify-center font-black text-sm transition-all duration-300",
+                        "w-10 h-10 md:w-12 md:h-12 shrink-0 rounded-xl md:rounded-2xl flex items-center justify-center font-black text-xs md:text-sm transition-all duration-300",
                         selected === key
                             ? "bg-[#3E4095] text-white shadow-lg shadow-[#3E4095]/20"
                             : "bg-gray-50 text-gray-400 group-hover:bg-white group-hover:text-[#3E4095] border border-transparent group-hover:border-[#3E4095]/10"
@@ -335,15 +334,15 @@ function Options({ question, selected, onSelect }: { question: TakeExamQuestionT
                     </div>
                    
                     <div className={clsx(
-                        "pt-3 text-base font-bold transition-colors leading-relaxed",
+                        "pt-2 md:pt-3 text-sm md:text-base font-bold transition-colors leading-relaxed break-words overflow-hidden",
                         selected === key ? "text-[#3E4095]" : "text-gray-600 group-hover:text-gray-900"
                     )}>
                         <MathRenderer content={value as string} inline />
                     </div>
 
                     {selected === key && (
-                        <div className="absolute top-4 right-4 animate-in zoom-in duration-300">
-                            <i className="fas fa-check-circle text-[#3E4095] text-lg"></i>
+                        <div className="absolute top-3 right-3 md:top-4 md:right-4 animate-in zoom-in duration-300">
+                            <i className="fas fa-check-circle text-[#3E4095] text-base md:text-lg"></i>
                         </div>
                     )}
                 </button>
