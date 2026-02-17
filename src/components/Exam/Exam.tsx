@@ -11,10 +11,20 @@ import { useAntiCheating } from '@/hooks/useAntiCheating';
 import { shuffleArray } from '@/utils/generalUtils';
 import { TakeExamType, TakeExamQuestionType } from '@/types/Examtype';
 
+// Local types for shuffling logic
+interface ShuffledTakeExamQuestionType extends TakeExamQuestionType {
+  _optionMapping?: Record<string, string>;
+}
+
+interface ShuffledTakeExamType extends Omit<TakeExamType, 'questions'> {
+  questions: ShuffledTakeExamQuestionType[];
+}
 
 export default function Exam() {
   const router = useRouter();
-  const { examId } = useParams<{ examId: string }>();
+  const params = useParams();
+  const examId = params?.examId as string;
+  
   const { isPending, data } = useCandidateTakeExam(examId);
   const { data: dashboardData, isPending: dashboardPending } = useGetExamPortal();
   const [answers, setAnswers] = useState<Record<number, string>>({});
@@ -46,12 +56,12 @@ export default function Exam() {
 
   // Shuffling logic
   const processedData = useMemo(() => {
-    if (!data || !data.questions) return data;
+    if (!data || !data.questions) return undefined;
 
     const storageKey = `shuffled_exam_${examId}`;
-    const savedShuffled = localStorage.getItem(storageKey);
+    const savedShuffled = typeof window !== 'undefined' ? localStorage.getItem(storageKey) : null;
 
-    let shuffledQuestions: TakeExamQuestionType[];
+    let shuffledQuestions: ShuffledTakeExamQuestionType[];
 
     if (savedShuffled) {
       try {
@@ -69,17 +79,19 @@ export default function Exam() {
       shuffledQuestions = shuffleQuestions(data.questions);
     }
 
-    localStorage.setItem(storageKey, JSON.stringify(shuffledQuestions));
+    if (typeof window !== 'undefined') {
+      localStorage.setItem(storageKey, JSON.stringify(shuffledQuestions));
+    }
 
     return {
       ...data,
       questions: shuffledQuestions
-    };
+    } as ShuffledTakeExamType;
   }, [data, examId]);
 
-  function shuffleQuestions(questions: TakeExamQuestionType[]): TakeExamQuestionType[] {
+  function shuffleQuestions(questions: TakeExamQuestionType[]): ShuffledTakeExamQuestionType[] {
     // 1. Shuffle questions order
-    const shuffled = shuffleArray(questions);
+    const shuffled = shuffleArray([...questions]);
     
     // 2. Shuffle options for each question
     return shuffled.map(q => {
@@ -98,24 +110,20 @@ export default function Exam() {
         option_b: shuffledOptions[1].value,
         option_c: shuffledOptions[2].value,
         option_d: shuffledOptions[3].value,
-        // We need to keep track of original keys for answer submission if backend expects original A,B,C,D
-        // But if the backend just expects the text or we map it back, we need a plan.
-        // Assuming the question structure in ExamQuestions expects option_a to be "A" label.
-        // Let's store the mapping in the question object itself.
         _optionMapping: {
           A: shuffledOptions[0].key,
           B: shuffledOptions[1].key,
           C: shuffledOptions[2].key,
           D: shuffledOptions[3].key,
         }
-      } as any;
+      };
     });
   }
 
   const handleSelectOption = (questionId: number, displayedOption: string) => {
     // Map displayed option (A,B,C,D) back to original option key for backend
-    const question = processedData?.questions.find(q => q.id === questionId) as any;
-    const originalOption = question?._optionMapping?.[displayedOption] || displayedOption;
+    const question = processedData?.questions.find(q => q.id === questionId);
+    const originalOption = (question?._optionMapping as Record<string, string> | undefined)?.[displayedOption] || displayedOption;
     
     setAnswers(prev => ({ ...prev, [questionId]: originalOption }));
   };
@@ -125,7 +133,7 @@ export default function Exam() {
     const mapped: Record<number, string> = {};
     Object.entries(answers).forEach(([qId, originalOpt]) => {
       const questionId = Number(qId);
-      const question = processedData?.questions.find(q => q.id === questionId) as any;
+      const question = processedData?.questions.find(q => q.id === questionId);
       
       if (question?._optionMapping) {
         const displayedOpt = Object.entries(question._optionMapping).find(([_, orig]) => orig === originalOpt)?.[0];
@@ -140,7 +148,7 @@ export default function Exam() {
   const formattedAnswers = {
     answers: Object.entries(answers).map(([questionId, selected_option]) => ({
       question: Number(questionId),
-      selected_option: selected_option.toLowerCase(),
+      selected_option: selected_option ? selected_option.toLowerCase() : '',
     })),
   };
 
@@ -219,7 +227,7 @@ export default function Exam() {
         submitPending={submitPending} 
         handleSubmit={handleSubmit} 
         answers={uiAnswers} 
-        setAnswers={handleSelectOption as any} 
+        onSelect={handleSelectOption} 
         isPending={isPending} 
         data={processedData} 
       />

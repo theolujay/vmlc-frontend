@@ -1,9 +1,8 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { useExamContext } from "@/contexts/ExamNavigationProvider";
 import clsx from "clsx";
-import { Dispatch, SetStateAction, useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import Spinner from "../ui/spinner/spinner";
 import SubmissionConfirmationModal from "./SubmissionConfirmationModal";
 import MathRenderer from "./MathRenderer";
@@ -11,7 +10,21 @@ import Image from "next/image";
 import { TakeExamQuestionType, TakeExamType } from "@/types/Examtype";
 import useGetCurrentUser from "@/hooks/useGetCurrentUser";
 
-export default function Questions({ data, isPending, answers, setAnswers, handleSubmit, submitPending }: { submitPending: boolean, handleSubmit: () => void, data: TakeExamType | undefined, isPending: boolean, answers: Record<number, string>, setAnswers: Dispatch<SetStateAction<Record<number, string>>> }) {
+export default function Questions({ 
+    data, 
+    isPending, 
+    answers, 
+    onSelect, 
+    handleSubmit, 
+    submitPending 
+}: { 
+    submitPending: boolean, 
+    handleSubmit: () => void, 
+    data: TakeExamType | undefined, 
+    isPending: boolean, 
+    answers: Record<number, string>, 
+    onSelect: (questionId: number, optionLetter: string) => void 
+}) {
     const { showNav } = useExamContext();
     const { user } = useGetCurrentUser();
     const [open, setOpen] = useState(false);
@@ -70,10 +83,6 @@ export default function Questions({ data, isPending, answers, setAnswers, handle
         if (currentQuestionIndex > 0) {
             setCurrentQuestionIndex(prev => prev - 1);
         }
-    };
-
-    const handleSelectOption = (questionId: number, optionLetter: string) => {
-        setAnswers(prev => ({ ...prev, [questionId]: optionLetter }));
     };
 
     const totalAnswered = Object.keys(answers).length;
@@ -153,7 +162,7 @@ export default function Questions({ data, isPending, answers, setAnswers, handle
                         <EachQuestion question={currentQuestion.text} image={currentQuestion.image} />
                         <Options 
                             selected={answers[currentQuestion.id] || null} 
-                            onSelect={handleSelectOption} 
+                            onSelect={onSelect} 
                             question={currentQuestion} 
                         />
                     </div>
@@ -290,7 +299,7 @@ function Toggle({
 }
 
 
-function NumberGrid({ numberOfQuestions, current, onSelect, answers, questions }: Readonly<{ numberOfQuestions: number; current: number; onSelect: (index: number) => void; answers: Record<number, string>; questions: any[] }>) {
+function NumberGrid({ numberOfQuestions, current, onSelect, answers, questions }: Readonly<{ numberOfQuestions: number; current: number; onSelect: (index: number) => void; answers: Record<number, string>; questions: TakeExamQuestionType[] }>) {
     return (
         <div className="grid grid-cols-5 sm:grid-cols-4 md:grid-cols-5 gap-3">
             {Array.from({ length: numberOfQuestions }, (_, i) => {
