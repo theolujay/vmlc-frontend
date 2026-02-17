@@ -2,6 +2,7 @@ import ExamNavigationProvider from '@/contexts/ExamNavigationProvider'
 import React from 'react'
 import Header from '../General/Layout/Header'
 import HeaderTimer from './HeaderTimer'
+import FaceProctor from './FaceProctor'
 
 export default function ExamLayout({ 
     children, 
@@ -22,10 +23,11 @@ export default function ExamLayout({
             <Header />
             <ExamNavigationProvider>
                 <HeaderTimer onTimeUp={onTimeUp} timer={timer} deadline={deadline} title={title} />
-                <main className='flex-1 py-10'>
+                <main className='flex-1 py-10 relative'>
                     <div className="max-w-[1400px] w-[95%] mx-auto">
                         {children}
                     </div>
+                    <FaceProctor />
                 </main>
             </ExamNavigationProvider>
         </div>

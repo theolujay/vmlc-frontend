@@ -103,6 +103,40 @@ export function getOrdinal(n: number): string {
 
 
 export function formatExamTitle(title: string | undefined): string {
+
+
     if (!title) return '';
+
+
     return title.replace(/^\d{4}\s*\|\s*/, '');
+
+
 }
+
+
+
+
+
+export function shuffleArray<T>(array: T[]): T[] {
+
+
+  const shuffled = [...array];
+
+
+  for (let i = shuffled.length - 1; i > 0; i--) {
+
+
+    const j = Math.floor(Math.random() * (i + 1));
+
+
+    [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+
+
+  }
+
+
+  return shuffled;
+
+
+}
+

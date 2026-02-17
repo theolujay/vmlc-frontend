@@ -1,4 +1,5 @@
-import { useEffect } from 'react';
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { useEffect, useState, useCallback } from 'react';
 import { toast, ToastOptions } from 'react-toastify';
 
 interface AntiCheatingWindow extends Window {
@@ -6,9 +7,56 @@ interface AntiCheatingWindow extends Window {
 }
 
 export const useAntiCheating = () => {
+  const [isFullscreen, setIsFullscreen] = useState(false);
+
+  const enterFullscreen = useCallback(async () => {
+    try {
+      const element = document.documentElement;
+      if (element.requestFullscreen) {
+        await element.requestFullscreen();
+      } else if ((element as any).webkitRequestFullscreen) {
+        await (element as any).webkitRequestFullscreen();
+      } else if ((element as any).msRequestFullscreen) {
+        await (element as any).msRequestFullscreen();
+      }
+    } catch (error) {
+      console.error("Error attempting to enable full-screen mode:", error);
+      toast.error("Full-screen mode is required to take this exam.");
+    }
+  }, []);
+
+  const exitFullscreen = useCallback(async () => {
+    try {
+      if (document.exitFullscreen) {
+        await document.exitFullscreen();
+      } else if ((document as any).webkitExitFullscreen) {
+        await (document as any).webkitExitFullscreen();
+      } else if ((document as any).msExitFullscreen) {
+        await (document as any).msExitFullscreen();
+      }
+    } catch (error) {
+      console.error("Error attempting to exit full-screen mode:", error);
+    }
+  }, []);
+
   useEffect(() => {
     let wasInactive = false;
     const acWindow = window as AntiCheatingWindow;
+
+    const handleFullscreenChange = () => {
+      const isCurrentlyFullscreen = !!document.fullscreenElement;
+      setIsFullscreen(isCurrentlyFullscreen);
+
+      if (!isCurrentlyFullscreen) {
+        document.body.style.filter = "blur(15px)";
+        toast.error("FULLSCREEN EXIT DETECTED: You must stay in fullscreen mode. This incident has been recorded.", {
+          position: "top-center",
+          autoClose: 10000,
+        });
+      } else {
+        document.body.style.filter = "none";
+      }
+    };
 
     const handleContextMenu = (e: MouseEvent) => {
       e.preventDefault();
@@ -73,19 +121,21 @@ export const useAntiCheating = () => {
     };
 
     const handleActive = () => {
-      document.body.style.filter = "none";
+      const isCurrentlyFullscreen = !!document.fullscreenElement;
+      if (isCurrentlyFullscreen) {
+        document.body.style.filter = "none";
+      }
+
       const now = Date.now();
 
       if (wasInactive) {
         const timeInactive = now - (acWindow.lastBlurTime || 0);
 
-        // If the window was blurred and refocused in less than 2 seconds,
-        // it's highly likely a screenshot or app switch gesture.
         if (timeInactive > 0 && timeInactive < 2000) {
-          toast.error("SCREENSHOT DETECTED: Screen captures are strictly prohibited. This incident has been logged with your student ID.", {
+          toast.error("SCREENSHOT DETECTED: Screen captures are strictly prohibited. This incident has been logged.", {
             position: "top-center",
             autoClose: 15000,
-            theme: "dark",
+            // theme: "dark" as any,
           } as ToastOptions);
         } else {
           toast.error("WARNING: You switched tabs/windows. This suspicious activity has been recorded.", {
@@ -94,14 +144,11 @@ export const useAntiCheating = () => {
           });
         }
 
-        // Attempt to clear clipboard as a secondary measure
         try {
           if (navigator.clipboard && navigator.clipboard.writeText) {
              navigator.clipboard.writeText(" ");
           }
-        } catch (e) {
-          // Clipboard API might fail if not focused
-        }
+        } catch (e) { }
 
         wasInactive = false;
       }
@@ -126,12 +173,10 @@ export const useAntiCheating = () => {
     const handleTouchStart = (e: TouchEvent) => {
       if (e.touches.length > 2) {
         toast.warn("Multi-finger gestures are restricted during the exam.");
-        // We can't easily prevent the screenshot, but we can warn.
       }
     };
 
     const handleResize = () => {
-      // Detect if user is trying to use split-screen on mobile
       if (window.innerHeight < 400 || window.innerWidth < 300) {
         toast.error("Please maximize your window. Split-screen or small windows are not allowed.");
       }
@@ -141,7 +186,6 @@ export const useAntiCheating = () => {
       e.preventDefault();
     };
 
-    // Add CSS to disable text selection and print
     const style = document.createElement('style');
     style.id = 'anti-cheating-style';
     style.innerHTML = `
@@ -175,6 +219,7 @@ export const useAntiCheating = () => {
     document.addEventListener('visibilitychange', handleVisibilityChange);
     document.addEventListener('touchstart', handleTouchStart, { passive: true });
     document.addEventListener('selectstart', handleSelectStart);
+    document.addEventListener('fullscreenchange', handleFullscreenChange);
     window.addEventListener('blur', handleWindowBlur);
     window.addEventListener('focus', handleWindowFocus);
     window.addEventListener('resize', handleResize);
@@ -188,6 +233,7 @@ export const useAntiCheating = () => {
       document.removeEventListener('visibilitychange', handleVisibilityChange);
       document.removeEventListener('touchstart', handleTouchStart);
       document.removeEventListener('selectstart', handleSelectStart);
+      document.removeEventListener('fullscreenchange', handleFullscreenChange);
       window.removeEventListener('blur', handleWindowBlur);
       window.removeEventListener('focus', handleWindowFocus);
       window.removeEventListener('resize', handleResize);
@@ -198,5 +244,7 @@ export const useAntiCheating = () => {
       }
       document.body.style.filter = "none";
     };
-  }, []);
+  }, []); // Removed handleActive from dependency array
+
+  return { isFullscreen, enterFullscreen, exitFullscreen };
 };
