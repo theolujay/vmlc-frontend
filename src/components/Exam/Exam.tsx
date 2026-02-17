@@ -24,7 +24,7 @@ export default function Exam() {
   const router = useRouter();
   const params = useParams();
   const examId = params?.examId as string;
-  
+
   const { isPending, data } = useCandidateTakeExam(examId);
   const { data: dashboardData, isPending: dashboardPending } = useGetExamPortal();
   const [answers, setAnswers] = useState<Record<number, string>>({});
@@ -54,6 +54,7 @@ export default function Exam() {
     }
   }, [dashboardData, dashboardPending, examId, router]);
 
+  
   // Shuffling logic
   const processedData = useMemo(() => {
     if (!data || !data.questions) return undefined;
@@ -92,7 +93,7 @@ export default function Exam() {
   function shuffleQuestions(questions: TakeExamQuestionType[]): ShuffledTakeExamQuestionType[] {
     // 1. Shuffle questions order
     const shuffled = shuffleArray([...questions]);
-    
+
     // 2. Shuffle options for each question
     return shuffled.map(q => {
       const options = [
@@ -101,9 +102,9 @@ export default function Exam() {
         { key: 'C', value: q.option_c },
         { key: 'D', value: q.option_d },
       ];
-      
+
       const shuffledOptions = shuffleArray(options);
-      
+
       return {
         ...q,
         option_a: shuffledOptions[0].value,
@@ -124,7 +125,7 @@ export default function Exam() {
     // Map displayed option (A,B,C,D) back to original option key for backend
     const question = processedData?.questions.find(q => q.id === questionId);
     const originalOption = (question?._optionMapping as Record<string, string> | undefined)?.[displayedOption] || displayedOption;
-    
+
     setAnswers(prev => ({ ...prev, [questionId]: originalOption }));
   };
 
@@ -134,7 +135,7 @@ export default function Exam() {
     Object.entries(answers).forEach(([qId, originalOpt]) => {
       const questionId = Number(qId);
       const question = processedData?.questions.find(q => q.id === questionId);
-      
+
       if (question?._optionMapping) {
         const displayedOpt = Object.entries(question._optionMapping).find(([_, orig]) => orig === originalOpt)?.[0];
         if (displayedOpt) mapped[questionId] = displayedOpt;
@@ -201,11 +202,11 @@ export default function Exam() {
           </div>
           <h1 className="text-3xl font-black text-gray-800 mb-4">Secure Exam Environment</h1>
           <p className="text-gray-600 mb-8 leading-relaxed">
-            This examination requires a secure, full-screen environment. 
-            Once you start, switching tabs, taking screenshots, or exiting full-screen mode 
+            This examination requires a secure, full-screen environment.
+            Once you start, switching tabs, taking screenshots, or exiting full-screen mode
             will be flagged as suspicious activity.
           </p>
-          <button 
+          <button
             onClick={handleStartExam}
             className="px-10 py-5 bg-[#3E4095] text-white rounded-2xl font-black text-sm uppercase tracking-widest shadow-xl shadow-[#3E4095]/20 hover:scale-105 transition-all active:scale-95"
           >
@@ -217,19 +218,19 @@ export default function Exam() {
   }
 
   return (
-    <ExamLayout 
-      onTimeUp={handleSubmit} 
-      timer={data?.countdown_minutes ?? 0} 
+    <ExamLayout
+      onTimeUp={handleSubmit}
+      timer={data?.countdown_minutes ?? 0}
       deadline={data?.attempt?.deadline}
       title={data?.title}
     >
-      <Questions 
-        submitPending={submitPending} 
-        handleSubmit={handleSubmit} 
-        answers={uiAnswers} 
-        onSelect={handleSelectOption} 
-        isPending={isPending} 
-        data={processedData} 
+      <Questions
+        submitPending={submitPending}
+        handleSubmit={handleSubmit}
+        answers={uiAnswers}
+        onSelect={handleSelectOption}
+        isPending={isPending}
+        data={processedData}
       />
     </ExamLayout>
   )
