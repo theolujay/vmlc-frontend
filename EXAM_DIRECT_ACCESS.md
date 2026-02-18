@@ -18,6 +18,7 @@ The Exam Direct Access system allows eligible candidates to access their exams d
 4.  **Identity Verification**: Before the candidate can begin the exam (even after authentication), they must submit a face capture image for identity verification.
 5.  **Exam Start**: Once identity verification is successful (status becomes `PENDING`), the candidate can proceed to "take" the exam, which transitions the access status to `STARTED`.
 
+
 ## API Specification
 
 ### Direct Access Login
