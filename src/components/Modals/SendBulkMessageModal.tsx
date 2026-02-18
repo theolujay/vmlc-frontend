@@ -364,6 +364,38 @@ export default function SendBulkMessageModal({
                   </span>
                 )}
               </section>
+
+              {/* Scheduling Section */}
+              <section className="space-y-6">
+                <div className="flex items-center space-x-4">
+                  <div className="w-10 h-10 flex items-center justify-center rounded-2xl bg-[#3E4095] text-white font-black shadow-lg shadow-[#3E4095]/20">
+                    4
+                  </div>
+                  <h3 className="text-base font-black text-gray-800 tracking-tight">
+                    Scheduling (Optional)
+                  </h3>
+                </div>
+
+                <div className="bg-white p-8 rounded-[2.5rem] shadow-sm border border-gray-100 space-y-6">
+                  <div className="flex flex-col">
+                    <label
+                      htmlFor="scheduled_at"
+                      className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2 px-1"
+                    >
+                      Schedule for later delivery
+                    </label>
+                    <input
+                      type="datetime-local"
+                      id="scheduled_at"
+                      {...register("scheduled_at")}
+                      className="w-full bg-gray-50/50 border border-gray-100 h-14 px-6 rounded-2xl outline-none focus:ring-4 focus:ring-[#3E4095]/5 focus:border-[#3E4095] focus:bg-white transition-all text-sm font-bold shadow-inner"
+                    />
+                    <p className="text-[9px] text-gray-400 mt-2 px-1 italic">
+                      Leave blank to send immediately
+                    </p>
+                  </div>
+                </div>
+              </section>
             </form>
           </FormProvider>
         </div>
