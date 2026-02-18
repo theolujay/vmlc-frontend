@@ -14,6 +14,7 @@ This document outlines the technical and psychological deterrents implemented to
 - **Print Protection**: Uses `@media print` CSS to hide all exam content if a user attempts to "Print to PDF" or use physical printing.
 - **Context Menu Block**: Disables right-click menus to prevent "Save Image As" or "Inspect Element" shortcuts.
 
+
 ## 📱 Mobile Measures
 - **Mandatory Full-Screen Mode**: The exam requires entering full-screen mode, and exiting it triggers a blur and a severe warning.
 - **Screenshot "Detection" Bluff**: Monitors rapid focus/blur transitions (typical of mobile screenshot animations) and triggers a high-severity "Screenshot Detected" alert.
