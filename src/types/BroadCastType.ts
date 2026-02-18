@@ -53,7 +53,8 @@ export type BroadcastItemType = {
   logs?: DeliveryLogType[];
   task_id?: string;
   delivery_attempts?: number;
-  delivery_logs?: any[]; // For backward compatibility if needed
+  delivery_logs?: DeliveryLogType[];
+  scheduled_at?: string;
 };
 
 export type CreateBroadCastType = {
@@ -61,4 +62,5 @@ export type CreateBroadCastType = {
   message: string;
   mediums: ('email' | 'platform' | 'sms' | 'whatsapp')[];
   target_roles: TargetRolesType;
+  scheduled_at?: string;
 };

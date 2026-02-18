@@ -191,6 +191,15 @@ export default function BroadcastDetailsModal({
                 </div>
                 <div className="bg-white rounded-[2rem] border border-gray-100 p-8 space-y-8 shadow-sm relative overflow-hidden">
                   <div className="absolute top-0 right-0 w-32 h-32 bg-gray-50 rounded-full -mr-16 -mt-16 blur-3xl opacity-50"></div>
+                  {broadcast.scheduled_at && (
+                    <TimelineEvent
+                      icon="fa-calendar-alt"
+                      label="Scheduled At"
+                      date={formatDateTime(broadcast.scheduled_at)}
+                      color="text-amber-500"
+                      isLast={false}
+                    />
+                  )}
                   <TimelineEvent
                     icon="fa-clock"
                     label="Created At"
@@ -255,7 +264,7 @@ export default function BroadcastDetailsModal({
                 </div>
               </div>
 
-              <div className="bg-white rounded-[2rem] border border-gray-100 shadow-sm overflow-hidden">
+              <div className="bg-white rounded-[2rem] border border-gray-100 shadow-sm overflow-hidden sm:overflow-x-auto sm:max-h-[20rem] sm:overflow-y-auto">
                 <table className="w-full text-left">
                   <thead>
                     <tr className="bg-gray-50 border-b border-gray-100">
