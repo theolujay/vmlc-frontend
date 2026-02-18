@@ -2,6 +2,9 @@ import { SupportService } from "@/services/Support.service";
 import { SendMessagePayload, SupportMessageType } from "@/types/SupportType";
 import { useState } from "react";
 
+/**
+ * Hook to send a message to a support thread.
+ */
 export default function useSendSupportMessage() {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -10,9 +13,9 @@ export default function useSendSupportMessage() {
         setLoading(true);
         setError(null);
         try {
-            const response = await SupportService.sendMessage(payload);
+            const response = await SupportService.postMessage(payload);
             return response;
-        } catch {
+        } catch (_err) {
             setError('Failed to send message');
             return null;
         } finally {

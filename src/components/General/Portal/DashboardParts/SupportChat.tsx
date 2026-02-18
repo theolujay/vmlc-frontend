@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import useSendSupportMessage from '@/hooks/useSendSupportMessage';
-import useGetSupportMessages from '@/hooks/useGetSupportMessages';
-import useListConversations from '@/hooks/useListConversations';
+import useGetSupportThread from '@/hooks/useGetSupportThread';
+import useSupportSocket from '@/hooks/useSupportSocket';
 import { SupportMessageType } from '@/types/SupportType';
 import Image from "next/image";
 
@@ -13,11 +13,21 @@ interface SupportChatProps {
 
 const SupportChat: React.FC<SupportChatProps> = ({ currentStage, onClose, candidateName }) => {
   const [message, setMessage] = useState('');
-  const { data: conversations } = useListConversations(1, {});
-  const conversationId = conversations?.results?.[0]?.id.toString() || null;
-  const { messages, addMessage, loading: loadingMessages } = useGetSupportMessages(conversationId);
+  const { thread, messages, loading: loadingMessages, setMessages } = useGetSupportThread();
   const { sendMessage, loading: sending } = useSendSupportMessage();
   const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  const onMessageReceived = React.useCallback((newMsg: SupportMessageType) => {
+    setMessages((prev) => {
+      if (prev.some((m) => m.id === newMsg.id)) return prev;
+      return [...prev, newMsg];
+    });
+  }, [setMessages]);
+
+  const { connected, isTyping, sendTypingStatus } = useSupportSocket(
+    thread?.id || null,
+    onMessageReceived
+  );
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -29,29 +39,37 @@ const SupportChat: React.FC<SupportChatProps> = ({ currentStage, onClose, candid
 
   const handleSend = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!message.trim() || !conversationId || sending) return;
+    if (!message.trim() || !thread?.id || sending) return;
 
-    const tempMessage: SupportMessageType = {
-        id: Date.now(),
-        text: message,
-        created_at: new Date().toISOString(),
-        sender_profile: 'user'
-    };
+    const textToSend = message;
+    setMessage('');
+    sendTypingStatus(false);
 
     const sent = await sendMessage({
-        text: message,
-        conversation_id: conversationId
+        text: textToSend,
+        thread_id: thread.id
     });
 
     if (sent) {
-        addMessage(sent);
-        setMessage('');
-    } else {
-        // Fallback for demo if API fails
-        addMessage(tempMessage);
-        setMessage('');
+        // Message will be added via WebSocket callback or here if WebSocket is not yet connected
+        setMessages((prev) => {
+            if (prev.some((m) => m.id === sent.id)) return prev;
+            return [...prev, sent];
+        });
     }
   };
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setMessage(e.target.value);
+    if (e.target.value.trim().length > 0) {
+        sendTypingStatus(true);
+    } else {
+        sendTypingStatus(false);
+    }
+  };
+
+  // Check if any staff is typing
+  const isStaffTyping = Object.values(isTyping).some(typing => typing);
 
   return (
     <div className="flex flex-col h-full bg-white font-sans">
@@ -59,18 +77,18 @@ const SupportChat: React.FC<SupportChatProps> = ({ currentStage, onClose, candid
       <div className="bg-grey-100 p-4 text-white flex items-center justify-between shadow-md">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-full overflow-hidden border border-white/20 relative">
-            <Image 
-              src="/vmlc_logo.png" 
-              alt="Logo"
+            <Image
+              src="/vmlc_logo.png"
+              alt="System"
               width={40}
               height={40}
-              className="w-full h-full object-cover"
+              className="w-full h-full object-cover bg-white"
             />
           </div>
           <div>
-            <h3 className="text-sm font-bold text-[#3E4095] tracking-tight">Verboheit Support</h3>
+            <h3 className="text-sm font-bold text-[#3E4095] tracking-tight">Verboheit Helpdesk</h3>
             <div className="flex items-center gap-1.5 mt-0.5">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                <span className={`w-1.5 h-1.5 rounded-full ${connected ? 'bg-emerald-400 animate-pulse' : 'bg-gray-400'}`}></span>
                 <p className="text-[7px] font-bold text-black uppercase tracking-widest">{currentStage} Stage</p>
             </div>
           </div>
@@ -81,57 +99,74 @@ const SupportChat: React.FC<SupportChatProps> = ({ currentStage, onClose, candid
           </svg>
         </button>
       </div>
-      
+
       {/* MESSAGES */}
       <div className="flex-1 p-4 bg-[#F9FAFB] overflow-y-auto space-y-4">
-        {/* Welcome Message */}
-        <div className="flex flex-col items-start max-w-[85%]">
-            <div className="bg-white p-3 rounded-[18px] rounded-tl-none shadow-sm border border-[#E4E7EC]">
-                <p className="text-xs text-[#475367] leading-relaxed">
-                    Hiii <span className="font-bold text-[#101828]">{candidateName}</span>! How can we help you today?
-                </p>
+        {messages.length === 0 && !loadingMessages && (
+             <div className="flex flex-col items-start max-w-[85%]">
+                <div className="bg-white p-3 rounded-[18px] rounded-tl-none shadow-sm border border-[#E4E7EC]">
+                    <p className="text-xs text-[#475367] leading-relaxed">
+                        Hiii <span className="font-bold text-[#101828]">{candidateName}</span>! How can we help you today?
+                    </p>
+                </div>
+                <p className="text-[9px] font-bold text-[#98A2B3] mt-1 uppercase ml-1">System • Just now</p>
             </div>
-            <p className="text-[9px] font-bold text-[#98A2B3] mt-1 uppercase ml-1">VMLC Team • Just now</p>
-        </div>
+        )}
 
         {/* Dynamic Messages */}
         {messages.map((msg) => {
-            const isUser = msg.sender_profile === 'user';
+            const isCandidate = msg.sender_type === 'candidate';
+            const isSystem = msg.sender_type === 'system';
+
             return (
-                <div key={msg.id} className={`flex flex-col ${isUser ? 'items-end' : 'items-start'} animate-in slide-in-from-bottom-1 duration-300`}>
+                <div key={msg.id} className={`flex flex-col ${isCandidate ? 'items-end' : 'items-start'} animate-in slide-in-from-bottom-1 duration-300`}>
                     <div className={`p-3 max-w-[90%] rounded-[18px] shadow-sm text-xs leading-relaxed ${
-                        isUser 
-                        ? 'bg-[#3E4095] text-white rounded-tr-none' 
-                        : 'bg-white text-[#475367] border border-[#E4E7EC] rounded-tl-none'
+                        isCandidate
+                        ? 'bg-[#3E4095] text-white rounded-tr-none'
+                        : isSystem
+                          ? 'bg-gray-100 text-[#475367] border border-[#E4E7EC] rounded-tl-none italic'
+                          : 'bg-white text-[#475367] border border-[#E4E7EC] rounded-tl-none'
                     }`}>
                         <p>{msg.text}</p>
                     </div>
                     <p className="text-[9px] font-bold text-[#98A2B3] mt-1 uppercase mx-1">
-                        {isUser ? 'You' : 'Staff'} • {new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                        {isCandidate ? 'You' : msg.sender_name} • {new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                     </p>
                 </div>
             );
         })}
+
+        {isStaffTyping && (
+            <div className="flex flex-col items-start animate-pulse">
+                <div className="bg-white p-2 px-4 rounded-full shadow-sm border border-[#E4E7EC]">
+                    <div className="flex gap-1">
+                        <span className="w-1 h-1 bg-gray-400 rounded-full animate-bounce"></span>
+                        <span className="w-1 h-1 bg-gray-400 rounded-full animate-bounce [animation-delay:0.2s]"></span>
+                        <span className="w-1 h-1 bg-gray-400 rounded-full animate-bounce [animation-delay:0.4s]"></span>
+                    </div>
+                </div>
+            </div>
+        )}
         <div ref={messagesEndRef} />
       </div>
 
       {/* INPUT */}
       <div className="p-4 border-t border-[#E4E7EC] bg-white">
         <form onSubmit={handleSend} className="flex items-center gap-2">
-          <input 
-            type="text" 
+          <input
+            type="text"
             value={message}
-            onChange={(e) => setMessage(e.target.value)}
+            onChange={handleInputChange}
             placeholder="Type your query..."
-            className="flex-1 bg-[#F9FAFB] border border-[#E4E7EC] rounded-xl px-4 py-2.5 text-xs text-[#101828] focus:outline-none focus:border-[#01ACEA] focus:ring-1 focus:ring-[#01ACEA]/20 transition-all placeholder:text-[#98A2B3]"
+            className="flex-1 bg-[#F9FAFB] border border-[#E4E7EC] rounded-xl px-4 py-2.5 text-xs text-[#101828] focus:outline-none focus:border-[#3E4095] focus:ring-1 focus:ring-[#3E4095]/20 transition-all placeholder:text-[#98A2B3]"
           />
-          <button 
+          <button
             type="submit"
-            disabled={!message.trim() || sending}
+            disabled={!message.trim() || sending || !thread}
             className={`p-2.5 rounded-xl shadow-md transition-all ${
-                !message.trim() || sending 
-                ? 'bg-[#F0F2F5] text-[#98A2B3] cursor-not-allowed' 
-                : 'bg-[#01ACEA] text-white hover:bg-[#008DBD] transform active:scale-95'
+                !message.trim() || sending || !thread
+                ? 'bg-[#F0F2F5] text-[#98A2B3] cursor-not-allowed'
+                : 'bg-grey-800 border border-[#3E4095] text-white hover:bg-[#3E4095] transform active:scale-95'
             }`}
           >
             {sending ? (

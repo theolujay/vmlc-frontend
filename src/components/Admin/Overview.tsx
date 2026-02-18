@@ -61,7 +61,7 @@ const tabs: TabType[] = [
     },
     {
         value: 'support',
-        label: <SupportLabel />,
+        label: <HelpdeskLabel />,
         content: <SupportSectionWrapper />
     }
 ]
@@ -122,6 +122,6 @@ function BroadcastsLabel() {
     return <div className='flex gap-1 items-center'><span><BroadcastIcon /></span><span>Broadcasts</span></div>
 }
 
-function SupportLabel() {
-    return <div className='flex gap-1 items-center'><span><SupportIcon /></span><span>Support</span></div>
+function HelpdeskLabel() {
+    return <div className='flex gap-1 items-center'><span><SupportIcon /></span><span>Helpdesk</span></div>
 }

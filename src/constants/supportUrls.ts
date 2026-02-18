@@ -1,5 +1,12 @@
 export const SupportUrls = {
-    getConversations: (query?: string) => query ? `/v1/support/conversations/?${query}` : `/v1/support/conversations/`,
-    getMessages: (id: string) => `/v1/support/conversations/${id}/`,
-    sendMessage: (id: string) => `/v1/support/conversations/${id}/reply/`,
+    // Candidate
+    getOrCreateThread: `/v1/support/thread/`,
+    postMessage: (threadId: string) => `/v1/support/thread/${threadId}/message/`,
+
+    // Staff
+    listThreads: (query?: string) => query ? `/v1/staff/support/threads/?${query}` : `/v1/staff/support/threads/`,
+    getThreadDetail: (threadId: string) => `/v1/staff/support/threads/${threadId}/`,
+
+    // WebSocket
+    supportSocket: (threadId: string) => `/v1/ws/support/thread/${threadId}/`
 }

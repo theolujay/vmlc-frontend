@@ -10,6 +10,8 @@ import { toast } from 'react-toastify';
 import { useAntiCheating } from '@/hooks/useAntiCheating';
 import { shuffleArray } from '@/utils/generalUtils';
 import { TakeExamType, TakeExamQuestionType } from '@/types/Examtype';
+import SupportChatButton from '../General/Portal/DashboardParts/SupportChatButton';
+import useGetCurrentUser from '@/hooks/useGetCurrentUser';
 
 // Local types for shuffling logic
 interface ShuffledTakeExamQuestionType extends TakeExamQuestionType {
@@ -33,6 +35,7 @@ export default function Exam() {
   const [examStarted, setExamStarted] = useState(false);
 
   const { isFullscreen, enterFullscreen } = useAntiCheating();
+  const { user } = useGetCurrentUser();
 
   useEffect(() => {
     if (!dashboardPending && dashboardData) {
@@ -54,7 +57,12 @@ export default function Exam() {
     }
   }, [dashboardData, dashboardPending, examId, router]);
 
-  
+  const candidateName = user 
+    ? `${user.first_name} ${user.last_name}` 
+    : "Candidate";
+
+  const currentStage = dashboardData?.enrollment_stage_progress?.current_stage || 'SCREENING';
+
   // Shuffling logic
   const processedData = useMemo(() => {
     if (!data || !data.questions) return undefined;
@@ -224,14 +232,22 @@ export default function Exam() {
       deadline={data?.attempt?.deadline}
       title={data?.title}
     >
-      <Questions
-        submitPending={submitPending}
-        handleSubmit={handleSubmit}
-        answers={uiAnswers}
-        onSelect={handleSelectOption}
-        isPending={isPending}
-        data={processedData}
-      />
+      <div className="relative">
+        <Questions
+          submitPending={submitPending}
+          handleSubmit={handleSubmit}
+          answers={uiAnswers}
+          onSelect={handleSelectOption}
+          isPending={isPending}
+          data={processedData}
+        />
+
+        {/* PERSISTENT ACTIONS - SUPPORT CHAT */}
+        <SupportChatButton 
+            currentStage={currentStage}
+            candidateName={candidateName}
+        />
+      </div>
     </ExamLayout>
   )
 }
