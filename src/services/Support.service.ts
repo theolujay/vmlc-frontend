@@ -1,14 +1,14 @@
-import { SupportUrls } from "@/constants/supportUrls";
+import { HelpdeskUrls } from "@/constants/supportUrls";
 import { SendMessagePayload, SupportThreadListResponse, SupportThreadType, SupportMessageType } from "@/types/SupportType";
 import client from "@/utils/axios";
 
-export class SupportService {
+export class HelpdeskService {
     /**
      * Get or create a support thread for the candidate.
      */
     static async getOrCreateThread(): Promise<SupportThreadType> {
         try {
-            const response = await client.get(SupportUrls.getOrCreateThread);
+            const response = await client.get(HelpdeskUrls.getOrCreateThread);
             return response.data;
         } catch (error) {
             console.error('Error getting or creating thread:', error);
@@ -21,7 +21,7 @@ export class SupportService {
      */
     static async postMessage(payload: SendMessagePayload): Promise<SupportMessageType> {
         try {
-            const response = await client.post(SupportUrls.postMessage(payload.thread_id), {
+            const response = await client.post(HelpdeskUrls.postMessage(payload.thread_id), {
                 text: payload.text,
                 metadata: payload.metadata
             });
@@ -47,7 +47,7 @@ export class SupportService {
                 });
             }
             const queryParams = new URLSearchParams(params).toString();
-            const response = await client.get(SupportUrls.listThreads(queryParams));
+            const response = await client.get(HelpdeskUrls.listThreads(queryParams));
             return response.data;
         } catch (error) {
             console.error('Error listing threads:', error);
@@ -60,7 +60,7 @@ export class SupportService {
      */
     static async getThreadDetail(threadId: string): Promise<SupportThreadType> {
         try {
-            const response = await client.get(SupportUrls.getThreadDetail(threadId));
+            const response = await client.get(HelpdeskUrls.getThreadDetail(threadId));
             return response.data;
         } catch (error) {
             console.error('Error getting thread detail:', error);

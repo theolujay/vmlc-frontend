@@ -28,7 +28,7 @@ export default function SupportSection() {
 
     return (
         <div className="flex flex-col gap-1 font-sans">
-            <AdminHeader label="Support Chat" actionButton={undefined} />
+            <AdminHeader label="Helpdesk Thread" actionButton={undefined} />
             <div className="flex flex-col gap-3 sm:gap-4 mt-3 w-full sm:w-[96%] px-2 sm:px-0 sm:mx-auto pb-10">
                 {view === 'conversation-details' ? (
                     <ConversationDetails />
@@ -106,11 +106,12 @@ function Table<T extends { id: string | number }>({
                                     className="border-b border-[#E4E7EC] last:border-0 hover:bg-gray-50 transition-colors"
                                 >
                                     {columns.map((col, ci) => {
-                                        const value = (row as any)[col.key];
+                                        const value = (row as Record<string, unknown>)[col.key as string];
 
                                         return (
                                             <td key={ci} className={clsx("py-4 px-6", col.align === 'center' ? 'text-center' : col.align === 'right' ? 'text-right' : 'text-left')}>
-                                                {col.render ? col.render(value, row, index) : value}
+                                                {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+                                                {col.render ? col.render(value, row, index) : (value as any)}
                                             </td>
                                         );
                                     })}
@@ -162,7 +163,7 @@ function ConversationListCard({
              <div className="flex flex-col md:flex-row md:items-center justify-between px-8 gap-4 mb-2">
                 <div className="flex gap-2.5 items-center">
                     <div className="w-1.5 h-6 bg-[#3E4095] rounded-full"></div>
-                    <h2 className="text-lg font-black text-gray-800 tracking-tight uppercase">Threads</h2>
+                    <h2 className="text-lg font-black text-gray-800 tracking-tight uppercase">Helpdesk Threads</h2>
                 </div>
                 <div className="flex flex-wrap items-center gap-3">
                     <div className="relative group">

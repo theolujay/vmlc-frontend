@@ -140,3 +140,23 @@ export function shuffleArray<T>(array: T[]): T[] {
 
 }
 
+
+/**
+ * Formats a phone number for use in a WhatsApp (wa.me) link.
+ * It removes all non-numeric characters and ensures the number is ready for wa.me.
+ */
+export function formatWhatsAppLink(phone: string | undefined): string {
+    if (!phone) return '#';
+    
+    // Remove all non-numeric characters
+    const cleaned = phone.replace(/\D/g, '');
+    
+    // If it starts with 0 (and not 234), it's likely a local Nigerian number
+    // We should probably handle this case if the API ever returns local numbers
+    if (cleaned.startsWith('0') && !cleaned.startsWith('234')) {
+        return `https://wa.me/234${cleaned.slice(1)}`;
+    }
+    
+    return `https://wa.me/${cleaned}`;
+}
+

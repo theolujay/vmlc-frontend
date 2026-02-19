@@ -1,6 +1,7 @@
 
 import { ExamPortal } from '@/services/examPortal.service';
 import { CreateQuestionType } from '@/types/Examtype';
+import { ApiError } from '@/types/Index';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { useForm } from 'react-hook-form';
@@ -50,7 +51,8 @@ export default function useCreateQuestion(onSuccess: () => void, examId?: string
         },
         onError: (error: unknown) => {
             console.error('Question creation error:', error);
-            const errorMessage = (error as any)?.response?.data?.message || (error as Error)?.message || 'Failed to create question';
+            const apiError = error as ApiError;
+            const errorMessage = apiError.response?.data?.message || (error as Error)?.message || 'Failed to create question';
             toast.error(errorMessage);
         }
     })

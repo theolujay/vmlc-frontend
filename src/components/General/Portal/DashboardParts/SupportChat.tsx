@@ -4,18 +4,29 @@ import useGetSupportThread from '@/hooks/useGetSupportThread';
 import useSupportSocket from '@/hooks/useSupportSocket';
 import { SupportMessageType } from '@/types/SupportType';
 import Image from "next/image";
+import { useExamContext } from '@/contexts/ExamNavigationProvider';
 
-interface SupportChatProps {
+interface HelpdeskThreadProps {
   currentStage: string;
   onClose: () => void;
   candidateName: string;
+  exam_id?: string; // Add exam_id as an optional prop
 }
 
-const SupportChat: React.FC<SupportChatProps> = ({ currentStage, onClose, candidateName }) => {
+const HelpdeskThread: React.FC<HelpdeskThreadProps> = ({ currentStage, onClose, candidateName, exam_id }) => {
   const [message, setMessage] = useState('');
   const { thread, messages, loading: loadingMessages, setMessages } = useGetSupportThread();
   const { sendMessage, loading: sending } = useSendSupportMessage();
   const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  // Safely get exam context if available
+  let examContext: { timeLeft: number } | null = null;
+  try {
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    examContext = useExamContext();
+  } catch (e) {
+    // Not in an exam session, useExamContext will throw an error if called outside of provider
+  }
 
   const onMessageReceived = React.useCallback((newMsg: SupportMessageType) => {
     setMessages((prev) => {
@@ -45,9 +56,19 @@ const SupportChat: React.FC<SupportChatProps> = ({ currentStage, onClose, candid
     setMessage('');
     sendTypingStatus(false);
 
+    const metadata: Record<string, unknown> = {};
+    if (exam_id) {
+        metadata.exam_id = exam_id;
+        metadata.device = typeof navigator !== 'undefined' ? navigator.userAgent : 'Unknown';
+        if (examContext) {
+            metadata.countdown_left = examContext.timeLeft;
+        }
+    }
+
     const sent = await sendMessage({
         text: textToSend,
-        thread_id: thread.id
+        thread_id: thread.id,
+        metadata
     });
 
     if (sent) {
@@ -183,4 +204,4 @@ const SupportChat: React.FC<SupportChatProps> = ({ currentStage, onClose, candid
   );
 };
 
-export default SupportChat;
+export default HelpdeskThread;
