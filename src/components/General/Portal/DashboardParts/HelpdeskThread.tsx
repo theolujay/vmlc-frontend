@@ -95,7 +95,7 @@ const HelpdeskThread: React.FC<HelpdeskThreadProps> = ({ currentStage, onClose, 
   return (
     <div className="flex flex-col h-full bg-white font-sans">
       {/* HEADER */}
-      <div className="bg-grey-100 p-4 text-white flex items-center justify-between shadow-md">
+      <div className="bg-grey-100 p-4 text-white flex items-center justify-between shadow-md flex-shrink-0">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-full overflow-hidden border border-white/20 relative">
             <Image
@@ -172,7 +172,7 @@ const HelpdeskThread: React.FC<HelpdeskThreadProps> = ({ currentStage, onClose, 
       </div>
 
       {/* INPUT */}
-      <div className="p-4 border-t border-[#E4E7EC] bg-white">
+      <div className="p-4 border-t border-[#E4E7EC] bg-white flex-shrink-0">
         <form onSubmit={handleSend} className="flex items-center gap-2">
           <input
             type="text"
