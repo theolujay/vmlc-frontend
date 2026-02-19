@@ -20,7 +20,7 @@ export default function useGetSupportThread() {
             try {
                 const response = await SupportService.getOrCreateThread();
                 setThread(response);
-                setUnreadCount(response.unread_count || 0);
+                setUnreadCount(response.unread_by_staff_count || 0);
                 if (response.messages) {
                     setMessages(response.messages);
                 }
@@ -39,7 +39,7 @@ export default function useGetSupportThread() {
             if (prev.some((m) => m.id === message.id)) return prev;
             return [...prev, message];
         });
-        
+
         // If it's a new message from staff/system, increment unread count
         if (message.sender_type !== 'candidate') {
             setUnreadCount(prev => prev + 1);
@@ -52,14 +52,14 @@ export default function useGetSupportThread() {
         setUnreadCount(0);
     };
 
-    return { 
-        thread, 
-        messages, 
-        unreadCount, 
-        loading, 
-        error, 
-        setMessages, 
+    return {
+        thread,
+        messages,
+        unreadCount,
+        loading,
+        error,
+        setMessages,
         markAllAsRead,
-        connected 
+        connected
     };
 }

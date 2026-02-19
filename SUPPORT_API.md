@@ -11,7 +11,7 @@ This document defines the REST API and WebSocket behavior for the real-time in-a
 **Behavior:**
 - If a thread exists for the authenticated candidate, it returns the existing thread.
 - If not, it creates a new thread.
-- Upon creation, a system message is automatically inserted: `"Hiii {full_name}! How can we help you today?"`
+- Upon creation, a system message is automatically inserted: `"Hello, {full_name}. How can we help you today?"`
 - Marks all unread messages as read for the candidate.
 
 **Response Body (200 OK):**
@@ -20,7 +20,10 @@ This document defines the REST API and WebSocket behavior for the real-time in-a
     "id": "uuid-string",
     "candidate_name": "John Doe",
     "candidate_email": "john.doe@example.com",
+    "candidate_phone": "09123456789",
     "assigned_staff": null,
+    "assigned_staff_name": null,
+    "participating_staff_names": [],
     "status": "open",
     "priority": "medium",
     "last_message_at": "2023-10-27T10:00:00Z",
@@ -30,7 +33,7 @@ This document defines the REST API and WebSocket behavior for the real-time in-a
             "sender": null,
             "sender_name": "System",
             "sender_type": "system",
-            "text": "Hiii John Doe! How can we help you today?",
+            "text": "Hello, John Doe. How can we help you today?",
             "metadata": null,
             "is_read": true,
             "created_at": "2023-10-27T10:00:00Z"
@@ -112,8 +115,8 @@ This document defines the REST API and WebSocket behavior for the real-time in-a
             "status": "in_progress",
             "priority": "medium",
             "last_message_at": "2023-10-27T10:05:00Z",
-            "unread_count": 2,
-            "last_message_preview": "I need help with my exam login...",
+            "unread_by_staff_count": 2,
+            "candidate_last_msg_preview": "I need help with my exam login...",
             "is_online": true,
             "created_at": "2023-10-27T10:00:00Z"
         }

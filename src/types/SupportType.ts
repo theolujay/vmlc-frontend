@@ -13,16 +13,18 @@ export interface SupportThreadType {
     id: string;
     candidate_name: string;
     candidate_email: string;
+    candidate_phone: string;
     assigned_staff: number | null;
     assigned_staff_name?: string;
+    participating_staff_names?: string[];
     status: 'open' | 'in_progress' | 'resolved' | 'closed';
     priority: 'low' | 'medium' | 'high' | 'urgent';
     last_message_at: string;
     messages?: SupportMessageType[];
     created_at: string;
     updated_at: string;
-    unread_count?: number;
-    last_message_preview?: string;
+    unread_by_staff_count?: number;
+    candidate_last_msg_preview?: string;
     is_online?: boolean;
 }
 
