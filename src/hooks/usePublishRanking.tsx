@@ -1,4 +1,5 @@
 import { CompetitionService } from '@/services/Competition.service';
+import { ApiError } from '@/types/Index';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'react-toastify';
 
@@ -18,9 +19,10 @@ export default function usePublishRanking() {
         queryClient.invalidateQueries({ queryKey: ['competition-dashboard'] });
       }, 2000);
     },
-    onError: (error: unknown) => {
-      toast.error((error as any)?.response?.data?.message || 'Failed to process ranking');
-    },
+            onError: (error: unknown) => {
+                const apiError = error as ApiError;
+                toast.error(apiError.response?.data?.message || 'Failed to process ranking');
+            },
   });
 
   return { publishRanking: mutate, isPending };

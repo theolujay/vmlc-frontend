@@ -10,7 +10,7 @@ import InfoBoard from './DashboardParts/InfoBoard';
 import PrimaryAction from './DashboardParts/PrimaryAction';
 import Performance from './DashboardParts/Performance';
 import ExamHistory from './DashboardParts/ExamHistory';
-import HelpdeskButton from './DashboardParts/SupportChatButton';
+import HelpdeskButton from './DashboardParts/HelpdeskButton';
 import ProfileModal from '@/components/Modals/ProfileModal';
 import { AvailableExamType } from '@/types/Examtype';
 import FullLeagueLeaderboard from '@/components/Admin/Competition/FullLeagueLeaderboard';

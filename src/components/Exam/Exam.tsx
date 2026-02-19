@@ -10,7 +10,7 @@ import { toast } from 'react-toastify';
 import { useAntiCheating } from '@/hooks/useAntiCheating';
 import { shuffleArray } from '@/utils/generalUtils';
 import { TakeExamType, TakeExamQuestionType } from '@/types/Examtype';
-import HelpdeskButton from '../General/Portal/DashboardParts/SupportChatButton';
+import HelpdeskButton from '../General/Portal/DashboardParts/HelpdeskButton';
 import useGetCurrentUser from '@/hooks/useGetCurrentUser';
 
 // Local types for shuffling logic

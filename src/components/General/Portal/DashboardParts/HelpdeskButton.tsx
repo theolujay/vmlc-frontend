@@ -1,6 +1,6 @@
 "use client"
 import React, { useState, useEffect } from 'react';
-import HelpdeskThread from './SupportChat';
+import HelpdeskThread from './HelpdeskThread';
 import useGetSupportThread from '@/hooks/useGetSupportThread';
 
 interface HelpdeskButtonProps {

@@ -1,3 +1,4 @@
+import { ApiError } from '@/types/Index'
 import { ExamPortal } from '@/services/examPortal.service'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'react-toastify'
@@ -19,8 +20,9 @@ export default function useUnassignQuestion(onSuccessCallback: () => void) {
             queryClient.invalidateQueries({ queryKey: ['list-exams'] })
             queryClient.invalidateQueries({ queryKey: ['exam-questions'] })
         },
-        onError: (error: any) => {
-            toast.error(error?.response?.data?.message || 'Failed to remove question from session')
+        onError: (error: unknown) => {
+            const apiError = error as ApiError;
+            toast.error(apiError.response?.data?.message || 'Failed to remove question from session')
         }
     })
 

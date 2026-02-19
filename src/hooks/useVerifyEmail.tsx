@@ -1,4 +1,5 @@
 import { AuthService } from '@/services/auth.service';
+import { ApiError } from '@/types/Index';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useMutation } from '@tanstack/react-query';
 import { useRouter } from 'next/navigation';
@@ -45,7 +46,8 @@ export default function useVerifyEmail() {
       router.push('/login')
     },
     onError: (error: unknown) => {
-      toast.error((error as any)?.response?.data?.message || 'An error occurred. Please try again.');
+      const apiError = error as ApiError;
+      toast.error(apiError.response?.data?.message || 'An error occurred. Please try again.');
     }
   })
 
