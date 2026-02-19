@@ -90,8 +90,8 @@ export default function ConversationDetails() {
     const isCandidateTyping = Object.values(isTyping).some(typing => typing);
 
     return (
-        <div className="flex flex-col gap-1 h-[calc(100vh-140px)] font-sans">
-             <div className="flex items-center justify-between mb-4">
+        <div className="flex flex-col h-[calc(100vh-80px)] font-sans">
+             <div className="flex items-center justify-between mb-4 sticky top-0 bg-white z-10 p-4">
                 <button
                     onClick={handleBack}
                     className="flex items-center gap-2 text-gray-600 hover:text-gray-900 transition-colors"
@@ -216,7 +216,7 @@ export default function ConversationDetails() {
                         )}
                     </div>
 
-                    <div className="p-4 bg-white border-t border-gray-200">
+                    <div className="p-4 bg-white border-t border-gray-200 sticky bottom-0">
                         <div className="flex gap-3 items-end w-full">
                             <div className="flex-1 relative">
                                 <textarea
