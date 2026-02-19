@@ -1,42 +1,44 @@
 "use client"
 import React, { useState, useEffect } from 'react';
-import SupportChat from './SupportChat';
+import HelpdeskThread from './HelpdeskThread';
 import useGetSupportThread from '@/hooks/useGetSupportThread';
 
-interface SupportChatButtonProps {
+interface HelpdeskButtonProps {
     currentStage: string;
     candidateName: string;
+    exam_id?: string;
 }
 
-const SupportChatButton: React.FC<SupportChatButtonProps> = ({ currentStage, candidateName }) => {
-    const [isSupportOpen, setIsSupportOpen] = useState(false);
+const HelpdeskButton: React.FC<HelpdeskButtonProps> = ({ currentStage, candidateName, exam_id }) => {
+    const [isHelpdeskOpen, setIsHelpdeskOpen] = useState(false);
     const { unreadCount, markAllAsRead } = useGetSupportThread();
 
     useEffect(() => {
-        if (isSupportOpen) {
+        if (isHelpdeskOpen) {
             markAllAsRead();
         }
-    }, [isSupportOpen, markAllAsRead]);
+    }, [isHelpdeskOpen, markAllAsRead]);
 
     return (
         <div className="fixed bottom-4 right-4 z-50 flex flex-col items-end gap-4">
-            {isSupportOpen && (
+            {isHelpdeskOpen && (
                 <div className="w-[350px] h-[500px] bg-white rounded-[24px] shadow-2xl border border-[#E4E7EC] flex flex-col overflow-hidden animate-in slide-in-from-bottom-5 duration-300">
-                    <SupportChat
+                    <HelpdeskThread
                         currentStage={currentStage}
                         candidateName={candidateName}
-                        onClose={() => setIsSupportOpen(false)}
+                        exam_id={exam_id}
+                        onClose={() => setIsHelpdeskOpen(false)}
                     />
                 </div>
             )}
             <button
-                onClick={() => setIsSupportOpen(!isSupportOpen)}
+                onClick={() => setIsHelpdeskOpen(!isHelpdeskOpen)}
                 className={`relative flex items-center gap-2 px-6 py-3.5 rounded-full shadow-lg transition-all transform hover:scale-105 active:scale-95 ${
-                    isSupportOpen ? 'bg-[#4A4DA8] text-gray-300' : 'bg-[#3E4095] text-white'
+                    isHelpdeskOpen ? 'bg-[#4A4DA8] text-gray-300' : 'bg-[#3E4095] text-white'
                 }`}
             >
                 {/* Unread Indicator Dot */}
-                {!isSupportOpen && unreadCount > 0 && (
+                {!isHelpdeskOpen && unreadCount > 0 && (
                     <span className="absolute -top-1 -right-1 flex h-5 w-5">
                         <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
                         <span className="relative inline-flex items-center justify-center rounded-full h-5 w-5 bg-red-600 text-[10px] font-bold text-white shadow-sm">
@@ -45,7 +47,7 @@ const SupportChatButton: React.FC<SupportChatButtonProps> = ({ currentStage, can
                     </span>
                 )}
                 
-                {isSupportOpen ? (
+                {isHelpdeskOpen ? (
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
                     </svg>
@@ -60,4 +62,4 @@ const SupportChatButton: React.FC<SupportChatButtonProps> = ({ currentStage, can
     );
 };
 
-export default SupportChatButton;
+export default HelpdeskButton;

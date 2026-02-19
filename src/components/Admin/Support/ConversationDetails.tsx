@@ -8,6 +8,7 @@ import useSendSupportMessage from '@/hooks/useSendSupportMessage';
 import useSupportSocket from '@/hooks/useSupportSocket';
 import { SupportMessageType, SupportThreadType } from '@/types/SupportType';
 import { formatDateTime } from '@/utils/formatFileSize';
+import { formatWhatsAppLink } from '@/utils/generalUtils';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useRef, useState, useCallback } from 'react';
 import Image from 'next/image';
@@ -260,7 +261,7 @@ export default function ConversationDetails() {
 
             <Drawer open={isDetailsOpen} onClose={setIsDetailsOpen}>
                 <div className="flex justify-between items-center mb-6">
-                    <h2 className="text-lg font-bold text-gray-900 uppercase tracking-widest">Thread Details</h2>
+                    <h2 className="text-lg font-bold text-gray-900 uppercase tracking-widest">Helpdesk Thread Details</h2>
                     <button onClick={() => setIsDetailsOpen(false)} className="text-gray-400 hover:text-gray-600 transition-colors">
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <path d="M18 6L6 18M6 6L18 18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
@@ -281,7 +282,7 @@ function CandidateDetails({ thread, isDrawer = false }: { thread: SupportThreadT
             "bg-white flex flex-col gap-4 p-6",
             !isDrawer && "shadow-lg border border-gray-200 rounded-xl"
         )}>
-            <h3 className="font-bold text-sm text-gray-900 mb-4 pb-2 border-b border-gray-100 uppercase tracking-widest">Chat Details</h3>
+            <h3 className="font-bold text-sm text-gray-900 mb-4 pb-2 border-b border-gray-100 uppercase tracking-widest">Helpdesk Thread Details</h3>
             <div className="flex flex-col gap-4">
                 <div>
                     <p className="text-[10px] text-gray-400 uppercase font-bold tracking-wider mb-1">Candidate Name</p>
@@ -290,7 +291,7 @@ function CandidateDetails({ thread, isDrawer = false }: { thread: SupportThreadT
                 <div>
                     <p className="text-[10px] text-gray-400 uppercase font-bold tracking-wider mb-1">Phone (click for WhatsApp)</p>
                     <a
-                        href={`https://wa.me/+234${thread?.candidate_phone?.slice(1)}`}
+                        href={formatWhatsAppLink(thread?.candidate_phone)}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="text-xs font-bold text-[#3E4095] hover:underline"

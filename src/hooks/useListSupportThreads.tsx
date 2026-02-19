@@ -1,4 +1,4 @@
-import { SupportService } from "@/services/Support.service";
+import { HelpdeskService } from "@/services/Support.service";
 import { useQuery } from "@tanstack/react-query";
 
 /**
@@ -7,7 +7,7 @@ import { useQuery } from "@tanstack/react-query";
 export default function useListSupportThreads(page: number, filters?: Record<string, string>) {
     const { data, isLoading, error, refetch } = useQuery({
         queryKey: ['support-threads', page, filters],
-        queryFn: () => SupportService.listThreads(page, filters),
+        queryFn: () => HelpdeskService.listThreads(page, filters),
         refetchInterval: 5000, // Poll every 5 seconds
         refetchIntervalInBackground: true,
     });

@@ -68,9 +68,8 @@ export default function CustomTable<T>({
                     typeof col.key === "string" && col.key.includes(".")
                       ? col.key
                           .split(".")
-                          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                          .reduce((acc: any, k) => acc?.[k] ?? "", row)
-                      : (row as any)[col.key];
+                          .reduce((acc: unknown, k) => (acc as Record<string, unknown>)?.[k] ?? "", row)
+                      : (row as Record<string, unknown>)[col.key as string];
 
                   return (
                     <td 
@@ -80,7 +79,8 @@ export default function CustomTable<T>({
                         !col.align || col.align === 'left' ? "text-left" : col.align === 'center' ? "text-center" : "text-right"
                       )}
                     >
-                      {col.render ? col.render(value, row, index) : value}
+                      {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+                      {col.render ? col.render(value, row, index) : (value as any)}
                     </td>
                   );
                 })}

@@ -1,4 +1,5 @@
 import { AuthService } from '@/services/auth.service'
+import { ApiError } from '@/types/Index'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { useMutation } from '@tanstack/react-query'
 import { useState } from 'react'
@@ -56,11 +57,12 @@ export default function useForgotPassword(callbacks?: {
             callbacks?.onEmailSuccess?.()
         },
         onError: (error: unknown) => {
-            const emailError = (error as any)?.response?.data?.email?.[0]
+            const apiError = error as ApiError;
+            const emailError = apiError.response?.data?.email?.[0]
             if (emailError === "No account found with this email address.") {
                 toast.error("Invalid email. Please confirm.")
             } else {
-                toast.error((error as any)?.response?.data?.message || "Failed to send reset instructions")
+                toast.error(apiError.response?.data?.message || "Failed to send reset instructions")
             }
         }
     })
@@ -79,7 +81,8 @@ export default function useForgotPassword(callbacks?: {
             callbacks?.onOtpSuccess?.()
         },
         onError: (error: unknown) => {
-            toast.error((error as any)?.response?.data?.message || "Invalid OTP code")
+            const apiError = error as ApiError;
+            toast.error(apiError.response?.data?.message || "Invalid OTP code")
         }
     })
 
@@ -90,7 +93,8 @@ export default function useForgotPassword(callbacks?: {
             callbacks?.onPasswordSuccess?.()
         },
         onError: (error: unknown) => {
-            toast.error((error as any)?.response?.data?.message || "Failed to update password")
+            const apiError = error as ApiError;
+            toast.error(apiError.response?.data?.message || "Failed to update password")
         }
     })
 

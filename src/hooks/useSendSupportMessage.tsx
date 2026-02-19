@@ -1,4 +1,4 @@
-import { SupportService } from "@/services/Support.service";
+import { HelpdeskService } from "@/services/Support.service";
 import { SendMessagePayload, SupportMessageType } from "@/types/SupportType";
 import { useState } from "react";
 
@@ -13,7 +13,7 @@ export default function useSendSupportMessage() {
         setLoading(true);
         setError(null);
         try {
-            const response = await SupportService.postMessage(payload);
+            const response = await HelpdeskService.postMessage(payload);
             return response;
         } catch (_err) {
             setError('Failed to send message');
