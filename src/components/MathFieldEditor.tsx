@@ -213,8 +213,7 @@ const MathFieldEditor: React.FC<MathFieldEditorProps> = ({
                   '--caret-color': '#3E4095',
                   '--selection-background-color': 'rgba(62, 64, 149, 0.2)',
                   '--text-color': '#1f2937',
-                  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                } as any}
+                } as React.CSSProperties}
               >
                 {value}
               {/* @ts-expect-error: math-field is a custom Web Component not recognized by JSX intrinsic elements */}

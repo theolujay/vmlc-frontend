@@ -48,8 +48,7 @@ export default function useSupportSocket(threadId: string | null, onMessageRecei
             let wsUrl = baseUrl.replace('http://', 'ws://').replace('https://', 'wss://');
             if (wsUrl.endsWith('/')) wsUrl = wsUrl.slice(0, -1);
             
-            const path = wsUrl.endsWith('/v1') ? '/ws/support/thread' : '/v1/ws/support/thread';
-            const fullWsUrl = `${wsUrl}${path}/${threadId}/?api_key=${config.API_KEY}&token=${token}`;
+            const fullWsUrl = `${wsUrl}/v1/ws/helpdesk/thread/${threadId}/?api_key=${config.API_KEY}&token=${token}`;
 
             console.log(`Connecting to Support WebSocket: ${fullWsUrl}`);
             const socket = new WebSocket(fullWsUrl);

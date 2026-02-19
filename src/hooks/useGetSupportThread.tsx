@@ -1,4 +1,4 @@
-import { SupportService } from "@/services/Support.service";
+import { HelpdeskService } from "@/services/Support.service";
 import { SupportThreadType, SupportMessageType } from "@/types/SupportType";
 import { useEffect, useState, useCallback } from "react";
 import useSupportSocket from "./useSupportSocket";
@@ -18,7 +18,7 @@ export default function useGetSupportThread() {
         const fetchThread = async () => {
             setLoading(true);
             try {
-                const response = await SupportService.getOrCreateThread();
+                const response = await HelpdeskService.getOrCreateThread();
                 setThread(response);
                 setUnreadCount(response.unread_by_staff_count || 0);
                 if (response.messages) {

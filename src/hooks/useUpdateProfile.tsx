@@ -1,4 +1,5 @@
 import { UserMgtService } from '@/services/UserMgt.service'
+import { ApiError } from '@/types/Index'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'react-toastify'
 
@@ -13,7 +14,8 @@ export default function useUpdateProfile() {
       queryClient.invalidateQueries({ queryKey: ['candidate-details'] })
     },
     onError: (error: unknown) => {
-      const message = (error as any).response?.data?.message || (error as Error).message || 'Failed to update profile'
+      const apiError = error as ApiError;
+      const message = apiError.response?.data?.message || (error as Error).message || 'Failed to update profile'
       toast.error(message)
     }
   })

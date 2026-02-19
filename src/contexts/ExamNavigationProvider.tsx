@@ -6,8 +6,9 @@ const ExamContext = createContext<ExamContextType | null>(null)
 
 export default function ExamNavigationProvider({ children }: Readonly<{ children: React.ReactNode }>) {
     const [showNav, setShowNav] = useState(true)
+    const [timeLeft, setTimeLeft] = useState(0)
     return (
-        <ExamContext.Provider value={{ showNav, setShowNav }}>
+        <ExamContext.Provider value={{ showNav, setShowNav, timeLeft, setTimeLeft }}>
             {children}
         </ExamContext.Provider>
     )

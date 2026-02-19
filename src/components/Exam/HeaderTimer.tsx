@@ -2,7 +2,7 @@
 import { useExamContext } from "@/contexts/ExamNavigationProvider"
 import { formatExamTitle } from "@/utils/generalUtils"
 import { useRouter } from "next/navigation"
-import { useCallback, useEffect, useRef, useState } from "react"
+import { useCallback, useEffect, useRef } from "react"
 import clsx from 'clsx'
 
 export default function HeaderTimer({
@@ -17,8 +17,8 @@ export default function HeaderTimer({
   title?: string
 }) {
   const router = useRouter()
-  const { showNav, setShowNav } = useExamContext()
-  
+  const { showNav, setShowNav, timeLeft, setTimeLeft } = useExamContext()
+
   const calculateInitialTime = useCallback(() => {
     if (deadline) {
       const remaining = Math.floor((new Date(deadline).getTime() - new Date().getTime()) / 1000);
@@ -27,12 +27,11 @@ export default function HeaderTimer({
     return timer * 60;
   }, [timer, deadline]);
 
-  const [timeLeft, setTimeLeft] = useState<number>(calculateInitialTime);
   const hasSubmitted = useRef(false)
 
   useEffect(() => {
     setTimeLeft(calculateInitialTime());
-  }, [calculateInitialTime])
+  }, [calculateInitialTime, setTimeLeft])
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -44,7 +43,7 @@ export default function HeaderTimer({
             hasSubmitted.current = true;
             (async () => {
               try {
-                await onTimeUp?.() 
+                await onTimeUp?.()
               } catch (err) {
                 console.error("Error submitting exam:", err)
               }
@@ -58,7 +57,7 @@ export default function HeaderTimer({
     }, 1000)
 
     return () => clearInterval(interval)
-  }, [onTimeUp, router])
+  }, [onTimeUp, router, setTimeLeft])
 
   const formatTime = (seconds: number) => {
     const h = Math.floor(seconds / 3600).toString().padStart(2, "0")
@@ -100,8 +99,8 @@ export default function HeaderTimer({
           onClick={() => setShowNav(!showNav)}
           className={clsx(
             "flex items-center space-x-3 px-5 py-2.5 rounded-xl font-black text-[10px] uppercase tracking-widest transition-all active:scale-95 border",
-            showNav 
-              ? "bg-[#3E4095] text-white border-[#3E4095] shadow-lg shadow-[#3E4095]/20" 
+            showNav
+              ? "bg-[#3E4095] text-white border-[#3E4095] shadow-lg shadow-[#3E4095]/20"
               : "bg-white text-gray-600 border-gray-200 hover:bg-gray-50"
           )}
         >

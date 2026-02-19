@@ -120,22 +120,22 @@ Returns a paginated list of notifications for the current user, along with statu
 
 ---
 
-## 3. Support Chat
+## 3. Helpdesk Thread
 
-The system supports 1:1 chat between candidates and staff for technical or academic support.
+The system supports 1:1 chat between candidates and staff for technical or academic helpdesk.
 
 ### Endpoints Summary
 
 | Method | Endpoint | Description |
 | :--- | :--- | :--- |
-| `GET` | `/v1/support/thread/` | Get or create support thread (Candidate) |
+| `GET` | `/v1/support/thread/` | Get or create helpdesk thread (Candidate) |
 | `POST` | `/v1/support/thread/<uuid:id>/message/` | Send message to thread |
-| `GET` | `/v1/staff/support/threads/` | List all support threads (Staff) |
-| `GET` | `/v1/staff/support/threads/<uuid:id>/` | Retrieve specific thread (Staff) |
+| `GET` | `/v1/staff/support/threads/` | List all helpdesk threads (Staff) |
+| `GET` | `/v1/staff/support/threads/<uuid:id>/` | Retrieve specific helpdesk thread (Staff) |
 
 #### Escalation Logic
 If a candidate sends a message and there is no staff reply within **2 minutes**, the system automatically escalates the thread:
-- A Slack alert is sent to the `#support` channel.
+- A Slack alert is sent to the `#helpdesk` channel.
 - Email and SMS alerts are sent to all active Admins and Managers.
 
 ---
@@ -150,7 +150,7 @@ All broadcasts are handled via Celery.
 
 ### Real-time Delivery
 - **Platform Notifications**: Dispatched via WebSockets (Django Channels) to the `user__<user_id>` group.
-- **Support Chat**: Dispatched via WebSockets to the `support_thread_<thread_id>` group.
+- **Helpdesk Thread**: Dispatched via WebSockets to the `helpdesk_thread_<thread_id>` group.
 
 ### Caching Strategy
 - **Broadcast Summary**: Cached for 1 hour; invalidated on new broadcast creation.
