@@ -6,11 +6,13 @@ import { useAuth } from '@/contexts/AuthProvider';
 import useGetSupportThreadDetail from '@/hooks/useGetSupportThreadDetail';
 import useSendSupportMessage from '@/hooks/useSendSupportMessage';
 import useSupportSocket from '@/hooks/useSupportSocket';
-import { SupportMessageType } from '@/types/SupportType';
-import { formatDate, formatDateTime } from '@/utils/formatFileSize';
+import { SupportMessageType, SupportThreadType } from '@/types/SupportType';
+import { formatDateTime } from '@/utils/formatFileSize';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useEffect, useRef, useState, useCallback } from 'react';
 import Image from 'next/image';
+import Drawer from '@/components/ui/Drawer/Drawer';
+import clsx from 'clsx';
 
 export default function ConversationDetails() {
     const router = useRouter();
@@ -20,6 +22,7 @@ export default function ConversationDetails() {
     const { thread, messages, loading: messagesLoading, setMessages } = useGetSupportThreadDetail(threadId);
     const { sendMessage, loading: sendingLoading } = useSendSupportMessage();
     const [newMessage, setNewMessage] = useState('');
+    const [isDetailsOpen, setIsDetailsOpen] = useState(false);
     const bottomRef = useRef<HTMLDivElement>(null);
 
     const onMessageReceived = useCallback((newMsg: SupportMessageType) => {
@@ -99,20 +102,33 @@ export default function ConversationDetails() {
                 </button>
                 {thread && (
                     <div className="flex items-center gap-2">
-                        <div className="relative">
-                            <div className="w-8 h-8 bg-[#3E4095] text-white rounded-full flex items-center justify-center text-xs font-bold">
-                                {thread.candidate_name.charAt(0).toUpperCase()}
+                        <div className="flex items-center gap-2">
+                            <div className="relative">
+                                <div className="w-8 h-8 bg-[#3E4095] text-white rounded-full flex items-center justify-center text-xs font-bold">
+                                    {thread.candidate_name.charAt(0).toUpperCase()}
+                                </div>
+                                {thread.is_online && (
+                                    <div className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 bg-green-500 border-2 border-white rounded-full"></div>
+                                )}
                             </div>
-                            {thread.is_online && (
-                                <div className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 bg-green-500 border-2 border-white rounded-full"></div>
-                            )}
+                            <div className="flex flex-col">
+                                <span className="font-bold text-sm text-[#3E4095]">{thread.candidate_name}</span>
+                                <span className={`text-[10px] font-bold uppercase ${connected ? 'text-green-500 animate-pulse' : 'text-gray-400'}`}>
+                                    {connected ? 'Connected' : 'Disconnected'}
+                                </span>
+                            </div>
                         </div>
-                        <div className="flex flex-col">
-                            <span className="font-bold text-sm text-[#3E4095]">{thread.candidate_name}</span>
-                            <span className={`text-[10px] font-bold uppercase ${connected ? 'text-green-500 animate-pulse' : 'text-gray-400'}`}>
-                                {connected ? 'Connected' : 'Disconnected'}
-                            </span>
-                        </div>
+
+                        <button
+                            onClick={() => setIsDetailsOpen(true)}
+                            className="lg:hidden p-2 text-gray-400 hover:text-gray-600 transition-colors"
+                        >
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M12 13C12.5523 13 13 12.5523 13 12C13 11.4477 12.5523 11 12 11C11.4477 11 11 11.4477 11 12C11 12.5523 11.4477 13 12 13Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                                <path d="M12 6C12.5523 6 13 5.55228 13 5C13 4.44772 12.5523 4 12 4C11.4477 4 11 4.44772 11 5C11 5.55228 11.4477 6 12 6Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                                <path d="M12 20C12.5523 20 13 19.5523 13 19C13 18.4477 12.5523 18 12 18C11.4477 18 11 18.4477 11 19C11 19.5523 11.4477 20 12 20Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                            </svg>
+                        </button>
                     </div>
                 )}
             </div>
@@ -238,51 +254,97 @@ export default function ConversationDetails() {
                 </ResponsiveContainer>
 
                 <div className="flex-1 hidden lg:flex flex-col gap-4">
-                    <ResponsiveContainer className="bg-white shadow-lg border border-gray-200 rounded-xl p-6">
-                        <h3 className="font-bold text-sm text-gray-900 mb-4 pb-2 border-b border-gray-100 uppercase tracking-widest">Candidate Details</h3>
-                        <div className="flex flex-col gap-4">
-                            <div>
-                                <p className="text-[10px] text-gray-400 uppercase font-bold tracking-wider mb-1">Candidate Name</p>
-                                <p className="text-xs font-bold text-gray-900">{thread?.candidate_name || 'N/A'}</p>
-                            </div>
-                            <div>
-                                <p className="text-[10px] text-gray-400 uppercase font-bold tracking-wider mb-1">Email Address</p>
-                                <p className="text-xs font-bold text-gray-900">{thread?.candidate_email || 'N/A'}</p>
-                            </div>
-                            <div>
-                                <p className="text-[10px] text-gray-400 uppercase font-bold tracking-wider mb-1">Status</p>
-                                <span className={`capitalize text-[10px] font-bold px-2 py-0.5 rounded-full inline-block ${
-                                    thread?.status === 'open' ? 'bg-white text-[#9E0A05] border border-[#9E0A05]/20' :
-                                    thread?.status === 'in_progress' ? 'bg-white text-[#865503] border border-[#865503]/20' :
-                                    thread?.status === 'resolved' ? 'bg-white text-emerald-600 border border-emerald-600/20' :
-                                    'bg-gray-100 text-gray-700'
-                                }`}>
-                                    {thread?.status.replace('_', ' ') || 'N/A'}
-                                </span>
-                            </div>
-                            <div>
-                                <p className="text-[10px] text-gray-400 uppercase font-bold tracking-wider mb-1">Priority</p>
-                                <span className={`capitalize text-[10px] font-bold px-2 py-0.5 rounded-full inline-block ${
-                                    thread?.priority === 'urgent' ? 'bg-white text-[#9E0A05] border border-[#9E0A05]/20' :
-                                    thread?.priority === 'high' ? 'bg-white border border-[#FC6A03]/40 text-[#FC6A03]' :
-                                    thread?.priority === 'medium' ? 'bg-white border border-[#3E4095]/40 text-[#3E4095]' :
-                                    'bg-gray-100 text-gray-700'
-                                }`}>
-                                    {thread?.priority || 'N/A'}
-                                </span>
-                            </div>
-                            <div>
-                                <p className="text-[10px] text-gray-400 uppercase font-bold tracking-wider mb-1">Assigned Staff</p>
-                                <p className="text-xs font-bold text-gray-900">{thread?.assigned_staff_name || 'Unassigned'}</p>
-                            </div>
-                            <div>
-                                <p className="text-[10px] text-gray-400 uppercase font-bold tracking-wider mb-1">Started On</p>
-                                <p className="text-xs font-bold text-gray-900">{thread ? formatDate(new Date(thread.created_at)) : 'N/A'}</p>
-                            </div>
-                        </div>
-                    </ResponsiveContainer>
+                    <CandidateDetails thread={thread} />
                 </div>
             </div>
+
+            <Drawer open={isDetailsOpen} onClose={setIsDetailsOpen}>
+                <div className="flex justify-between items-center mb-6">
+                    <h2 className="text-lg font-bold text-gray-900 uppercase tracking-widest">Thread Details</h2>
+                    <button onClick={() => setIsDetailsOpen(false)} className="text-gray-400 hover:text-gray-600 transition-colors">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M18 6L6 18M6 6L18 18" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                        </svg>
+                    </button>
+                </div>
+                <div className="-mx-6">
+                    <CandidateDetails thread={thread} isDrawer />
+                </div>
+            </Drawer>
         </div>
+    );
+}
+
+function CandidateDetails({ thread, isDrawer = false }: { thread: SupportThreadType | null, isDrawer?: boolean }) {
+    return (
+        <ResponsiveContainer className={clsx(
+            "bg-white flex flex-col gap-4 p-6",
+            !isDrawer && "shadow-lg border border-gray-200 rounded-xl"
+        )}>
+            <h3 className="font-bold text-sm text-gray-900 mb-4 pb-2 border-b border-gray-100 uppercase tracking-widest">Chat Details</h3>
+            <div className="flex flex-col gap-4">
+                <div>
+                    <p className="text-[10px] text-gray-400 uppercase font-bold tracking-wider mb-1">Candidate Name</p>
+                    <p className="text-xs font-bold text-gray-900">{thread?.candidate_name || 'N/A'}</p>
+                </div>
+                <div>
+                    <p className="text-[10px] text-gray-400 uppercase font-bold tracking-wider mb-1">Phone (click for WhatsApp)</p>
+                    <a
+                        href={`https://wa.me/+234${thread?.candidate_phone?.slice(1)}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-xs font-bold text-[#3E4095] hover:underline"
+                    >
+                        {thread?.candidate_phone || 'N/A'}
+                    </a>
+                </div>
+                <div>
+                    <p className="text-[10px] text-gray-400 uppercase font-bold tracking-wider mb-1">Email Address</p>
+                    <p className="text-xs font-bold text-gray-900">{thread?.candidate_email || 'N/A'}</p>
+                </div>
+                <div>
+                    <p className="text-[10px] text-gray-400 uppercase font-bold tracking-wider mb-1">Status</p>
+                    <span className={`capitalize text-[10px] font-bold px-2 py-0.5 rounded-full inline-block ${
+                        thread?.status === 'open' ? 'bg-white text-[#9E0A05] border border-[#9E0A05]/20' :
+                        thread?.status === 'in_progress' ? 'bg-white text-[#865503] border border-[#865503]/20' :
+                        thread?.status === 'resolved' ? 'bg-white text-emerald-600 border border-emerald-600/20' :
+                        'bg-gray-100 text-gray-700'
+                    }`}>
+                        {thread?.status.replace('_', ' ') || 'N/A'}
+                    </span>
+                </div>
+                <div>
+                    <p className="text-[10px] text-gray-400 uppercase font-bold tracking-wider mb-1">Priority</p>
+                    <span className={`capitalize text-[10px] font-bold px-2 py-0.5 rounded-full inline-block ${
+                        thread?.priority === 'urgent' ? 'bg-white text-[#9E0A05] border border-[#9E0A05]/20' :
+                        thread?.priority === 'high' ? 'bg-white border border-[#FC6A03]/40 text-[#FC6A03]' :
+                        thread?.priority === 'medium' ? 'bg-white border border-[#3E4095]/40 text-[#3E4095]' :
+                        'bg-gray-100 text-gray-700'
+                    }`}>
+                        {thread?.priority || 'N/A'}
+                    </span>
+                </div>
+                <div>
+                    <p className="text-[10px] text-gray-400 uppercase font-bold tracking-wider mb-1">Assigned Staff</p>
+                    <p className="text-xs font-bold text-gray-900">{thread?.assigned_staff_name || 'Unassigned'}</p>
+                </div>
+                {thread?.participating_staff_names && thread.participating_staff_names.length > 0 && (
+                    <div>
+                        <p className="text-[10px] text-gray-400 uppercase font-bold tracking-wider mb-1">Participating Staff</p>
+                        <div className="flex flex-wrap gap-1 mt-1">
+                            {thread.participating_staff_names.map((name, i) => (
+                                <span key={i} className="text-[10px] font-bold bg-blue-50 text-[#3E4095] px-2 py-0.5 rounded-md border border-blue-100/50">
+                                    {name}
+                                </span>
+                            ))}
+                        </div>
+                    </div>
+                )}
+                <div>
+                    <p className="text-[10px] text-gray-400 uppercase font-bold tracking-wider mb-1">Started On</p>
+                    <p className="text-xs font-bold text-gray-900">{thread ? formatDateTime(new Date(thread.created_at)) : 'N/A'}</p>
+                </div>
+            </div>
+        </ResponsiveContainer>
     );
 }

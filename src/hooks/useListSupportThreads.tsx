@@ -1,30 +1,21 @@
 import { SupportService } from "@/services/Support.service";
-import { SupportThreadListResponse } from "@/types/SupportType";
-import { useEffect, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 
 /**
- * Hook to list support threads for staff.
+ * Hook to list support threads for staff with automatic 5-second polling.
  */
 export default function useListSupportThreads(page: number, filters?: Record<string, string>) {
-    const [data, setData] = useState<SupportThreadListResponse | null>(null);
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState<string | null>(null);
+    const { data, isLoading, error, refetch } = useQuery({
+        queryKey: ['support-threads', page, filters],
+        queryFn: () => SupportService.listThreads(page, filters),
+        refetchInterval: 5000, // Poll every 5 seconds
+        refetchIntervalInBackground: true,
+    });
 
-    useEffect(() => {
-        const fetchThreads = async () => {
-            setLoading(true);
-            try {
-                const response = await SupportService.listThreads(page, filters);
-                setData(response);
-            } catch (_err) {
-                setError('Failed to fetch support threads');
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        fetchThreads();
-    }, [page, filters]);
-
-    return { data, loading, error };
+    return { 
+        data, 
+        loading: isLoading, 
+        error: error ? (error as Error).message : null,
+        refetch 
+    };
 }
