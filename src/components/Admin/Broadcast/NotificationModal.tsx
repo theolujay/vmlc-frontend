@@ -179,11 +179,11 @@ const NotificationModal: React.FC<NotificationModalProps> = ({
             {currentItems.map((item) => (
               <div
                 key={item.id}
-                onClick={() => !item.is_read_by_recipient && onMarkSingleRead(item.id)}
-                className={`flex items-start justify-between px-6 py-4 hover:bg-gray-50 cursor-pointer transition-colors border-b border-gray-50 ${!item.is_read_by_recipient ? 'bg-[#3E4095]/5' : ''}`}
+                onClick={() => !item.is_read && onMarkSingleRead(item.id)}
+                className={`flex items-start justify-between px-6 py-4 hover:bg-gray-50 cursor-pointer transition-colors border-b border-gray-50 ${!item.is_read ? 'bg-[#3E4095]/5' : ''}`}
               >
                 <div className="flex-1">
-                  <p className={`text-sm ${!item.is_read_by_recipient ? 'font-bold text-gray-800' : 'text-gray-600'}`}>
+                  <p className={`text-sm ${!item.is_read ? 'font-bold text-gray-800' : 'text-gray-600'}`}>
                     {item.message}
                   </p>
                   <p className="text-[10px] font-bold text-gray-400 mt-1 uppercase tracking-tight">{formatTimestamp(item.created_at)}</p>

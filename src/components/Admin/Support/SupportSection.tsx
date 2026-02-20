@@ -15,6 +15,8 @@ import ConversationDetails from './ConversationDetails';
 import clsx from 'clsx';
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
 import Spinner from '@/components/ui/spinner/spinner';
+import CustomTable from '@/components/ui/CustomTable';
+import React from 'react';
 
 export default function SupportSection() {
     const searchParams = useSearchParams();
@@ -39,12 +41,14 @@ export default function SupportSection() {
                 ) : (
                     <ConversationListCard
                         data={data?.results ?? []}
-                        page_count={data?.count ? Math.ceil(data.count / 10) : 0}
+                        page_count={data?.total_pages ?? 0}
                         currentPage={page}
                         onPageChange={setPage}
                         handleSearch={setFilters}
                         filters={filters}
                         setFilters={setFilters}
+                        hasNext={data?.next !== null}
+                        hasPrevious={data?.previous !== null}
                     />
                 )}
             </div>
@@ -52,80 +56,7 @@ export default function SupportSection() {
     );
 }
 
-type ColumnType<T> = {
-    key: keyof T | string;
-    header: string;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    render?: (value: any, row: T, index: number) => React.ReactNode;
-    align?: 'left' | 'center' | 'right';
-};
 
-type TableProps<T> = {
-    columns: ColumnType<T>[];
-    data: T[];
-    emptyLabel?: string;
-    emptyDesc?: React.ReactNode;
-    footer?: React.ReactNode;
-};
-
-function Table<T extends { id: string | number }>({
-    columns,
-    data,
-    emptyLabel = "No records found",
-    emptyDesc = "There are currently no entries to display.",
-    footer,
-}: Readonly<TableProps<T>>) {
-    return (
-        <div className="flex flex-col">
-            <div className="overflow-x-auto w-full">
-                <table className="min-w-full border-collapse">
-                    <thead>
-                        <tr className="border-b border-[#E4E7EC] bg-[#E4E7EC]">
-                            {columns.map((col, i) => (
-                                <th key={i} className={clsx("py-3 px-6 text-[9px] font-black uppercase tracking-widest text-gray-500", col.align === 'center' ? 'text-center' : col.align === 'right' ? 'text-right' : 'text-left')}>
-                                    {col.header}
-                                </th>
-                            ))}
-                        </tr>
-                    </thead>
-
-                    <tbody>
-                        {data.length === 0 ? (
-                            <tr>
-                                <td colSpan={columns.length} className="py-12 text-center text-gray-500">
-                                    <div className="flex flex-col items-center gap-2">
-                                        <h2 className="text-xl font-semibold">{emptyLabel}</h2>
-                                        <p>{emptyDesc}</p>
-                                    </div>
-                                </td>
-                            </tr>
-                        ) : (
-                            data.map((row, index) => (
-                                <tr
-                                    key={row.id}
-                                    className="border-b border-[#E4E7EC] last:border-0 hover:bg-gray-50 transition-colors"
-                                >
-                                    {columns.map((col, ci) => {
-                                        const value = (row as Record<string, unknown>)[col.key as string];
-
-                                        return (
-                                            <td key={ci} className={clsx("py-4 px-6", col.align === 'center' ? 'text-center' : col.align === 'right' ? 'text-right' : 'text-left')}>
-                                                {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
-                                                {col.render ? col.render(value, row, index) : (value as any)}
-                                            </td>
-                                        );
-                                    })}
-                                </tr>
-                            ))
-                        )}
-                    </tbody>
-                </table>
-
-                {footer && <div className="py-3 px-4 border-t border-gray-50">{footer}</div>}
-            </div>
-        </div>
-    );
-}
 
 function ConversationListCard({
     data,
@@ -134,7 +65,10 @@ function ConversationListCard({
     page_count,
     handleSearch,
     filters,
-    setFilters
+    setFilters,
+    hasNext,
+    hasPrevious,
+    pageSize = 20,
 }: Readonly<{
     data: SupportThreadType[];
     handleSearch: Dispatch<SetStateAction<Record<string, string>>>;
@@ -143,6 +77,9 @@ function ConversationListCard({
     page_count: number;
     filters: Record<string, string>;
     setFilters: Dispatch<SetStateAction<Record<string, string>>>;
+    hasNext?: boolean;
+    hasPrevious?: boolean;
+    pageSize?: number;
 }>) {
     const { searchInput, setSearchInput } = useDebouncedSearch(handleSearch);
     const pathName = usePathname();
@@ -251,9 +188,10 @@ function ConversationListCard({
                 </div>
             </div>
 
-            <div className="px-1">
-                <Table
+            <React.Fragment>
+                <CustomTable
                     data={data}
+                    getRowId={(row) => row.id}
                     columns={[
                         {
                             key: 'id',
@@ -262,7 +200,7 @@ function ConversationListCard({
                             render: (_, __, index) => (
                                 <div className="flex justify-center">
                                     <span className="text-xs font-bold text-gray-400">
-                                        {(currentPage - 1) * 10 + index + 1}
+                                        {(currentPage - 1) * pageSize + index + 1}
                                     </span>
                                 </div>
                             ),
@@ -396,14 +334,19 @@ function ConversationListCard({
                         }
                     ]}
                     footer={
-                        <TablePagination
-                            currentPage={currentPage}
-                            pageCount={page_count}
-                            onPageChange={onPageChange}
-                        />
+                        <div className="px-8 border-t border-gray-50 py-3">
+                            <TablePagination
+                                currentPage={currentPage}
+                                pageCount={page_count}
+                                onPageChange={onPageChange}
+                                hasNext={hasNext}
+                                hasPrevious={hasPrevious}
+                            />
+                        </div>
                     }
                 />
-            </div>
+            </React.Fragment>
         </ResponsiveContainer>
     );
 }
+

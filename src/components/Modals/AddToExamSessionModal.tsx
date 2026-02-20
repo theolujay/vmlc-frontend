@@ -15,7 +15,7 @@ export default function AddToExamSessionModal({
     open,
     close,
     selectedQuestionIds
-}: Readonly<{ open: boolean; close: (close: boolean) => void, selectedQuestionIds: number[] }>) {
+}: Readonly<{ open: boolean; close: (close: boolean) => void, selectedQuestionIds: (string | number)[] }>) {
     const handleClose = useCallback(() => {
         close(false)
         setSelected([])

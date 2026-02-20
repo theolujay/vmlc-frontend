@@ -12,11 +12,11 @@ type Props = Readonly<{
     question_id: number, 
     information: SessionQuestionItemType,
     onAddToExam?: () => void,
-    onEdit?: () => void
+    onEdit?: () => void,
+    onView?: () => void,
 }>
 
-export default function QuestionPoolDropdown({ question_id, information, onAddToExam, onEdit }: Props) {
-    const [openViewModal, setOpenViewModal] = useState(false)
+export default function QuestionPoolDropdown({ question_id, information, onAddToExam, onEdit, onView }: Props) {
     const [openDeleteModal, setOpenDeleteModal] = useState(false)
 
     const currentUser = useGetCurrentUser();
@@ -25,10 +25,6 @@ export default function QuestionPoolDropdown({ question_id, information, onAddTo
 
     function handleDeleteModal() {
         setOpenDeleteModal(true)
-    }
-
-    function handleOpenViewModal() {
-        setOpenViewModal(true)
     }
 
     const actionItems = useMemo(() => {
@@ -71,7 +67,7 @@ export default function QuestionPoolDropdown({ question_id, information, onAddTo
                     <span className="text-[10px] font-black uppercase tracking-widest text-gray-700">View Details</span>
                 </div>
             ),
-            onClick: handleOpenViewModal
+            onClick: onView
         });
 
         if (isAdminOrAbove) {
@@ -89,7 +85,7 @@ export default function QuestionPoolDropdown({ question_id, information, onAddTo
         }
 
         return items;
-    }, [isAdminOrAbove, handleOpenViewModal, handleDeleteModal]);
+    }, [isAdminOrAbove, handleDeleteModal, onView]);
 
     return (
         <AppDropdownDialog 
@@ -101,7 +97,7 @@ export default function QuestionPoolDropdown({ question_id, information, onAddTo
                 </button>
             } 
         >
-            <QuestionInformation information={information} open={openViewModal} setOpen={setOpenViewModal} />
+
             <RemoveQuestionModal question_id={question_id} open={openDeleteModal} close={setOpenDeleteModal} />
         </AppDropdownDialog>
     )

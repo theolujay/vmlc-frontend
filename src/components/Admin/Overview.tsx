@@ -90,12 +90,12 @@ export function OverviewTabs() {
 
     if (hasOngoingExams) {
         // Helpdesk first if exam ongoing, Registration last
-        const supportTab = userTabs.find(tab => tab.value === 'support');
+        const helpdeskTab = userTabs.find(tab => tab.value === 'support');
         const registrationTab = userTabs.find(tab => tab.value === 'registration');
         const others = userTabs.filter(tab => tab.value !== 'support' && tab.value !== 'registration');
-        
+
         userTabs = [];
-        if (supportTab) userTabs.push(supportTab);
+        if (helpdeskTab) userTabs.push(helpdeskTab);
         userTabs.push(...others);
         if (registrationTab) userTabs.push(registrationTab);
     } else if (!isRegistrationOpen) {

@@ -30,8 +30,13 @@ export interface SupportThreadType {
 
 export interface SupportThreadListResponse {
     count: number;
-    next: string | null;
+    total_pages: number;
     previous: string | null;
+    next: string | null;
+    has_previous: boolean;
+    has_next: boolean;
+    page_size: number;
+    page: number;
     results: SupportThreadType[];
 }
 
