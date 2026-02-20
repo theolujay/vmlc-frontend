@@ -141,6 +141,8 @@ export default function ExamSection() {
             currentPage={questionPage} 
             onPageChange={setQuestionPage} 
             questions={questionData?.results ?? []} 
+            hasNext={questionData?.pagination.has_next}
+            hasPrevious={questionData?.pagination.has_previous}
           />
         </div>
       </div>

@@ -1,7 +1,6 @@
-
-
 import React from "react";
 import clsx from "clsx";
+import { Checkbox } from "@/components/ui/Checkbox";
 
 type ColumnType<T> = {
   key: keyof T | string;
@@ -18,80 +17,121 @@ type CustomTableProps<T> = {
   emptyDesc?: React.ReactNode;
   footer?: React.ReactNode;
   minWidth?: string;
+  // Selection props
+  isAdminOrAbove?: boolean;
+  onSelectAll?: (checked: boolean) => void;
+  onSelectRow?: (id: string | number, checked: boolean) => void;
+  selectedIds?: (string | number)[];
+  getRowId?: (row: T) => string | number;
 };
 
-
-export default function CustomTable<T>({
+export default function CustomTable<T extends object>({
   columns,
   data,
   emptyLabel = "No records found",
   emptyDesc = "There are currently no entries to display.",
   footer,
   minWidth = "100%",
+  isAdminOrAbove = false,
+  onSelectAll,
+  onSelectRow,
+  selectedIds = [],
+  getRowId = (row: T) => (row as any).id ?? JSON.stringify(row),
 }: Readonly<CustomTableProps<T>>) {
+  const allSelected =
+    data.length > 0 &&
+    data.every(
+      (row) => {
+        const id = getRowId(row);
+        return selectedIds.includes(id);
+      }
+    );
+
   return (
     <div className="flex flex-col">
       <div className="overflow-x-auto w-full custom-scrollbar">
-
-      <table className="border-collapse" style={{ minWidth, width: '100%' }}>
-        <thead>
-          <tr className="border-b border-[#E4E7EC] bg-[#E4E7EC]">
-            {columns.map((col, i) => (
-              <th 
-                key={i} 
-                className={clsx(
-                  "py-3 px-3 font-semibold text-gray-700",
-                  !col.align || col.align === 'left' ? "text-left" : col.align === 'center' ? "text-center" : "text-right"
-                )}
-              >
-                {col.header}
-              </th>
-            ))}
-          </tr>
-        </thead>
-
-        <tbody>
-          {data.length === 0 ? (
-            <tr>
-              <td colSpan={columns.length} className="py-6 text-center">
-                <EmptyRecords label={emptyLabel} desc={emptyDesc} />
-              </td>
+        <table className="min-w-full border-collapse" style={{ minWidth, width: '100%' }}>
+          <thead>
+            <tr className="border-b border-[#E4E7EC] bg-[#E4E7EC]">
+              {isAdminOrAbove && (
+                <th className="py-2 px-3 text-center w-10">
+                  <div className="flex justify-center">
+                    <Checkbox
+                      checked={allSelected}
+                      onChange={(checked) => onSelectAll?.(checked)}
+                    />
+                  </div>
+                </th>
+              )}
+              {columns.map((col, i) => (
+                <th 
+                  key={i} 
+                  className={clsx(
+                    "py-3 px-3 text-[9px] font-black uppercase tracking-widest text-gray-500",
+                    !col.align || col.align === 'left' ? "text-left" : col.align === 'center' ? "text-center" : "text-right"
+                  )}
+                >
+                  {col.header}
+                </th>
+              ))}
             </tr>
-          ) : (
-            data.map((row, index) => (
-              <tr
-                key={index}
-                className="border-b border-[#E4E7EC] last:border-0 hover:bg-gray-50 transition-colors"
-              >
-                {columns.map((col, ci) => {
-                  const value =
-                    typeof col.key === "string" && col.key.includes(".")
-                      ? col.key
-                          .split(".")
-                          .reduce((acc: unknown, k) => (acc as Record<string, unknown>)?.[k] ?? "", row)
-                      : (row as Record<string, unknown>)[col.key as string];
+          </thead>
 
-                  return (
-                    <td 
-                      key={ci} 
-                      className={clsx(
-                        "py-4 px-3 text-gray-600",
-                        !col.align || col.align === 'left' ? "text-left" : col.align === 'center' ? "text-center" : "text-right"
-                      )}
-                    >
-                      {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
-                      {col.render ? col.render(value, row, index) : (value as any)}
-                    </td>
-                  );
-                })}
+          <tbody>
+            {data.length === 0 ? (
+              <tr>
+                <td colSpan={columns.length + (isAdminOrAbove ? 1 : 0)} className="py-6 text-center">
+                  <EmptyRecords label={emptyLabel} desc={emptyDesc} />
+                </td>
               </tr>
-            ))
-          )}
-        </tbody>
-      </table>
+            ) : (
+              data.map((row, index) => (
+                <tr
+                  key={getRowId(row)}
+                  className="border-b border-[#E4E7EC] last:border-0 hover:bg-gray-50 transition-colors"
+                >
+                  {isAdminOrAbove && (
+                    <td className="py-2 px-3">
+                      <div className="flex justify-center">
+                                          <Checkbox
+                                            checked={selectedIds.includes(getRowId(row))}
+                                            onChange={(checked) =>
+                                              onSelectRow?.(getRowId(row), checked)
+                                            }
+                                          />
+                      </div>
+                    </td>
+                  )}
+
+                  {columns.map((col, ci) => {
+                    const value =
+                      typeof col.key === "string" && col.key.includes(".")
+                        ? col.key
+                            .split(".")
+                            .reduce((acc: unknown, k) => (acc as Record<string, unknown>)?.[k] ?? "", row)
+                        : (row as Record<string, unknown>)[col.key as string];
+
+                    return (
+                      <td 
+                        key={ci} 
+                        className={clsx(
+                          "py-2 px-3",
+                          !col.align || col.align === 'left' ? "text-left" : col.align === 'center' ? "text-center" : "text-right"
+                        )}
+                      >
+                        {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
+                        {col.render ? col.render(value, row, index) : (value as any)}
+                      </td>
+                    );
+                  })}
+                </tr>
+              ))
+            )}
+          </tbody>
+        </table>
+      </div>
 
       {footer && <div className="py-3">{footer}</div>}
-      </div>
     </div>
   );
 }

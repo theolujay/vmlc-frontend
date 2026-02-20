@@ -5,7 +5,7 @@ import Spinner from '../ui/spinner/spinner'
 import useBulkArchiveQuestions from '@/hooks/useBulkArchiveQuestions'
 import { useCallback } from 'react';
 
-export default function BulkRemoveQuestionsModal({ open, close, questions }: Readonly<{ open: boolean, close: (close: boolean) => void, questions: number[] }>) {
+export default function BulkRemoveQuestionsModal({ open, close, questions }: Readonly<{ open: boolean, close: (close: boolean) => void, questions: (string | number)[] }>) {
 
     const handleClose = useCallback(() => {
         close(false)

@@ -28,18 +28,18 @@ export type SelectItem={
 
 
 export type BulkPayloadType= {
-    question_ids: number[],
+    question_ids: (number | string)[],
     exam_ids: (number | string)[]
 }
 
 
 export type BulkArchiveType={
-  question_ids:number[]
+  question_ids:(number | string)[]
 }
 
 export type BulkActionType = {
 action: 'archive' | 'assign' | 'unassign';
-  question_ids: number[];
+  question_ids: (number | string)[];
   exam_ids?: (number | string)[];
 }
 export type VerificationUploadPayloadType = FormData;

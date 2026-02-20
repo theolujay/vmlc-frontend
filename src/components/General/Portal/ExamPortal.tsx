@@ -35,7 +35,7 @@ function ExamPortal() {
   // Only show notifications that are NOT read
   const activeNotifications = useMemo(() => {
     return notifications
-      .filter(n => !n.is_read_by_recipient)
+      .filter(n => !n.is_read)
       .filter(n => {
         const type = (n.type || '').toLowerCase();
         return type === 'info' || type === 'success';
@@ -84,8 +84,8 @@ function ExamPortal() {
   }
 
   // Use synced profile data
-  const candidateName = profile?.user 
-    ? `${profile.user.first_name} ${profile.user.last_name}` 
+  const candidateName = profile?.user
+    ? `${profile.user.first_name} ${profile.user.last_name}`
     : "Candidate";
 
   // Derive current stage from data
@@ -262,7 +262,7 @@ function ExamPortal() {
         )}
 
         {/* PERSISTENT ACTIONS - HELPDESK */}
-        <HelpdeskButton 
+        <HelpdeskButton
             currentStage={currentStage}
             candidateName={candidateName}
         />

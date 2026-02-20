@@ -40,8 +40,8 @@ export default function Header() {
 
     const filteredUnreadCount = notifications.filter(n => {
         // const type = (n.type || '').toLowerCase();
-        return !n.is_read_by_recipient;
-        // return !n.is_read_by_recipient && type !== 'info' && type !== 'success';
+        return !n.is_read;
+        // return !n.is_read && type !== 'info' && type !== 'success';
     }).length;
 
     const [showNotifications, setShowNotifications] = useState(false);

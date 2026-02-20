@@ -65,6 +65,8 @@ export default function ExamSession() {
             setFilters={setFilters}
             status={data?.status}
             exam_id={id}
+            hasNext={!!data?.questions?.next}
+            hasPrevious={!!data?.questions?.previous}
           />
         </div>
       }

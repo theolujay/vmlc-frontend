@@ -18,87 +18,7 @@ import {
   SMSIcon,
 } from './BroadcastIcons';
 import { BroadcastItemType } from '@/types/BroadCastType';
-
-type ColumnType<T> = {
-  key: keyof T | string;
-  header: string;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  render?: (value: any, row: T, index: number) => React.ReactNode;
-  align?: 'left' | 'center' | 'right';
-};
-
-type CustomTableProps<T> = {
-  columns: ColumnType<T>[];
-  data: T[];
-  emptyLabel?: string;
-  emptyDesc?: React.ReactNode;
-  footer?: React.ReactNode;
-};
-
-function CustomTable<T extends { id: number }>({
-  columns,
-  data,
-  emptyLabel = "No records found",
-  emptyDesc = "There are currently no entries to display.",
-  footer,
-}: Readonly<CustomTableProps<T>>) {
-  return (
-    <div className="flex flex-col">
-      <div className="overflow-x-auto w-full">
-        <table className="min-w-full border-collapse">
-          <thead>
-            <tr className="border-b border-[#E4E7EC] bg-[#E4E7EC]">
-              {columns.map((col, i) => (
-                <th key={i} className={clsx("py-3 px-3 text-[9px] font-black uppercase tracking-widest text-gray-500", col.align === 'center' ? 'text-center' : col.align === 'right' ? 'text-right' : 'text-left')}>
-                  {col.header}
-                </th>
-              ))}
-            </tr>
-          </thead>
-
-          <tbody>
-            {data.length === 0 ? (
-              <tr>
-                <td colSpan={columns.length} className="py-12 text-center">
-                  <div className="flex flex-col items-center gap-2 text-center">
-                    <h2 className="text-xl font-semibold">{emptyLabel}</h2>
-                    <p className="text-gray-500">{emptyDesc}</p>
-                  </div>
-                </td>
-              </tr>
-            ) : (
-              data.map((row) => (
-                <tr
-                  key={row.id}
-                  className="border-b border-[#E4E7EC] last:border-0 hover:bg-gray-50 transition-colors"
-                >
-                  {columns.map((col, ci) => {
-                    const value =
-                      typeof col.key === "string" && col.key.includes(".")
-                        ? col.key
-                          .split(".")
-                          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                          .reduce((acc: any, k) => acc?.[k] ?? "", row)
-                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                        : (row as any)[col.key];
-
-                    return (
-                      <td key={ci} className={clsx("py-2 px-3", col.align === 'center' ? 'text-center' : col.align === 'right' ? 'text-right' : 'text-left')}>
-                        {col.render ? col.render(value, row, 0) : value}
-                      </td>
-                    );
-                  })}
-                </tr>
-              ))
-            )}
-          </tbody>
-        </table>
-
-        {footer && <div className="py-3">{footer}</div>}
-      </div>
-    </div>
-  );
-}
+import CustomTable from '@/components/ui/CustomTable';
 
 export default function Broadcast() {
   const [open, setOpen] = useState(false);
@@ -155,6 +75,8 @@ export default function Broadcast() {
             onViewDetails={handleViewDetails}
             search={search}
             setSearch={setSearch}
+            hasNext={!!data?.next}
+            hasPrevious={!!data?.previous}
           />
         )}
       </div>
@@ -281,6 +203,8 @@ type Props = {
   onViewDetails: (broadcast: BroadcastItemType) => void;
   search: string;
   setSearch: (val: string) => void;
+  hasNext?: boolean;
+  hasPrevious?: boolean;
 };
 
 export function BroadcastHistoryTable({
@@ -291,6 +215,8 @@ export function BroadcastHistoryTable({
   onViewDetails,
   search,
   setSearch,
+  hasNext,
+  hasPrevious,
 }: Readonly<Props>) {
   return (
     <ResponsiveContainer className="flex gap-4 py-8 px-0 flex-col mx-auto font-sans bg-white border border-gray-100 rounded-[2rem] shadow-sm overflow-hidden">
@@ -321,7 +247,7 @@ export function BroadcastHistoryTable({
         </div>
       </div>
 
-      <div className="px-1 overflow-x-auto">
+      <div className="px-1">
         <CustomTable
           data={broadcastData}
           columns={[
@@ -413,6 +339,8 @@ export function BroadcastHistoryTable({
                 currentPage={currentPage}
                 pageCount={page_count}
                 onPageChange={onPageChange}
+                hasNext={hasNext}
+                hasPrevious={hasPrevious}
               />
             </div>
           }
