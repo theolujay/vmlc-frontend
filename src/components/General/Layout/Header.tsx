@@ -85,6 +85,7 @@ export default function Header() {
                                     src={currentUser.profile.user.profile_picture}
                                     alt="Profile"
                                     fill
+                                    sizes="44px"
                                     className="object-cover"
                                 />
                             ) : (

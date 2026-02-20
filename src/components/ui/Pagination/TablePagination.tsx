@@ -22,6 +22,7 @@ export default function TablePagination({
     return (
         <div className="w-full">
             <ReactPaginate
+                key={currentPage}
                 forcePage={currentPage - 1}
                 pageRangeDisplayed={3}
                 marginPagesDisplayed={1}
@@ -46,7 +47,7 @@ export default function TablePagination({
                     isLastPage ? 'opacity-50 grayscale cursor-not-allowed' : 'hover:bg-gray-50 active:scale-95 cursor-pointer'
                 )}
                 disabledLinkClassName='cursor-not-allowed'
-                activeClassName='pointer-events-none'
+
                 previousLabel={
                     <div className='flex items-center gap-2'>
                         <BackIcon />

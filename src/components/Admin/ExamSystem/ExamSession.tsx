@@ -57,16 +57,16 @@ export default function ExamSession() {
             }}
           />
           <QuestionsTable 
-            page_count={data?.questions?.total_pages ?? 0} 
-            currentPage={page} 
+            page_count={data?.questions?.pagination?.total_pages ?? 0} 
+            currentPage={data?.questions?.pagination?.page ?? page} 
             onPageChange={setPage} 
             questions={(data?.questions?.results ?? []) as SessionQuestionItemType[]} 
             filters={filters}
             setFilters={setFilters}
             status={data?.status}
             exam_id={id}
-            hasNext={!!data?.questions?.next}
-            hasPrevious={!!data?.questions?.previous}
+            hasNext={data?.questions?.pagination?.has_next}
+            hasPrevious={data?.questions?.pagination?.has_previous}
           />
         </div>
       }

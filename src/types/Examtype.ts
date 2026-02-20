@@ -405,6 +405,7 @@ type QuestionType = {
   // meta: MetaType,
   // results: QuestionItemType[],
   results:SessionQuestionItemType[]
+  pagination:PaginationType,
   question_pool_data: QuestionPoolDataType
 }
 type QuestionPoolDataType = {
