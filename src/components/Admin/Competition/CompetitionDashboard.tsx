@@ -16,20 +16,20 @@ interface CompetitionDashboardProps {
   onViewFullLeaderboard?: () => void;
   onViewFullRanking?: (id: string, title: string) => void;
   onViewRanking?: (id: string, title: string) => void;
-  onViewCandidateDetail?: (params: { 
-    candidate_id: string, 
-    exam_id?: string, 
+  onViewCandidateDetail?: (params: {
+    candidate_id: string,
+    exam_id?: string,
     isLeagueCumulative?: boolean,
     stage?: string,
     round?: string
   }) => void;
 }
 
-const CompetitionDashboard: React.FC<CompetitionDashboardProps> = ({ 
-  onViewFullLeaderboard, 
+const CompetitionDashboard: React.FC<CompetitionDashboardProps> = ({
+  onViewFullLeaderboard,
   onViewFullRanking,
   onViewRanking,
-  onViewCandidateDetail 
+  onViewCandidateDetail
 }) => {
   const { authState } = useAuth();
   const userRole = authState?.user?.role;
@@ -45,7 +45,7 @@ const CompetitionDashboard: React.FC<CompetitionDashboardProps> = ({
   // Notification Queue Logic: info and success go to InfoBoard
   const activeNotifications = useMemo(() => {
     return notifications
-      .filter(n => !n.is_read_by_recipient)
+      .filter(n => !n.is_read)
       .filter(n => {
         const type = (n.type || '').toLowerCase();
         return type === 'info' || type === 'success';
@@ -56,7 +56,7 @@ const CompetitionDashboard: React.FC<CompetitionDashboardProps> = ({
       }));
   }, [notifications]);
 
-  const currentNotification = activeNotifications.length > 0 
+  const currentNotification = activeNotifications.length > 0
     ? { message: activeNotifications[0].message, type: activeNotifications[0].type }
     : null;
 
@@ -114,7 +114,7 @@ const CompetitionDashboard: React.FC<CompetitionDashboardProps> = ({
         <div className="flex flex-col items-center justify-center p-20 flex-1 text-center">
           <h2 className="text-xl font-bold text-gray-800 mb-2">Failed to load competition data</h2>
           <p className="text-gray-600 mb-6">Please check your connection and try again.</p>
-          <button 
+          <button
             onClick={() => refetch()}
             className="px-6 py-2 bg-[#3E4095] text-white rounded-full font-bold hover:bg-[#2d2f6e] transition-colors"
           >
@@ -127,38 +127,38 @@ const CompetitionDashboard: React.FC<CompetitionDashboardProps> = ({
 
   return (
       <div className="flex flex-col gap-2">
-        <AdminHeader 
-          label="Competition" 
+        <AdminHeader
+          label="Competition"
           actionButton={[
             isManagerOrAbove && (
-              <button 
+              <button
                 key="promote-candidates"
-                onClick={() => setOpenPromoteModal(true)} 
+                onClick={() => setOpenPromoteModal(true)}
                 className="inline-flex items-center gap-2.5 bg-white text-emerald-600 border border-emerald-600/20 px-6 py-3 rounded-xl font-black text-[10px] tracking-widest hover:bg-emerald-50 transition-all uppercase shadow-sm active:scale-95"
               >
                 <i className="fas fa-users-cog text-xs"></i>
                 <span>Promote Candidates</span>
               </button>
             )
-          ].filter(Boolean) as React.ReactNode[]} 
+          ].filter(Boolean) as React.ReactNode[]}
         />
 
           <div className="flex flex-col gap-3 sm:gap-4 mt-3 w-full sm:w-[96%] px-2 sm:px-0 sm:mx-auto">
-            <InfoBoard 
-              message={currentNotification?.message} 
+            <InfoBoard
+              message={currentNotification?.message}
               type={currentNotification?.type}
-              onDismiss={handleDismissNotification} 
+              onDismiss={handleDismissNotification}
             />
-            
-            <CompetitionStats 
+
+            <CompetitionStats
               candidatesStats={{
                 enrolled: data.stats.enrolled,
                 active: data.stats.active,
                 eliminated: data.stats.eliminated
-              }} 
+              }}
             />
 
-            <StageBoard 
+            <StageBoard
               currentStage={capitalizeWord(data.progress.current_stage) as CompetitionStage}
               leagueStatus={{
                 currentRound: data.progress.current_round,
@@ -167,7 +167,7 @@ const CompetitionDashboard: React.FC<CompetitionDashboardProps> = ({
               }}
             />
 
-            <ExamStatus 
+            <ExamStatus
               exams={data.exams}
               onView={handleView}
               onGenerate={handleGenerate}
@@ -177,22 +177,22 @@ const CompetitionDashboard: React.FC<CompetitionDashboardProps> = ({
             />
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 pb-10">
-              <LeaderboardSummary 
+              <LeaderboardSummary
                 entries={data.leaderboard_summary}
                 onViewFull={isModeratorOrAbove ? (onViewFullLeaderboard || (() => {})) : undefined}
-                onViewCandidate={isModeratorOrAbove ? ((id) => onViewCandidateDetail?.({ 
-                  candidate_id: id, 
-                  isLeagueCumulative: true 
-                })) : undefined} 
+                onViewCandidate={isModeratorOrAbove ? ((id) => onViewCandidateDetail?.({
+                  candidate_id: id,
+                  isLeagueCumulative: true
+                })) : undefined}
               />
               <RankingSummary
                 examTitle={data.latest_ranking_summary?.exam_title || "Latest Exam"}
                 entries={data.latest_ranking_summary?.entries || []}
-                onViewFull={isModeratorOrAbove && onViewFullRanking && data.latest_ranking_summary ? 
-                  (() => onViewFullRanking(data.latest_ranking_summary!.exam_id, data.latest_ranking_summary!.exam_title)) 
+                onViewFull={isModeratorOrAbove && onViewFullRanking && data.latest_ranking_summary ?
+                  (() => onViewFullRanking(data.latest_ranking_summary!.exam_id, data.latest_ranking_summary!.exam_title))
                   : undefined}
-                onViewCandidate={isModeratorOrAbove ? ((id) => onViewCandidateDetail?.({ 
-                  candidate_id: id, 
+                onViewCandidate={isModeratorOrAbove ? ((id) => onViewCandidateDetail?.({
+                  candidate_id: id,
                   exam_id: data.latest_ranking_summary?.exam_id,
                   stage: data.progress.current_stage,
                   round: String(data.progress.current_round)

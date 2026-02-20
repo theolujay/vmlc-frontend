@@ -146,6 +146,8 @@ export default function OverviewSection() {
               setFilters={setFilters}
               showPreRegistered={showPreRegistered}
               setShowPreRegistered={setShowPreRegistered}
+              hasNext={preRegisteredData?.pagination.has_next}
+              hasPrevious={preRegisteredData?.pagination.has_previous}
             />
           ) : (
             <RegisteredCandidatesTable
@@ -160,6 +162,8 @@ export default function OverviewSection() {
               showPreRegistered={showPreRegistered}
               setShowPreRegistered={setShowPreRegistered}
               setPage={setPage}
+              hasNext={data?.pagination.has_next}
+              hasPrevious={data?.pagination.has_previous}
             />
           )
         )}
@@ -197,6 +201,9 @@ function RegisteredCandidatesTable({
   showPreRegistered,
   setShowPreRegistered,
   setPage,
+  hasNext,
+  hasPrevious,
+  pageSize = 20,
 }: Readonly<{
   data: RegisteredCandidatesType[];
   handleSearch: Dispatch<SetStateAction<Record<string, string>>>;
@@ -209,6 +216,9 @@ function RegisteredCandidatesTable({
   showPreRegistered: boolean;
   setShowPreRegistered: Dispatch<SetStateAction<boolean>>;
   setPage: Dispatch<SetStateAction<number>>;
+  hasNext?: boolean;
+  hasPrevious?: boolean;
+  pageSize?: number;
 }>) {
   const { searchInput, setSearchInput } = useDebouncedSearch(handleSearch);
 
@@ -362,16 +372,18 @@ function RegisteredCandidatesTable({
         data={data}
         minWidth="1100px"
         columns={[
-          // {
-          //   key: 'S/N',
-          //   header: 'S/N',
-          //   align: 'center',
-          //   render: (_, __, index) => (
-          //     <div className="py-2">
-          //       {index + 1}
-          //     </div>
-          //   ),
-          // },
+          {
+            key: "id",
+            header: "S/N",
+            align: 'center',
+            render: (_, __, index) => (
+              <div className="flex justify-center">
+                <span className="text-xs font-bold text-gray-400">
+                  {(currentPage - 1) * pageSize + index + 1}
+                </span>
+              </div>
+            ),
+          },
           {
             key: 'Name',
             header: 'Name',
@@ -446,6 +458,8 @@ function RegisteredCandidatesTable({
             currentPage={currentPage}
             pageCount={page_count}
             onPageChange={onPageChange}
+            hasNext={hasNext}
+            hasPrevious={hasPrevious}
           />
         }
       />

@@ -89,6 +89,8 @@ export default function UserManagement() {
                     setProfile={setProfile}
                     filters={filters}
                     setFilters={setFilters}
+                    hasNext={data?.pagination.has_next}
+                    hasPrevious={data?.pagination.has_previous}
                 />
             </div>
 
@@ -225,6 +227,9 @@ function UserHistoryTable({
   setProfile,
   filters,
   setFilters,
+  hasNext,
+  hasPrevious,
+  pageSize = 20,
 }: {
   candidates: (MgtItem | MgtItemType)[];
   onViewProfile: (id: string) => void;
@@ -236,6 +241,9 @@ function UserHistoryTable({
   setProfile: (profile: string) => void;
   filters: Record<string, string>;
   setFilters: Dispatch<SetStateAction<Record<string, string>>>;
+  hasNext?: boolean;
+  hasPrevious?: boolean;
+  pageSize?: number;
 }) {
   const { searchInput, setSearchInput } = useDebouncedSearch(handleSearch);
 
@@ -395,6 +403,18 @@ function UserHistoryTable({
       <CustomTable
         columns={[
           {
+            key: "id",
+            header: "S/N",
+            align: 'center',
+            render: (_, __, index) => (
+              <div className="flex justify-center">
+                <span className="text-xs font-bold text-gray-400">
+                  {(currentPage - 1) * pageSize + index + 1}
+                </span>
+              </div>
+            ),
+          },
+          {
             key: 'Name',
             header: 'Name',
             render: (_, row) => {
@@ -511,6 +531,8 @@ function UserHistoryTable({
             currentPage={currentPage}
             pageCount={page_count}
             onPageChange={onPageChange}
+            hasNext={hasNext}
+            hasPrevious={hasPrevious}
           />
         }
       />

@@ -1,3 +1,4 @@
+import { ApiError } from '@/types/Index'
 import { ExamPortal } from '@/services/examPortal.service'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { toast } from 'react-toastify'
@@ -14,8 +15,9 @@ export default function useRetractExam(onSuccessCallback?: () => void) {
             queryClient.invalidateQueries({ queryKey: ['exam-questions'] })
             queryClient.invalidateQueries({ queryKey: ['exam-details'] })
         },
-        onError: (error: any) => {
-            toast.error(error?.response?.data?.message || 'Failed to retract exam')
+        onError: (error: unknown) => {
+            const apiError = error as ApiError;
+            toast.error(apiError.response?.data?.message || 'Failed to retract exam')
         }
     })
 

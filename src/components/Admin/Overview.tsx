@@ -18,11 +18,12 @@ import CompetitionWrapper from './Competition/CompetitionWrapper'
 function getTabsForRole(role: string): TabType[] {
     switch (role) {
         case 'volunteer':
-            return tabs.slice(0, 2); // Registration, Competition
+	case 'sponsor':
+            return [tabs[1], tabs[0]]; // Competition, Registration
 
         case 'moderator':
         case 'admin':
-            return [tabs[0], tabs[1], tabs[2], tabs[5]]; // Registration, Competition, Exams & Questions, Support
+            return [tabs[0], tabs[1], tabs[2], tabs[3]]; // Registration, Competition, Helpdesk, Exams & Questions
 
         case 'manager':
         case 'superadmin':
@@ -44,15 +45,15 @@ const tabs: TabType[] = [
         content: <CompetitionWrapper />
     },
     {
+        value: 'support',
+        label: <HelpdeskLabel />,
+        content: <SupportSectionWrapper />
+    },
+    {
         value: 'exams-questions',
         label: <ExamConsoleLabel />,
         content: <ExamSectionWrapper />
 
-    },
-    {
-        value: 'user-mgt',
-        label: <UserMgtLabel />,
-        content: <StaffMgtWrapper />
     },
     {
         value: 'broadcasts',
@@ -60,20 +61,22 @@ const tabs: TabType[] = [
         content: <Broadcast />
     },
     {
-        value: 'support',
-        label: <SupportLabel />,
-        content: <SupportSectionWrapper />
-    }
+        value: 'user-mgt',
+        label: <UserMgtLabel />,
+        content: <StaffMgtWrapper />
+    },
 ]
 
 
 
 import { useEffect, useState } from 'react'
 import useGetRegistrationStatus from '@/hooks/useGetRegistrationStatus'
+import useGetStatOverview from '@/hooks/useGetStatOverview'
 
 export function OverviewTabs() {
     const { authState } = useAuth()
     const { data: registrationStatus } = useGetRegistrationStatus();
+    const { data: statOverview } = useGetStatOverview();
     const [mounted, setMounted] = useState(false);
 
     useEffect(() => {
@@ -82,13 +85,29 @@ export function OverviewTabs() {
 
     let userTabs = getTabsForRole(authState?.user?.role ?? '')
 
-    if (registrationStatus?.candidate_registration?.is_open === false) {
+    const hasOngoingExams = (statOverview?.exams?.ongoing ?? 0) > 0;
+    const isRegistrationOpen = registrationStatus?.candidate_registration?.is_open === true;
+
+    if (hasOngoingExams) {
+        // Helpdesk first if exam ongoing, Registration last
+        const helpdeskTab = userTabs.find(tab => tab.value === 'support');
+        const registrationTab = userTabs.find(tab => tab.value === 'registration');
+        const others = userTabs.filter(tab => tab.value !== 'support' && tab.value !== 'registration');
+
+        userTabs = [];
+        if (helpdeskTab) userTabs.push(helpdeskTab);
+        userTabs.push(...others);
+        if (registrationTab) userTabs.push(registrationTab);
+    } else if (!isRegistrationOpen) {
+        // Competition first if registration closed, Registration last
         const competitionTab = userTabs.find(tab => tab.value === 'competition');
-        const otherTabs = userTabs.filter(tab => tab.value !== 'competition');
-        
-        if (competitionTab) {
-            userTabs = [competitionTab, ...otherTabs];
-        }
+        const registrationTab = userTabs.find(tab => tab.value === 'registration');
+        const others = userTabs.filter(tab => tab.value !== 'competition' && tab.value !== 'registration');
+
+        userTabs = [];
+        if (competitionTab) userTabs.push(competitionTab);
+        userTabs.push(...others);
+        if (registrationTab) userTabs.push(registrationTab);
     }
 
     return (
@@ -122,6 +141,6 @@ function BroadcastsLabel() {
     return <div className='flex gap-1 items-center'><span><BroadcastIcon /></span><span>Broadcasts</span></div>
 }
 
-function SupportLabel() {
-    return <div className='flex gap-1 items-center'><span><SupportIcon /></span><span>Support</span></div>
+function HelpdeskLabel() {
+    return <div className='flex gap-1 items-center'><span><SupportIcon /></span><span>Helpdesk</span></div>
 }

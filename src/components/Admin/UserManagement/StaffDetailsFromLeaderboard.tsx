@@ -188,33 +188,33 @@ function ActionsLabel() {
 function ActionsComponent(
     // { results }: Readonly<{ results: ExamTakenType[] }>
 ) {
-    const results: unknown[] = []
+    const results: ExamTakenType[] = []
 
     return <div className="flex flex-col">
         {results.length > 0 ?
             <div className="flex gap-2 flex-col">
                 <CustomTable columns={[
                     {
-                        key: 'Exams Taken', header: 'Exams Taken', render: (_, row: any) => <div className="flex  items-center gap-1">
+                        key: 'Exams Taken', header: 'Exams Taken', render: (_, row: ExamTakenType) => <div className="flex  items-center gap-1">
                             {row.exam_title}
                         </div>
                     },
                     {
-                        key: 'Stage', header: 'Stage', render: (_, row: any) => <div className="flex  items-center gap-1">
+                        key: 'Stage', header: 'Stage', render: (_, row: ExamTakenType) => <div className="flex  items-center gap-1">
                             {row.exam_stage}
                         </div>
                     },
                     {
-                        key: 'Score', header: 'Score', render: (_, row: any) => <div className="flex  items-center gap-1">
+                        key: 'Score', header: 'Score', render: (_, row: ExamTakenType) => <div className="flex  items-center gap-1">
                             {row.score}
                         </div>
                     },
                     {
-                        key: 'Date Taken', header: 'Date Taken', render: (_, row: any) => <div className="flex  items-center gap-1">
+                        key: 'Date Taken', header: 'Date Taken', render: (_, row: ExamTakenType) => <div className="flex  items-center gap-1">
                             {formatDate(row.recorded_at)}
                         </div>
                     },
-                ]} data={results as any[]} />
+                ]} data={results} />
                 {/* <Table data={[]} columns={['Activity', 'Date', 'Time']} /> */}
             </div> : <EmptySession desc="Activities done on this platform by this user would appear here " label='No actions yet' />}
     </div>

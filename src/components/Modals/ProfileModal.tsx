@@ -140,7 +140,7 @@ export default function ProfileModal({
           <div className="flex items-center gap-4">
              <div className="w-12 h-12 rounded-2xl bg-[#3E4095]/10 flex items-center justify-center text-[#3E4095] font-bold text-xl overflow-hidden relative">
                 {user?.profile_picture ? (
-                    <Image src={user.profile_picture} alt={userName} fill className="object-cover" />
+                    <Image src={user.profile_picture} alt={userName} fill sizes="48px" className="object-cover" />
                 ) : (
                     <span>{user?.first_name?.[0]}{user?.last_name?.[0]}</span>
                 )}
@@ -299,7 +299,7 @@ export default function ProfileModal({
                             <div className="relative">
                                 <div className="w-32 h-32 rounded-3xl bg-gray-50 border-4 border-white shadow-lg overflow-hidden flex items-center justify-center text-[#3E4095] text-4xl font-black relative">
                                     {user?.profile_picture ? (
-                                        <Image src={user.profile_picture} alt={userName} fill className="object-cover" />
+                                        <Image src={user.profile_picture} alt={userName} fill sizes="128px" className="object-cover" />
                                     ) : (
                                         <span>{user?.first_name?.[0]}{user?.last_name?.[0]}</span>
                                     )}
@@ -446,8 +446,8 @@ function DocumentCard({ label, url, type, isImage }: { label: string, url: strin
         <div className="flex items-start justify-between mb-6">
             <div className="space-y-3">
                 {isImage ? (
-                    <div className="w-12 h-12 rounded-xl bg-gray-50 overflow-hidden border border-gray-100 p-1">
-                        <Image src={url} alt={label} className="w-full h-full object-cover rounded-lg" />
+                    <div className="w-12 h-12 rounded-xl bg-gray-50 overflow-hidden border border-gray-100 p-1 relative">
+                        <Image src={url} alt={label} fill sizes="48px" className="object-cover rounded-lg" />
                     </div>
                 ) : (
                     <div className="w-12 h-12 rounded-xl bg-[#3E4095]/5 text-[#3E4095] flex items-center justify-center text-xl">

@@ -1,6 +1,8 @@
 export type ExamContextType = {
   showNav: boolean;
   setShowNav: React.Dispatch<React.SetStateAction<boolean>>;
+  timeLeft: number;
+  setTimeLeft: React.Dispatch<React.SetStateAction<number>>;
 };
 
 export type User = {
@@ -26,18 +28,18 @@ export type SelectItem={
 
 
 export type BulkPayloadType= {
-    question_ids: number[],
+    question_ids: (number | string)[],
     exam_ids: (number | string)[]
 }
 
 
 export type BulkArchiveType={
-  question_ids:number[]
+  question_ids:(number | string)[]
 }
 
 export type BulkActionType = {
 action: 'archive' | 'assign' | 'unassign';
-  question_ids: number[];
+  question_ids: (number | string)[];
   exam_ids?: (number | string)[];
 }
 export type VerificationUploadPayloadType = FormData;
@@ -49,3 +51,14 @@ export type AnswerItem={
 export type CandidateSubmitAnswerType={
   answers: AnswerItem[]
 }
+
+export type ApiError = {
+  response?: {
+    data?: {
+      message?: string;
+      email?: string[];
+      [key: string]: unknown;
+    };
+  };
+  message?: string;
+};

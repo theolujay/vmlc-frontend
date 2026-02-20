@@ -36,6 +36,7 @@ const createBroadcastSchema = z.object({
         (data.candidate && data.candidate.length > 0),
       { message: 'At least one target role is required (staff or candidate)' }
     ),
+  scheduled_at: z.string().optional(),
 });
 
 type ValueType = z.infer<typeof createBroadcastSchema>;
@@ -48,6 +49,7 @@ const defaultValues: ValueType = {
     staff: [],
     candidate: [],
   },
+  scheduled_at: '',
 };
 
 export default function useCreateBroadcastMessage(
@@ -76,6 +78,7 @@ export default function useCreateBroadcastMessage(
     const cleanedPayload: CreateBroadCastType = {
       ...payload,
       target_roles: {},
+      scheduled_at: payload.scheduled_at || undefined,
     };
 
     if (payload.target_roles.staff && payload.target_roles.staff.length > 0) {

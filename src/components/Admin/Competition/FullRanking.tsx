@@ -95,10 +95,21 @@ const FullRanking: React.FC<FullRankingProps> = ({ onBack, examId, examTitle, on
 
         <CustomTable<RankingEntry>
           data={filteredData}
+          getRowId={(row) => row.candidate}
           minWidth="900px"
           emptyLabel="Results Empty"
           emptyDesc="No ranking data has been processed for this exam yet."
           columns={[
+            {
+              key: 'sn',
+              header: 'S/N',
+              render: (_, __, index) => (
+                <div className="flex items-center justify-center">
+                  <span className="text-xs font-bold text-gray-400">{index + 1}</span>
+                </div>
+              ),
+              align: 'center'
+            },
             {
               key: 'rank',
               header: 'Rank',

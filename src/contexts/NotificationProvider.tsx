@@ -79,12 +79,12 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
     // Optimistic update
     setNotifications(prev => {
         const notification = prev.find(n => n.id === id);
-        if (notification && !notification.is_read_by_recipient) {
+        if (notification && !notification.is_read) {
             setUnreadCount(count => Math.max(0, count - 1));
         }
-        return prev.map(n => n.id === id ? { ...n, is_read_by_recipient: true } : n);
+        return prev.map(n => n.id === id ? { ...n, is_read: true } : n);
     });
-    
+
     try {
         await NotificationService.markAsRead(id);
     } catch (error) {
@@ -96,16 +96,16 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
 
   const markAllAsRead = async () => {
     // Optimistic update
-    setNotifications(prev => prev.map(n => ({ ...n, is_read_by_recipient: true })));
+    setNotifications(prev => prev.map(n => ({ ...n, is_read: true })));
     setUnreadCount(0);
-    
+
     try {
         await NotificationService.markAllAsRead();
     } catch (error) {
         console.error("Failed to mark all notifications as read:", error);
     }
   };
-  
+
   const clearAll = () => {
       setNotifications([]);
       setUnreadCount(0);
@@ -116,12 +116,12 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
   }
 
   return (
-    <NotificationContext.Provider value={{ 
-        notifications, 
-        unreadCount, 
-        markAsRead, 
-        markAllAsRead, 
-        clearAll, 
+    <NotificationContext.Provider value={{
+        notifications,
+        unreadCount,
+        markAsRead,
+        markAllAsRead,
+        clearAll,
         isConnected,
         inAppNotificationsEnabled,
         toggleInAppNotifications,

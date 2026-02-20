@@ -9,156 +9,40 @@ import { formatDate, getAppropriateColor } from "@/utils/formatFileSize";
 import { getOptionAsArray } from "@/utils/generalUtils";
 import clsx from "clsx";
 import { FilterIcon, SortIcon } from "../AdminIcons";
-import { Checkbox } from "@/components/ui/Checkbox";
 import QuestionPoolDropdown from "./QuestionPoolDropdown";
 import AddToExamSessionModal from "@/components/Modals/AddToExamSessionModal";
 import BulkRemoveQuestionsModal from "@/components/Modals/BulkRemoveQuestionsModal";
 import { useDebouncedSearch } from "@/hooks/useDebouncedSearch";
 import MathRenderer from "@/components/Exam/MathRenderer";
 import useGetCurrentUser from "@/hooks/useGetCurrentUser";
+import CustomTable from "@/components/ui/CustomTable";
 import dynamic from "next/dynamic";
 
 const AddQuestionModal = dynamic(() => import("@/components/Modals/AddQuestionModal"), {
   ssr: false,
 });
 
-type ColumnType<T> = {
-  key: keyof T | string;
-  header: string;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  render?: (value: any, row: T, index: number) => React.ReactNode;
-  align?: 'left' | 'center' | 'right';
-};
-
-type CustomTableProps<T> = {
-  columns: ColumnType<T>[];
-  data: T[];
-  emptyLabel?: string;
-  emptyDesc?: React.ReactNode;
-  footer?: React.ReactNode;
-  onSelectAll?: (checked: boolean) => void;
-  onSelectRow?: (id: number, checked: boolean) => void;
-  selectedIds?: number[];
-  isAdminOrAbove?: boolean;
-};
-
-function CustomTable<T extends { id: number }>({
-  columns,
-  data,
-  emptyLabel = "No records found",
-  emptyDesc = "There are currently no entries to display.",
-  footer,
-  onSelectAll,
-  onSelectRow,
-  selectedIds = [],
-  isAdminOrAbove = false,
-}: Readonly<CustomTableProps<T>>) {
-  const allSelected = data.length > 0 && data.every((row) => selectedIds.includes(row.id));
-
-  return (
-    <div className="flex flex-col">
-      <div className="overflow-x-auto w-full">
-        <table className="min-w-full border-collapse">
-          <thead>
-            <tr className="border-b border-[#E4E7EC] bg-[#E4E7EC]">
-              {isAdminOrAbove && (
-                <th className="py-2 px-3 text-center">
-                  <div className="flex justify-center">
-                    <Checkbox
-                      checked={allSelected}
-                      onChange={(checked) => onSelectAll?.(checked)}
-                    />
-                  </div>
-                </th>
-              )}
-              {columns.map((col, i) => (
-                <th key={i} className={clsx("py-3 px-3 text-[9px] font-black uppercase tracking-widest text-gray-500", col.align === 'center' ? 'text-center' : col.align === 'right' ? 'text-right' : 'text-left')}>
-                  {col.header}
-                </th>
-              ))}
-            </tr>
-          </thead>
-
-          <tbody>
-            {data.length === 0 ? (
-              <tr>
-                <td colSpan={columns.length + (isAdminOrAbove ? 1 : 0)} className="py-6 text-center">
-                  <EmptyRecords label={emptyLabel} desc={emptyDesc} />
-                </td>
-              </tr>
-            ) : (
-              data.map((row, index) => (
-                <tr
-                  key={row.id}
-                  className="border-b border-[#E4E7EC] last:border-0 hover:bg-gray-50 transition-colors"
-                >
-                  {isAdminOrAbove && (
-                    <td className="py-2 px-3">
-                      <div className="flex justify-center">
-                        <Checkbox
-                          checked={selectedIds.includes(row.id)}
-                          onChange={(checked) => onSelectRow?.(row.id, checked)}
-                        />
-                      </div>
-                    </td>
-                  )}
-
-                  {columns.map((col, ci) => {
-                    const value =
-                      typeof col.key === "string" && col.key.includes(".")
-                        ? col.key
-                          .split(".")
-                          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                          .reduce((acc: any, k) => acc?.[k] ?? "", row)
-                        : (row as any)[col.key];
-
-                    return (
-                      <td key={ci} className={clsx("py-2 px-3", col.align === 'center' ? 'text-center' : col.align === 'right' ? 'text-right' : 'text-left')}>
-                        {col.render ? col.render(value, row, index) : value}
-                      </td>
-                    );
-                  })}
-                </tr>
-              ))
-            )}
-          </tbody>
-        </table>
-
-        {footer && <div className="py-3">{footer}</div>}
-      </div>
-    </div>
-  );
-}
-
-function EmptyRecords({
-  label,
-  desc,
-}: Readonly<{ label: string; desc: React.ReactNode }>) {
-  return (
-    <div className="w-full grid place-content-center py-12">
-      <div className="flex flex-col items-center gap-2 text-center">
-        <h2 className="text-xl font-semibold">{label}</h2>
-        <p className="text-gray-500">{desc}</p>
-      </div>
-    </div>
-  );
-}
-
 export default function QuestionPoolTable<T extends { search?: string }>({
   questions,
   onPageChange,
   currentPage,
   page_count,
-  handleSearch
+  handleSearch,
+  pageSize = 20,
+  hasNext,
+  hasPrevious
 }: Readonly<{
   questions: SessionQuestionItemType[];
   onPageChange: Dispatch<SetStateAction<number>>;
   currentPage: number;
   page_count: number;
-  handleSearch: Dispatch<SetStateAction<T>>
+  handleSearch: Dispatch<SetStateAction<T>>;
+  pageSize?: number;
+  hasNext?: boolean;
+  hasPrevious?: boolean;
 }>) {
-  const [selectedQuestions, setSelectedQuestions] = useState<number[]>([]);
-  const [modalQuestionIds, setModalQuestionIds] = useState<number[]>([]);
+  const [selectedQuestions, setSelectedQuestions] = useState<(string | number)[]>([]);
+  const [modalQuestionIds, setModalQuestionIds] = useState<(string | number)[]>([]);
   const [openRemoveQuestion, setOpenRemoveQuestion] = useState(false);
   const [openExamSession, setOpenExamSession] = useState(false)
   const [openBulkDelete, setOpenBulkDelete] = useState(false)
@@ -173,7 +57,7 @@ export default function QuestionPoolTable<T extends { search?: string }>({
   const isAdminOrAbove = ["admin", "manager", "superadmin"].includes(userRole);
 
   // handle single selection
-  function handleSelectRow(id: number, checked: boolean) {
+  function handleSelectRow(id: string | number, checked: boolean) {
     setSelectedQuestions((prev) =>
       checked ? [...prev, id] : prev.filter((q) => q !== id)
     );
@@ -185,11 +69,11 @@ export default function QuestionPoolTable<T extends { search?: string }>({
     setSelectedQuestions((prev) =>
       checked
         ? [...new Set([...prev, ...currentPageIds])]
-        : prev.filter((id) => !currentPageIds.includes(id))
+        : prev.filter((id) => !currentPageIds.includes(id as number))
     );
   }
 
-  function handleOpenExamSessionModal(ids?: number[]) {
+  function handleOpenExamSessionModal(ids?: (string | number)[]) {
     if (ids) {
         setModalQuestionIds(ids);
     } else {
@@ -265,12 +149,21 @@ export default function QuestionPoolTable<T extends { search?: string }>({
         <CustomTable
           data={questions}
           isAdminOrAbove={isAdminOrAbove}
+          onSelectAll={handleSelectAll}
+          onSelectRow={handleSelectRow}
+          selectedIds={selectedQuestions}
           columns={[
             {
               key: "id",
               header: "S/N",
               align: 'center',
-              render: (_, __, index) => <div className="flex justify-center"><span className="text-xs font-bold text-gray-400">{(currentPage - 1) * 10 + index + 1}</span></div>,
+              render: (_, __, index) => (
+                <div className="flex justify-center">
+                  <span className="text-xs font-bold text-gray-400">
+                    {(currentPage - 1) * pageSize + index + 1}
+                  </span>
+                </div>
+              ),
             },
             {
               key: "text",
@@ -353,6 +246,10 @@ export default function QuestionPoolTable<T extends { search?: string }>({
                       setQuestionToEdit(row);
                       setOpenEditQuestion(true);
                     }}
+                    onView={() => {
+                      setCurrentQuestion(row);
+                      setOpenDrawer(true);
+                    }}
                     information={row} 
                     question_id={row.id} 
                   />
@@ -366,21 +263,16 @@ export default function QuestionPoolTable<T extends { search?: string }>({
                 currentPage={currentPage}
                 pageCount={page_count}
                 onPageChange={onPageChange}
+                hasNext={hasNext}
+                hasPrevious={hasPrevious}
               />
             </div>
           }
-          onSelectAll={handleSelectAll}
-          onSelectRow={handleSelectRow}
-          selectedIds={selectedQuestions}
         />
       </div>
 
       {currentQuestion && (
-        <QuestionInformation
-          information={currentQuestion}
-          open={openDrawer}
-          setOpen={setOpenDrawer}
-        />
+        <QuestionInformation information={currentQuestion} open={openDrawer} setOpen={setOpenDrawer} />
       )}
       <BulkRemoveQuestionsModal questions={selectedQuestions} open={openBulkDelete} close={setOpenBulkDelete} />
       <AddToExamSessionModal selectedQuestionIds={modalQuestionIds} open={openExamSession} close={setOpenExamSession} />

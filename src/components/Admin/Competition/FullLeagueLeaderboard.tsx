@@ -96,10 +96,21 @@ const FullLeagueLeaderboard: React.FC<FullLeagueLeaderboardProps> = ({ onBack, o
 
         <CustomTable<LeagueLeaderboardEntry>
           data={filteredData}
+          getRowId={(row) => row.candidate}
           minWidth="900px"
           emptyLabel="Leaderboard Empty"
           emptyDesc="No rankings have been generated for this stage yet."
           columns={[
+            {
+              key: 'sn',
+              header: 'S/N',
+              render: (_, __, index) => (
+                <div className="flex items-center justify-center">
+                  <span className="text-xs font-bold text-gray-400">{index + 1}</span>
+                </div>
+              ),
+              align: 'center'
+            },
             {
               key: 'overall_rank',
               header: 'Rank',

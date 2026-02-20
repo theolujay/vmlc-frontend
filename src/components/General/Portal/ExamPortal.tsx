@@ -10,7 +10,7 @@ import InfoBoard from './DashboardParts/InfoBoard';
 import PrimaryAction from './DashboardParts/PrimaryAction';
 import Performance from './DashboardParts/Performance';
 import ExamHistory from './DashboardParts/ExamHistory';
-import SupportChat from './DashboardParts/SupportChat';
+import HelpdeskButton from './DashboardParts/HelpdeskButton';
 import ProfileModal from '@/components/Modals/ProfileModal';
 import { AvailableExamType } from '@/types/Examtype';
 import FullLeagueLeaderboard from '@/components/Admin/Competition/FullLeagueLeaderboard';
@@ -20,7 +20,6 @@ function ExamPortal() {
   const { notifications, markAsRead } = useNotifications();
   const user = useGetCurrentUser();
   const [isProfileNoticeDismissed, setIsProfileNoticeDismissed] = useState(false);
-  const [isSupportOpen, setIsSupportOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [showLeaderboard, setShowLeaderboard] = useState(false);
 
@@ -36,7 +35,7 @@ function ExamPortal() {
   // Only show notifications that are NOT read
   const activeNotifications = useMemo(() => {
     return notifications
-      .filter(n => !n.is_read_by_recipient)
+      .filter(n => !n.is_read)
       .filter(n => {
         const type = (n.type || '').toLowerCase();
         return type === 'info' || type === 'success';
@@ -85,8 +84,8 @@ function ExamPortal() {
   }
 
   // Use synced profile data
-  const candidateName = profile?.user 
-    ? `${profile.user.first_name} ${profile.user.last_name}` 
+  const candidateName = profile?.user
+    ? `${profile.user.first_name} ${profile.user.last_name}`
     : "Candidate";
 
   // Derive current stage from data
@@ -262,35 +261,11 @@ function ExamPortal() {
           </>
         )}
 
-        {/* PERSISTENT ACTIONS - SUPPORT CHAT */}
-        <div className="fixed bottom-4 right-4 z-50 flex flex-col items-end gap-4">
-            {isSupportOpen && (
-                <div className="w-[350px] h-[500px] bg-white rounded-[24px] shadow-2xl border border-[#E4E7EC] flex flex-col overflow-hidden animate-in slide-in-from-bottom-5 duration-300">
-                    <SupportChat
-                        currentStage={currentStage}
-                        candidateName={candidateName}
-                        onClose={() => setIsSupportOpen(false)}
-                    />
-                </div>
-            )}
-            <button
-                onClick={() => setIsSupportOpen(!isSupportOpen)}
-                className={`flex items-center gap-2 px-6 py-3.5 rounded-full shadow-lg transition-all transform hover:scale-105 active:scale-95 ${
-                    isSupportOpen ? 'bg-[#4A4DA8] text-gray-300' : 'bg-[#3E4095] text-white'
-                }`}
-            >
-                {isSupportOpen ? (
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                    </svg>
-                ) : (
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
-                    </svg>
-                )}
-                <span className="font-bold text-sm tracking-wide">Help?</span>
-            </button>
-        </div>
+        {/* PERSISTENT ACTIONS - HELPDESK */}
+        <HelpdeskButton
+            currentStage={currentStage}
+            candidateName={candidateName}
+        />
       </div>
 
       {profile && (
