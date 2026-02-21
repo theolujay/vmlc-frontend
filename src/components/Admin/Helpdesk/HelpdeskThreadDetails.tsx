@@ -14,6 +14,7 @@ import { useEffect, useRef, useState, useCallback } from 'react';
 import Image from 'next/image';
 import Drawer from '@/components/ui/Drawer/Drawer';
 import clsx from 'clsx';
+import { formatTextWithLinks } from '@/utils/formatTextWithLinks';
 
 export default function HelpdeskThreadDetails({id}:{id:string}) {
     const router = useRouter();
@@ -81,7 +82,7 @@ export default function HelpdeskThreadDetails({id}:{id:string}) {
     const isCandidateTyping = Object.values(isTyping).some(typing => typing);
 
     return (
-        <div className="flex flex-col h-[calc(100vh-80px)] font-sans">
+        <div className="flex flex-col h-full font-sans overflow-hidden">
              <div className="flex items-center justify-between mb-4 sticky top-0 bg-white z-10 p-4">
                 <button
                     onClick={handleBack}
@@ -182,7 +183,25 @@ export default function HelpdeskThreadDetails({id}:{id:string}) {
                                                               : 'bg-white border border-gray-200 text-gray-800 rounded-bl-none'
                                                     }`}
                                                 >
-                                                    <p className="whitespace-pre-wrap">{msg.text}</p>
+                                                    <p className="whitespace-pre-wrap">
+                                                        {formatTextWithLinks(msg.text).map((node, i) => {
+                                                            if (typeof node === 'string') {
+                                                                return <React.Fragment key={i}>{node}</React.Fragment>;
+                                                            } else {
+                                                                return (
+                                                                    <a
+                                                                        key={i}
+                                                                        href={node.href}
+                                                                        target="_blank"
+                                                                        rel="noopener noreferrer"
+                                                                        className="text-cyan-600 hover:underline break-all"
+                                                                    >
+                                                                        {node.text}
+                                                                    </a>
+                                                                );
+                                                            }
+                                                        })}
+                                                    </p>
                                                 </div>
                                             </div>
                                             <span className="text-[9px] font-bold text-gray-400 mt-1 px-10 uppercase tracking-wider">
@@ -207,7 +226,7 @@ export default function HelpdeskThreadDetails({id}:{id:string}) {
                         )}
                     </div>
 
-                    <div className="p-4 bg-white border-t border-gray-200 sticky bottom-0">
+                    <div className="p-4 bg-white border-t border-gray-200">
                         <div className="flex gap-3 items-end w-full">
                             <div className="flex-1 relative">
                                 <textarea
@@ -270,7 +289,7 @@ export default function HelpdeskThreadDetails({id}:{id:string}) {
 function CandidateDetails({ thread, isDrawer = false }: { thread: HelpdeskThreadType | null, isDrawer?: boolean }) {
     return (
         <ResponsiveContainer className={clsx(
-            "bg-white flex flex-col gap-4 p-6",
+            "bg-white flex flex-col gap-4 p-6 overflow-y-auto",
             !isDrawer && "shadow-lg border border-gray-200 rounded-xl"
         )}>
             <h3 className="font-bold text-sm text-gray-900 mb-4 pb-2 border-b border-gray-100 uppercase tracking-widest">Helpdesk Thread Details</h3>

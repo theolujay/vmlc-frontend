@@ -4,12 +4,10 @@ import Header from '../General/Layout/Header'
 
 export default function AdminLayout({ children }: Readonly<{ children: ReactNode }>) {
     return (
-        <div className='flex bg-[#f0f2f5] pb-5 w-full flex-col '>
+        <div className='flex bg-[#f0f2f5] h-screen w-full flex-col overflow-hidden'>
             <Header />
-            <main className='min-h-screen'>
-                {/* <div className="flex gap-2 flex-col max-w-[95%] my-3 mx-auto"> */}
-                    {children}
-                {/* </div> */}
+            <main className='flex-1 overflow-hidden'>
+                {children}
             </main>
         </div>
     )
