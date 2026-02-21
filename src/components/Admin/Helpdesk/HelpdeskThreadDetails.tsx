@@ -82,7 +82,7 @@ export default function HelpdeskThreadDetails({id}:{id:string}) {
     const isCandidateTyping = Object.values(isTyping).some(typing => typing);
 
     return (
-        <div className="flex flex-col h-full font-sans overflow-hidden">
+        <div className="flex flex-col h-full font-sans">
              <div className="flex items-center justify-between mb-4 sticky top-0 bg-white z-10 p-4">
                 <button
                     onClick={handleBack}
