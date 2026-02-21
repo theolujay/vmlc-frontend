@@ -37,6 +37,15 @@ export interface HelpdeskThreadListResponse {
     has_next: boolean;
     page_size: number;
     page: number;
+    helpdesk_summary_data?: {
+        total_threads: number;
+        open_threads: number;
+        in_progress_threads: number;
+        resolved_threads: number;
+        unassigned_threads: number;
+        unread_messages: number;
+        public_requests: number;
+    };
     results: HelpdeskThreadType[];
 }
 

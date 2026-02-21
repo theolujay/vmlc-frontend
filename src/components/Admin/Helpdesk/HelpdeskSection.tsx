@@ -17,8 +17,6 @@ import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
 import Spinner from '@/components/ui/spinner/spinner';
 import CustomTable from '@/components/ui/CustomTable';
 import React from 'react';
-import useGetStatOverview from '@/hooks/useGetStatOverview';
-
 import { HelpdeskStatData } from '@/types/UserMgtType';
 
 export default function HelpdeskSection() {
@@ -31,14 +29,13 @@ export default function HelpdeskSection() {
     });
 
     const { data, loading } = useListHelpdeskThreads(page, filters);
-    const { data: statOverview } = useGetStatOverview();
 
     return (
         <div className="flex flex-col gap-1 font-sans h-full">
             <AdminHeader label="Helpdesk Thread" actionButton={undefined} />
             <div className="flex flex-col gap-3 sm:gap-4 mt-3 w-full sm:w-[96%] px-2 sm:px-0 sm:mx-auto flex-1 pb-10">
-                {view !== 'conversation-details' && statOverview?.helpdesk && (
-                    <HelpdeskStats stats={statOverview.helpdesk} />
+                {view !== 'conversation-details' && data?.helpdesk_summary_data && (
+                    <HelpdeskStats stats={data.helpdesk_summary_data} />
                 )}
 
                 {view === 'conversation-details' && threadId ? ( // Conditionally render if threadId exists
@@ -70,7 +67,7 @@ function HelpdeskStats({ stats }: { stats: HelpdeskStatData }) {
         <ResponsiveContainer className="flex gap-4 py-8 px-8 flex-col w-full font-sans bg-white border border-gray-100 rounded-[2rem] shadow-sm overflow-hidden mb-4">
             <div className="flex items-center gap-2 mb-2">
                 <div className="w-1.5 h-6 bg-[#3E4095] rounded-full"></div>
-                <h2 className="text-lg font-black text-gray-800 tracking-tight uppercase">Helpdesk Overview</h2>
+                <h2 className="text-lg font-black text-gray-800 tracking-tight uppercase">Overview</h2>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 <div className="flex flex-col p-5 bg-blue-50/30 rounded-2xl border border-blue-100/50">
@@ -170,7 +167,7 @@ function ConversationListCard({
              <div className="flex flex-col md:flex-row md:items-center justify-between px-8 gap-4 mb-2">
                 <div className="flex gap-2.5 items-center">
                     <div className="w-1.5 h-6 bg-[#3E4095] rounded-full"></div>
-                    <h2 className="text-lg font-black text-gray-800 tracking-tight uppercase">Helpdesk Threads</h2>
+                    <h2 className="text-lg font-black text-gray-800 tracking-tight uppercase">Threads</h2>
                 </div>
                 <div className="flex flex-wrap items-center gap-3">
                     <div className="relative group">

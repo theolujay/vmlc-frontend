@@ -1,18 +1,17 @@
-# API Schema: Stats Overview
+# API Schema: Statistics & Summaries
 
-Endpoint: `GET /stats/overview/`
+This document outlines the schemas for endpoints providing statistical overviews and summarized data.
 
-## Description
-Retrieves overall statistics for candidates, staff, exams, active competitions, helpdesk threads, registration funnels, and geographic distribution. This endpoint is restricted to users with `moderator` roles or higher (Active Volunteers).
+---
 
-## Authentication
-Requires a valid JWT token.
-Permission: `ActiveVolunteerPermissions`
+## 1. Overall Statistics
+**Endpoint:** `GET /stats/overview/`
 
-## Response Schema
+### Description
+Retrieves system-wide statistics for candidates, staff, exams, competitions, helpdesk, and geographic distribution.
+**Permission:** `ActiveVolunteerPermissions` (Moderator+)
 
-The response is a JSON object with the following structure:
-
+### Response Schema
 ```json
 {
   "candidates": {
@@ -63,87 +62,68 @@ The response is a JSON object with the following structure:
     "public_requests": "number"
   },
   "funnel": {
-    "overall": {
-      "pre_registrations": "number",
-      "completed_registrations": "number",
-      "conversion_percentage": "float"
-    },
-    "candidate": {
-      "pre_registrations": "number",
-      "completed_registrations": "number",
-      "conversion_percentage": "float"
-    },
-    "volunteer": {
-      "pre_registrations": "number",
-      "completed_registrations": "number",
-      "conversion_percentage": "float"
-    }
+    "overall": { "pre_registrations": "number", "completed_registrations": "number", "conversion_percentage": "float" },
+    "candidate": { "pre_registrations": "number", "completed_registrations": "number", "conversion_percentage": "float" },
+    "volunteer": { "pre_registrations": "number", "completed_registrations": "number", "conversion_percentage": "float" }
   },
   "geographics": {
-    "overall": [
-      {
-        "state": "string",
-        "count": "number"
-      }
-    ],
-    "candidate": [
-      {
-        "state": "string",
-        "count": "number"
-      }
-    ],
-    "volunteer": [
-      {
-        "state": "string",
-        "count": "number"
-      }
-    ]
+    "overall": [{ "state": "string", "count": "number" }],
+    "candidate": [{ "state": "string", "count": "number" }],
+    "volunteer": [{ "state": "string", "count": "number" }]
   }
 }
 ```
 
-### Detailed Field Descriptions
+---
 
-#### `candidates` & `staff`
-- `registered`: Total number of fully registered users.
-- `active`: Users who logged in within the last 7 days. For candidates, they must also have participated in the last concluded exam.
-- `inactive`: Registered users who are neither active nor deactivated.
-- `has_logged_in`: Number of users who have logged in at least once.
-- `pre_registered`: Users in the `PreRegUser` model who haven't completed registration.
-- `deactivated`: Users with `is_active=False`.
-- `both_entities`: Users who exist in both the `PreRegUser` model and as fully registered users.
+## 2. Staff Helpdesk Thread List
+**Endpoint:** `GET /staff/helpdesk/threads/`
 
-#### `exams`
-- `total`: Total number of exams in the system.
-- `active`: Exams where `is_active=True`.
-- `ongoing`: Active exams currently within their scheduled time and duration.
-- `upcoming`: Active exams scheduled for the future.
-- `concluded`: Active exams whose duration has passed.
-- `drafts`: Exams with no `scheduled_date`.
+### Description
+Retrieves a paginated list of all helpdesk threads for staff, including a real-time summary of helpdesk statistics.
+**Permission:** `ActiveModeratorPermissions` (Moderator+)
 
-#### `competition`
-- `active_competition`: Name of the currently active competition.
-- `active_competition_id`: ID of the active competition.
-- `stages`: List of stages within the competition.
-    - `id`: Unique identifier for the stage.
-    - `name`: Display name of the stage (prefix removed).
-    - `type`: Type of stage (e.g., `LEAGUE`, `KNOCKOUT`).
-    - `rounds`: (Only for `LEAGUE` type) List of active round numbers.
+### Response Schema
+```json
+{
+  "count": "number",
+  "next": "string or null",
+  "previous": "string or null",
+  "helpdesk_summary_data": {
+    "total_threads": "number",
+    "open_threads": "number",
+    "in_progress_threads": "number",
+    "resolved_threads": "number",
+    "unassigned_threads": "number",
+    "unread_messages": "number",
+    "public_requests": "number"
+  },
+  "results": [
+    {
+      "id": "uuid",
+      "candidate_email": "string",
+      "candidate_name": "string",
+      "assigned_staff": "uuid or null",
+      "assigned_staff_name": "string or null",
+      "status": "string",
+      "priority": "string",
+      "last_message_at": "iso-datetime",
+      "unread_by_staff_count": "number",
+      "candidate_last_msg_preview": "string",
+      "is_online": "boolean",
+      "created_at": "iso-datetime"
+    }
+  ]
+}
+```
 
-#### `helpdesk`
-- `total_threads`: Total number of helpdesk threads.
-- `open_threads`: Threads with `OPEN` status.
-- `in_progress_threads`: Threads with `IN_PROGRESS` status.
-- `resolved_threads`: Threads with `RESOLVED` status.
-- `unassigned_threads`: Threads without an assigned staff member.
-- `unread_messages`: Count of unread messages from candidates.
-- `public_requests`: Total number of public support requests.
+### Detailed Field Descriptions (Helpdesk List)
 
-#### `funnel`
-Registration conversion metrics derived from event logs.
-- `pre_registrations`: Number of pre-registration events.
-- `completed_registrations`: Number of successful conversion events.
-- `conversion_percentage`: Percentage of pre-registrations that became full registrations.
+#### `helpdesk_summary_data`
+- Same structure as the `helpdesk` field in `/stats/overview/`. Provides instant context for the support desk workload.
 
-#### `geographics`
-Breakdown of user counts by state for `overall`, `candidate`, and `volunteer` categories.
+#### `results` (Thread Object)
+- `unread_by_staff_count`: Count of messages sent by the candidate that have not yet been read by any staff member.
+- `candidate_last_msg_preview`: A 100-character snippet of the latest message from the candidate.
+- `is_online`: Boolean indicating if the candidate is currently active/online (via Redis cache).
+- `assigned_staff_name`: Display name of the staff member currently assigned to the thread.

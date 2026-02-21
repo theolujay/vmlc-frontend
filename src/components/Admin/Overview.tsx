@@ -72,18 +72,23 @@ const tabs: TabType[] = [
 import { useEffect, useState, useMemo } from 'react'
 import useGetRegistrationStatus from '@/hooks/useGetRegistrationStatus'
 import useGetStatOverview from '@/hooks/useGetStatOverview'
+import useListHelpdeskThreads from '@/hooks/useListHelpdeskThreads'
 
 export function OverviewTabs() {
     const { authState } = useAuth()
+    const userRole = authState?.user?.role ?? '';
+    const hasHelpdeskAccess = ['moderator', 'admin', 'manager', 'superadmin'].includes(userRole);
+    
     const { data: registrationStatus } = useGetRegistrationStatus();
     const { data: statOverview } = useGetStatOverview();
+    const { data: helpdeskData } = useListHelpdeskThreads(1, {}, hasHelpdeskAccess);
     const [mounted, setMounted] = useState(false);
 
     useEffect(() => {
         setMounted(true);
     }, []);
 
-    const unreadCount = statOverview?.helpdesk?.unread_messages ?? 0;
+    const unreadCount = helpdeskData?.helpdesk_summary_data?.unread_messages ?? statOverview?.helpdesk?.unread_messages ?? 0;
 
     const dynamicTabs = useMemo(() => {
         return tabs.map(tab => {
