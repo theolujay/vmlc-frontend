@@ -47,11 +47,22 @@ export type CompetitionData = {
   stages: CompetitionStage[];
 };
 
+export type HelpdeskStatData = {
+  total_threads: number;
+  open_threads: number;
+  in_progress_threads: number;
+  resolved_threads: number;
+  unassigned_threads: number;
+  unread_messages: number;
+  public_requests: number;
+};
+
 export type StatOverviewType = {
   candidates: OverviewType;
   staff: OverviewType;
   exams: ExamOverviewType;
   competition: CompetitionData;
+  helpdesk: HelpdeskStatData;
   funnel: {
     overall: FunnelData;
     candidate: FunnelData;

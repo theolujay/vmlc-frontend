@@ -17,6 +17,7 @@ import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
 import Spinner from '@/components/ui/spinner/spinner';
 import CustomTable from '@/components/ui/CustomTable';
 import React from 'react';
+import { HelpdeskStatData } from '@/types/UserMgtType';
 
 export default function HelpdeskSection() {
     const searchParams = useSearchParams();
@@ -32,7 +33,11 @@ export default function HelpdeskSection() {
     return (
         <div className="flex flex-col gap-1 font-sans h-full">
             <AdminHeader label="Helpdesk Thread" actionButton={undefined} />
-            <div className="flex flex-col gap-3 sm:gap-4 mt-3 w-full sm:w-[96%] px-2 sm:px-0 sm:mx-auto flex-1">
+            <div className="flex flex-col gap-3 sm:gap-4 mt-3 w-full sm:w-[96%] px-2 sm:px-0 sm:mx-auto flex-1 pb-10">
+                {view !== 'conversation-details' && data?.helpdesk_summary_data && (
+                    <HelpdeskStats stats={data.helpdesk_summary_data} />
+                )}
+
                 {view === 'conversation-details' && threadId ? ( // Conditionally render if threadId exists
                     <HelpdeskThreadDetails id={threadId} />
                 ) : loading && !data ? (
@@ -56,6 +61,67 @@ export default function HelpdeskSection() {
         </div>
     );
 }
+
+function HelpdeskStats({ stats }: { stats: HelpdeskStatData }) {
+    return (
+        <ResponsiveContainer className="flex gap-4 py-8 px-8 flex-col w-full font-sans bg-white border border-gray-100 rounded-[2rem] shadow-sm overflow-hidden mb-4">
+            <div className="flex items-center gap-2 mb-2">
+                <div className="w-1.5 h-6 bg-[#3E4095] rounded-full"></div>
+                <h2 className="text-lg font-black text-gray-800 tracking-tight uppercase">Overview</h2>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div className="flex flex-col p-5 bg-blue-50/30 rounded-2xl border border-blue-100/50">
+                    <span className="text-[10px] font-black text-blue-400 uppercase tracking-widest mb-1">Total Threads</span>
+                    <span className="text-3xl font-black text-[#3E4095]">{stats.total_threads}</span>
+                    <div className="mt-2 flex items-center gap-2">
+                        <span className="text-[10px] font-bold text-gray-400 uppercase tracking-tight">Public Requests:</span>
+                        <span className="text-xs font-black text-blue-600">{stats.public_requests}</span>
+                    </div>
+                </div>
+
+                <div className="flex flex-col p-5 bg-amber-50/30 rounded-2xl border border-amber-100/50">
+                    <span className="text-[10px] font-black text-amber-500 uppercase tracking-widest mb-1">Active Support</span>
+                    <div className="flex items-end gap-3">
+                        <div className="flex flex-col">
+                            <span className="text-2xl font-black text-amber-700">{stats.open_threads}</span>
+                            <span className="text-[9px] font-bold text-amber-600/70 uppercase">Open</span>
+                        </div>
+                        <div className="w-px h-8 bg-amber-200/50 mb-1"></div>
+                        <div className="flex flex-col">
+                            <span className="text-2xl font-black text-amber-700">{stats.in_progress_threads}</span>
+                            <span className="text-[9px] font-bold text-amber-600/70 uppercase">In Progress</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div className="flex flex-col p-5 bg-emerald-50/30 rounded-2xl border border-emerald-100/50">
+                    <span className="text-[10px] font-black text-emerald-500 uppercase tracking-widest mb-1">Efficiency</span>
+                    <div className="flex items-end gap-3">
+                        <div className="flex flex-col">
+                            <span className="text-2xl font-black text-emerald-700">{stats.resolved_threads}</span>
+                            <span className="text-[9px] font-bold text-emerald-600/70 uppercase">Resolved</span>
+                        </div>
+                        <div className="w-px h-8 bg-emerald-200/50 mb-1"></div>
+                        <div className="flex flex-col">
+                            <span className="text-2xl font-black text-red-700">{stats.unassigned_threads}</span>
+                            <span className="text-[9px] font-bold text-red-600/70 uppercase font-black">Unassigned</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div className="flex flex-col p-5 bg-red-50 rounded-2xl border border-red-100 shadow-sm shadow-red-500/5 relative overflow-hidden group">
+                    <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:scale-110 transition-transform">
+                        <i className="fas fa-envelope-open-text text-4xl text-red-600"></i>
+                    </div>
+                    <span className="text-[10px] font-black text-red-400 uppercase tracking-widest mb-1">Attention Required</span>
+                    <span className="text-3xl font-black text-red-600">{stats.unread_messages}</span>
+                    <p className="mt-1 text-[10px] font-bold text-red-400 uppercase tracking-tight">Unread messages from candidates</p>
+                </div>
+            </div>
+        </ResponsiveContainer>
+    );
+}
+
 
 
 
@@ -101,7 +167,7 @@ function ConversationListCard({
              <div className="flex flex-col md:flex-row md:items-center justify-between px-8 gap-4 mb-2">
                 <div className="flex gap-2.5 items-center">
                     <div className="w-1.5 h-6 bg-[#3E4095] rounded-full"></div>
-                    <h2 className="text-lg font-black text-gray-800 tracking-tight uppercase">Helpdesk Threads</h2>
+                    <h2 className="text-lg font-black text-gray-800 tracking-tight uppercase">Threads</h2>
                 </div>
                 <div className="flex flex-wrap items-center gap-3">
                     <div className="relative group">
