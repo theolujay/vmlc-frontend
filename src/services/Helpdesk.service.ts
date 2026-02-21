@@ -1,12 +1,12 @@
-import { HelpdeskUrls } from "@/constants/supportUrls";
-import { SendMessagePayload, SupportThreadListResponse, SupportThreadType, SupportMessageType } from "@/types/SupportType";
+import { HelpdeskUrls } from "@/constants/helpdeskUrls";
+import { SendMessagePayload, HelpdeskThreadListResponse, HelpdeskThreadType, HelpdeskMessageType } from "@/types/HelpdeskType";
 import client from "@/utils/axios";
 
 export class HelpdeskService {
     /**
-     * Get or create a support thread for the candidate.
+     * Get or create a helpdesk thread for the candidate.
      */
-    static async getOrCreateThread(): Promise<SupportThreadType> {
+    static async getOrCreateThread(): Promise<HelpdeskThreadType> {
         try {
             const response = await client.get(HelpdeskUrls.getOrCreateThread);
             return response.data;
@@ -17,9 +17,9 @@ export class HelpdeskService {
     }
 
     /**
-     * Post a message to a support thread.
+     * Post a message to a helpdesk thread.
      */
-    static async postMessage(payload: SendMessagePayload): Promise<SupportMessageType> {
+    static async postMessage(payload: SendMessagePayload): Promise<HelpdeskMessageType> {
         try {
             const response = await client.post(HelpdeskUrls.postMessage(payload.thread_id), {
                 text: payload.text,
@@ -33,9 +33,9 @@ export class HelpdeskService {
     }
 
     /**
-     * List all support threads for staff.
+     * List all helpdesk threads for staff.
      */
-    static async listThreads(page?: number, filters?: Record<string, string>): Promise<SupportThreadListResponse> {
+    static async listThreads(page?: number, filters?: Record<string, string>): Promise<HelpdeskThreadListResponse> {
         try {
             const params: Record<string, string> = {};
             if (page) params.page = page.toString();
@@ -56,9 +56,9 @@ export class HelpdeskService {
     }
 
     /**
-     * Get details for a specific support thread (Staff).
+     * Get details for a specific helpdesk thread (Staff).
      */
-    static async getThreadDetail(threadId: string): Promise<SupportThreadType> {
+    static async getThreadDetail(threadId: string): Promise<HelpdeskThreadType> {
         try {
             const response = await client.get(HelpdeskUrls.getThreadDetail(threadId));
             return response.data;

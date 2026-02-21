@@ -1,8 +1,9 @@
 "use client";
 import { useSearchParams } from "next/navigation";
-import SupportSection from "./SupportSection";
+import HelpdeskSection from "./HelpdeskSection";
+import HelpdeskThreadDetails from "./HelpdeskThreadDetails";
 
-export default function SupportSectionWrapper() {
+export default function HelpdeskSectionWrapper() {
   const searchParams = useSearchParams();
   const currentView = searchParams.get("view");
   const id = searchParams.get("id");
@@ -12,9 +13,9 @@ export default function SupportSectionWrapper() {
 
 function renderComponent(view: string | null, id: string | null) {
   switch (view) {
-    // case "conversation-details":
-      // return <ConversationDetails id={id!} />; // To be implemented
+    case "conversation-details":
+      return <HelpdeskThreadDetails id={id!} />;
     default:
-      return <SupportSection />;
+      return <HelpdeskSection />;
   }
 }

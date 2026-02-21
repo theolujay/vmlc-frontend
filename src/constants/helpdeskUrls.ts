@@ -8,5 +8,5 @@ export const HelpdeskUrls = {
     getThreadDetail: (threadId: string) => `/v1/staff/helpdesk/threads/${threadId}/`,
 
     // WebSocket
-    supportSocket: (threadId: string) => `/v1/ws/helpdesk/thread/${threadId}/`
+    helpdeskSocket: (threadId: string) => `/v1/ws/helpdesk/thread/${threadId}/`
 }

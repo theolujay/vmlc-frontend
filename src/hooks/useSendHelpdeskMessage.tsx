@@ -1,15 +1,15 @@
-import { HelpdeskService } from "@/services/Support.service";
-import { SendMessagePayload, SupportMessageType } from "@/types/SupportType";
+import { HelpdeskService } from "@/services/Helpdesk.service";
+import { SendMessagePayload, HelpdeskMessageType } from "@/types/HelpdeskType";
 import { useState } from "react";
 
 /**
- * Hook to send a message to a support thread.
+ * Hook to send a message to a helpdesk thread.
  */
-export default function useSendSupportMessage() {
+export default function useSendHelpdeskMessage() {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
-    const sendMessage = async (payload: SendMessagePayload): Promise<SupportMessageType | null> => {
+    const sendMessage = async (payload: SendMessagePayload): Promise<HelpdeskMessageType | null> => {
         setLoading(true);
         setError(null);
         try {

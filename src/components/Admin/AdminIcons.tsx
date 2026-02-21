@@ -6,7 +6,7 @@ export function CompetitionIcon(props: Readonly<React.SVGProps<SVGSVGElement>>) 
     </svg>
 }
 
-export function SupportIcon(props: Readonly<React.SVGProps<SVGSVGElement>>) {
+export function HelpdeskIcon(props: Readonly<React.SVGProps<SVGSVGElement>>) {
     return <svg {...props} className={`stroke-current ${props.className}`} width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path d="M17 14V5C17 3.34315 15.6569 2 14 2H6C4.34315 2 3 3.34315 3 5V18L7 14H14C15.6569 14 17 12.6569 17 11Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
         <path d="M7 7H13M7 10H10" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />

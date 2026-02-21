@@ -148,8 +148,7 @@ export default function Register() {
           </div>
         </div>
       ) : (
-        <RegistrationClosed mail={isRegistrationAvailable?.support_email} profile_type="candidate" />
-      )}
+                 <RegistrationClosed mail={isRegistrationAvailable?.helpdesk_email} profile_type="candidate" />      )}
     </AuthLayout>
   )
 }

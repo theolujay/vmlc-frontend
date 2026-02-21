@@ -139,5 +139,5 @@ export type RegisterStaffRequestValueType={
 export type RegAvailableType = {
     is_candidate_reg_open:boolean,
     is_staff_reg_open:boolean,
-    support_email: string
+    helpdesk_email: string
 }

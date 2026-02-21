@@ -124,8 +124,7 @@ export default function RegisterStaff() {
           </div>
         </div>
       ) : (
-        <RegistrationClosed mail={isRegistrationAvailable?.support_email} profile_type="volunteer" />
-      )}
+                 <RegistrationClosed mail={isRegistrationAvailable?.helpdesk_email} profile_type="volunteer" />      )}
     </AuthLayout>
   )
 }

@@ -109,7 +109,7 @@ export type RegistrationStatusType = {
     is_open: boolean;
     closing_date: string | null;
   };
-  support_email: string;
+  helpdesk_email: string;
 };
 
 

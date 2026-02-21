@@ -1,11 +1,11 @@
 import { useEffect, useRef, useState } from 'react';
-import { SupportSocketEvent, SupportMessageType } from '@/types/SupportType';
+import { HelpdeskSocketEvent, HelpdeskMessageType } from '@/types/HelpdeskType';
 import config from '../../config';
 
 /**
- * Hook to manage WebSocket connection for a support thread.
+ * Hook to manage WebSocket connection for a helpdesk thread.
  */
-export default function useSupportSocket(threadId: string | null, onMessageReceived: (message: SupportMessageType) => void) {
+export default function useHelpdeskSocket(threadId: string | null, onMessageReceived: (message: HelpdeskMessageType) => void) {
     const socketRef = useRef<WebSocket | null>(null);
     const onMessageReceivedRef = useRef(onMessageReceived);
     const [isTyping, setIsTyping] = useState<Record<string, boolean>>({});
@@ -31,7 +31,7 @@ export default function useSupportSocket(threadId: string | null, onMessageRecei
             }
             if (socketRef.current) {
                 if (socketRef.current.readyState === WebSocket.OPEN || socketRef.current.readyState === WebSocket.CONNECTING) {
-                    console.log('Closing Support WebSocket during cleanup');
+                    console.log('Closing Helpdesk WebSocket during cleanup');
                     socketRef.current.close();
                 }
                 socketRef.current = null;
@@ -50,18 +50,18 @@ export default function useSupportSocket(threadId: string | null, onMessageRecei
             
             const fullWsUrl = `${wsUrl}/v1/ws/helpdesk/thread/${threadId}/?api_key=${config.API_KEY}&token=${token}`;
 
-            console.log(`Connecting to Support WebSocket: ${fullWsUrl}`);
+            console.log(`Connecting to Helpdesk WebSocket: ${fullWsUrl}`);
             const socket = new WebSocket(fullWsUrl);
             socketRef.current = socket;
 
             socket.onopen = () => {
-                console.log('Support WebSocket connected');
+                console.log('Helpdesk WebSocket connected');
                 setConnected(true);
             };
 
             socket.onmessage = (event) => {
                 try {
-                    const data: SupportSocketEvent = JSON.parse(event.data);
+                    const data: HelpdeskSocketEvent = JSON.parse(event.data);
                     if (data.type === 'chat.message' && data.message) {
                         onMessageReceivedRef.current(data.message);
                     } else if (data.type === 'chat.typing') {
@@ -73,12 +73,12 @@ export default function useSupportSocket(threadId: string | null, onMessageRecei
                         }
                     }
                 } catch (error) {
-                    console.error('Error parsing support socket message:', error);
+                    console.error('Error parsing helpdesk socket message:', error);
                 }
             };
 
             socket.onclose = (event) => {
-                console.log('Support WebSocket disconnected', event.code, event.reason);
+                console.log('Helpdesk WebSocket disconnected', event.code, event.reason);
                 setConnected(false);
                 // Only clear socketRef if it's still this socket
                 if (socketRef.current === socket) {
@@ -87,7 +87,7 @@ export default function useSupportSocket(threadId: string | null, onMessageRecei
             };
 
             socket.onerror = (error) => {
-                console.error('Support WebSocket error:', error);
+                console.error('Helpdesk WebSocket error:', error);
                 setConnected(false);
             };
         }, 100); // 100ms delay
