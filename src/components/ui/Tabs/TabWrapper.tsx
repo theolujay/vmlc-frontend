@@ -35,7 +35,7 @@ export default function TabWrapper({
       onValueChange={handleTabChange}
       value={activeTab}
       defaultValue={defaultValue ?? tabs[0]?.value}
-      className="flex flex-col"
+      className="flex flex-col h-full"
     >
       <Tabs.List className={tabListClassName}>
         {tabs.map((tab, index) => (
@@ -50,15 +50,17 @@ export default function TabWrapper({
         ))}
       </Tabs.List>
 
-      {tabs.map((tab, index) => (
-        <Tabs.Content
-          key={`tab-content-${index}`}
-          value={tab.value}
-          className=""
-        >
-          {tab.content}
-        </Tabs.Content>
-      ))}
+      <div className="flex-1 overflow-hidden">
+        {tabs.map((tab, index) => (
+          <Tabs.Content
+            key={`tab-content-${index}`}
+            value={tab.value}
+            className="h-full overflow-y-auto"
+          >
+            {tab.content}
+          </Tabs.Content>
+        ))}
+      </div>
     </Tabs.Root>
   )
 }

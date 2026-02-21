@@ -112,7 +112,7 @@ export function OverviewTabs() {
 
     return (
         <AdminLayout>
-            {mounted && <TabWrapper tabListClassName='flex overflow-y-auto border-b border-gray-300 gap-2 bg-white px-6 font-sans' tabs={userTabs} />}
+            {mounted && <TabWrapper tabListClassName='sticky top-0 z-30 flex overflow-x-auto border-b border-gray-300 gap-2 bg-white px-6 font-sans' tabs={userTabs} />}
         </AdminLayout>
     )
 }

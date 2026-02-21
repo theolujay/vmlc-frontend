@@ -5,6 +5,7 @@ import useHelpdeskSocket from '@/hooks/useHelpdeskSocket';
 import { HelpdeskMessageType } from '@/types/HelpdeskType';
 import Image from "next/image";
 import { useExamContext } from '@/contexts/ExamNavigationProvider';
+import { formatTextWithLinks } from '@/utils/formatTextWithLinks';
 
 interface HelpdeskThreadProps {
   currentStage: string;
@@ -148,7 +149,25 @@ const HelpdeskThread: React.FC<HelpdeskThreadProps> = ({ currentStage, onClose, 
                           ? 'bg-gray-100 text-[#475367] border border-[#E4E7EC] rounded-tl-none italic'
                           : 'bg-white text-[#475367] border border-[#E4E7EC] rounded-tl-none'
                     }`}>
-                        <p>{msg.text}</p>
+                        <p>
+                            {formatTextWithLinks(msg.text).map((node, i) => {
+                                if (typeof node === 'string') {
+                                    return <React.Fragment key={i}>{node}</React.Fragment>;
+                                } else {
+                                    return (
+                                        <a
+                                            key={i}
+                                            href={node.href}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="text-cyan-500 hover:underline break-all"
+                                        >
+                                            {node.text}
+                                        </a>
+                                    );
+                                }
+                            })}
+                        </p>
                     </div>
                     <p className="text-[9px] font-bold text-[#98A2B3] mt-1 uppercase mx-1">
                         {isCandidate ? 'You' : msg.sender_name} • {new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
