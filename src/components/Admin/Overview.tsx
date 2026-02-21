@@ -69,7 +69,7 @@ const tabs: TabType[] = [
 
 
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useMemo } from 'react'
 import useGetRegistrationStatus from '@/hooks/useGetRegistrationStatus'
 import useGetStatOverview from '@/hooks/useGetStatOverview'
 
@@ -83,7 +83,27 @@ export function OverviewTabs() {
         setMounted(true);
     }, []);
 
+    const unreadCount = statOverview?.helpdesk?.unread_messages ?? 0;
+
+    const dynamicTabs = useMemo(() => {
+        return tabs.map(tab => {
+            if (tab.value === 'helpdesk') {
+                return {
+                    ...tab,
+                    label: <HelpdeskLabel unreadCount={unreadCount} />
+                };
+            }
+            return tab;
+        });
+    }, [unreadCount]);
+
     let userTabs = getTabsForRole(authState?.user?.role ?? '')
+    
+    // Re-map userTabs to include the dynamic HelpdeskLabel with unreadCount
+    userTabs = userTabs.map(userTab => {
+        const dynamicTab = dynamicTabs.find(t => t.value === userTab.value);
+        return dynamicTab ?? userTab;
+    });
 
     const hasOngoingExams = (statOverview?.exams?.ongoing ?? 0) > 0;
     const isRegistrationOpen = registrationStatus?.candidate_registration?.is_open === true;
@@ -141,6 +161,19 @@ function BroadcastsLabel() {
     return <div className='flex gap-1 items-center'><span><BroadcastIcon /></span><span>Broadcasts</span></div>
 }
 
-function HelpdeskLabel() {
-    return <div className='flex gap-1 items-center'><span><HelpdeskIcon /></span><span>Helpdesk</span></div>
+function HelpdeskLabel({ unreadCount }: { unreadCount?: number }) {
+    return (
+        <div className='flex gap-2 items-center'>
+            <div className="relative">
+                <HelpdeskIcon />
+                {unreadCount && unreadCount > 0 ? (
+                    <span className="absolute -top-1.5 -right-1.5 flex h-4 min-w-[16px] px-1 items-center justify-center rounded-full bg-red-500 text-[9px] font-black text-white border-2 border-white">
+                        {unreadCount > 99 ? '99+' : unreadCount}
+                    </span>
+                ) : null}
+            </div>
+            <span>Helpdesk</span>
+        </div>
+    );
 }
+
