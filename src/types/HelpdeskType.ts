@@ -1,4 +1,4 @@
-export interface SupportMessageType {
+export interface HelpdeskMessageType {
     id: number | string;
     sender: string | null;
     sender_name: string;
@@ -9,7 +9,7 @@ export interface SupportMessageType {
     created_at: string;
 }
 
-export interface SupportThreadType {
+export interface HelpdeskThreadType {
     id: string;
     candidate_name: string;
     candidate_email: string;
@@ -20,7 +20,7 @@ export interface SupportThreadType {
     status: 'open' | 'in_progress' | 'resolved' | 'closed';
     priority: 'low' | 'medium' | 'high' | 'urgent';
     last_message_at: string;
-    messages?: SupportMessageType[];
+    messages?: HelpdeskMessageType[];
     created_at: string;
     updated_at: string;
     unread_by_staff_count?: number;
@@ -28,7 +28,7 @@ export interface SupportThreadType {
     is_online?: boolean;
 }
 
-export interface SupportThreadListResponse {
+export interface HelpdeskThreadListResponse {
     count: number;
     total_pages: number;
     previous: string | null;
@@ -37,7 +37,7 @@ export interface SupportThreadListResponse {
     has_next: boolean;
     page_size: number;
     page: number;
-    results: SupportThreadType[];
+    results: HelpdeskThreadType[];
 }
 
 export interface SendMessagePayload {
@@ -46,9 +46,9 @@ export interface SendMessagePayload {
     metadata?: Record<string, unknown>;
 }
 
-export interface SupportSocketEvent {
+export interface HelpdeskSocketEvent {
     type: 'chat.message' | 'chat.typing';
-    message?: SupportMessageType;
+    message?: HelpdeskMessageType;
     user_id?: string;
     is_typing?: boolean;
 }

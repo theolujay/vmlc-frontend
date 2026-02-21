@@ -3,13 +3,13 @@ import { useAuth } from '@/contexts/AuthProvider'
 import withAuthentication from '@/hocs/withAuthentication'
 import {  TabType } from '@/types/TabType'
 import TabWrapper from '../ui/Tabs/TabWrapper'
-import { BroadcastIcon, ExamSystemIcon, OverviewIcon, SupportIcon, UserManagementIcon, CompetitionIcon } from './AdminIcons'
+import { BroadcastIcon, ExamSystemIcon, OverviewIcon, HelpdeskIcon, UserManagementIcon, CompetitionIcon } from './AdminIcons'
 import AdminLayout from './AdminLayout'
 import Broadcast from './Broadcast/Broadcast'
 import ExamSectionWrapper from './ExamSystem/ExamSectionWrapper'
 import OverviewSectionWrapper from './OverviewSection/OverviewSectionWrapper'
 import StaffMgtWrapper from './UserManagement/StaffMgtWrapper'
-import SupportSectionWrapper from './Support/SupportSectionWrapper'
+import HelpdeskSectionWrapper from './Helpdesk/HelpdeskSectionWrapper'
 import CompetitionWrapper from './Competition/CompetitionWrapper'
 
 
@@ -45,9 +45,9 @@ const tabs: TabType[] = [
         content: <CompetitionWrapper />
     },
     {
-        value: 'support',
+        value: 'helpdesk',
         label: <HelpdeskLabel />,
-        content: <SupportSectionWrapper />
+        content: <HelpdeskSectionWrapper />
     },
     {
         value: 'exams-questions',
@@ -90,9 +90,9 @@ export function OverviewTabs() {
 
     if (hasOngoingExams) {
         // Helpdesk first if exam ongoing, Registration last
-        const helpdeskTab = userTabs.find(tab => tab.value === 'support');
+        const helpdeskTab = userTabs.find(tab => tab.value === 'helpdesk');
         const registrationTab = userTabs.find(tab => tab.value === 'registration');
-        const others = userTabs.filter(tab => tab.value !== 'support' && tab.value !== 'registration');
+        const others = userTabs.filter(tab => tab.value !== 'helpdesk' && tab.value !== 'registration');
 
         userTabs = [];
         if (helpdeskTab) userTabs.push(helpdeskTab);
@@ -142,5 +142,5 @@ function BroadcastsLabel() {
 }
 
 function HelpdeskLabel() {
-    return <div className='flex gap-1 items-center'><span><SupportIcon /></span><span>Helpdesk</span></div>
+    return <div className='flex gap-1 items-center'><span><HelpdeskIcon /></span><span>Helpdesk</span></div>
 }

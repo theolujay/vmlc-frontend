@@ -3,38 +3,36 @@ import React from 'react';
 import Button from '@/components/ui/Button';
 import ResponsiveContainer from '@/components/ui/ResponsiveContainer';
 import { useAuth } from '@/contexts/AuthProvider';
-import useGetSupportThreadDetail from '@/hooks/useGetSupportThreadDetail';
-import useSendSupportMessage from '@/hooks/useSendSupportMessage';
-import useSupportSocket from '@/hooks/useSupportSocket';
-import { SupportMessageType, SupportThreadType } from '@/types/SupportType';
+import useGetHelpdeskThreadDetail from '@/hooks/useGetHelpdeskThreadDetail';
+import useSendHelpdeskMessage from '@/hooks/useSendHelpdeskMessage';
+import useHelpdeskSocket from '@/hooks/useHelpdeskSocket';
+import { HelpdeskMessageType, HelpdeskThreadType } from '@/types/HelpdeskType';
 import { formatDateTime } from '@/utils/formatFileSize';
 import { formatWhatsAppLink } from '@/utils/generalUtils';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useRouter } from 'next/navigation';
 import { useEffect, useRef, useState, useCallback } from 'react';
 import Image from 'next/image';
 import Drawer from '@/components/ui/Drawer/Drawer';
 import clsx from 'clsx';
 
-export default function ConversationDetails() {
+export default function HelpdeskThreadDetails({id}:{id:string}) {
     const router = useRouter();
-    const searchParams = useSearchParams();
-    const threadId = searchParams.get('id');
     const { authState } = useAuth();
-    const { thread, messages, loading: messagesLoading, setMessages } = useGetSupportThreadDetail(threadId);
-    const { sendMessage, loading: sendingLoading } = useSendSupportMessage();
+    const { thread, messages, loading: messagesLoading, setMessages } = useGetHelpdeskThreadDetail(id);
+    const { sendMessage, loading: sendingLoading } = useSendHelpdeskMessage();
     const [newMessage, setNewMessage] = useState('');
     const [isDetailsOpen, setIsDetailsOpen] = useState(false);
     const bottomRef = useRef<HTMLDivElement>(null);
 
-    const onMessageReceived = useCallback((newMsg: SupportMessageType) => {
+    const onMessageReceived = useCallback((newMsg: HelpdeskMessageType) => {
         setMessages((prev) => {
             if (prev.some((m) => m.id === newMsg.id)) return prev;
             return [...prev, newMsg];
         });
     }, [setMessages]);
 
-    const { connected, isTyping, sendTypingStatus } = useSupportSocket(
-        threadId,
+    const { connected, isTyping, sendTypingStatus } = useHelpdeskSocket(
+        id,
         onMessageReceived
     );
 
@@ -45,7 +43,7 @@ export default function ConversationDetails() {
     }, [messages]);
 
     const handleSend = async () => {
-        if (!newMessage.trim() || !threadId || !authState?.user) return;
+        if (!newMessage.trim() || !id || !authState?.user) return;
 
         const textToSend = newMessage;
         setNewMessage('');
@@ -53,7 +51,7 @@ export default function ConversationDetails() {
 
         const payload = {
             text: textToSend,
-            thread_id: threadId,
+            thread_id: id,
         };
 
         const sentMessage = await sendMessage(payload);
@@ -79,13 +77,6 @@ export default function ConversationDetails() {
     const handleBack = () => {
         router.back();
     };
-
-    if (!threadId) return (
-        <div className="flex flex-col items-center justify-center h-64 bg-gray-50 rounded-lg border-2 border-dashed border-gray-300">
-            <p className="text-gray-500 text-xs">Invalid Thread ID</p>
-            <button onClick={handleBack} className="mt-2 text-[#3E4095] font-bold underline text-xs">Go Back</button>
-        </div>
-    );
 
     const isCandidateTyping = Object.values(isTyping).some(typing => typing);
 
@@ -276,7 +267,7 @@ export default function ConversationDetails() {
     );
 }
 
-function CandidateDetails({ thread, isDrawer = false }: { thread: SupportThreadType | null, isDrawer?: boolean }) {
+function CandidateDetails({ thread, isDrawer = false }: { thread: HelpdeskThreadType | null, isDrawer?: boolean }) {
     return (
         <ResponsiveContainer className={clsx(
             "bg-white flex flex-col gap-4 p-6",
