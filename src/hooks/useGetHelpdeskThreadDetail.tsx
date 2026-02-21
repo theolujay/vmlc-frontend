@@ -1,13 +1,13 @@
-import { HelpdeskService } from "@/services/Support.service";
-import { SupportThreadType, SupportMessageType } from "@/types/SupportType";
+import { HelpdeskService } from "@/services/Helpdesk.service";
+import { HelpdeskThreadType, HelpdeskMessageType } from "@/types/HelpdeskType";
 import { useEffect, useState } from "react";
 
 /**
- * Hook to get a specific support thread details for staff.
+ * Hook to get a specific helpdesk thread details for staff.
  */
-export default function useGetSupportThreadDetail(threadId: string | null) {
-    const [thread, setThread] = useState<SupportThreadType | null>(null);
-    const [messages, setMessages] = useState<SupportMessageType[]>([]);
+export default function useGetHelpdeskThreadDetail(threadId: string | null) {
+    const [thread, setThread] = useState<HelpdeskThreadType | null>(null);
+    const [messages, setMessages] = useState<HelpdeskMessageType[]>([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
@@ -31,7 +31,7 @@ export default function useGetSupportThreadDetail(threadId: string | null) {
         fetchThreadDetail();
     }, [threadId]);
 
-    const addMessage = (message: SupportMessageType) => {
+    const addMessage = (message: HelpdeskMessageType) => {
         setMessages((prev) => [...prev, message]);
     };
 

@@ -1,9 +1,9 @@
 'use client';
 import TablePagination from '@/components/ui/Pagination/TablePagination';
 import { useDebouncedSearch } from '@/hooks/useDebouncedSearch';
-import useListSupportThreads from '@/hooks/useListSupportThreads';
+import useListHelpdeskThreads from '@/hooks/useListHelpdeskThreads';
 import usePagination from '@/hooks/usePagination';
-import { SupportThreadType } from '@/types/SupportType';
+import { HelpdeskThreadType } from '@/types/HelpdeskType';
 import { formatDateTime } from '@/utils/formatFileSize';
 import Link from 'next/link';
 import { usePathname, useSearchParams } from 'next/navigation';
@@ -11,29 +11,30 @@ import { Dispatch, SetStateAction, useState } from 'react';
 import ResponsiveContainer from '../../ui/ResponsiveContainer';
 import AdminHeader from '../AdminHeader';
 import { FilterIcon, SortIcon } from '../AdminIcons';
-import ConversationDetails from './ConversationDetails';
+import HelpdeskThreadDetails from './HelpdeskThreadDetails';
 import clsx from 'clsx';
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
 import Spinner from '@/components/ui/spinner/spinner';
 import CustomTable from '@/components/ui/CustomTable';
 import React from 'react';
 
-export default function SupportSection() {
+export default function HelpdeskSection() {
     const searchParams = useSearchParams();
     const view = searchParams.get('view');
+    const threadId = searchParams.get('id'); // Extract the ID from search params
     const { page, setPage } = usePagination();
     const [filters, setFilters] = useState<Record<string, string>>({
         search: '',
     });
 
-    const { data, loading } = useListSupportThreads(page, filters);
+    const { data, loading } = useListHelpdeskThreads(page, filters);
 
     return (
         <div className="flex flex-col gap-1 font-sans">
             <AdminHeader label="Helpdesk Thread" actionButton={undefined} />
             <div className="flex flex-col gap-3 sm:gap-4 mt-3 w-full sm:w-[96%] px-2 sm:px-0 sm:mx-auto pb-10">
-                {view === 'conversation-details' ? (
-                    <ConversationDetails />
+                {view === 'conversation-details' && threadId ? ( // Conditionally render if threadId exists
+                    <HelpdeskThreadDetails id={threadId} />
                 ) : loading && !data ? (
                     <div className="grid w-full h-[40vh] place-content-center bg-white rounded-[2rem] border border-gray-100 shadow-sm">
                         <Spinner />
@@ -70,7 +71,7 @@ function ConversationListCard({
     hasPrevious,
     pageSize = 20,
 }: Readonly<{
-    data: SupportThreadType[];
+    data: HelpdeskThreadType[];
     handleSearch: Dispatch<SetStateAction<Record<string, string>>>;
     onPageChange: Dispatch<SetStateAction<number>>;
     currentPage: number;

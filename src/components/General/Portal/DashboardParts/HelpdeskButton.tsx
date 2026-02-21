@@ -1,7 +1,7 @@
 "use client"
 import React, { useState, useEffect } from 'react';
 import HelpdeskThread from './HelpdeskThread';
-import useGetSupportThread from '@/hooks/useGetSupportThread';
+import useGetHelpdeskThread from '@/hooks/useGetHelpdeskThread';
 
 interface HelpdeskButtonProps {
     currentStage: string;
@@ -11,7 +11,7 @@ interface HelpdeskButtonProps {
 
 const HelpdeskButton: React.FC<HelpdeskButtonProps> = ({ currentStage, candidateName, exam_id }) => {
     const [isHelpdeskOpen, setIsHelpdeskOpen] = useState(false);
-    const { unreadCount, markAllAsRead } = useGetSupportThread();
+    const { unreadCount, markAllAsRead } = useGetHelpdeskThread();
 
     useEffect(() => {
         if (isHelpdeskOpen) {

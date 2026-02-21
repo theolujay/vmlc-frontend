@@ -1,12 +1,12 @@
-import { HelpdeskService } from "@/services/Support.service";
+import { HelpdeskService } from "@/services/Helpdesk.service";
 import { useQuery } from "@tanstack/react-query";
 
 /**
- * Hook to list support threads for staff with automatic 5-second polling.
+ * Hook to list helpdesk threads for staff with automatic 5-second polling.
  */
-export default function useListSupportThreads(page: number, filters?: Record<string, string>) {
+export default function useListHelpdeskThreads(page: number, filters?: Record<string, string>) {
     const { data, isLoading, error, refetch } = useQuery({
-        queryKey: ['support-threads', page, filters],
+        queryKey: ['helpdesk-threads', page, filters],
         queryFn: () => HelpdeskService.listThreads(page, filters),
         refetchInterval: 5000, // Poll every 5 seconds
         refetchIntervalInBackground: true,

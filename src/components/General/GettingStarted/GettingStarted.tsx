@@ -5,7 +5,7 @@ import withAuthentication from '@/hocs/withAuthentication'
 import PageLayout from '../Layout/PageLayout'
 import Hero from './Hero'
 import InfoBoard from './InfoBoard'
-import Support from './Support'
+import Helpdesk from './Helpdesk'
 import TourGuide from './TourGuide'
 import GenericInfoBoard from '../Portal/DashboardParts/InfoBoard';
 import useGetCurrentUser from '@/hooks/useGetCurrentUser';
@@ -40,7 +40,7 @@ import ProfileModal from '@/components/Modals/ProfileModal';
         <InfoBoard/>
         <div className="flex gap-3 flex-col">
           <TourGuide/>
-          <Support/>
+          <Helpdesk/>
         </div>
       </div>
 

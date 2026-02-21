@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
-import useSendSupportMessage from '@/hooks/useSendSupportMessage';
-import useGetSupportThread from '@/hooks/useGetSupportThread';
-import useSupportSocket from '@/hooks/useSupportSocket';
-import { SupportMessageType } from '@/types/SupportType';
+import useSendHelpdeskMessage from '@/hooks/useSendHelpdeskMessage';
+import useGetHelpdeskThread from '@/hooks/useGetHelpdeskThread';
+import useHelpdeskSocket from '@/hooks/useHelpdeskSocket';
+import { HelpdeskMessageType } from '@/types/HelpdeskType';
 import Image from "next/image";
 import { useExamContext } from '@/contexts/ExamNavigationProvider';
 
@@ -15,8 +15,8 @@ interface HelpdeskThreadProps {
 
 const HelpdeskThread: React.FC<HelpdeskThreadProps> = ({ currentStage, onClose, candidateName, exam_id }) => {
   const [message, setMessage] = useState('');
-  const { thread, messages, loading: loadingMessages, setMessages } = useGetSupportThread();
-  const { sendMessage, loading: sending } = useSendSupportMessage();
+  const { thread, messages, loading: loadingMessages, setMessages } = useGetHelpdeskThread();
+  const { sendMessage, loading: sending } = useSendHelpdeskMessage();
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   // Safely get exam context if available
@@ -28,14 +28,14 @@ const HelpdeskThread: React.FC<HelpdeskThreadProps> = ({ currentStage, onClose, 
     // Not in an exam session, useExamContext will throw an error if called outside of provider
   }
 
-  const onMessageReceived = React.useCallback((newMsg: SupportMessageType) => {
+  const onMessageReceived = React.useCallback((newMsg: HelpdeskMessageType) => {
     setMessages((prev) => {
       if (prev.some((m) => m.id === newMsg.id)) return prev;
       return [...prev, newMsg];
     });
   }, [setMessages]);
 
-  const { connected, isTyping, sendTypingStatus } = useSupportSocket(
+  const { connected, isTyping, sendTypingStatus } = useHelpdeskSocket(
     thread?.id || null,
     onMessageReceived
   );

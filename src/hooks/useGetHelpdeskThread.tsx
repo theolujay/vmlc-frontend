@@ -1,15 +1,15 @@
-import { HelpdeskService } from "@/services/Support.service";
-import { SupportThreadType, SupportMessageType } from "@/types/SupportType";
+import { HelpdeskService } from "@/services/Helpdesk.service";
+import { HelpdeskThreadType, HelpdeskMessageType } from "@/types/HelpdeskType";
 import { useEffect, useState, useCallback } from "react";
-import useSupportSocket from "./useSupportSocket";
+import useHelpdeskSocket from "./useHelpdeskSocket";
 
 /**
- * Hook to get or create a support thread for the candidate.
+ * Hook to get or create a helpdesk thread for the candidate.
  * Includes real-time message updates and unread count tracking.
  */
-export default function useGetSupportThread() {
-    const [thread, setThread] = useState<SupportThreadType | null>(null);
-    const [messages, setMessages] = useState<SupportMessageType[]>([]);
+export default function useGetHelpdeskThread() {
+    const [thread, setThread] = useState<HelpdeskThreadType | null>(null);
+    const [messages, setMessages] = useState<HelpdeskMessageType[]>([]);
     const [unreadCount, setUnreadCount] = useState(0);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -25,7 +25,7 @@ export default function useGetSupportThread() {
                     setMessages(response.messages);
                 }
             } catch (_err) {
-                setError('Failed to fetch support thread');
+                setError('Failed to fetch helpdesk thread');
             } finally {
                 setLoading(false);
             }
@@ -34,7 +34,7 @@ export default function useGetSupportThread() {
         fetchThread();
     }, []);
 
-    const onMessageReceived = useCallback((message: SupportMessageType) => {
+    const onMessageReceived = useCallback((message: HelpdeskMessageType) => {
         setMessages((prev) => {
             if (prev.some((m) => m.id === message.id)) return prev;
             return [...prev, message];
@@ -46,7 +46,7 @@ export default function useGetSupportThread() {
         }
     }, []);
 
-    const { connected } = useSupportSocket(thread?.id || null, onMessageReceived);
+    const { connected } = useHelpdeskSocket(thread?.id || null, onMessageReceived);
 
     const markAllAsRead = () => {
         setUnreadCount(0);
