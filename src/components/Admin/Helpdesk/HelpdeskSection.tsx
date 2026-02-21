@@ -30,9 +30,9 @@ export default function HelpdeskSection() {
     const { data, loading } = useListHelpdeskThreads(page, filters);
 
     return (
-        <div className="flex flex-col gap-1 font-sans">
+        <div className="flex flex-col gap-1 font-sans h-full overflow-hidden">
             <AdminHeader label="Helpdesk Thread" actionButton={undefined} />
-            <div className="flex flex-col gap-3 sm:gap-4 mt-3 w-full sm:w-[96%] px-2 sm:px-0 sm:mx-auto pb-10">
+            <div className="flex flex-col gap-3 sm:gap-4 mt-3 w-full sm:w-[96%] px-2 sm:px-0 sm:mx-auto flex-1 overflow-hidden">
                 {view === 'conversation-details' && threadId ? ( // Conditionally render if threadId exists
                     <HelpdeskThreadDetails id={threadId} />
                 ) : loading && !data ? (

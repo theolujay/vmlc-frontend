@@ -21,7 +21,7 @@ export default function AdminHeader({ actionButton, isExport = false, backUrl }:
         }
     };
 
-    return <div className='flex bg-white px-10 py-3 justify-between items-center border-b border-gray-100 relative z-20'>
+    return <div className='flex bg-white px-10 py-3 justify-between items-center border-b border-gray-100 sticky top-0 z-20'>
         <div className="flex items-center gap-4">
             <button 
                 onClick={handleBack}
