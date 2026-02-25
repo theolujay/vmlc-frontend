@@ -172,6 +172,7 @@ export type UserProfileType = {
   created_at: Date,
   updated_at: Date,
   is_setup_complete: boolean,
+  has_cowrywise_kid_profile: boolean,
 }
 
 export type StaffDetailsType = {
