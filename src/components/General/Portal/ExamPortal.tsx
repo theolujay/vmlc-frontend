@@ -60,8 +60,15 @@ function ExamPortal() {
     : showProfileNotice
       ? { message: "Your profile is incomplete. Please update your profile to ensure you don't miss any important updates.", type: 'info' as const, mode: 'profile' }
       : showCowrywiseNotice
-        ? { message: "Link your Cowrywise Kid profile to be eligible for the League stage.", type: 'info' as const, mode: 'cowrywise' }
+        ? { message: "Finished the Cowrywise Kids game? Link your username to qualify for the League stage. Visit https://kids.cowrywise.com/ if you haven't played yet.", type: 'info' as const, mode: 'cowrywise' }
         : null;
+
+  const handleCountdownEnd = useCallback(() => {
+    // Wait 30 seconds after countdown ends to refetch dashboard
+    setTimeout(() => {
+      refetch();
+    }, 30000);
+  }, [refetch]);
 
   const handleDismissNotification = useCallback(() => {
     if (activeNotifications.length > 0) {
@@ -231,7 +238,7 @@ function ExamPortal() {
                 currentNotification?.mode === 'profile'
                   ? "Update Profile"
                   : currentNotification?.mode === 'cowrywise'
-                  ? "Link Cowrywise Kid Profile"
+                  ? "Link my Cowrywise Kid username"
                   : undefined
               }
               onAction={() => {
@@ -252,7 +259,7 @@ function ExamPortal() {
               exam={currentExam}
               candidateName={candidateName}
               isRankingAvailable={!!activeRanking}
-              onCountdownEnd={refetch}
+              onCountdownEnd={handleCountdownEnd}
             />
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
