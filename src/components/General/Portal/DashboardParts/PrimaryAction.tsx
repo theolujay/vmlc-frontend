@@ -44,7 +44,7 @@ const PrimaryAction: React.FC<PrimaryActionProps> = ({ exam, isRankingAvailable 
     }
 
     const targetDate = new Date(exam.scheduled_date);
-    
+
     const updateTimer = () => {
       const now = new Date();
       const diff = targetDate.getTime() - now.getTime();
@@ -54,9 +54,9 @@ const PrimaryAction: React.FC<PrimaryActionProps> = ({ exam, isRankingAvailable 
         setTimeLeft(null);
         if (onCountdownEnd && hasRefetchedFor.current !== exam.id) {
           hasRefetchedFor.current = exam.id;
-          setTimeout(onCountdownEnd, 2000);
+          setTimeout(onCountdownEnd, 500);
         }
-        return true; 
+        return true;
       }
 
       const days = Math.floor(diff / (1000 * 60 * 60 * 24));
@@ -76,7 +76,7 @@ const PrimaryAction: React.FC<PrimaryActionProps> = ({ exam, isRankingAvailable 
       if (isFinished) {
         clearInterval(timer);
       }
-    }, 1000); 
+    }, 1000);
 
     return () => clearInterval(timer);
   }, [exam, onCountdownEnd]);
@@ -107,11 +107,12 @@ const PrimaryAction: React.FC<PrimaryActionProps> = ({ exam, isRankingAvailable 
   };
 
   const isFinals = exam?.stage?.toLowerCase() === 'final';
-  const hasParticipated = exam?.access_status === 'submitted' || !!exam?.attempt?.submitted_at;
+  const hasSubmitted = exam?.access_status == "submitted";
   const isAwaitingResults = exam?.status === 'awaiting_results' && !isRankingAvailable;
   const isOngoing = exam?.status === 'ongoing';
+  // const isDeadlinePassed = exam?.attempt?.deadline ? new Date(exam.attempt.deadline) <= new Date() : false;
   const isDeadlineActive = exam?.attempt?.deadline ? new Date(exam.attempt.deadline) > new Date() : false;
-  const canEnter = (isOngoing || isDeadlineActive) && !hasParticipated;
+  const canEnter = (isOngoing || isDeadlineActive) && !hasSubmitted && exam?.access_status !== "expired" && exam?.access_status !== "failed"
 
   if (!exam) {
      return (
@@ -141,19 +142,19 @@ const PrimaryAction: React.FC<PrimaryActionProps> = ({ exam, isRankingAvailable 
           {formatExamTitle(exam.title)}
         </h2>
         <p className="text-[#667185] mt-2 text-[11px] italic leading-relaxed">
-          {isFinals 
+          {isFinals
             ? "This is an in-person examination. Please ensure you have reviewed the venue logistics and have your identification ready."
-            : isAwaitingResults 
+            : isAwaitingResults
               ? "Currently processing the results... Please check back soon."
               : (exam.description || "")}
         </p>
-        
+
         <div className="mt-8 space-y-4">
-          {hasParticipated ? (
+          {hasSubmitted || exam.access_status === "expired" ? (
              <div className="p-4 bg-[#3E4095]/2 rounded-xl border border-[#3E4095]/20">
               <p className="text-xs font-bold text-[#3E4095] uppercase">Status</p>
               <p className="text-lg font-bold text-[#3E4095] mt-1">
-                {isAwaitingResults || exam.status === 'results_published' ? 'Exam Concluded' : 'Exam Submitted'}
+                {isAwaitingResults || exam.status === 'results_published' ? 'Concluded' : hasSubmitted ? 'Submitted' : 'Access Expired'}
               </p>
             </div>
           ) : !canEnter ? (
@@ -172,7 +173,7 @@ const PrimaryAction: React.FC<PrimaryActionProps> = ({ exam, isRankingAvailable 
                   </>
                 ) : (
                   <div className="flex items-baseline space-x-1 animate-pulse">
-                    <span className="text-sm font-bold text-[#3E4095]">Processing...</span>
+                    <span className="text-sm font-bold text-[#3E4095]">Please hang on...</span>
                   </div>
                 )}
               </div>
@@ -185,31 +186,30 @@ const PrimaryAction: React.FC<PrimaryActionProps> = ({ exam, isRankingAvailable 
               </p>
             </div>
           )}
-          
-          <button 
-            disabled={!canEnter || isFinals}
-            onClick={handleStartExam}
-            className={`w-full py-4 rounded-xl font-bold transition-all uppercase tracking-wider ${
-              canEnter && !isFinals
-                ? 'bg-[#3E4095] text-white hover:bg-[#4A4DA8] shadow-lg transform hover:scale-[1.02] cursor-pointer' 
-                : 'bg-[#F0F2F5] text-[#98A2B3] cursor-not-allowed'
-            }`}
-          >
-            {isFinals 
-               ? 'View Venue Logistics' 
-               : hasParticipated 
-                 ? 'SUBMITTED' 
-                 : exam.access_status === 'started'
-                   ? 'RESUME EXAM'
-                   : 'START EXAM'}
-          </button>
-          
-          {!canStart && !hasParticipated && !isAwaitingResults && (
+
+                    <button
+                      disabled={!canEnter || isFinals}
+                      onClick={handleStartExam}
+                      className={`w-full py-4 rounded-xl font-bold transition-all uppercase tracking-wider ${
+                        canEnter && !isFinals
+                          ? 'bg-[#3E4095] text-white hover:bg-[#4A4DA8] shadow-lg transform hover:scale-[1.02] cursor-pointer'
+                          : 'bg-[#F0F2F5] text-[#98A2B3] cursor-not-allowed'
+                      }`}
+                    >
+                      {isFinals
+                         ? 'View Venue Logistics'
+                         : hasSubmitted
+                           ? 'SUBMITTED'
+                             : exam.access_status === 'started'
+                               ? 'RESUME EXAM'
+                               : 'START EXAM'}
+                    </button>
+          {!canStart && !hasSubmitted && !isAwaitingResults && (
              <p className="text-xs text-[#98A2B3] italic font-medium">
                 {isFinals ? 'Venue details will be fully accessible when the window opens.' : 'The start button enables when it\'s exam time.'}
              </p>
           )}
-          {hasParticipated && (
+          {hasSubmitted && (
             <p className="text-xs text-[#3E4095] italic font-medium">
                 {isAwaitingResults ? 'Ranking will be published shortly.' : 'You have successfully completed this examination.'}
             </p>

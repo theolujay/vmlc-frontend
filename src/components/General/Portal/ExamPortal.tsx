@@ -12,6 +12,7 @@ import Performance from './DashboardParts/Performance';
 import ExamHistory from './DashboardParts/ExamHistory';
 import HelpdeskButton from './DashboardParts/HelpdeskButton';
 import ProfileModal from '@/components/Modals/ProfileModal';
+import CowrywiseKidModal from '@/components/Modals/CowrywiseKidModal';
 import { AvailableExamType } from '@/types/Examtype';
 import FullLeagueLeaderboard from '@/components/Admin/Competition/FullLeagueLeaderboard';
 
@@ -20,7 +21,9 @@ function ExamPortal() {
   const { notifications, markAsRead } = useNotifications();
   const user = useGetCurrentUser();
   const [isProfileNoticeDismissed, setIsProfileNoticeDismissed] = useState(false);
+  const [isCowrywiseNoticeDismissed, setIsCowrywiseNoticeDismissed] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const [isCowrywiseModalOpen, setIsCowrywiseModalOpen] = useState(false);
   const [showLeaderboard, setShowLeaderboard] = useState(false);
 
   const stageProgressData = data?.enrollment_stage_progress;
@@ -49,11 +52,23 @@ function ExamPortal() {
   const showProfileNotice = !isProfileNoticeDismissed &&
     (profile?.is_setup_complete === false);
 
+  const showCowrywiseNotice = !isCowrywiseNoticeDismissed &&
+    (profile?.has_cowrywise_kid_profile === false);
+
   const currentNotification = activeNotifications.length > 0
-    ? { message: activeNotifications[0].message, type: activeNotifications[0].type, isProfile: false }
+    ? { message: activeNotifications[0].message, type: activeNotifications[0].type, mode: 'notification' }
     : showProfileNotice
-      ? { message: "Your profile is incomplete. Please update your profile to ensure you don't miss any important updates.", type: 'info' as const, isProfile: true }
-      : null;
+      ? { message: "Your profile is incomplete. Please update your profile to ensure you don't miss any important updates.", type: 'info' as const, mode: 'profile' }
+      : showCowrywiseNotice
+        ? { message: "Finished the Cowrywise Kids game? Link your username to qualify for the League stage. Visit https://kids.cowrywise.com/ if you haven't played yet.", type: 'info' as const, mode: 'cowrywise' }
+        : null;
+
+  const handleCountdownEnd = useCallback(() => {
+    // Wait 30 seconds after countdown ends to refetch dashboard
+    setTimeout(() => {
+      refetch();
+    }, 30000);
+  }, [refetch]);
 
   const handleDismissNotification = useCallback(() => {
     if (activeNotifications.length > 0) {
@@ -61,8 +76,10 @@ function ExamPortal() {
       markAsRead(notificationId);
     } else if (showProfileNotice) {
       setIsProfileNoticeDismissed(true);
+    } else if (showCowrywiseNotice) {
+      setIsCowrywiseNoticeDismissed(true);
     }
-  }, [activeNotifications, markAsRead, showProfileNotice]);
+  }, [activeNotifications, markAsRead, showProfileNotice, showCowrywiseNotice]);
 
   const determineStage = useCallback((stage: string): 'SCREENING' | 'LEAGUE' | 'FINAL' | null => {
     if (!stage) return null;
@@ -217,8 +234,17 @@ function ExamPortal() {
               message={currentNotification?.message}
               type={currentNotification?.type}
               onDismiss={handleDismissNotification}
-              actionLabel={currentNotification?.isProfile ? "Update Profile" : undefined}
-              onAction={() => setIsProfileOpen(true)}
+              actionLabel={
+                currentNotification?.mode === 'profile'
+                  ? "Update Profile"
+                  : currentNotification?.mode === 'cowrywise'
+                  ? "Link my Cowrywise Kid username"
+                  : undefined
+              }
+              onAction={() => {
+                if (currentNotification?.mode === 'profile') setIsProfileOpen(true);
+                else if (currentNotification?.mode === 'cowrywise') setIsCowrywiseModalOpen(true);
+              }}
             />
 
             {/* STAGE PROGRESS */}
@@ -233,7 +259,7 @@ function ExamPortal() {
               exam={currentExam}
               candidateName={candidateName}
               isRankingAvailable={!!activeRanking}
-              onCountdownEnd={refetch}
+              onCountdownEnd={handleCountdownEnd}
             />
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -276,6 +302,11 @@ function ExamPortal() {
           isOwnProfile={true}
         />
       )}
+
+      <CowrywiseKidModal
+        isOpen={isCowrywiseModalOpen}
+        onClose={setIsCowrywiseModalOpen}
+      />
     </PageLayout>
   );
 }

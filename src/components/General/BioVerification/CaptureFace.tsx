@@ -14,7 +14,7 @@ export default function CaptureFaceCard({ onCapture, isPending, isSuccess,open,h
         handleOpen(false)
     //   setOpen(false);
     }
-  }, [isSuccess]);
+  }, [isSuccess, handleOpen]);
     return (
         <ResponsiveContainer className='col-span-2 gap-4 '>
             <div className="flex border-b border-[#E4E7EC]">

@@ -19,7 +19,6 @@ class AppErrorBoundary extends Component<Props, State> {
     return { hasError: true };
   }
 
-  // eslint-disable-next-line class-methods-use-this
   public componentDidCatch(error: Error, errorInfo: ErrorInfo) {
     throw new Error(`"Uncaught error: " ${error} ${errorInfo}`);
   }
