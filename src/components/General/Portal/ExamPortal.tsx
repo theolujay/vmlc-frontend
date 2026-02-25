@@ -60,7 +60,7 @@ function ExamPortal() {
     : showProfileNotice
       ? { message: "Your profile is incomplete. Please update your profile to ensure you don't miss any important updates.", type: 'info' as const, mode: 'profile' }
       : showCowrywiseNotice
-        ? { message: "Finished the Cowrywise Kids game? Link your username to qualify for the League stage. Visit https://kids.cowrywise.com/ if you haven't played yet.", type: 'info' as const, mode: 'cowrywise' }
+        ? { message: "Played the Cowrywise Kids game? Link your username to qualify for the League stage. Visit https://kids.cowrywise.com/ if you haven't played yet.", type: 'info' as const, mode: 'cowrywise' }
         : null;
 
   const handleCountdownEnd = useCallback(() => {
