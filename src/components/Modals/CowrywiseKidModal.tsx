@@ -2,38 +2,38 @@ import React, { useState } from 'react';
 import { useCreateCowrywiseKidProfile } from '@/hooks/useCreateCowrywiseKidProfile';
 
 interface CowrywiseKidModalProps {
-  open: boolean;
-  close: (open: boolean) => void;
+  isOpen: boolean;
+  onClose: (isOpen: boolean) => void;
 }
 
-const CowrywiseKidModal: React.FC<CowrywiseKidModalProps> = ({ open, close }) => {
+const CowrywiseKidModal: React.FC<CowrywiseKidModalProps> = ({ isOpen, onClose }) => {
   const [username, setUsername] = useState('');
   const { mutate, isPending } = useCreateCowrywiseKidProfile();
 
-  if (!open) return null;
+  if (!isOpen) return null;
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!username.trim()) return;
-    
+
     mutate(username, {
       onSuccess: () => {
-        close(false);
+        onClose(false);
       },
     });
   };
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-in fade-in duration-300">
-      <div 
+    <div className="font-sans fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-in fade-in duration-300">
+      <div
         className="bg-white rounded-[24px] w-full max-w-md overflow-hidden shadow-2xl animate-in zoom-in-95 duration-300"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="p-6">
           <div className="flex justify-between items-center mb-6">
-            <h2 className="text-xl font-bold text-[#101828]">Link Cowrywise Kid Profile</h2>
-            <button 
-              onClick={() => close(false)}
+            <h2 className="text-xl font-bold text-[#101828]">Link Cowrywise Kid username</h2>
+            <button
+              onClick={() => onClose(false)}
               className="text-[#667185] hover:text-[#101828] transition-colors"
             >
               <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -44,11 +44,11 @@ const CowrywiseKidModal: React.FC<CowrywiseKidModalProps> = ({ open, close }) =>
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label htmlFor="username" className="block text-sm font-medium text-[#344054] mb-1.5">
+              {/* <label htmlFor="username" className="block text-sm font-medium text-[#344054] mb-1.5">
                 Cowrywise Kid Username
-              </label>
+              </label> */}
               <p className="text-xs text-[#667185] mb-3">
-                Please type in your &apos;Cowrywise Kid&apos; username to be eligible for the League stage.
+                Please type in your username to be eligible for the League stage.
               </p>
               <input
                 id="username"

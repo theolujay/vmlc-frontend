@@ -6,7 +6,7 @@ export class CowrywiseKidsService {
             const response = await client.post('/v1/cowrywise-kids/', { username });
             return response.data;
         } catch (error) {
-            console.error('Error creating Cowrywise Kid profile:', error);
+            console.error('Error linking Cowrywise Kid username:', error);
             throw error;
         }
     }

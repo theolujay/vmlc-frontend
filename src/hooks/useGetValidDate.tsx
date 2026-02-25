@@ -1,14 +1,13 @@
 import { useMemo, useState } from 'react';
 
 export default function useGetValidDate(applicationDate: Date) {
-  const today = new Date();
-  const examDate = new Date(applicationDate);
-
   // ✅ Calculate day difference
   const daysDiff = useMemo(() => {
+    const today = new Date();
+    const examDate = new Date(applicationDate);
     const diffTime = examDate.getTime() - today.getTime();
     return Math.ceil(diffTime / (1000 * 60 * 60 * 24)); // convert ms → days
-  }, [examDate, today]);
+  }, [applicationDate]);
   const isUpcomingDateDiff = daysDiff > 0;
   const [isUpcoming] = useState(isUpcomingDateDiff);
 

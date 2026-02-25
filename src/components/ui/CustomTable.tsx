@@ -36,7 +36,7 @@ export default function CustomTable<T extends object>({
   onSelectAll,
   onSelectRow,
   selectedIds = [],
-  getRowId = (row: T) => (row as any).id ?? JSON.stringify(row),
+  getRowId = (row: T) => (row as Record<string, unknown>).id ? String((row as Record<string, unknown>).id) : JSON.stringify(row),
 }: Readonly<CustomTableProps<T>>) {
   const allSelected =
     data.length > 0 &&

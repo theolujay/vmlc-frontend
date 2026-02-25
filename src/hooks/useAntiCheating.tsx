@@ -67,7 +67,7 @@ export const useAntiCheating = () => {
       if (e.key === 'PrintScreen') {
         try {
           if (navigator.clipboard && navigator.clipboard.writeText) {
-             navigator.clipboard.writeText("");
+             navigator.clipboard.writeText("").catch(() => {});
           }
         } catch (err) {
           console.error("Failed to clear clipboard", err);

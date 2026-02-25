@@ -1,4 +1,5 @@
 import React from 'react';
+import { formatTextWithLinks } from '@/utils/formatTextWithLinks';
 
 interface InfoBoardProps {
   message?: string;
@@ -41,6 +42,8 @@ const InfoBoard: React.FC<InfoBoardProps> = ({ message, onDismiss, actionLabel, 
     }
   }[type];
 
+  const formattedMessage = formatTextWithLinks(message);
+
   return (
     <section className={`${styles.bg} border ${styles.border} rounded-[24px] p-4 flex items-start gap-4 animate-in fade-in duration-500 mb-6`}>
       {/* Icon Container */}
@@ -67,7 +70,23 @@ const InfoBoard: React.FC<InfoBoardProps> = ({ message, onDismiss, actionLabel, 
 
       <div className="flex-1">
         <h3 className={`${styles.accent} font-bold text-sm`}>{styles.title}</h3>
-        <p className={`${styles.text} text-sm mt-0.5`}>{message}</p>
+        <p className={`${styles.text} text-sm mt-0.5`}>
+          {formattedMessage.map((node, i) => (
+            typeof node === 'string' ? (
+              <span key={i}>{node}</span>
+            ) : (
+              <a 
+                key={i} 
+                href={node.href} 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                className="underline font-bold hover:opacity-80"
+              >
+                {node.text}
+              </a>
+            )
+          ))}
+        </p>
         
         {actionLabel && onAction && (
           <button 
