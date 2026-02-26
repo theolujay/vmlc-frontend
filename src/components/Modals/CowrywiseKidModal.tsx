@@ -4,9 +4,10 @@ import { useCreateCowrywiseKidProfile } from '@/hooks/useCreateCowrywiseKidProfi
 interface CowrywiseKidModalProps {
   isOpen: boolean;
   onClose: (isOpen: boolean) => void;
+  onSuccess?: () => void;
 }
 
-const CowrywiseKidModal: React.FC<CowrywiseKidModalProps> = ({ isOpen, onClose }) => {
+const CowrywiseKidModal: React.FC<CowrywiseKidModalProps> = ({ isOpen, onClose, onSuccess }) => {
   const [username, setUsername] = useState('');
   const { mutate, isPending } = useCreateCowrywiseKidProfile();
 
@@ -18,6 +19,7 @@ const CowrywiseKidModal: React.FC<CowrywiseKidModalProps> = ({ isOpen, onClose }
 
     mutate(username, {
       onSuccess: () => {
+        onSuccess?.();
         onClose(false);
       },
     });
