@@ -306,6 +306,12 @@ function ExamPortal() {
       <CowrywiseKidModal
         isOpen={isCowrywiseModalOpen}
         onClose={setIsCowrywiseModalOpen}
+        onSuccess={() => {
+          setIsCowrywiseNoticeDismissed(true);
+          setTimeout(() => {
+            window.location.reload();
+          }, 3000);
+        }}
       />
     </PageLayout>
   );
