@@ -14,7 +14,8 @@ import Image from "next/image"
 import CustomTable from "@/components/ui/CustomTable"
 import EmptySession from "@/components/Admin/EmptySession"
 import { ExamTakenType, RecordsType } from "@/types/CandidateType"
-import { useForm, UseFormRegister } from "react-hook-form"
+import { type UserProfileType } from "@/types/UserMgtType"
+import { useForm, type UseFormRegister } from "react-hook-form"
 import { useAuth } from "@/contexts/AuthProvider"
 
 type TabType = 'Profile' | 'Activities' | 'Scores' | 'Actions'
@@ -28,6 +29,7 @@ type ProfileFormData = {
   school_name: string
   school_type: string
   current_class: string
+  cowrywise_kid_username: string
   profile_picture?: FileList
 }
 
@@ -43,8 +45,8 @@ export default function ProfileModal({
 }: Readonly<{ id: string; open: boolean; close: (open: boolean) => void; isOwnProfile?: boolean }>) {
   const [activeTab, setActiveTab] = useState<TabType>('Profile')
   const [isEditing, setIsEditing] = useState(false)
-  
-  const { authState } = useAuth()
+
+  const { authState, dispatch } = useAuth()
   const { data: otherAccountData, isPending: otherAccountPending } = useGetAccountDetails(id, !isOwnProfile && !!id)
 
   const accountData = useMemo(() => {
@@ -57,7 +59,7 @@ export default function ProfileModal({
   const accountPending = !isOwnProfile && otherAccountPending
 
   const isCandidate = accountData?.profile?.profile_type === 'candidate'
-  
+
   const { data: candidateData, isPending: candidatePending } = useGetCandidateDetails(id, !isOwnProfile && !!isCandidate && !!id)
   const { mutate: updateProfile, isPending: updatePending } = useUpdateProfile()
 
@@ -76,6 +78,7 @@ export default function ProfileModal({
         school_name: accountData.profile.school_name || '',
         school_type: accountData.profile.school_type || '',
         current_class: accountData.profile.current_class || '',
+        cowrywise_kid_username: accountData.profile.cowrywise_kid_profile?.username || '',
       })
     }
   }, [accountData, reset])
@@ -88,29 +91,35 @@ export default function ProfileModal({
 
   const onSave = (data: ProfileFormData) => {
     const formData = new FormData()
-    
+
     // Add user fields
     formData.append('user[first_name]', data.first_name)
     formData.append('user[last_name]', data.last_name)
     formData.append('user[phone]', data.phone)
     formData.append('user[state]', data.state)
-    
+
     // Add profile fields
     if (isCandidate) {
       formData.append('profile[school_name]', data.school_name)
       formData.append('profile[school_type]', data.school_type)
       formData.append('profile[current_class]', data.current_class)
+      formData.append('profile[cowrywise_kid_profile][username]', data.cowrywise_kid_username)
     } else {
       formData.append('profile[occupation]', data.occupation)
     }
-    
+
     // Add profile picture if selected
     if (data.profile_picture?.[0]) {
       formData.append('user[profile_picture]', data.profile_picture[0])
     }
 
     updateProfile(formData, {
-      onSuccess: () => setIsEditing(false)
+      onSuccess: (data: { message: string, profile: UserProfileType }) => {
+        setIsEditing(false)
+        if (isOwnProfile) {
+          dispatch({ type: 'updateProfile', payload: data.profile })
+        }
+      }
     })
   }
 
@@ -134,7 +143,7 @@ export default function ProfileModal({
   return (
     <AppDialog open={open} className="!max-w-5xl !w-auto !p-0 bg-transparent shadow-none">
       <div className="flex flex-col bg-[#F7F9FC] w-[95vw] md:w-[80vw] lg:w-[70vw] xl:w-[60vw] h-[85vh] rounded-2xl overflow-hidden shadow-2xl relative font-sans">
-        
+
         {/* Header */}
         <div className="px-8 py-6 border-b border-gray-200 flex justify-between items-center bg-white sticky top-0 z-30">
           <div className="flex items-center gap-4">
@@ -160,8 +169,8 @@ export default function ProfileModal({
                           key={tab.id}
                           onClick={() => setActiveTab(tab.id)}
                           className={`flex items-center gap-2 px-4 py-2 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all ${
-                              activeTab === tab.id 
-                              ? 'bg-white text-[#3E4095] shadow-sm ring-1 ring-black/5' 
+                              activeTab === tab.id
+                              ? 'bg-white text-[#3E4095] shadow-sm ring-1 ring-black/5'
                               : 'text-gray-400 hover:text-gray-600'
                           }`}
                       >
@@ -199,7 +208,7 @@ export default function ProfileModal({
                             <h3 className="text-sm font-black text-gray-800 uppercase tracking-widest">Personal Information</h3>
                             <div className="flex items-center gap-3">
                                 {isOwnProfile && !isEditing && (
-                                    <button 
+                                    <button
                                         type="button"
                                         onClick={() => setIsEditing(true)}
                                         className="text-[10px] font-black text-[#3E4095] uppercase tracking-widest hover:underline cursor-pointer"
@@ -218,29 +227,35 @@ export default function ProfileModal({
                                     <EditInfoItem label="First Name" name="first_name" register={register} disabled={!!user?.first_name} />
                                     <EditInfoItem label="Last Name" name="last_name" register={register} disabled={!!user?.last_name} />
                                     <EditInfoItem label="Phone Number" name="phone" register={register} disabled={false} />
-                                    <EditInfoItem 
-                                        label="State" 
-                                        name="state" 
-                                        register={register} 
-                                        disabled={!!user?.state} 
+                                    <EditInfoItem
+                                        label="State"
+                                        name="state"
+                                        register={register}
+                                        disabled={!!user?.state}
                                         options={isCandidate ? STATES : undefined}
                                     />
                                     {isCandidate ? (
                                         <>
                                             <EditInfoItem label="School Name" name="school_name" register={register} disabled={!!profile?.school_name} />
-                                            <EditInfoItem 
-                                                label="School Type" 
-                                                name="school_type" 
-                                                register={register} 
-                                                disabled={!!profile?.school_type} 
+                                            <EditInfoItem
+                                                label="School Type"
+                                                name="school_type"
+                                                register={register}
+                                                disabled={!!profile?.school_type}
                                                 options={SCHOOL_TYPES}
                                             />
-                                            <EditInfoItem 
-                                                label="Current Class" 
-                                                name="current_class" 
-                                                register={register} 
-                                                disabled={!!profile?.current_class} 
+                                            <EditInfoItem
+                                                label="Current Class"
+                                                name="current_class"
+                                                register={register}
+                                                disabled={!!profile?.current_class}
                                                 options={CURRENT_CLASSES}
+                                            />
+                                            <EditInfoItem
+                                                label="Cowrywise Kid username"
+                                                name="cowrywise_kid_username"
+                                                register={register}
+                                                disabled={profile?.current_stage === "league"}
                                             />
                                         </>
                                     ) : (
@@ -255,14 +270,24 @@ export default function ProfileModal({
                                 <>
                                     <InfoItem label="Full Name" value={userName} />
                                     <InfoItem label="Email Address" value={user?.email || 'N/A'} />
-                                    <InfoItem label="Phone Number" value={user?.phone || 'Not Provided'} />
+                                    <InfoItem
+                                        label="Phone Number"
+                                        value={user?.phone || 'Not provided'}
+                                        onEdit={isOwnProfile ? () => setIsEditing(true) : undefined}
+                                    />
                                     <InfoItem label="Location / State" value={user?.state || 'Not Specified'} />
                                     <InfoItem label="Date Joined" value={user?.date_joined ? formatDate(user.date_joined) : 'N/A'} />
                                     {isCandidate ? (
                                         <>
-                                            <InfoItem label="School Name" value={profile.school_name || 'Not Specified'} />
-                                            <InfoItem label="School Type" value={profile.school_type || 'Not Specified'} />
-                                            <InfoItem label="Current Class" value={profile.current_class || 'Not Specified'} />
+                                            <InfoItem label="School Name" value={profile.school_name || 'Not provided'} />
+                                            <InfoItem label="School Type" value={profile.school_type || 'Not provided'} />
+                                            <InfoItem label="Current Class" value={profile.current_class || 'Not specified'} />
+                                            <InfoItem label="Current Competition Stage" value={profile.current_stage?.slice(4) ?? 'Unavailable'} />
+                                            <InfoItem
+                                                label="Cowrywise Kid username"
+                                                value={profile.cowrywise_kid_profile?.username || 'Not Specified'}
+                                                onEdit={isOwnProfile && profile.current_stage !== "league" ? () => setIsEditing(true) : undefined}
+                                            />
                                         </>
                                     ) : (
                                         <InfoItem label="Occupation" value={profile.occupation || 'Not Specified'} />
@@ -272,8 +297,8 @@ export default function ProfileModal({
                         </div>
                         {isEditing && (
                             <div className="flex justify-end gap-3 pt-4">
-                                <button 
-                                    type="button" 
+                                <button
+                                    type="button"
                                     onClick={() => {
                                         setIsEditing(false)
                                         reset()
@@ -282,7 +307,7 @@ export default function ProfileModal({
                                 >
                                     Cancel
                                 </button>
-                                <button 
+                                <button
                                     type="submit"
                                     disabled={updatePending}
                                     className="px-8 py-2 rounded-xl bg-[#3E4095] text-white text-[10px] font-black uppercase tracking-widest shadow-lg shadow-[#3E4095]/20 hover:-translate-y-0.5 transition-all cursor-pointer flex items-center gap-2"
@@ -293,7 +318,7 @@ export default function ProfileModal({
                             </div>
                         )}
                     </div>
-                    
+
                     <div className="relative rounded-3xl p-1 bg-gradient-to-tr from-[#3E4095] to-[#01ACEA] shadow-xl shadow-[#3E4095]/20 group">
                         <div className="bg-white rounded-[22px] p-8 h-full flex flex-col items-center justify-center gap-6 relative overflow-hidden">
                             <div className="relative">
@@ -311,7 +336,7 @@ export default function ProfileModal({
                                     </label>
                                 )}
                             </div>
-                            
+
                             <div className="text-center">
                                 <p className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mb-1">Account Role</p>
                                 <p className="text-lg font-black text-gray-800 uppercase tracking-tight">{profile.role || 'Member'}</p>
@@ -391,11 +416,23 @@ export default function ProfileModal({
   )
 }
 
-function InfoItem({ label, value }: { label: string, value: string }) {
+function InfoItem({ label, value, onEdit }: { label: string, value: string, onEdit?: () => void }) {
   return (
-    <div className="space-y-1">
-      <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">{label}</p>
-      <p className="text-sm font-bold text-gray-800 break-words">{value}</p>
+    <div className="flex items-start justify-between group/info">
+      <div className="space-y-1">
+        <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">{label}</p>
+        <p className="text-sm font-bold text-gray-800 break-words">{value}</p>
+      </div>
+      {onEdit && (
+        <button
+          type="button"
+          onClick={onEdit}
+          className="p-2 text-[#3E4095] group-hover/info:scale-130 transition-all cursor-pointer"
+          title={`Edit ${label}`}
+        >
+          <i className="fas fa-pen text-[10px]"></i>
+        </button>
+      )}
     </div>
   )
 }
@@ -405,7 +442,7 @@ function EditInfoItem({ label, name, register, disabled = false, options }: { la
     <div className="space-y-1.5">
       <label className="text-[10px] font-black text-[#3E4095] uppercase tracking-widest">{label}</label>
       {options ? (
-        <select 
+        <select
           {...register(name)}
           disabled={disabled}
           className={`w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2.5 text-sm font-bold text-gray-800 focus:ring-2 focus:ring-[#3E4095]/10 focus:border-[#3E4095] outline-none transition-all ${disabled ? 'opacity-50 cursor-not-allowed bg-gray-100 text-gray-500' : ''}`}
@@ -416,7 +453,7 @@ function EditInfoItem({ label, name, register, disabled = false, options }: { la
           ))}
         </select>
       ) : (
-        <input 
+        <input
           {...register(name)}
           disabled={disabled}
           className={`w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2.5 text-sm font-bold text-gray-800 focus:ring-2 focus:ring-[#3E4095]/10 focus:border-[#3E4095] outline-none transition-all ${disabled ? 'opacity-50 cursor-not-allowed bg-gray-100 text-gray-500' : ''}`}
@@ -440,7 +477,7 @@ function DocumentCard({ label, url, type, isImage }: { label: string, url: strin
         </div>
       )
     }
-  
+
     return (
       <div className="p-6 rounded-3xl bg-white border border-gray-100 shadow-sm hover:shadow-md transition-all group flex flex-col justify-between h-full">
         <div className="flex items-start justify-between mb-6">
@@ -460,9 +497,9 @@ function DocumentCard({ label, url, type, isImage }: { label: string, url: strin
                 </div>
             </div>
         </div>
-        <Link 
-          href={url} 
-          target="_blank" 
+        <Link
+          href={url}
+          target="_blank"
           className="flex items-center justify-center gap-2 w-full py-3 rounded-xl bg-gray-50 text-[#3E4095] text-[10px] font-black uppercase tracking-widest hover:bg-[#3E4095] hover:text-white transition-all group-hover:shadow-sm"
         >
           <span>View Asset</span>
@@ -485,7 +522,7 @@ function ActivityComponent({ results }: Readonly<{ results: ExamTakenType[] }>) 
                 </div>
             </div>
             {results.length > 0 ? (
-                <CustomTable 
+                <CustomTable
                     columns={[
                         {
                             key: 'Exam', header: 'Exam Title', render: (_, row) => (
@@ -514,8 +551,8 @@ function ActivityComponent({ results }: Readonly<{ results: ExamTakenType[] }>) 
                                 <div className="text-xs text-gray-500">{formatDate(row.recorded_at)}</div>
                             )
                         },
-                    ]} 
-                    data={results} 
+                    ]}
+                    data={results}
                 />
             ) : (
                 <div className="p-20">
