@@ -70,7 +70,7 @@ function HelpdeskStats({ stats }: { stats: HelpdeskStatData }) {
                 <h2 className="text-lg font-black text-gray-800 tracking-tight uppercase">Overview</h2>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                <div className="flex flex-col p-5 bg-blue-50/30 rounded-2xl border border-blue-100/50">
+                {/* <div className="flex flex-col p-5 bg-blue-50/30 rounded-2xl border border-blue-100/50">
                     <span className="text-[10px] font-black text-blue-400 uppercase tracking-widest mb-1">Total Threads</span>
                     <span className="text-3xl font-black text-[#3E4095]">{stats.total_threads}</span>
                     <div className="mt-2 flex items-center gap-2">
@@ -116,6 +116,24 @@ function HelpdeskStats({ stats }: { stats: HelpdeskStatData }) {
                     <span className="text-[10px] font-black text-red-400 uppercase tracking-widest mb-1">Attention Required</span>
                     <span className="text-3xl font-black text-red-600">{stats.unread_messages}</span>
                     <p className="mt-1 text-[10px] font-bold text-red-400 uppercase tracking-tight">Unread messages from candidates</p>
+                </div> */}
+
+                <div className="flex flex-col p-5 bg-red-50 rounded-2xl border border-red-100 shadow-sm shadow-red-500/5 relative overflow-hidden group">
+                    <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:scale-110 transition-transform">
+                        <i className="fas fa-envelope-open-text text-4xl text-red-600"></i>
+                    </div>
+                    <span className="text-[10px] font-black text-red-400 uppercase tracking-widest mb-1">Attention Required</span>
+                    <div className="flex items-end gap-3">
+                        <div className="flex flex-col">
+                            <span className="text-2xl font-black  text-red-600">{stats.unattended_candidates}</span>
+                            <span className="text-[9px] font-bold text-red-500/70 uppercase">Unattended candidates</span>
+                        </div>
+                        <div className="w-px h-8 bg-emerald-200/50 mb-1"></div>
+                        <div className="flex flex-col">
+                            <span className="text-2xl font-black text-red-900">{stats.unread_messages}</span>
+                            <span className="text-[9px] font-bold text-red-800/70 uppercase">Total messages unread</span>
+                        </div>
+                    </div>
                 </div>
             </div>
         </ResponsiveContainer>
@@ -346,7 +364,7 @@ function ConversationListCard({
                         },
                         {
                             key: 'unread_by_staff_count',
-                            header: 'Unattended',
+                            header: 'Unread',
                             align: 'center',
                             render: (_, row) => {
                                 // Count only unread messages sent by the candidate
