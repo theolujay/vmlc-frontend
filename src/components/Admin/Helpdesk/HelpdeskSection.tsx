@@ -12,7 +12,7 @@ import ResponsiveContainer from '../../ui/ResponsiveContainer';
 import AdminHeader from '../AdminHeader';
 import { FilterIcon, SortIcon } from '../AdminIcons';
 import HelpdeskThreadDetails from './HelpdeskThreadDetails';
-import clsx from 'clsx';
+// import clsx from 'clsx';
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
 import Spinner from '@/components/ui/spinner/spinner';
 import CustomTable from '@/components/ui/CustomTable';
@@ -311,42 +311,42 @@ function ConversationListCard({
                                 </div>
                             ),
                         },
-                        {
-                            key: 'status',
-                            header: 'Status',
-                            align: 'center',
-                            render: (_, row) => (
-                                <div className="flex justify-center">
-                                    <span className={clsx(
-                                        "capitalize text-[9px] font-black px-3 py-1 rounded-full border tracking-widest",
-                                        row.status === 'open' ? 'bg-red-50 text-[#9E0A05] border-[#9E0A05]/20' :
-                                        row.status === 'in_progress' ? 'bg-amber-50 text-[#865503] border-[#865503]/20' :
-                                        row.status === 'resolved' ? 'bg-emerald-50 text-emerald-600 border-emerald-600/20' :
-                                        'bg-gray-50 text-gray-500 border-gray-200'
-                                    )}>
-                                        {row.status.replace('_', ' ')}
-                                    </span>
-                                </div>
-                            ),
-                        },
-                        {
-                            key: 'priority',
-                            header: 'Priority',
-                            align: 'center',
-                            render: (_, row) => (
-                                <div className="flex justify-center">
-                                    <span className={clsx(
-                                        "capitalize text-[9px] font-black px-3 py-1 rounded-full border tracking-widest",
-                                        row.priority === 'urgent' ? 'bg-red-50 text-[#9E0A05] border-[#9E0A05]/20' :
-                                        row.priority === 'high' ? 'bg-orange-50 border-orange-100 text-[#FC6A03]' :
-                                        row.priority === 'medium' ? 'bg-indigo-50 border-indigo-100 text-[#3E4095]' :
-                                        'bg-gray-50 text-gray-500 border-gray-200'
-                                    )}>
-                                        {row.priority}
-                                    </span>
-                                </div>
-                            ),
-                        },
+                        // {
+                        //     key: 'status',
+                        //     header: 'Status',
+                        //     align: 'center',
+                        //     render: (_, row) => (
+                        //         <div className="flex justify-center">
+                        //             <span className={clsx(
+                        //                 "capitalize text-[9px] font-black px-3 py-1 rounded-full border tracking-widest",
+                        //                 row.status === 'open' ? 'bg-red-50 text-[#9E0A05] border-[#9E0A05]/20' :
+                        //                 row.status === 'in_progress' ? 'bg-amber-50 text-[#865503] border-[#865503]/20' :
+                        //                 row.status === 'resolved' ? 'bg-emerald-50 text-emerald-600 border-emerald-600/20' :
+                        //                 'bg-gray-50 text-gray-500 border-gray-200'
+                        //             )}>
+                        //                 {row.status.replace('_', ' ')}
+                        //             </span>
+                        //         </div>
+                        //     ),
+                        // },
+                        // {
+                        //     key: 'priority',
+                        //     header: 'Priority',
+                        //     align: 'center',
+                        //     render: (_, row) => (
+                        //         <div className="flex justify-center">
+                        //             <span className={clsx(
+                        //                 "capitalize text-[9px] font-black px-3 py-1 rounded-full border tracking-widest",
+                        //                 row.priority === 'urgent' ? 'bg-red-50 text-[#9E0A05] border-[#9E0A05]/20' :
+                        //                 row.priority === 'high' ? 'bg-orange-50 border-orange-100 text-[#FC6A03]' :
+                        //                 row.priority === 'medium' ? 'bg-indigo-50 border-indigo-100 text-[#3E4095]' :
+                        //                 'bg-gray-50 text-gray-500 border-gray-200'
+                        //             )}>
+                        //                 {row.priority}
+                        //             </span>
+                        //         </div>
+                        //     ),
+                        // },
                         {
                             key: 'candidate_last_msg_preview',
                             header: 'Last Message (Candidate)',
