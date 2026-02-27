@@ -47,14 +47,14 @@ export default function HelpdeskSection() {
                 ) : (
                     <ConversationListCard
                         data={data?.results ?? []}
-                        page_count={data?.total_pages ?? 0}
+                        page_count={data?.pagination?.total_pages ?? 0}
                         currentPage={page}
                         onPageChange={setPage}
                         handleSearch={setFilters}
                         filters={filters}
                         setFilters={setFilters}
-                        hasNext={data?.next !== null}
-                        hasPrevious={data?.previous !== null}
+                        hasNext={data?.pagination?.has_next}
+                        hasPrevious={data?.pagination?.has_previous}
                     />
                 )}
             </div>
@@ -104,7 +104,7 @@ function HelpdeskStats({ stats }: { stats: HelpdeskStatData }) {
                         <div className="w-px h-8 bg-emerald-200/50 mb-1"></div>
                         <div className="flex flex-col">
                             <span className="text-2xl font-black text-red-700">{stats.unassigned_threads}</span>
-                            <span className="text-[9px] font-bold text-red-600/70 uppercase font-black">Unassigned</span>
+                            <span className="text-[9px] font-bold text-red-600/70 uppercase">Unassigned</span>
                         </div>
                     </div>
                 </div>
