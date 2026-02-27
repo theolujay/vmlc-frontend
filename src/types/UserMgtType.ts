@@ -52,6 +52,7 @@ export type HelpdeskStatData = {
   open_threads: number;
   in_progress_threads: number;
   resolved_threads: number;
+  unattended_candidates: number;
   unassigned_threads: number;
   unread_messages: number;
   public_requests: number;
@@ -156,6 +157,9 @@ export type StaffUserType = RequestUserType & {
   profile_picture: string | null,
 }
 
+export type CowrywiseKidProfileType = {
+  username: string,
+}
 
 export type UserProfileType = {
   user: StaffUserType
@@ -173,6 +177,8 @@ export type UserProfileType = {
   updated_at: Date,
   is_setup_complete: boolean,
   has_cowrywise_kid_profile: boolean,
+  cowrywise_kid_profile?: CowrywiseKidProfileType | null,
+  current_stage?: string | null,
 }
 
 export type StaffDetailsType = {
