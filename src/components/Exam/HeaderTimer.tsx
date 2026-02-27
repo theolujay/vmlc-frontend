@@ -69,7 +69,7 @@ export default function HeaderTimer({
   const isLowTime = timeLeft < 300 // 5 minutes
 
   return (
-    <div className='flex bg-white justify-between px-10 py-6 items-center border-b border-gray-100 sticky top-0 z-40 shadow-sm'>
+    <div className='flex bg-white justify-between px-10 py-6 items-center border-b border-gray-100 z-40 shadow-sm'>
       <div className="flex items-center space-x-4">
         <div className="w-10 h-10 bg-[#3E4095]/5 rounded-xl flex items-center justify-center text-[#3E4095]">
           <i className="fas fa-graduation-cap text-lg"></i>

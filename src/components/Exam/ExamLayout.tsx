@@ -20,9 +20,11 @@ export default function ExamLayout({
 
     return (
         <div className='flex min-h-screen w-full flex-col bg-[#F7F9FC]'>
-            <Header />
             <ExamNavigationProvider>
-                <HeaderTimer onTimeUp={onTimeUp} timer={timer} deadline={deadline} title={title} />
+                <div className='sticky top-0 z-40'>
+                    <Header />
+                    <HeaderTimer onTimeUp={onTimeUp} timer={timer} deadline={deadline} title={title} />
+                </div>
                 <main className='flex-1 py-10 relative'>
                     <div className="max-w-[1400px] w-[95%] mx-auto">
                         {children}
