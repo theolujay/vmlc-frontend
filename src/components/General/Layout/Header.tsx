@@ -49,7 +49,7 @@ export default function Header() {
 
 
     return (
-        <header className="flex bg-white px-6 items-center relative z-40">
+        <header className="flex bg-white px-6 items-center sticky top-0 z-40 border-b border-gray-100">
             <div className="flex mx-auto justify-between w-full py-4">
                 {/* Logo */}
                 <Link href="/">
