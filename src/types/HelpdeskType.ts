@@ -28,15 +28,19 @@ export interface HelpdeskThreadType {
     is_online?: boolean;
 }
 
-export interface HelpdeskThreadListResponse {
+export interface PaginationData {
     count: number;
-    total_pages: number;
-    previous: string | null;
-    next: string | null;
-    has_previous: boolean;
-    has_next: boolean;
-    page_size: number;
     page: number;
+    page_size: number;
+    total_pages: number;
+    has_next: boolean;
+    has_previous: boolean;
+    next: string | null;
+    previous: string | null;
+}
+
+export interface HelpdeskThreadListResponse {
+    pagination: PaginationData;
     helpdesk_summary_data?: {
         total_threads: number;
         open_threads: number;
