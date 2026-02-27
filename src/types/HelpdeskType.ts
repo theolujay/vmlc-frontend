@@ -46,6 +46,7 @@ export interface HelpdeskThreadListResponse {
         open_threads: number;
         in_progress_threads: number;
         resolved_threads: number;
+        unattended_candidates: number;
         unassigned_threads: number;
         unread_messages: number;
         public_requests: number;

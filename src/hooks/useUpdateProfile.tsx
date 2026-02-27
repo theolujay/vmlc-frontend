@@ -15,8 +15,8 @@ export default function useUpdateProfile() {
     },
     onError: (error: unknown) => {
       const apiError = error as ApiError;
-      const message = apiError.response?.data?.message || (error as Error).message || 'Failed to update profile'
-      toast.error(message)
+      const message = apiError.response?.data?.message || apiError.response?.data?.error || (error as Error).message || 'Failed to update profile'
+      toast.error(`${message}`)
     }
   })
 }
