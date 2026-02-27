@@ -13,10 +13,10 @@ export default function useListHelpdeskThreads(page: number, filters?: Record<st
         refetchIntervalInBackground: true,
     });
 
-    return { 
-        data, 
-        loading: isLoading, 
+    return {
+        data,
+        loading: isLoading,
         error: error ? (error as Error).message : null,
-        refetch 
+        refetch
     };
 }
