@@ -3,7 +3,7 @@ import React, { createContext, useContext, useEffect, useState, useCallback } fr
 import { NotificationService } from '@/services/notification.service';
 import { Notification } from '@/types/notificationType';
 import { useAuth } from '@/contexts/AuthProvider';
-import { useSocket } from '@/contexts/SocketProvider';
+import { useSocket, SocketMessage } from '@/contexts/SocketProvider';
 
 interface NotificationContextType {
   notifications: Notification[];
@@ -49,11 +49,20 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
     }
   }, [authState?.isAuthenticated, authState?.token]);
 
-  const handleNotificationActivity = useCallback((event: any) => {
-      // Use any here because of the potential 'type' collision in the spec
-      if (event.type === 'notification_activity' || (event.id && event.subject && (event.message || event.notification_type))) {
+  const handleNotificationActivity = useCallback((event: SocketMessage) => {
+      const id = event.id as number | undefined;
+      const subject = event.subject as string | undefined;
+      const message = event.message as string | { message: string } | undefined;
+      const content = event.content as string | undefined;
+      const notificationType = event.notification_type as Notification['type'] | undefined;
+      const title = event.title as string | undefined;
+      const link = event.link as string | undefined;
+      const isRead = event.is_read as boolean | undefined;
+      const createdAt = event.created_at as string | undefined;
+
+      if (event.type === 'notification_activity' || (id && subject && (message || notificationType))) {
           setNotifications(prev => {
-              const id = event.id;
+              if (!id) return prev;
               if (prev.find(n => n.id === id)) {
                   return prev;
               }
@@ -61,22 +70,24 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
               // Extract message string defensively. 
               // If event.message is an object, try to get event.message.message
               let messageContent = '';
-              if (typeof event.message === 'string') {
-                  messageContent = event.message;
-              } else if (event.message && typeof event.message.message === 'string') {
-                  messageContent = event.message.message;
-              } else if (event.content && typeof event.content === 'string') {
-                  messageContent = event.content;
+              if (typeof message === 'string') {
+                  messageContent = message;
+              } else if (message && typeof message === 'object' && 'message' in message && typeof (message as { message: string }).message === 'string') {
+                  messageContent = (message as { message: string }).message;
+              } else if (content && typeof content === 'string') {
+                  messageContent = content;
               }
+
+              const type = (notificationType || (['info', 'success', 'alert', 'error', 'warning'].includes(event.type) ? event.type : 'info')) as Notification['type'];
 
               const newNotification: Notification = {
                   id: id,
-                  subject: event.subject || event.title || 'Notification',
+                  subject: subject || title || 'Notification',
                   message: messageContent,
-                  type: (event.notification_type || (['info', 'success', 'alert', 'error', 'warning'].includes(event.type) ? event.type : 'info')) as any,
-                  link: event.link || '',
-                  is_read: event.is_read || false,
-                  created_at: event.created_at || new Date().toISOString()
+                  type,
+                  link: link || '',
+                  is_read: isRead || false,
+                  created_at: createdAt || new Date().toISOString()
               };
               return [newNotification, ...prev];
           });
