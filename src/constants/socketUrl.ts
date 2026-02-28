@@ -21,10 +21,10 @@ const getSocketUrl = () => {
     // If baseUrl ends with /v1, just append /ws/notifications/
     // Otherwise append /v1/ws/notifications/
     if (baseUrl.endsWith('/v1')) {
-        return `${baseUrl}/ws/notifications/`;
+        return `${baseUrl}/ws/`;
     }
     
-    return `${baseUrl}/v1/ws/notifications/`;
+    return `${baseUrl}/v1/ws/`;
 };
 
 export const socketUrl = getSocketUrl();

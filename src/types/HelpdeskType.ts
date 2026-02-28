@@ -1,3 +1,5 @@
+import { HelpdeskStatData } from "./UserMgtType";
+
 export interface HelpdeskMessageType {
     id: number | string;
     sender: string | null;
@@ -25,7 +27,7 @@ export interface HelpdeskThreadType {
     updated_at: string;
     unread_by_staff_count?: number;
     candidate_last_msg_preview?: string;
-    is_online?: boolean;
+    is_candidate_online?: boolean;
 }
 
 export interface PaginationData {
@@ -41,16 +43,7 @@ export interface PaginationData {
 
 export interface HelpdeskThreadListResponse {
     pagination: PaginationData;
-    helpdesk_summary_data?: {
-        total_threads: number;
-        open_threads: number;
-        in_progress_threads: number;
-        resolved_threads: number;
-        unattended_candidates: number;
-        unassigned_threads: number;
-        unread_messages: number;
-        public_requests: number;
-    };
+    helpdesk_summary_data?: HelpdeskStatData;
     results: HelpdeskThreadType[];
 }
 
@@ -60,9 +53,25 @@ export interface SendMessagePayload {
     metadata?: Record<string, unknown>;
 }
 
-export interface HelpdeskSocketEvent {
-    type: 'chat.message' | 'chat.typing';
-    message?: HelpdeskMessageType;
-    user_id?: string;
-    is_typing?: boolean;
-}
+export type HelpdeskSocketEvent =
+    | {
+        type: 'helpdesk.thread';
+        data: {
+            thread_id: string;
+            update_type: 'message' | 'metadata';
+            message?: HelpdeskMessageType;
+            thread?: Partial<HelpdeskThreadType>;
+        }
+      }
+    | {
+        type: 'helpdesk.thread_typing';
+        data: {
+            thread_id: string;
+            user_id: string;
+            is_typing: boolean;
+        }
+      }
+    | { type: 'helpdesk.update'; data: { stats: HelpdeskThreadListResponse['helpdesk_summary_data']; refresh_threads: boolean } }
+    | { type: 'helpdesk.list'; data: { results: HelpdeskThreadType[]; pagination: PaginationData } }
+    | { type: 'notification_activity'; id: number; subject: string; message: string; notification_type: 'info' | 'success' | 'alert' | 'error' | 'warning'; link: string; is_read: boolean; created_at: string }
+    | { type: 'error'; message: string };

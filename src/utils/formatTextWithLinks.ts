@@ -1,8 +1,8 @@
-import React from 'react';
-
 export type TextNode = string | { type: 'link'; href: string; text: string };
 
 export function formatTextWithLinks(text: string): TextNode[] {
+    if (!text || typeof text !== 'string') return [];
+
     const urlRegex = /(https?:\/\/[^\s]+)/g;
     const parts = text.split(urlRegex);
     const result: TextNode[] = [];

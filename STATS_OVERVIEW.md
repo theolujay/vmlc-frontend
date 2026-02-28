@@ -110,7 +110,7 @@ Retrieves a paginated list of all helpdesk threads for staff, including a real-t
       "last_message_at": "iso-datetime",
       "unread_by_staff_count": "number",
       "candidate_last_msg_preview": "string",
-      "is_online": "boolean",
+      "is_candidate_online": "boolean",
       "created_at": "iso-datetime"
     }
   ]
@@ -125,5 +125,5 @@ Retrieves a paginated list of all helpdesk threads for staff, including a real-t
 #### `results` (Thread Object)
 - `unread_by_staff_count`: Count of messages sent by the candidate that have not yet been read by any staff member.
 - `candidate_last_msg_preview`: A 100-character snippet of the latest message from the candidate.
-- `is_online`: Boolean indicating if the candidate is currently active/online (via Redis cache).
+- `is_candidate_online`: Boolean indicating if the candidate is currently active/online (via Redis cache).
 - `assigned_staff_name`: Display name of the staff member currently assigned to the thread.
