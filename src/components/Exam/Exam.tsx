@@ -12,6 +12,7 @@ import { shuffleArray } from '@/utils/generalUtils';
 import { TakeExamType, TakeExamQuestionType } from '@/types/Examtype';
 import HelpdeskButton from '../General/Portal/DashboardParts/HelpdeskButton';
 import useGetCurrentUser from '@/hooks/useGetCurrentUser';
+import { AxiosError } from 'axios';
 
 // Local types for shuffling logic
 interface ShuffledTakeExamQuestionType extends TakeExamQuestionType {
@@ -27,7 +28,7 @@ export default function Exam() {
   const params = useParams();
   const examId = params?.examId as string;
 
-  const { isPending, data, refetch } = useCandidateTakeExam(examId);
+  const { isPending, data, isError, error } = useCandidateTakeExam(examId);
   const { data: dashboardData, isPending: dashboardPending } = useGetExamPortal();
   const [answers, setAnswers] = useState<Record<number, string>>({});
   const { onSubmit, isPending: submitPending } = useSubmitAnswers(examId)
@@ -197,6 +198,34 @@ export default function Exam() {
     await enterFullscreen();
     setExamStarted(true);
   };
+
+  if (isError) {
+    const axiosError = error as AxiosError<{ detail?: string; message?: string }>;
+    const status = axiosError?.response?.status;
+    const detail = axiosError?.response?.data?.detail || axiosError?.response?.data?.message || "You cannot access this examination at this time.";
+
+    if (status === 403 || status === 404) {
+      return (
+        <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50 p-6 text-center">
+          <div className="bg-white p-10 rounded-[2.5rem] shadow-xl max-w-2xl border border-gray-100">
+            <div className="w-20 h-20 bg-amber-100 rounded-full flex items-center justify-center mx-auto mb-6 text-amber-600">
+              <i className="fas fa-exclamation-triangle text-3xl"></i>
+            </div>
+            <h1 className="text-3xl font-black text-gray-800 mb-4">Session Unavailable</h1>
+            <p className="text-gray-600 mb-8 leading-relaxed">
+              {detail}
+            </p>
+            <button
+              onClick={() => router.push('/exam-portal')}
+              className="px-10 py-5 bg-[#3E4095] text-white rounded-2xl font-black text-sm uppercase tracking-widest shadow-xl shadow-[#3E4095]/20 hover:scale-105 transition-all active:scale-95"
+            >
+              Return to Portal
+            </button>
+          </div>
+        </div>
+      );
+    }
+  }
 
   if (dashboardPending || isPending) {
     return (
