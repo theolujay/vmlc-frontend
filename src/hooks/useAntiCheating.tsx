@@ -8,31 +8,54 @@ interface AntiCheatingWindow extends Window {
 
 export const useAntiCheating = () => {
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const [isFullscreenSupported, setIsFullscreenSupported] = useState(true);
+
+  // Check if fullscreen is supported on mount
+  useEffect(() => {
+    const element = document.documentElement as any;
+    const isSupported = !!(
+      element.requestFullscreen ||
+      element.webkitRequestFullscreen ||
+      element.mozRequestFullScreen ||
+      element.msRequestFullscreen
+    );
+    setIsFullscreenSupported(isSupported);
+  }, []);
 
   const enterFullscreen = useCallback(async () => {
     try {
-      const element = document.documentElement;
+      const element = document.documentElement as any;
       if (element.requestFullscreen) {
         await element.requestFullscreen();
-      } else if ((element as any).webkitRequestFullscreen) {
-        await (element as any).webkitRequestFullscreen();
-      } else if ((element as any).msRequestFullscreen) {
-        await (element as any).msRequestFullscreen();
+      } else if (element.webkitRequestFullscreen) {
+        await element.webkitRequestFullscreen();
+      } else if (element.mozRequestFullScreen) {
+        await element.mozRequestFullScreen();
+      } else if (element.msRequestFullscreen) {
+        await element.msRequestFullscreen();
+      } else {
+        // Fallback for devices (like iOS Safari) that don't support element fullscreen
+        setIsFullscreen(true);
       }
     } catch (error) {
       console.error("Error attempting to enable full-screen mode:", error);
-      toast.error("Full-screen mode is required to take this exam.");
+      // Even if it fails, we might want to let the user proceed if we're on a problematic device
+      setIsFullscreen(true);
+      toast.warn("Full-screen mode could not be activated. Please ensure you stay on this page.");
     }
   }, []);
 
   const exitFullscreen = useCallback(async () => {
     try {
-      if (document.exitFullscreen) {
-        await document.exitFullscreen();
-      } else if ((document as any).webkitExitFullscreen) {
-        await (document as any).webkitExitFullscreen();
-      } else if ((document as any).msExitFullscreen) {
-        await (document as any).msExitFullscreen();
+      const doc = document as any;
+      if (doc.exitFullscreen) {
+        await doc.exitFullscreen();
+      } else if (doc.webkitExitFullscreen) {
+        await doc.webkitExitFullscreen();
+      } else if (doc.mozCancelFullScreen) {
+        await doc.mozCancelFullScreen();
+      } else if (doc.msExitFullscreen) {
+        await doc.msExitFullscreen();
       }
     } catch (error) {
       console.error("Error attempting to exit full-screen mode:", error);
@@ -44,10 +67,17 @@ export const useAntiCheating = () => {
     const acWindow = window as AntiCheatingWindow;
 
     const handleFullscreenChange = () => {
-      const isCurrentlyFullscreen = !!document.fullscreenElement;
+      const doc = document as any;
+      const isCurrentlyFullscreen = !!(
+        doc.fullscreenElement ||
+        doc.webkitFullscreenElement ||
+        doc.mozFullScreenElement ||
+        doc.msFullscreenElement
+      );
+      
       setIsFullscreen(isCurrentlyFullscreen);
 
-      if (!isCurrentlyFullscreen) {
+      if (!isCurrentlyFullscreen && isFullscreenSupported) {
         document.body.style.filter = "blur(15px)";
         toast.error("FULLSCREEN EXIT DETECTED: You must stay in fullscreen mode. This incident has been recorded.", {
           position: "top-center",
@@ -220,6 +250,9 @@ export const useAntiCheating = () => {
     document.addEventListener('touchstart', handleTouchStart, { passive: true });
     document.addEventListener('selectstart', handleSelectStart);
     document.addEventListener('fullscreenchange', handleFullscreenChange);
+    document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
+    document.addEventListener('mozfullscreenchange', handleFullscreenChange);
+    document.addEventListener('MSFullscreenChange', handleFullscreenChange);
     window.addEventListener('blur', handleWindowBlur);
     window.addEventListener('focus', handleWindowFocus);
     window.addEventListener('resize', handleResize);
@@ -234,6 +267,9 @@ export const useAntiCheating = () => {
       document.removeEventListener('touchstart', handleTouchStart);
       document.removeEventListener('selectstart', handleSelectStart);
       document.removeEventListener('fullscreenchange', handleFullscreenChange);
+      document.removeEventListener('webkitfullscreenchange', handleFullscreenChange);
+      document.removeEventListener('mozfullscreenchange', handleFullscreenChange);
+      document.removeEventListener('MSFullscreenChange', handleFullscreenChange);
       window.removeEventListener('blur', handleWindowBlur);
       window.removeEventListener('focus', handleWindowFocus);
       window.removeEventListener('resize', handleResize);
