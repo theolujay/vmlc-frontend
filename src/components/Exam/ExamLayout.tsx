@@ -19,7 +19,7 @@ export default function ExamLayout({
 }>) {
 
     return (
-        <div className='flex min-h-screen w-full flex-col bg-[#F7F9FC]'>
+        <div className='flex min-h-[100dvh] w-full flex-col bg-[#F7F9FC]'>
             <ExamNavigationProvider>
                 <div className='sticky top-0 z-40'>
                     <Header />
