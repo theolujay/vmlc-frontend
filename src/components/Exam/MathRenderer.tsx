@@ -1,8 +1,7 @@
 'use client';
 
 import React, { useEffect, useRef, useMemo } from 'react';
-import katex from 'katex';
-import renderMathInElement from 'katex/dist/contrib/auto-render';
+import renderMathInElement from 'katex/contrib/auto-render';
 
 interface MathRendererProps {
   content: string;

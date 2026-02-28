@@ -1,7 +1,7 @@
 import { useEffect, useState, useCallback, useRef } from 'react';
 import { HelpdeskThreadListResponse, HelpdeskSocketEvent } from '@/types/HelpdeskType';
 import { HelpdeskService } from '@/services/Helpdesk.service';
-import { useSocket } from '@/contexts/SocketProvider';
+import { useSocket, SocketMessage } from '@/contexts/SocketProvider';
 
 /**
  * Hook to list helpdesk threads for staff using Unified WebSocket for real-time updates.
@@ -43,27 +43,29 @@ export default function useListHelpdeskThreads(page: number, filters?: Record<st
         }
     }, [enabled, page, filters, isConnected, fetchThreadsRest]);
 
-    const handleHelpdeskList = useCallback((event: HelpdeskSocketEvent) => {
-        if (event.type === 'helpdesk.list' && event.data) {
+    const handleHelpdeskList = useCallback((event: SocketMessage) => {
+        const typedEvent = event as unknown as HelpdeskSocketEvent;
+        if (typedEvent.type === 'helpdesk.list' && typedEvent.data) {
             setData(prev => ({
                 ...prev,
-                results: event.data.results ?? [],
-                pagination: event.data.pagination ?? prev?.pagination,
+                results: typedEvent.data.results ?? [],
+                pagination: typedEvent.data.pagination ?? prev?.pagination,
                 helpdesk_summary_data: prev?.helpdesk_summary_data
             } as HelpdeskThreadListResponse));
             setLoading(false);
         }
     }, []);
 
-    const handleHelpdeskUpdate = useCallback((event: HelpdeskSocketEvent) => {
-        if (event.type === 'helpdesk.update' && event.data) {
-            if (event.data.stats) {
+    const handleHelpdeskUpdate = useCallback((event: SocketMessage) => {
+        const typedEvent = event as unknown as HelpdeskSocketEvent;
+        if (typedEvent.type === 'helpdesk.update' && typedEvent.data) {
+            if (typedEvent.data.stats) {
                 setData(prev => ({
                     ...prev,
-                    helpdesk_summary_data: event.data.stats
+                    helpdesk_summary_data: typedEvent.data.stats
                 } as HelpdeskThreadListResponse));
             }
-            if (event.data.refresh_threads) {
+            if (typedEvent.data.refresh_threads) {
                 fetchThreadsSocket(pageRef.current, filtersRef.current);
             }
         }
@@ -71,12 +73,12 @@ export default function useListHelpdeskThreads(page: number, filters?: Record<st
 
     useEffect(() => {
         if (enabled) {
-            addListener('helpdesk.list', handleHelpdeskList as any);
-            addListener('helpdesk.update', handleHelpdeskUpdate as any);
+            addListener('helpdesk.list', handleHelpdeskList);
+            addListener('helpdesk.update', handleHelpdeskUpdate);
         }
         return () => {
-            removeListener('helpdesk.list', handleHelpdeskList as any);
-            removeListener('helpdesk.update', handleHelpdeskUpdate as any);
+            removeListener('helpdesk.list', handleHelpdeskList);
+            removeListener('helpdesk.update', handleHelpdeskUpdate);
         };
     }, [enabled, addListener, removeListener, handleHelpdeskList, handleHelpdeskUpdate]);
 
