@@ -3,7 +3,7 @@ import { useParams, useRouter } from 'next/navigation';
 import ExamLayout from './ExamLayout'
 import Questions from './ExamQuestions'
 import useCandidateTakeExam from '@/hooks/useCandidateTakeExam';
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import useSubmitAnswers from '@/hooks/useSubmitAnswers';
 import useGetExamPortal from '@/hooks/useGetExamPortal';
 import { toast } from 'react-toastify';
@@ -27,14 +27,19 @@ export default function Exam() {
   const params = useParams();
   const examId = params?.examId as string;
 
-  const { isPending, data } = useCandidateTakeExam(examId);
+  const { isPending, data, refetch } = useCandidateTakeExam(examId);
   const { data: dashboardData, isPending: dashboardPending } = useGetExamPortal();
   const [answers, setAnswers] = useState<Record<number, string>>({});
   const { onSubmit, isPending: submitPending } = useSubmitAnswers(examId)
   const [isLoaded, setIsLoaded] = useState(false);
   const [examStarted, setExamStarted] = useState(false);
 
-  const { isFullscreen, enterFullscreen } = useAntiCheating();
+  const handleReturnToExam = useCallback(() => {
+    // Refresh page as requested to reset environment and sync state
+    window.location.reload();
+  }, []);
+
+  const { isFullscreen, enterFullscreen } = useAntiCheating(handleReturnToExam);
   const { user } = useGetCurrentUser();
 
   useEffect(() => {

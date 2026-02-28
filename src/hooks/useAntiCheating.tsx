@@ -6,7 +6,7 @@ interface AntiCheatingWindow extends Window {
   lastBlurTime?: number;
 }
 
-export const useAntiCheating = () => {
+export const useAntiCheating = (onReturn?: () => void) => {
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [isFullscreenSupported, setIsFullscreenSupported] = useState(true);
 
@@ -66,16 +66,23 @@ export const useAntiCheating = () => {
     let wasInactive = false;
     const acWindow = window as AntiCheatingWindow;
 
-    const handleFullscreenChange = () => {
+    const getIsFullscreen = () => {
       const doc = document as any;
-      const isCurrentlyFullscreen = !!(
+      return !!(
         doc.fullscreenElement ||
         doc.webkitFullscreenElement ||
         doc.mozFullScreenElement ||
         doc.msFullscreenElement
       );
+    };
+
+    const handleFullscreenChange = () => {
+      const isCurrentlyFullscreen = getIsFullscreen();
       
-      setIsFullscreen(isCurrentlyFullscreen);
+      // Only update state if the API is supported
+      if (isFullscreenSupported) {
+        setIsFullscreen(isCurrentlyFullscreen);
+      }
 
       if (!isCurrentlyFullscreen && isFullscreenSupported) {
         document.body.style.filter = "blur(15px)";
@@ -151,8 +158,8 @@ export const useAntiCheating = () => {
     };
 
     const handleActive = () => {
-      const isCurrentlyFullscreen = !!document.fullscreenElement;
-      if (isCurrentlyFullscreen) {
+      const isCurrentlyFullscreen = getIsFullscreen();
+      if (isCurrentlyFullscreen || !isFullscreenSupported) {
         document.body.style.filter = "none";
       }
 
@@ -181,6 +188,11 @@ export const useAntiCheating = () => {
         } catch (e) { }
 
         wasInactive = false;
+        
+        // Trigger the return callback if provided
+        if (onReturn) {
+          onReturn();
+        }
       }
     };
 
@@ -280,7 +292,7 @@ export const useAntiCheating = () => {
       }
       document.body.style.filter = "none";
     };
-  }, []); // Removed handleActive from dependency array
+  }, [onReturn, isFullscreenSupported]);
 
   return { isFullscreen, enterFullscreen, exitFullscreen };
 };
