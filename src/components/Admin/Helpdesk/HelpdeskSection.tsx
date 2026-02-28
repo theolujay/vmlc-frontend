@@ -45,7 +45,7 @@ export default function HelpdeskSection() {
                         <Spinner />
                     </div>
                 ) : (
-                    <ConversationListCard
+                    <HelpdeskThreadListCard
                         data={data?.results ?? []}
                         page_count={data?.pagination?.total_pages ?? 0}
                         currentPage={page}
@@ -107,31 +107,22 @@ function HelpdeskStats({ stats }: { stats: HelpdeskStatData }) {
                             <span className="text-[9px] font-bold text-red-600/70 uppercase">Unassigned</span>
                         </div>
                     </div>
-                </div>
-
-                <div className="flex flex-col p-5 bg-red-50 rounded-2xl border border-red-100 shadow-sm shadow-red-500/5 relative overflow-hidden group">
-                    <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:scale-110 transition-transform">
-                        <i className="fas fa-envelope-open-text text-4xl text-red-600"></i>
-                    </div>
-                    <span className="text-[10px] font-black text-red-400 uppercase tracking-widest mb-1">Attention Required</span>
-                    <span className="text-3xl font-black text-red-600">{stats.unread_messages}</span>
-                    <p className="mt-1 text-[10px] font-bold text-red-400 uppercase tracking-tight">Unread messages from candidates</p>
                 </div> */}
 
-                <div className="flex flex-col p-5 bg-red-50 rounded-2xl border border-red-100 shadow-sm shadow-red-500/5 relative overflow-hidden group">
+                <div className="flex flex-col p-5 bg-red-50/5 rounded-2xl border border-red-100 shadow-sm shadow-red-500/5 relative overflow-hidden group">
                     <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:scale-110 transition-transform">
                         <i className="fas fa-envelope-open-text text-4xl text-red-600"></i>
                     </div>
-                    <span className="text-[10px] font-black text-red-400 uppercase tracking-widest mb-1">Attention Required</span>
+                    <span className="text-[10px] font-black text-red-500 uppercase tracking-widest mb-1">Attention Required</span>
                     <div className="flex items-end gap-3">
                         <div className="flex flex-col">
                             <span className="text-2xl font-black  text-red-600">{stats.unattended_candidates}</span>
-                            <span className="text-[9px] font-bold text-red-500/70 uppercase">Unattended candidates</span>
+                            <span className="text-[9px] font-bold text-red-500/70 uppercase">Candidates without Staff Reply</span>
                         </div>
                         <div className="w-px h-8 bg-emerald-200/50 mb-1"></div>
                         <div className="flex flex-col">
                             <span className="text-2xl font-black text-red-900">{stats.unread_messages}</span>
-                            <span className="text-[9px] font-bold text-red-800/70 uppercase">Total messages unread</span>
+                            <span className="text-[9px] font-bold text-red-800/70 uppercase">Total unread messages</span>
                         </div>
                     </div>
                 </div>
@@ -143,7 +134,7 @@ function HelpdeskStats({ stats }: { stats: HelpdeskStatData }) {
 
 
 
-function ConversationListCard({
+function HelpdeskThreadListCard({
     data,
     onPageChange,
     currentPage,
@@ -378,7 +369,7 @@ function ConversationListCard({
                                             </span>
                                         ) : (
                                             <span className="text-gray-300">
-                                                <i className="fas fa-check-circle text-xs"></i>
+                                                <i className="fas fa-circle text-s"></i>
                                             </span>
                                         )}
                                     </div>
