@@ -4,21 +4,21 @@ import { useAuth } from '@/contexts/AuthProvider';
 import { socketUrl } from '@/constants/socketUrl';
 import config from '../../config';
 
-type SocketMessage = {
+export type SocketMessage = {
     type: string;
-    [key: string]: any;
+    [key: string]: unknown;
 };
 
 type SocketAction = {
     action: string;
-    data?: any;
+    data?: unknown;
 };
 
-type Listener = (data: any) => void;
+type Listener = (data: SocketMessage) => void;
 
 interface SocketContextType {
     isConnected: boolean;
-    sendAction: (action: string, data?: any) => void;
+    sendAction: (action: string, data?: unknown) => void;
     addListener: (type: string, listener: Listener) => void;
     removeListener: (type: string, listener: Listener) => void;
 }
@@ -102,7 +102,7 @@ export function SocketProvider({ children }: { children: React.ReactNode }) {
         };
     }, [authState?.isAuthenticated, authState?.token, connect]);
 
-    const sendAction = useCallback((action: string, data?: any) => {
+    const sendAction = useCallback((action: string, data?: unknown) => {
         if (socketRef.current && socketRef.current.readyState === WebSocket.OPEN) {
             const payload: SocketAction = { action, data };
             socketRef.current.send(JSON.stringify(payload));

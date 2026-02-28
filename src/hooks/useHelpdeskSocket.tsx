@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
 import { HelpdeskMessageType, HelpdeskSocketEvent, HelpdeskThreadType } from '@/types/HelpdeskType';
-import { useSocket } from '@/contexts/SocketProvider';
+import { useSocket, SocketMessage } from '@/contexts/SocketProvider';
 
 /**
  * Hook to manage real-time interactions for a specific helpdesk thread using the Unified WebSocket.
@@ -25,9 +25,10 @@ export default function useHelpdeskSocket(
         onThreadUpdatedRef.current = onThreadUpdated;
     }, [onThreadUpdated]);
 
-    const handleThreadEvent = useCallback((event: HelpdeskSocketEvent) => {
-        if (event.type === 'helpdesk.thread' && event.data.thread_id === threadId) {
-            const { update_type, message, thread } = event.data;
+    const handleThreadEvent = useCallback((event: SocketMessage) => {
+        const typedEvent = event as unknown as HelpdeskSocketEvent;
+        if (typedEvent.type === 'helpdesk.thread' && typedEvent.data.thread_id === threadId) {
+            const { update_type, message, thread } = typedEvent.data;
 
             if (update_type === 'message' && message) {
                 // When a message is received, clear the typing status for that user
@@ -55,9 +56,10 @@ export default function useHelpdeskSocket(
         }
     }, [threadId]);
 
-    const handleTypingEvent = useCallback((event: HelpdeskSocketEvent) => {
-        if (event.type === 'helpdesk.thread_typing' && event.data.thread_id === threadId) {
-            const { user_id, is_typing } = event.data;
+    const handleTypingEvent = useCallback((event: SocketMessage) => {
+        const typedEvent = event as unknown as HelpdeskSocketEvent;
+        if (typedEvent.type === 'helpdesk.thread_typing' && typedEvent.data.thread_id === threadId) {
+            const { user_id, is_typing } = typedEvent.data;
             const identifier = user_id;
 
             setIsTyping((prev) => ({
@@ -90,8 +92,8 @@ export default function useHelpdeskSocket(
         // Subscribe to the thread
         sendAction('subscribe_thread', { thread_id: threadId });
 
-        addListener('helpdesk.thread', handleThreadEvent as any);
-        addListener('helpdesk.thread_typing', handleTypingEvent as any);
+        addListener('helpdesk.thread', handleThreadEvent);
+        addListener('helpdesk.thread_typing', handleTypingEvent);
 
         return () => {
             // Cleanup timeouts
@@ -100,8 +102,8 @@ export default function useHelpdeskSocket(
 
             // Unsubscribe from the thread
             sendAction('unsubscribe_thread', { thread_id: threadId });
-            removeListener('helpdesk.thread', handleThreadEvent as any);
-            removeListener('helpdesk.thread_typing', handleTypingEvent as any);
+            removeListener('helpdesk.thread', handleThreadEvent);
+            removeListener('helpdesk.thread_typing', handleTypingEvent);
         };
     }, [threadId, isConnected, addListener, removeListener, sendAction, handleThreadEvent, handleTypingEvent]);
 

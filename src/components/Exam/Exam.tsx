@@ -3,7 +3,7 @@ import { useParams, useRouter } from 'next/navigation';
 import ExamLayout from './ExamLayout'
 import Questions from './ExamQuestions'
 import useCandidateTakeExam from '@/hooks/useCandidateTakeExam';
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import useSubmitAnswers from '@/hooks/useSubmitAnswers';
 import useGetExamPortal from '@/hooks/useGetExamPortal';
 import { toast } from 'react-toastify';
@@ -12,6 +12,7 @@ import { shuffleArray } from '@/utils/generalUtils';
 import { TakeExamType, TakeExamQuestionType } from '@/types/Examtype';
 import HelpdeskButton from '../General/Portal/DashboardParts/HelpdeskButton';
 import useGetCurrentUser from '@/hooks/useGetCurrentUser';
+import { AxiosError } from 'axios';
 
 // Local types for shuffling logic
 interface ShuffledTakeExamQuestionType extends TakeExamQuestionType {
@@ -27,18 +28,23 @@ export default function Exam() {
   const params = useParams();
   const examId = params?.examId as string;
 
-  const { isPending, data } = useCandidateTakeExam(examId);
+  const { isPending, data, isError, error } = useCandidateTakeExam(examId);
   const { data: dashboardData, isPending: dashboardPending } = useGetExamPortal();
   const [answers, setAnswers] = useState<Record<number, string>>({});
   const { onSubmit, isPending: submitPending } = useSubmitAnswers(examId)
   const [isLoaded, setIsLoaded] = useState(false);
   const [examStarted, setExamStarted] = useState(false);
 
-  const { isFullscreen, enterFullscreen } = useAntiCheating();
+  const handleReturnToExam = useCallback(() => {
+    // Refresh page as requested to reset environment and sync state
+    window.location.reload();
+  }, []);
+
+  const { isFullscreen, enterFullscreen } = useAntiCheating(handleReturnToExam);
   const { user } = useGetCurrentUser();
 
   useEffect(() => {
-    if (!dashboardPending && dashboardData) {
+    if (!dashboardPending && dashboardData && !isError) {
       // Check if this specific exam is already done
       const activeExam = dashboardData.active_exam;
       if (activeExam && activeExam.id === examId && activeExam.attempt?.submitted_at) {
@@ -55,10 +61,10 @@ export default function Exam() {
         return;
       }
     }
-  }, [dashboardData, dashboardPending, examId, router]);
+  }, [dashboardData, dashboardPending, examId, router, isError]);
 
-  const candidateName = user 
-    ? `${user.first_name} ${user.last_name}` 
+  const candidateName = user
+    ? `${user.first_name} ${user.last_name}`
     : "Candidate";
 
   const currentStage = dashboardData?.enrollment_stage_progress?.current_stage || 'SCREENING';
@@ -193,6 +199,40 @@ export default function Exam() {
     setExamStarted(true);
   };
 
+  if (isError) {
+    const axiosError = error as AxiosError<{ detail?: string; message?: string }>;
+    const status = axiosError?.response?.status;
+    const detail = axiosError?.response?.data?.detail || axiosError?.response?.data?.message || "You cannot access this examination at this time.";
+
+    if (status && status >= 400 && status < 599) {
+      return (
+        <div
+          onClick={() => router.push('/exam-portal')}
+          className="flex flex-col items-center justify-center min-h-screen bg-black/40 p-6 text-center backdrop-blur-sm fixed inset-0 z-[9999] cursor-pointer"
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="bg-white p-10 rounded-[2.5rem] shadow-xl max-w-2xl border border-gray-100 cursor-default"
+          >
+            <div className="w-20 h-20 bg-amber-100 rounded-full flex items-center justify-center mx-auto mb-6 text-amber-600">
+              <i className="fas fa-exclamation-triangle text-3xl"></i>
+            </div>
+            <h1 className="text-3xl font-black text-gray-800 mb-4">Session Unavailable</h1>
+            <p className="text-gray-600 mb-8 leading-relaxed">
+              {detail}
+            </p>
+            <button
+              onClick={() => router.push('/exam-portal')}
+              className="px-10 py-5 bg-[#3E4095] text-white rounded-2xl font-black text-sm uppercase tracking-widest shadow-xl shadow-[#3E4095]/20 hover:scale-105 transition-all active:scale-95"
+            >
+              Return to Portal
+            </button>
+          </div>
+        </div>
+      );
+    }
+  }
+
   if (dashboardPending || isPending) {
     return (
       <div className="flex items-center justify-center min-h-screen">
@@ -243,7 +283,7 @@ export default function Exam() {
         />
 
         {/* PERSISTENT ACTIONS - HELPDESK */}
-        <HelpdeskButton 
+        <HelpdeskButton
             currentStage={currentStage}
             candidateName={candidateName}
             exam_id={examId}

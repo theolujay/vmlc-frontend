@@ -14,4 +14,18 @@ declare global {
   }
 }
 
+declare module 'katex/dist/contrib/auto-render' {
+  import { KatexOptions } from 'katex';
+  export default function renderMathInElement(
+    element: HTMLElement,
+    options?: KatexOptions & {
+      delimiters?: {
+        left: string;
+        right: string;
+        display: boolean;
+      }[];
+    }
+  ): void;
+}
+
 export {};
