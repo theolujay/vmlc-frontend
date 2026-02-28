@@ -44,7 +44,7 @@ export default function Exam() {
   const { user } = useGetCurrentUser();
 
   useEffect(() => {
-    if (!dashboardPending && dashboardData) {
+    if (!dashboardPending && dashboardData && !isError) {
       // Check if this specific exam is already done
       const activeExam = dashboardData.active_exam;
       if (activeExam && activeExam.id === examId && activeExam.attempt?.submitted_at) {
@@ -61,10 +61,10 @@ export default function Exam() {
         return;
       }
     }
-  }, [dashboardData, dashboardPending, examId, router]);
+  }, [dashboardData, dashboardPending, examId, router, isError]);
 
-  const candidateName = user 
-    ? `${user.first_name} ${user.last_name}` 
+  const candidateName = user
+    ? `${user.first_name} ${user.last_name}`
     : "Candidate";
 
   const currentStage = dashboardData?.enrollment_stage_progress?.current_stage || 'SCREENING';
@@ -204,10 +204,16 @@ export default function Exam() {
     const status = axiosError?.response?.status;
     const detail = axiosError?.response?.data?.detail || axiosError?.response?.data?.message || "You cannot access this examination at this time.";
 
-    if (status === 403 || status === 404) {
+    if (status && status >= 400 && status < 599) {
       return (
-        <div className="flex flex-col items-center justify-center min-h-screen bg-gray-50 p-6 text-center">
-          <div className="bg-white p-10 rounded-[2.5rem] shadow-xl max-w-2xl border border-gray-100">
+        <div
+          onClick={() => router.push('/exam-portal')}
+          className="flex flex-col items-center justify-center min-h-screen bg-black/40 p-6 text-center backdrop-blur-sm fixed inset-0 z-[9999] cursor-pointer"
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="bg-white p-10 rounded-[2.5rem] shadow-xl max-w-2xl border border-gray-100 cursor-default"
+          >
             <div className="w-20 h-20 bg-amber-100 rounded-full flex items-center justify-center mx-auto mb-6 text-amber-600">
               <i className="fas fa-exclamation-triangle text-3xl"></i>
             </div>
@@ -277,7 +283,7 @@ export default function Exam() {
         />
 
         {/* PERSISTENT ACTIONS - HELPDESK */}
-        <HelpdeskButton 
+        <HelpdeskButton
             currentStage={currentStage}
             candidateName={candidateName}
             exam_id={examId}
