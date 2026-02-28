@@ -1,8 +1,9 @@
 "use client"
-import React, { createContext, useContext, useEffect, useState, useRef } from 'react';
+import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
 import { NotificationService } from '@/services/notification.service';
 import { Notification } from '@/types/notificationType';
 import { useAuth } from '@/contexts/AuthProvider';
+import { useSocket } from '@/contexts/SocketProvider';
 
 interface NotificationContextType {
   notifications: Notification[];
@@ -20,12 +21,11 @@ const NotificationContext = createContext<NotificationContextType | undefined>(u
 
 export function NotificationProvider({ children }: { children: React.ReactNode }) {
   const { authState } = useAuth();
+  const { isConnected, addListener, removeListener, sendAction } = useSocket();
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
-  const [isConnected, setIsConnected] = useState(false);
   const [inAppNotificationsEnabled, setInAppNotificationsEnabled] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
-  const serviceRef = useRef<NotificationService | null>(null);
 
   useEffect(() => {
     const fetchHistory = async () => {
@@ -43,37 +43,64 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
 
     if (authState?.isAuthenticated && authState.token) {
         fetchHistory();
-        // Initialize service
-        serviceRef.current = new NotificationService(
-            (newNotification) => {
-                setNotifications(prev => {
-                    // Avoid duplicates if history fetch and WS message overlap
-                    if (prev.find(n => n.id === newNotification.id)) {
-                        return prev;
-                    }
-                    return [newNotification, ...prev];
-                });
-                setUnreadCount(prev => prev + 1);
-            },
-            (error) => {
-                console.error("Notification Service Error:", error);
-            },
-            () => setIsConnected(true),
-            () => setIsConnected(false)
-        );
-        serviceRef.current.connect(authState.token);
     } else {
-        serviceRef.current?.disconnect();
-        serviceRef.current = null;
         setNotifications([]);
         setUnreadCount(0);
-        setIsConnected(false);
     }
-
-    return () => {
-        serviceRef.current?.disconnect();
-    };
   }, [authState?.isAuthenticated, authState?.token]);
+
+  const handleNotificationActivity = useCallback((event: any) => {
+      // Use any here because of the potential 'type' collision in the spec
+      if (event.type === 'notification_activity' || (event.id && event.subject && (event.message || event.notification_type))) {
+          setNotifications(prev => {
+              const id = event.id;
+              if (prev.find(n => n.id === id)) {
+                  return prev;
+              }
+
+              // Extract message string defensively. 
+              // If event.message is an object, try to get event.message.message
+              let messageContent = '';
+              if (typeof event.message === 'string') {
+                  messageContent = event.message;
+              } else if (event.message && typeof event.message.message === 'string') {
+                  messageContent = event.message.message;
+              } else if (event.content && typeof event.content === 'string') {
+                  messageContent = event.content;
+              }
+
+              const newNotification: Notification = {
+                  id: id,
+                  subject: event.subject || event.title || 'Notification',
+                  message: messageContent,
+                  type: (event.notification_type || (['info', 'success', 'alert', 'error', 'warning'].includes(event.type) ? event.type : 'info')) as any,
+                  link: event.link || '',
+                  is_read: event.is_read || false,
+                  created_at: event.created_at || new Date().toISOString()
+              };
+              return [newNotification, ...prev];
+          });
+          setUnreadCount(prev => prev + 1);
+      }
+  }, []);
+
+  useEffect(() => {
+      addListener('notification_activity', handleNotificationActivity);
+      addListener('info', handleNotificationActivity);
+      addListener('success', handleNotificationActivity);
+      addListener('alert', handleNotificationActivity);
+      addListener('error', handleNotificationActivity);
+      addListener('warning', handleNotificationActivity);
+
+      return () => {
+          removeListener('notification_activity', handleNotificationActivity);
+          removeListener('info', handleNotificationActivity);
+          removeListener('success', handleNotificationActivity);
+          removeListener('alert', handleNotificationActivity);
+          removeListener('error', handleNotificationActivity);
+          removeListener('warning', handleNotificationActivity);
+      };
+  }, [addListener, removeListener, handleNotificationActivity]);
 
   const markAsRead = async (id: number) => {
     // Optimistic update
@@ -86,11 +113,14 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
     });
 
     try {
-        await NotificationService.markAsRead(id);
+        // Use WebSocket action if connected, otherwise fallback to REST
+        if (isConnected) {
+            sendAction('mark_notification_as_read', { notification_id: id });
+        } else {
+            await NotificationService.markAsRead(id);
+        }
     } catch (error) {
         console.error("Failed to mark notification as read:", error);
-        // Revert unread count if needed, but usually we just leave it for better UX
-        // or re-fetch history if critical.
     }
   };
 

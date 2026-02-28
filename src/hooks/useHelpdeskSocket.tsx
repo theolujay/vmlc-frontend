@@ -1,108 +1,118 @@
-import { useEffect, useRef, useState } from 'react';
-import { HelpdeskSocketEvent, HelpdeskMessageType } from '@/types/HelpdeskType';
-import config from '../../config';
+import { useEffect, useRef, useState, useCallback } from 'react';
+import { HelpdeskMessageType, HelpdeskSocketEvent, HelpdeskThreadType } from '@/types/HelpdeskType';
+import { useSocket } from '@/contexts/SocketProvider';
 
 /**
- * Hook to manage WebSocket connection for a helpdesk thread.
+ * Hook to manage real-time interactions for a specific helpdesk thread using the Unified WebSocket.
  */
-export default function useHelpdeskSocket(threadId: string | null, onMessageReceived: (message: HelpdeskMessageType) => void) {
-    const socketRef = useRef<WebSocket | null>(null);
+export default function useHelpdeskSocket(
+    threadId: string | null, 
+    onMessageReceived: (message: HelpdeskMessageType) => void,
+    onThreadUpdated?: (thread: Partial<HelpdeskThreadType>) => void
+) {
+    const { isConnected, addListener, removeListener, sendAction } = useSocket();
     const onMessageReceivedRef = useRef(onMessageReceived);
+    const onThreadUpdatedRef = useRef(onThreadUpdated);
     const [isTyping, setIsTyping] = useState<Record<string, boolean>>({});
-    const [connected, setConnected] = useState(false);
-    const connectTimerRef = useRef<NodeJS.Timeout | null>(null);
+    const typingTimeoutsRef = useRef<Record<string, NodeJS.Timeout>>({});
 
-    // Update ref when callback changes
+    // Update refs when callbacks change
     useEffect(() => {
         onMessageReceivedRef.current = onMessageReceived;
     }, [onMessageReceived]);
 
     useEffect(() => {
-        if (!threadId) {
-            setConnected(false);
-            return;
-        }
+        onThreadUpdatedRef.current = onThreadUpdated;
+    }, [onThreadUpdated]);
 
-        // Cleanup function to clear any pending connection
-        const cleanup = () => {
-            if (connectTimerRef.current) {
-                clearTimeout(connectTimerRef.current);
-                connectTimerRef.current = null;
-            }
-            if (socketRef.current) {
-                if (socketRef.current.readyState === WebSocket.OPEN || socketRef.current.readyState === WebSocket.CONNECTING) {
-                    console.log('Closing Helpdesk WebSocket during cleanup');
-                    socketRef.current.close();
-                }
-                socketRef.current = null;
-            }
-        };
+    const handleThreadEvent = useCallback((event: HelpdeskSocketEvent) => {
+        if (event.type === 'helpdesk.thread' && event.data.thread_id === threadId) {
+            const { update_type, message, thread } = event.data;
 
-        // Delay connection slightly to avoid rapid open/close in StrictMode/re-renders
-        connectTimerRef.current = setTimeout(() => {
-            const session = localStorage.getItem("session");
-            const token = session ? JSON.parse(session).access : null;
-            if (!token) return;
-
-            const baseUrl = config.BASE_URL || 'http://localhost:8000/';
-            let wsUrl = baseUrl.replace('http://', 'ws://').replace('https://', 'wss://');
-            if (wsUrl.endsWith('/')) wsUrl = wsUrl.slice(0, -1);
-            
-            const fullWsUrl = `${wsUrl}/v1/ws/helpdesk/thread/${threadId}/?api_key=${config.API_KEY}&token=${token}`;
-
-            console.log(`Connecting to Helpdesk WebSocket: ${fullWsUrl}`);
-            const socket = new WebSocket(fullWsUrl);
-            socketRef.current = socket;
-
-            socket.onopen = () => {
-                console.log('Helpdesk WebSocket connected');
-                setConnected(true);
-            };
-
-            socket.onmessage = (event) => {
-                try {
-                    const data: HelpdeskSocketEvent = JSON.parse(event.data);
-                    if (data.type === 'chat.message' && data.message) {
-                        onMessageReceivedRef.current(data.message);
-                    } else if (data.type === 'chat.typing') {
-                        if (data.user_id) {
-                            setIsTyping((prev) => ({
-                                ...prev,
-                                [data.user_id as string]: !!data.is_typing
-                            }));
-                        }
+            if (update_type === 'message' && message) {
+                // When a message is received, clear the typing status for that user
+                const identifier = message.sender || message.sender_name;
+                if (identifier) {
+                    setIsTyping(prev => {
+                        const newState = { ...prev };
+                        delete newState[identifier];
+                        return newState;
+                    });
+                    if (typingTimeoutsRef.current[identifier]) {
+                        clearTimeout(typingTimeoutsRef.current[identifier]);
+                        delete typingTimeoutsRef.current[identifier];
                     }
-                } catch (error) {
-                    console.error('Error parsing helpdesk socket message:', error);
                 }
-            };
 
-            socket.onclose = (event) => {
-                console.log('Helpdesk WebSocket disconnected', event.code, event.reason);
-                setConnected(false);
-                // Only clear socketRef if it's still this socket
-                if (socketRef.current === socket) {
-                    socketRef.current = null;
+                if (onMessageReceivedRef.current) {
+                    onMessageReceivedRef.current(message);
                 }
-            };
-
-            socket.onerror = (error) => {
-                console.error('Helpdesk WebSocket error:', error);
-                setConnected(false);
-            };
-        }, 100); // 100ms delay
-
-        return cleanup;
+            } else if (update_type === 'metadata' && thread) {
+                if (onThreadUpdatedRef.current) {
+                    onThreadUpdatedRef.current(thread);
+                }
+            }
+        }
     }, [threadId]);
 
-    const sendTypingStatus = (typing: boolean) => {
-        if (socketRef.current && socketRef.current.readyState === WebSocket.OPEN) {
-            socketRef.current.send(JSON.stringify({
-                type: 'chat.typing',
-                is_typing: typing
+    const handleTypingEvent = useCallback((event: HelpdeskSocketEvent) => {
+        if (event.type === 'helpdesk.thread_typing' && event.data.thread_id === threadId) {
+            const { user_id, is_typing } = event.data;
+            const identifier = user_id;
+
+            setIsTyping((prev) => ({
+                ...prev,
+                [identifier]: !!is_typing
             }));
+
+            // Clear existing timeout for this user
+            if (typingTimeoutsRef.current[identifier]) {
+                clearTimeout(typingTimeoutsRef.current[identifier]);
+            }
+
+            // If they are typing, set a timeout to clear it after 10 seconds of inactivity
+            if (is_typing) {
+                typingTimeoutsRef.current[identifier] = setTimeout(() => {
+                    setIsTyping(prev => {
+                        const newState = { ...prev };
+                        delete newState[identifier];
+                        return newState;
+                    });
+                    delete typingTimeoutsRef.current[identifier];
+                }, 10000);
+            }
+        }
+    }, [threadId]);
+
+    useEffect(() => {
+        if (!threadId || !isConnected) return;
+
+        // Subscribe to the thread
+        sendAction('subscribe_thread', { thread_id: threadId });
+
+        addListener('helpdesk.thread', handleThreadEvent as any);
+        addListener('helpdesk.thread_typing', handleTypingEvent as any);
+
+        return () => {
+            // Cleanup timeouts
+            Object.values(typingTimeoutsRef.current).forEach(clearTimeout);
+            typingTimeoutsRef.current = {};
+
+            // Unsubscribe from the thread
+            sendAction('unsubscribe_thread', { thread_id: threadId });
+            removeListener('helpdesk.thread', handleThreadEvent as any);
+            removeListener('helpdesk.thread_typing', handleTypingEvent as any);
+        };
+    }, [threadId, isConnected, addListener, removeListener, sendAction, handleThreadEvent, handleTypingEvent]);
+
+    const sendTypingStatus = (typing: boolean) => {
+        if (threadId && isConnected) {
+            sendAction('thread.typing', {
+                thread_id: threadId,
+                is_typing: typing
+            });
         }
     };
 
-    return { connected, isTyping, sendTypingStatus };
+    return { connected: isConnected, isTyping, sendTypingStatus };
 }

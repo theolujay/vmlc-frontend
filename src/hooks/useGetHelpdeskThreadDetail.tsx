@@ -35,5 +35,5 @@ export default function useGetHelpdeskThreadDetail(threadId: string | null) {
         setMessages((prev) => [...prev, message]);
     };
 
-    return { thread, messages, loading, error, addMessage, setMessages };
+    return { thread, messages, loading, error, addMessage, setMessages, setThread };
 }

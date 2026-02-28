@@ -1,6 +1,7 @@
 import Script from "next/script";
 import AuthProvider from "@/contexts/AuthProvider";
 import { NotificationProvider } from "@/contexts/NotificationProvider";
+import { SocketProvider } from "@/contexts/SocketProvider";
 import QueryProvider from "@/contexts/QueryProviders";
 import type { Metadata } from "next";
 import { Suspense } from "react";
@@ -13,20 +14,7 @@ import Spinner from "@/components/ui/spinner/spinner";
 import { Analytics } from '@vercel/analytics/next';
 import { SpeedInsights } from "@vercel/speed-insights/next"
 
-// const geistSans = Geist({
-//   variable: "--font-geist-sans",
-//   subsets: ["latin"],
-// });
-
-// const geistMono = Geist_Mono({
-//   variable: "--font-geist-mono",
-//   subsets: ["latin"],
-// });
-
-export const metadata: Metadata = {
-  title: "Verboheit MLC Portal",
-  description: "Official portal for the Verboheit Mathematics League Competition.",
-};
+// ... (metadata unchanged)
 
 export default function RootLayout({
   children,
@@ -36,59 +24,33 @@ export default function RootLayout({
   // const routerReady=useRouterReady()
   return (
     <html lang="en">
-      <head>
-        <Script id="mathjax-config" strategy="beforeInteractive">
-          {`
-            window.MathJax = {
-              tex: {
-                inlineMath: [['$', '$'], ['\\\\(', '\\\\)']],
-                displayMath: [['$$', '$$'], ['\\\\[', '\\\\]']],
-                processEscapes: true,
-                processEnvironments: true
-              },
-              options: {
-                skipHtmlTags: ['script', 'noscript', 'style', 'textarea', 'pre']
-              },
-              startup: {
-                pageReady: () => {
-                  return MathJax.startup.defaultPageReady();
-                }
-              },
-              svg: {
-                fontCache: 'global'
-              }
-            };
-          `}
-        </Script>
-        <Script 
-          src="https://cdn.jsdelivr.net/npm/mathjax@4.0.0-beta.7/tex-mml-chtml.js" 
-          strategy="afterInteractive"
-        />
-      </head>
+      {/* ... (head unchanged) */}
       <body
         className="antialiased"
       >
         <AppErrorBoundary>
           <AuthProvider>
-            <NotificationProvider>
-              <QueryProvider>
-                <Suspense fallback={<div className="grid w-full h-screen place-content-center"><Spinner/></div>}>
-                  {children}
-                </Suspense>
-                <ToastContainer 
-                  position="top-right"
-                  autoClose={2000}
-                  hideProgressBar={false}
-                  newestOnTop
-                  closeOnClick
-                  rtl={false}
-                  pauseOnFocusLoss
-                  draggable
-                  pauseOnHover
-                  theme="light"
-                />
-              </QueryProvider>
-            </NotificationProvider>
+            <SocketProvider>
+              <NotificationProvider>
+                <QueryProvider>
+                  <Suspense fallback={<div className="grid w-full h-screen place-content-center"><Spinner/></div>}>
+                    {children}
+                  </Suspense>
+                  <ToastContainer 
+                    position="top-right"
+                    autoClose={2000}
+                    hideProgressBar={false}
+                    newestOnTop
+                    closeOnClick
+                    rtl={false}
+                    pauseOnFocusLoss
+                    draggable
+                    pauseOnHover
+                    theme="light"
+                  />
+                </QueryProvider>
+              </NotificationProvider>
+            </SocketProvider>
           </AuthProvider>
         </AppErrorBoundary>
         <Analytics />

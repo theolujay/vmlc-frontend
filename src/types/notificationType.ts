@@ -6,6 +6,7 @@ export interface Notification {
   is_read: boolean;
   created_at: string;
   type?: 'info' | 'success' | 'alert' | 'error' | 'warning';
+  link?: string;
 }
 
 export interface NotificationHistoryResponse {

@@ -8,7 +8,7 @@ import useGetCurrentUser from '@/hooks/useGetCurrentUser'
 import { getUserInitials } from '@/utils/capitalizeWords'
 import Link from 'next/link'
 import Image from 'next/image'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, Fragment } from 'react'
 import { useNotifications } from '@/contexts/NotificationProvider'
 import NotificationModal from '@/components/Admin/Broadcast/NotificationModal'
 import ProfileModal from '@/components/Modals/ProfileModal'
@@ -99,7 +99,7 @@ export default function Header() {
 
             {/* Notification Modal (Shared) */}
             {showNotifications && (
-                <>
+                <Fragment key="notifications-wrapper">
                     <div className="fixed inset-0 z-40" onClick={() => setShowNotifications(false)} />
                     <NotificationModal
                         notifications={notifications}
@@ -111,7 +111,7 @@ export default function Header() {
                         onToggleInApp={toggleInAppNotifications}
                         isLoading={isLoading}
                     />
-                </>
+                </Fragment>
             )}
 
             {currentUser?.profile?.user?.id && (
