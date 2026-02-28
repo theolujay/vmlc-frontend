@@ -4,7 +4,6 @@ import { NotificationIcon } from '@/components/ui/SvgAsset/GeneralAsset';
 import Spinner from '@/components/ui/spinner/spinner';
 
 // Inline Icons to replace lucide-react and avoid dependency issues
-// ... existing icons ...
 const CheckCheck = ({ className }: { className?: string }) => (
   <svg className={className} width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
     <path d="M18 6 7 17l-5-5" />
@@ -74,16 +73,6 @@ const NotificationModal: React.FC<NotificationModalProps> = ({
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 5;
 
-  // const startIndex = (currentPage - 1) * itemsPerPage;
-
-  // const filteredNotifications = notifications.filter(n => {
-  //   const type = (n.type || '').toLowerCase();
-  //   return type !== 'info' && type !== 'success';
-  // });
-
-  // const totalPages = Math.ceil(filteredNotifications.length / itemsPerPage);
-  // const currentItems = filteredNotifications.slice(startIndex, startIndex + itemsPerPage);
-
   const totalPages = Math.ceil(notifications.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
   const currentItems = notifications.slice(startIndex, startIndex + itemsPerPage);
@@ -118,7 +107,7 @@ const NotificationModal: React.FC<NotificationModalProps> = ({
       onClick={(e) => e.stopPropagation()}
     >
       {/* Header */}
-      <div className="flex items-center justify-between p-6 border-b border-gray-50">
+      <div key="modal-header" className="flex items-center justify-between p-6 border-b border-gray-50">
         <h2 className="text-xl font-bold text-gray-800 tracking-tight">Notifications</h2>
         <div className="flex items-center gap-3">
           <button
@@ -158,7 +147,7 @@ const NotificationModal: React.FC<NotificationModalProps> = ({
       </div>
 
       {/* Content */}
-      <div className="min-h-[400px] flex flex-col">
+      <div key="modal-content" className="min-h-[400px] flex flex-col">
         {isLoading ? (
           <div className="flex-1 flex items-center justify-center">
             <Spinner size={40} color="#3E4095" />
@@ -173,12 +162,12 @@ const NotificationModal: React.FC<NotificationModalProps> = ({
         ) : (
           <div className="max-h-[500px] overflow-y-auto custom-scrollbar">
             {/* Groups usually by date */}
-            <div className="bg-gray-50/50 px-6 py-2 text-[10px] font-black text-gray-500 uppercase tracking-widest">
+            <div key="date-group-today" className="bg-gray-50/50 px-6 py-2 text-[10px] font-black text-gray-500 uppercase tracking-widest">
               Today
             </div>
             {currentItems.map((item) => (
               <div
-                key={item.id}
+                key={`notification-${item.id}`}
                 onClick={() => !item.is_read && onMarkSingleRead(item.id)}
                 className={`flex items-start justify-between px-6 py-4 hover:bg-gray-50 cursor-pointer transition-colors border-b border-gray-50 ${!item.is_read ? 'bg-[#3E4095]/5' : ''}`}
               >
@@ -200,7 +189,7 @@ const NotificationModal: React.FC<NotificationModalProps> = ({
 
       {/* Pagination */}
       {!isLoading && notifications.length > 0 && (
-        <div className="p-6 border-t border-gray-50 flex items-center justify-between">
+        <div key="modal-pagination" className="p-6 border-t border-gray-50 flex items-center justify-between">
           <button
             disabled={currentPage === 1}
             onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
@@ -213,7 +202,7 @@ const NotificationModal: React.FC<NotificationModalProps> = ({
           <div className="flex items-center gap-1">
             {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => (
               <button
-                key={page}
+                key={`page-${page}`}
                 onClick={() => setCurrentPage(page)}
                 className={`w-8 h-8 rounded-lg text-[10px] font-black transition-all ${currentPage === page ? 'bg-[#3E4095] text-white shadow-md shadow-[#3E4095]/20' : 'text-gray-400 hover:bg-gray-50'}`}
               >
@@ -232,7 +221,7 @@ const NotificationModal: React.FC<NotificationModalProps> = ({
           </button>
         </div>
       )}
-      <style jsx global>{`
+      <style key="modal-styles" jsx global>{`
         .custom-scrollbar::-webkit-scrollbar {
           width: 6px;
         }

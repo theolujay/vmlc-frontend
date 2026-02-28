@@ -45,7 +45,7 @@ export default function HelpdeskSection() {
                         <Spinner />
                     </div>
                 ) : (
-                    <ConversationListCard
+                    <HelpdeskThreadListCard
                         data={data?.results ?? []}
                         page_count={data?.pagination?.total_pages ?? 0}
                         currentPage={page}
@@ -92,49 +92,44 @@ function HelpdeskStats({ stats }: { stats: HelpdeskStatData }) {
                             <span className="text-[9px] font-bold text-amber-600/70 uppercase">In Progress</span>
                         </div>
                     </div>
-                </div>
-
-                <div className="flex flex-col p-5 bg-emerald-50/30 rounded-2xl border border-emerald-100/50">
-                    <span className="text-[10px] font-black text-emerald-500 uppercase tracking-widest mb-1">Efficiency</span>
-                    <div className="flex items-end gap-3">
-                        <div className="flex flex-col">
-                            <span className="text-2xl font-black text-emerald-700">{stats.resolved_threads}</span>
-                            <span className="text-[9px] font-bold text-emerald-600/70 uppercase">Resolved</span>
-                        </div>
-                        <div className="w-px h-8 bg-emerald-200/50 mb-1"></div>
-                        <div className="flex flex-col">
-                            <span className="text-2xl font-black text-red-700">{stats.unassigned_threads}</span>
-                            <span className="text-[9px] font-bold text-red-600/70 uppercase">Unassigned</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div className="flex flex-col p-5 bg-red-50 rounded-2xl border border-red-100 shadow-sm shadow-red-500/5 relative overflow-hidden group">
-                    <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:scale-110 transition-transform">
-                        <i className="fas fa-envelope-open-text text-4xl text-red-600"></i>
-                    </div>
-                    <span className="text-[10px] font-black text-red-400 uppercase tracking-widest mb-1">Attention Required</span>
-                    <span className="text-3xl font-black text-red-600">{stats.unread_messages}</span>
-                    <p className="mt-1 text-[10px] font-bold text-red-400 uppercase tracking-tight">Unread messages from candidates</p>
                 </div> */}
 
-                <div className="flex flex-col p-5 bg-red-50 rounded-2xl border border-red-100 shadow-sm shadow-red-500/5 relative overflow-hidden group">
+                <div className="flex flex-col gap-3 p-4 bg-red-50/5 rounded-2xl border border-red-100 shadow-sm shadow-red-500/5 relative overflow-hidden group">
                     <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:scale-110 transition-transform">
-                        <i className="fas fa-envelope-open-text text-4xl text-red-600"></i>
+                        <i className="fas fa-envelope-open-text text-3xl text-red-600"></i>
                     </div>
-                    <span className="text-[10px] font-black text-red-400 uppercase tracking-widest mb-1">Attention Required</span>
-                    <div className="flex items-end gap-3">
-                        <div className="flex flex-col">
-                            <span className="text-2xl font-black  text-red-600">{stats.unattended_candidates}</span>
-                            <span className="text-[9px] font-bold text-red-500/70 uppercase">Unattended candidates</span>
+                    <span className="text-[10px] font-black text-red-500 uppercase tracking-widest mb-1">Candidate Messages</span>
+                    <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-3">
+                        <div className="flex flex-col items-center">
+                            <span className="text-2xl font-black text-red-900">{stats.unattended_candidates}</span>
+                            <span className="text-[8px] font-bold text-red-800/70 tracking-tight uppercase">Without Staff Reply</span>
                         </div>
-                        <div className="w-px h-8 bg-emerald-200/50 mb-1"></div>
-                        <div className="flex flex-col">
+                        <div className="w-px h-8 bg-red-200/50"></div>
+                        <div className="flex flex-col items-center">
                             <span className="text-2xl font-black text-red-900">{stats.unread_messages}</span>
-                            <span className="text-[9px] font-bold text-red-800/70 uppercase">Total messages unread</span>
+                            <span className="text-[8px] font-bold text-red-800/70 uppercase">Total unread</span>
                         </div>
                     </div>
                 </div>
+
+                <div className="flex flex-col gap-3 p-4 bg-emerald-50/5 rounded-2xl border border-emerald-100 shadow-sm shadow-emerald-500/5 relative overflow-hidden group">
+                    <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:scale-110 transition-transform">
+                        <i className="fas fa-light fa-lightbulb text-3xl text-emerald-600"></i>
+                    </div>
+                    <span className="text-[10px] font-black text-emerald-500 uppercase tracking-widest mb-1">Online</span>
+                    <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-3">
+                        <div className="flex flex-col items-center">
+                            <span className="text-2xl font-black  text-emerald-900">{stats.online_candidates}</span>
+                            <span className="text-[9px] font-bold text-emerald-800/70 uppercase">Candidates</span>
+                        </div>
+                        <div className="w-px h-8 bg-emerald-200/50 mb-1"></div>
+                        <div className="flex flex-col items-center">
+                            <span className="text-2xl font-black text-emerald-900">{stats.online_staff}</span>
+                            <span className="text-[9px] font-bold text-emerald-800/70 uppercase">Staff</span>
+                        </div>
+                    </div>
+                </div>
+
             </div>
         </ResponsiveContainer>
     );
@@ -143,7 +138,7 @@ function HelpdeskStats({ stats }: { stats: HelpdeskStatData }) {
 
 
 
-function ConversationListCard({
+function HelpdeskThreadListCard({
     data,
     onPageChange,
     currentPage,
@@ -300,7 +295,7 @@ function ConversationListCard({
                                         <div className="w-9 h-9 bg-blue-50 text-[#3E4095] rounded-full flex items-center justify-center text-xs font-black border border-blue-100/50">
                                             {row.candidate_name.charAt(0).toUpperCase()}
                                         </div>
-                                        {row.is_online && (
+                                        {row.is_candidate_online && (
                                             <div className="absolute bottom-0 right-0 w-2.5 h-2.5 bg-emerald-500 border-2 border-white rounded-full"></div>
                                         )}
                                     </div>
@@ -378,7 +373,7 @@ function ConversationListCard({
                                             </span>
                                         ) : (
                                             <span className="text-gray-300">
-                                                <i className="fas fa-check-circle text-xs"></i>
+                                                <i className="fas fa-circle text-s"></i>
                                             </span>
                                         )}
                                     </div>

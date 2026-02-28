@@ -41,13 +41,16 @@ const HelpdeskThread: React.FC<HelpdeskThreadProps> = ({ currentStage, onClose, 
     onMessageReceived
   );
 
+  // Check if any staff is typing
+  const isStaffTyping = Object.values(isTyping).some(typing => typing);
+
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
 
   useEffect(() => {
     scrollToBottom();
-  }, [messages]);
+  }, [messages, isStaffTyping]);
 
   const handleSend = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -89,9 +92,6 @@ const HelpdeskThread: React.FC<HelpdeskThreadProps> = ({ currentStage, onClose, 
         sendTypingStatus(false);
     }
   };
-
-  // Check if any staff is typing
-  const isStaffTyping = Object.values(isTyping).some(typing => typing);
 
   return (
     <div className="flex flex-col h-full bg-white font-sans">

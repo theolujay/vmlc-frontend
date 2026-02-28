@@ -56,6 +56,8 @@ export type HelpdeskStatData = {
   unassigned_threads: number;
   unread_messages: number;
   public_requests: number;
+  online_candidates: number;
+  online_staff: number;
 };
 
 export type StatOverviewType = {

@@ -19,7 +19,7 @@ import { formatTextWithLinks } from '@/utils/formatTextWithLinks';
 export default function HelpdeskThreadDetails({id}:{id:string}) {
     const router = useRouter();
     const { authState } = useAuth();
-    const { thread, messages, loading: messagesLoading, setMessages } = useGetHelpdeskThreadDetail(id);
+    const { thread, messages, loading: messagesLoading, setMessages, setThread } = useGetHelpdeskThreadDetail(id);
     const { sendMessage, loading: sendingLoading } = useSendHelpdeskMessage();
     const [newMessage, setNewMessage] = useState('');
     const [isDetailsOpen, setIsDetailsOpen] = useState(false);
@@ -32,16 +32,26 @@ export default function HelpdeskThreadDetails({id}:{id:string}) {
         });
     }, [setMessages]);
 
+    const onThreadUpdated = useCallback((updatedThread: Partial<HelpdeskThreadType>) => {
+        setThread(prev => {
+            if (!prev) return null;
+            return { ...prev, ...updatedThread };
+        });
+    }, [setThread]);
+
     const { connected, isTyping, sendTypingStatus } = useHelpdeskSocket(
         id,
-        onMessageReceived
+        onMessageReceived,
+        onThreadUpdated
     );
+
+    const isCandidateTyping = Object.values(isTyping).some(typing => typing);
 
     useEffect(() => {
         if (bottomRef.current) {
             bottomRef.current.scrollIntoView({ behavior: 'smooth' });
         }
-    }, [messages]);
+    }, [messages, isCandidateTyping]);
 
     const handleSend = async () => {
         if (!newMessage.trim() || !id || !authState?.user) return;
@@ -79,8 +89,6 @@ export default function HelpdeskThreadDetails({id}:{id:string}) {
         router.back();
     };
 
-    const isCandidateTyping = Object.values(isTyping).some(typing => typing);
-
     return (
         <div className="flex flex-col h-full font-sans">
              <div className="flex items-center justify-between mb-4 sticky top-0 bg-white z-10 p-4">
@@ -100,14 +108,14 @@ export default function HelpdeskThreadDetails({id}:{id:string}) {
                                 <div className="w-8 h-8 bg-[#3E4095] text-white rounded-full flex items-center justify-center text-xs font-bold">
                                     {thread.candidate_name.charAt(0).toUpperCase()}
                                 </div>
-                                {thread.is_online && (
+                                {thread.is_candidate_online && (
                                     <div className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 bg-green-500 border-2 border-white rounded-full"></div>
                                 )}
                             </div>
                             <div className="flex flex-col">
                                 <span className="font-bold text-sm text-[#3E4095]">{thread.candidate_name}</span>
-                                <span className={`text-[10px] font-bold uppercase ${connected ? 'text-green-500 animate-pulse' : 'text-gray-400'}`}>
-                                    {connected ? 'Connected' : 'Disconnected'}
+                                <span className={`text-[10px] font-bold lowercase tracking-widest ${connected ? 'text-green-500 animate-pulse' : 'text-gray-400'}`}>
+                                    {connected ? 'Online' : 'Offline'}
                                 </span>
                             </div>
                         </div>
