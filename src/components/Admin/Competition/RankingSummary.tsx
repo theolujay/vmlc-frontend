@@ -56,14 +56,14 @@ const RankingSummary: React.FC<RankingSummaryProps> = ({ examTitle, entries, onV
                   {entry.profile_picture ? (
                     <Image 
                       src={entry.profile_picture} 
-                      alt={entry.candidate_name}
+                      alt={entry.candidate_info?.full_name}
                       width={40}
                       height={40}
                       className={`w-10 h-10 rounded-full object-cover border-2 border-[#F2F4F7] transition-colors ${onViewCandidate ? 'group-hover:border-cyan-600/40' : ''}`}
                     />
                   ) : (
                     <div className="w-10 h-10 rounded-full bg-[#F2F4F7] flex items-center justify-center text-[#667185] text-xs font-bold border border-[#E4E7EC]">
-                      {entry.candidate_name.charAt(0)}
+                      {entry.candidate_info?.full_name?.charAt(0)}
                     </div>
                   )}
                   
@@ -77,20 +77,26 @@ const RankingSummary: React.FC<RankingSummaryProps> = ({ examTitle, entries, onV
                 <div className="flex flex-1 justify-between items-center min-w-0 ml-1">
                   <div className="flex flex-col min-w-0">
                     <span className="text-sm font-bold text-[#101828] truncate">
-                      {entry.candidate_name}
+                      {entry.candidate_info?.full_name}
                     </span>
                     <span className="text-[8px] text-[#667185] font-semibold uppercase tracking-wider truncate">
-                      {entry.school_name}
+                      {entry.candidate_info?.school_name}
                     </span>
                   </div>
 
                   <div className="flex flex-col items-end pl-2">
-                    <span className="text-xs font-black text-cyan-600 bg-white border border-cyan-600/60 px-1 py-0.5 rounded-md">
-                      {entry.exam_score}
-                    </span>
-                    {/* <span className="text-[8px] font-medium text-[#667185] mt-0.5">
-                      Top {100 - entry.percentile}%
-                    </span> */}
+                    {(() => {
+                      const isAbsent = typeof entry.exam_score === 'string' && entry.exam_score.toLowerCase() === 'absent';
+                      return (
+                        <span className={`text-xs font-black px-1 py-0.5 rounded-md border ${
+                          isAbsent 
+                            ? "text-[#667185] bg-[#F2F4F7] border-[#E4E7EC]" 
+                            : "text-cyan-600 bg-white border-cyan-600/60"
+                        }`}>
+                          {isAbsent ? "Absent" : entry.exam_score}
+                        </span>
+                      );
+                    })()}
                   </div>
                 </div>
               </button>

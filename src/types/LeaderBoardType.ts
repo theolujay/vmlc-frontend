@@ -4,7 +4,7 @@ import { PaginationType } from "./Examtype"
 export type LeaderType = {
     rank: number,
     candidate: LeaderCandidateType,
-    total_score: number
+    total_score: number | string
 }
 export type LeaderCandidateType = {
     role: string,
@@ -57,7 +57,7 @@ type ExamDetailsType = {
 export type CandidateType = {
     rank: number,
     candidate: EachCandidate,
-    score: number
+    score: number | string
     percentage: number
 }
 
@@ -103,19 +103,26 @@ export type SubmissionItem = {
 }
 export type ViewCandidateDetailType = {
     exam_details: CandidateExamDetailType,
-   
+    candidate_info?: {
+        id: string;
+        full_name: string;
+        email: string;
+        state: string;
+        school_name: string;
+        school_type: string;
+        current_class: string;
+    },
     candidate_performance: {
         rank: number,
-        score: number,
-        candidate: {
-            id: string,
-            school_name: string,
-            full_name: string,
-            profile_picture: string | null,
-            submissions: SubmissionItem[]
-        },
-        percentage: number,
-         participated_at:Date,
+        score: number | string,
+        percentile?: number,
+        face_capture?: string | null,
+        percentage?: number,
+        participated_at?: Date,
+        started_at?: Date,
+        submitted_at?: Date,
+        recorded_at?: Date,
+        submissions?: SubmissionItem[]
     }
 }
 
@@ -156,9 +163,15 @@ export type PaginatedType<T> = {
 
 export interface RankingEntry {
   candidate: string;
-  candidate_name: string;
-  candidate_email: string;
-  school_name: string;
+  candidate_info: {
+    id: string;
+    full_name: string;
+    email: string;
+    state: string;
+    school_name: string;
+    school_type: string;
+    current_class: string;
+  };
   exam_score: string;
   rank: number;
   percentile: number;
@@ -182,9 +195,15 @@ export interface RankingResponse {
 
 export interface LeagueLeaderboardEntry {
   candidate: string;
-  candidate_name: string;
-  candidate_email: string;
-  school_name: string;
+  candidate_info: {
+    id: string;
+    full_name: string;
+    email: string;
+    state: string;
+    school_name: string;
+    school_type: string;
+    current_class: string;
+  };
   total_score: string;
   overall_rank: number;
   rank_change: number;
@@ -207,6 +226,7 @@ export interface CompetitionDashboardResponse {
     enrolled: number;
     active: number;
     eliminated: number;
+    disqualified: number;
   };
   progress: {
     current_stage: string;

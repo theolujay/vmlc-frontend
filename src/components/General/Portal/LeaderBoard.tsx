@@ -148,18 +148,18 @@ function ScreeningTab({ stage, round }: { stage: string; round: number }) {
 }
 
 
-function InfoDesk({score, rank,examtype}:{score:number,rank:number,examtype:string}) {
+function InfoDesk({score, rank,examtype}:{score:number | string,rank:number,examtype:string}) {
 
     const userRank=getOrdinal(rank)
+    const isAbsent = typeof score === 'string' && score.toLowerCase() === 'absent';
     return (
         <div className="flex text-white flex-col gap-1 bg-[#00455E] p-2">
-            <p className="text-xl">Congratulations!</p>
+            <p className="text-xl">{isAbsent ? 'Exam missed' : 'Congratulations!'}</p>
             <p className="text-sm">
-                Congratulations on scoring {score}% on the {examtype} exam! You&apos;ve secured the
-              {' '}  {userRank.toLowerCase()} spot on the leaderboard, which qualifies you for the next stage of
-                the league exams. Keep up the great work, and best of luck moving
-                forward!
+                {isAbsent 
+                  ? `You were absent for the ${examtype} exam. Your rank is ${userRank.toLowerCase()} on the leaderboard.`
+                  : `Congratulations on scoring ${score}% on the ${examtype} exam! You've secured the ${userRank.toLowerCase()} spot on the leaderboard, which qualifies you for the next stage of the league exams. Keep up the great work, and best of luck moving forward!`}
             </p>
         </div>
-    );
+    )
 }

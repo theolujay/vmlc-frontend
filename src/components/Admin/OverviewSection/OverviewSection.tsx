@@ -9,7 +9,6 @@ import { PreRegisteredCandidate } from '@/types/UserMgtType';
 import { formatDate } from '@/utils/formatFileSize';
 import { getUserName } from '@/utils/generalUtils';
 import { getUserInitials } from '@/utils/capitalizeWords';
-// import Link from 'next/link';
 import Image from 'next/image';
 import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 import ResponsiveContainer from '../../ui/ResponsiveContainer';
@@ -69,7 +68,7 @@ export default function OverviewSection() {
   const [profileOpen, setProfileOpen] = useState(false);
   const [isOwnProfileOpen, setIsOwnProfileOpen] = useState(false);
   const [infoMessage, setInfoMessage] = useState<string | undefined>(undefined);
-  
+
   const [filters, setFilters] = useState<Record<string, string>>({
     search: '',
     profile: 'candidate',
@@ -85,7 +84,7 @@ export default function OverviewSection() {
   const { data: preRegisteredData } = useListPreRegisteredCandidates(page, filters, !isVolunteer && showPreRegistered);
   const { data: statOverview } = useGetStatOverview();
   const { data: registrationStatus } = useGetRegistrationStatus();
-  
+
   const handleViewProfile = (id: string) => {
     setSelectedUserId(id);
     setProfileOpen(true);
@@ -96,8 +95,8 @@ export default function OverviewSection() {
       <AdminHeader
         label="Overview"
         actionButton={
-          <Countdown 
-            targetDate={registrationStatus?.candidate_registration?.closing_date || ''} 
+          <Countdown
+            targetDate={registrationStatus?.candidate_registration?.closing_date || ''}
             isOpen={registrationStatus?.candidate_registration?.is_open}
             label="Reg. Closes in:"
           />
@@ -105,7 +104,7 @@ export default function OverviewSection() {
       />
       <div className="flex flex-col gap-3 sm:gap-4 mt-3 w-full sm:w-[96%] px-2 sm:px-0 sm:mx-auto">
         {infoMessage && (
-          <InfoBoard 
+          <InfoBoard
             message={infoMessage}
             onDismiss={() => setInfoMessage(undefined)}
             actionLabel="Update Profile"
@@ -121,18 +120,18 @@ export default function OverviewSection() {
           registeredChange={statOverview?.candidates?.registered_change}
         />
         <RegistrationTrends />
-        
+
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-          <RegistrationFunnel 
+          <RegistrationFunnel
             funnel={statOverview?.funnel?.candidate}
           />
-          <GeographicsSection 
+          <GeographicsSection
             data={statOverview?.geographics?.candidate}
             title="Candidate Geographics"
             subtitle="Distribution of candidates by state"
           />
         </div>
-        
+
         {/* <QuickActionsCard /> */}
 
         {!isVolunteer && (
@@ -170,15 +169,15 @@ export default function OverviewSection() {
       </div>
       <SendBulkMessageModal open={open} close={setOpen} />
       {selectedUserId && (
-        <ProfileModal 
-          id={selectedUserId} 
-          open={profileOpen} 
-          close={setProfileOpen} 
+        <ProfileModal
+          id={selectedUserId}
+          open={profileOpen}
+          close={setProfileOpen}
           isOwnProfile={false}
         />
       )}
       {user?.profile && (
-        <ProfileModal 
+        <ProfileModal
           id={user.profile.user.id}
           open={isOwnProfileOpen}
           close={setIsOwnProfileOpen}
@@ -239,7 +238,7 @@ function RegisteredCandidatesTable({
             <h2 className="font-bold text-lg sm:text-xl">Registered Candidates</h2>
             {/* <p className="text-sm text-gray-600">List of users fully registered as candidates</p> */}
           </div>
-          
+
         </div>
 
         <div className="flex flex-col sm:flex-row gap-2 sm:items-center">
@@ -289,8 +288,8 @@ function RegisteredCandidatesTable({
                   <div className="flex flex-col gap-3">
                     <div className="flex flex-col gap-1">
                       <label className="text-xs font-semibold text-gray-500 uppercase">Role</label>
-                      <select 
-                        value={filters.role || ''} 
+                      <select
+                        value={filters.role || ''}
                         onChange={(e) => handleFilterChange('role', e.target.value)}
                         className="border rounded px-2 py-1.5 text-sm outline-none"
                       >
@@ -303,8 +302,8 @@ function RegisteredCandidatesTable({
 
                     <div className="flex flex-col gap-1">
                       <label className="text-xs font-semibold text-gray-500 uppercase">Class</label>
-                      <select 
-                        value={filters.current_class || ''} 
+                      <select
+                        value={filters.current_class || ''}
                         onChange={(e) => handleFilterChange('current_class', e.target.value)}
                         className="border rounded px-2 py-1.5 text-sm outline-none"
                       >
@@ -316,8 +315,8 @@ function RegisteredCandidatesTable({
                     </div>
                     <div className="flex flex-col gap-1">
                       <label className="text-xs font-semibold text-gray-500 uppercase">School Type</label>
-                      <select 
-                        value={filters.school_type || ''} 
+                      <select
+                        value={filters.school_type || ''}
                         onChange={(e) => handleFilterChange('school_type', e.target.value)}
                         className="border rounded px-2 py-1.5 text-sm outline-none"
                       >
@@ -327,8 +326,8 @@ function RegisteredCandidatesTable({
                         <option value="tertiary">Tertiary</option>
                       </select>
                     </div>
-                    
-                    <button 
+
+                    <button
                       onClick={() => {
                         setFilters({ profile: 'candidate' });
                         onPageChange(1);
@@ -342,24 +341,24 @@ function RegisteredCandidatesTable({
               </DropdownMenu.Portal>
             </DropdownMenu.Root>
             <div className="flex bg-[#F2F4F7] p-1 rounded-lg ml-4">
-              <button 
+              <button
                   onClick={() => {
                     setShowPreRegistered(false);
                     setFilters({ profile: 'candidate' });
                     setPage(1);
                   }}
-                  className={clsx("px-4 py-1.5 text-xs font-medium rounded-md transition-all", 
+                  className={clsx("px-4 py-1.5 text-xs font-medium rounded-md transition-all",
                       !showPreRegistered ? "bg-white shadow-sm text-[#344054]" : "text-[#667085] hover:text-[#344054]")}
               >
                   Registered
               </button>
-              <button 
+              <button
                   onClick={() => {
                     setShowPreRegistered(true);
                     setFilters({ profile: 'pre_reg_candidate' });
                     setPage(1);
                   }}
-                  className={clsx("px-4 py-1.5 text-xs font-medium rounded-md transition-all", 
+                  className={clsx("px-4 py-1.5 text-xs font-medium rounded-md transition-all",
                       showPreRegistered ? "bg-white shadow-sm text-[#344054]" : "text-[#667085] hover:text-[#344054]")}
               >
                   Pre-registered
@@ -393,15 +392,15 @@ function RegisteredCandidatesTable({
                 row.user.last_name
               );
               const userInitials = getUserInitials(userName);
-              
+
               return (
                 <div className="flex items-center gap-2">
                   <div className="w-[35px] h-[35px] rounded-full relative overflow-hidden bg-[#CCEEFB] flex items-center justify-center shrink-0">
                     {row.user.profile_picture ? (
-                      <Image 
-                        src={row.user.profile_picture} 
-                        alt={userName} 
-                        fill 
+                      <Image
+                        src={row.user.profile_picture}
+                        alt={userName}
+                        fill
                         className="object-cover"
                       />
                     ) : (
@@ -443,9 +442,9 @@ function RegisteredCandidatesTable({
             align: 'right',
             render: (_, row) => {
               return (
-                <button 
+                <button
                   onClick={() => onViewProfile(row.user.id)}
-                  className="text-[#3E4095] font-bold hover:underline px-3 text-sm cursor-pointer"
+                  className="text-[#3E4095] font-bold hover:underline px-3 text-sm cursor-pointer outline-none bg-transparent border-none"
                 >
                   View
                 </button>
@@ -559,8 +558,8 @@ function OverviewSummaryCard({
     <ResponsiveContainer className="flex gap-3 sm:gap-4 px-2 sm:px-3 flex-col mx-auto justify-between font-sans">
       <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-3 gap-3 sm:gap-4">
         {stats.map((stat, index) => (
-          <div 
-            key={index} 
+          <div
+            key={index}
             className="flex flex-col gap-3 sm:gap-4 p-4 sm:p-0 bg-gray-50 sm:bg-transparent rounded-lg sm:rounded-none sm:items-center"
           >
             {/* Header: Icon & Label */}

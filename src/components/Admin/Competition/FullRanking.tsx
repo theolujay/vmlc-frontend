@@ -22,14 +22,13 @@ const FullRanking: React.FC<FullRankingProps> = ({ onBack, examId, examTitle, on
 
   const rankingData = (data as unknown as RankingResponse)?.entries || [];
   const responseData = data as unknown as RankingResponse;
-  
+
   const displayTitle = examTitle || (responseData ? `${responseData.stage_display} ${responseData.round ? `- Round ${responseData.round}` : ''}` : 'Ranking');
 
-  const filteredData = rankingData.filter(item => 
-    item.candidate_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    item.school_name.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredData = rankingData.filter(item =>
+    (item.candidate_info?.full_name?.toLowerCase() || '').includes(searchTerm.toLowerCase()) ||
+    (item.candidate_info?.school_name?.toLowerCase() || '').includes(searchTerm.toLowerCase())
   );
-
   if (isLoading) {
     return (
       <div className="flex flex-col items-center justify-center p-20 w-full">
@@ -47,7 +46,7 @@ const FullRanking: React.FC<FullRankingProps> = ({ onBack, examId, examTitle, on
         </div>
         <h2 className="text-lg font-bold text-[#101828]">Failed to load ranking</h2>
         <p className="text-sm text-[#667185] mt-1 max-w-xs mx-auto">There was an error retrieving the result data for this exam. Please try again.</p>
-        <button 
+        <button
           onClick={() => refetch()}
           className="mt-6 px-6 py-2 bg-cyan-600 text-white rounded-full font-bold text-sm hover:bg-cyan-700 transition-colors"
         >
@@ -59,36 +58,42 @@ const FullRanking: React.FC<FullRankingProps> = ({ onBack, examId, examTitle, on
 
   return (
     <div className="flex flex-col gap-4 w-full animate-in fade-in slide-in-from-bottom-2 duration-500">
-      <div className="flex items-center gap-2 mb-2">
-        <button 
+      <div className="flex items-center gap-4 mb-2">
+        <button
           onClick={onBack}
-          className="p-2 rounded-full hover:bg-gray-100 transition-colors border border-transparent hover:border-gray-200"
+          className="p-2.5 bg-white border border-gray-100 rounded-xl shadow-sm hover:bg-gray-50 transition-all active:scale-95 group"
         >
-          <div className="rotate-180"><AngleIcon width={8} height={14} /></div>
+          <div className="rotate-180 group-hover:-translate-x-0.5 transition-transform"><AngleIcon width={8} height={14} /></div>
         </button>
-        <div className="flex flex-col">
-          <h1 className="text-xl font-bold text-[#101828]">Ranking: {displayTitle}</h1>
-          <p className="text-xs text-[#667185]">Detailed results for this round</p>
+        <div className="flex items-center gap-3">
+          <div className="w-1.5 h-8 bg-[#3E4095] rounded-full"></div>
+          <div className="flex flex-col">
+            <h1 className="text-xl font-black text-gray-800 tracking-tight uppercase leading-none">Ranking: {displayTitle}</h1>
+            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-1">Detailed results for this round</p>
+          </div>
         </div>
       </div>
 
-      <ResponsiveContainer className="flex flex-col gap-4">
-        <div className="flex flex-col sm:flex-row justify-between gap-3 p-1">
-          <input
-            value={searchTerm}
-            onChange={(e) => setSearchInput(e.target.value)}
-            type="text"
-            placeholder="Search candidate or school..."
-            className="border h-10 px-3 py-1 rounded-md border-[#E4E7EC] outline-none w-full sm:w-80 text-sm focus:border-cyan-600 transition-colors"
-          />
-          <div className="flex gap-2">
-             <button className="inline-flex items-center justify-center gap-2 border h-10 rounded-md px-3 py-1 border-[#E4E7EC] cursor-pointer bg-white hover:bg-gray-50 transition-colors">
+      <ResponsiveContainer className="flex gap-4 py-8 px-0 flex-col w-full font-sans bg-white border border-gray-100 rounded-[2rem] shadow-sm overflow-hidden">
+        <div className="flex md:flex-row md:items-center justify-between px-8 gap-4 mb-2">
+          <div className="relative group">
+            <i className="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-[#3E4095] transition-colors text-xs"></i>
+            <input
+              value={searchTerm}
+              onChange={(e) => setSearchInput(e.target.value)}
+              type="text"
+              placeholder="Search candidate or school..."
+              className="bg-gray-50/50 border border-gray-100 h-11 pl-11 pr-4 py-2 rounded-xl outline-none focus:ring-4 focus:ring-[#3E4095]/5 focus:border-[#3E4095] focus:bg-white transition-all text-sm font-semibold w-full md:w-80 shadow-inner"
+            />
+          </div>
+          <div className="flex items-center gap-3">
+             <button className="inline-flex items-center justify-center gap-2 bg-white border border-gray-100 h-11 rounded-xl px-4 text-gray-600 hover:bg-gray-50 transition-all font-bold text-[10px] uppercase tracking-widest shadow-sm outline-none cursor-pointer">
                 <SortIcon className="w-4 h-4" />
-                <span className="text-[#344054] text-sm font-medium">Sort</span>
+                <span>Sort</span>
              </button>
-             <button className="inline-flex items-center justify-center gap-2 border h-10 rounded-md px-3 py-1 border-[#E4E7EC] cursor-pointer bg-white hover:bg-gray-50 transition-colors">
+             <button className="inline-flex items-center justify-center gap-2 bg-white border border-gray-100 h-11 rounded-xl px-4 text-gray-600 hover:bg-gray-50 transition-all font-bold text-[10px] uppercase tracking-widest shadow-sm outline-none cursor-pointer">
                 <FilterIcon className="w-4 h-4" />
-                <span className="text-[#344054] text-sm font-medium">Filter</span>
+                <span>Filter</span>
              </button>
           </div>
         </div>
@@ -115,63 +120,87 @@ const FullRanking: React.FC<FullRankingProps> = ({ onBack, examId, examTitle, on
               header: 'Rank',
               render: (val) => (
                 <div className="flex items-center justify-center">
-                  <span className="text-sm font-bold text-gray-500"># {val}</span>
+                  <span className="text-sm font-black text-[#3E4095] bg-blue-50/50 px-3 py-1 rounded-lg border border-blue-100/50"># {val}</span>
                 </div>
               ),
               align: 'center'
             },
             {
-              key: 'candidate_name',
+              key: 'candidate_info',
               header: 'Candidate',
-              render: (_, row) => (
+              render: (val: any, row) => (
                 <div className="flex items-center gap-3">
                   <div className="relative flex items-center justify-center w-10 h-10 shrink-0">
-                    <div className="w-10 h-10 rounded-full bg-[#F2F4F7] flex items-center justify-center text-[#667185] text-xs font-bold border border-[#E4E7EC] overflow-hidden relative">
+                    <div className="w-10 h-10 rounded-full bg-blue-50 text-[#3E4095] flex items-center justify-center text-xs font-black border border-blue-100/50 overflow-hidden relative">
                         {row.profile_picture ? (
                           <Image src={row.profile_picture} alt="" fill className="object-cover" />
-                        ) : row.candidate_name.charAt(0)}
+                        ) : val?.full_name?.charAt(0).toUpperCase()}
                     </div>
                     <RankMedal rank={row.rank} className="absolute -bottom-1 -right-1 drop-shadow-md" />
                   </div>
-                  <div className="flex flex-col">
-                    <span className="font-bold text-[#101828] text-sm">{row.candidate_name}</span>
-                    {!isPublicView && <span className="text-[10px] text-[#667185]">{row.candidate_email}</span>}
+                  <div className="flex flex-col gap-0.5">
+                    <span className="font-bold text-gray-800 text-sm">{val?.full_name}</span>
+                    {!isPublicView && <span className="text-[10px] font-bold text-gray-400 uppercase tracking-tight">{val?.email}</span>}
                   </div>
                 </div>
               ),
               align: 'left'
             },
             {
-              key: 'school_name',
+              key: 'candidate_info',
               header: 'School',
-              render: (val) => <span className="text-sm text-[#475467] font-medium">{val}</span>
+              render: (val: any) => (
+                <div className="flex flex-col">
+                  <span className="text-sm text-gray-700 font-bold">{val?.school_name}</span>
+                  {!isPublicView && <span className="text-[10px] font-bold text-gray-400 uppercase tracking-tight">{val?.school_type}</span>}
+                </div>
+              )
             },
-            // {
-            //   key: 'percentile',
-            //   header: 'Percentile',
-            //   render: (val) => <span className="text-xs text-gray-500">{val}%</span>,
-            //   align: 'right'
-            // },
+            ...(isPublicView ? [
+              {
+                key: 'candidate_info',
+                header: 'Class',
+                render: (val: any) => <span className="text-[10px] font-black text-gray-500 bg-gray-50 px-2 py-1 rounded-md border border-gray-100 uppercase tracking-widest">{val?.current_class}</span>,
+                align: 'center' as const
+              },
+              {
+                key: 'candidate_info',
+                header: 'State',
+                render: (val: any) => <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">{val?.state}</span>,
+                align: 'center' as const
+              }
+            ] : []),
             {
               key: 'exam_score',
-              header: 'Score',
-              render: (val) => (
-                <span className="text-xs font-black text-cyan-600 bg-white px-3 py-1 rounded-full border border-cyan-600/40">
-                  {val}
-                </span>
-              ),
+              header: 'Score (%)',
+              render: (val) => {
+                const isAbsent = typeof val === 'string' && val.toLowerCase() === 'absent';
+                return (
+                  <div className="flex justify-center">
+                    <span className={`text-[11px] font-black px-2 py-1.5 rounded-full border uppercase transition-all ${
+                      isAbsent
+                        ? "text-gray-400 bg-gray-50 border-gray-200 tracking-tight"
+                        : "text-[#3E4095] bg-[#FFFFFF] border-[#3E4095]/40 shadow-sm shadow-emerald-500/5 tracking-widest"
+                    }`}>
+                      {isAbsent ? "ABSENT" : val}
+                    </span>
+                  </div>
+                );
+              },
               align: 'center'
             },
             ...(onViewDetails && !isPublicView ? [{
-              key: 'action',
-              header: 'Action',
+              key: 'details',
+              header: 'Details',
               render: (_: any, row: RankingEntry) => (
-                <button 
-                  onClick={() => onViewDetails?.(row.candidate)}
-                  className="text-cyan-600 font-bold hover:bg-cyan-600 hover:text-white text-xs bg-white px-3 py-1.5 rounded-full border border-cyan-600/40 transition-colors"
-                >
-                  View Details
-                </button>
+                <div className="flex justify-center">
+                  <button
+                    onClick={() => onViewDetails?.(row.candidate)}
+                    className="bg-[#3E4095] text-white font-black px-5 py-2 rounded-xl text-[10px] uppercase tracking-widest hover:bg-[#2d2f6e] transition-all shadow-md shadow-[#3E4095]/10 active:scale-95"
+                  >
+                    View
+                  </button>
+                </div>
               ),
               align: 'center' as const
             }] : [])

@@ -28,7 +28,7 @@ const ExamResultRow: React.FC<ExamResultRowProps> = ({ exam, onView, canInteract
     }
   };
 
-  const canView = exam.ranking_status === 'published' && canInteract;
+  const canView = exam.ranking_status === 'published' ||  exam.ranking_status === 'ready' && canInteract;
 
   return (
     <div className={`border border-[#E4E7EC] rounded-lg p-4 bg-white transition-colors group font-sans ${canInteract ? 'hover:border-[#3E4095]' : ''}`}>
@@ -60,7 +60,7 @@ const ExamResultRow: React.FC<ExamResultRowProps> = ({ exam, onView, canInteract
                 )}
                 <span className="text-gray-300">|</span>
                 <span className="flex items-center gap-1">
-                  Ranking: 
+                  Ranking:
                   <span className={`font-medium ${exam.ranking_status === 'published' ? 'text-[#3E4095]' : 'text-black-100'}`}>
                     {exam.ranking_status === 'published' ? 'Published' : exam.ranking_status === 'ready' ? 'Ready' : 'Pending'}
                   </span>
@@ -75,9 +75,9 @@ const ExamResultRow: React.FC<ExamResultRowProps> = ({ exam, onView, canInteract
         {/* Right: Actions */}
         <div className="flex items-center gap-2">
            {canView && (
-             <button 
+             <button
                onClick={() => onView(exam.id)}
-               className="flex items-center gap-1 px-3 py-1.5 text-xs font-medium text-[#344054] bg-white border border-[#D0D5DD] rounded-full hover:bg-[#3E4095] hover:text-[#FFFFFF]"
+               className="flex items-center gap-1 px-3 py-1.5 text-xs font-medium text-[#344054] bg-white border border-[#D0D5DD] rounded-full hover:bg-[#3E4095] hover:text-[#FFFFFF] hover:cursor-pointer"
              >
                View
              </button>
