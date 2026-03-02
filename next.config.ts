@@ -17,6 +17,12 @@ const nextConfig: NextConfig = {
       },
       {
         protocol: 'https',
+        hostname: 'vmlc-s3.s3.amazonaws.com',
+        port: '',
+        pathname: '/**',
+      },
+      {
+        protocol: 'https',
         hostname: 'vmlc-prod.s3.eu-central-1.amazonaws.com',
         port: '',
         pathname: '/**',

@@ -150,9 +150,14 @@ function ScoreComponent({ stage, round }: Readonly<{ stage: string; round: numbe
             key: 'School', header: 'School', render: (_, row) => <div className="flex items-center gap-1">{row.candidate.school_name}</div>
           },
           {
-            key: 'Score', header: 'Score', render: (_, row) => <div className="flex  items-center gap-1">
-              {row.score}
-            </div>
+            key: 'Score', header: 'Score', render: (_, row) => {
+              const isAbsent = typeof row.score === 'string' && row.score.toLowerCase() === 'absent';
+              return (
+                <div className="flex items-center gap-1 font-bold">
+                  {isAbsent ? 'Absent' : row.score}
+                </div>
+              );
+            }
           },
           {
             key: 'action', header: "Action", render: (_, row) => {
@@ -249,7 +254,14 @@ export function Podium({ users, stage, round }: Readonly<{ users: CandidateType[
                 <span className="">{val.candidate.school_name}</span>
               </div>
               <div className="relative">
-                <span className="w-15 h-6 p-2 inline-flex items-center absolute left-1/2 -top-2 bg-[#3E4095] text-white  -translate-x-1/2  whitespace-nowrap font-bold rounded-full">{val.score}</span>
+                {(() => {
+                  const isAbsent = typeof val.score === 'string' && val.score.toLowerCase() === 'absent';
+                  return (
+                    <span className="w-15 h-6 p-2 inline-flex items-center absolute left-1/2 -top-2 bg-[#3E4095] text-white -translate-x-1/2 whitespace-nowrap font-bold rounded-full">
+                      {isAbsent ? 'Absent' : val.score}
+                    </span>
+                  );
+                })()}
                 <Shape />
               </div>
             </div>

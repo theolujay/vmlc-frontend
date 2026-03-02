@@ -5,8 +5,15 @@ import RankMedal from './RankMedal';
 
 export interface LeaderboardEntry {
   candidate: string;
-  candidate_name: string;
-  school_name: string;
+  candidate_info: {
+    id: string;
+    full_name: string;
+    email: string;
+    state: string;
+    school_name: string;
+    school_type: string;
+    current_class: string;
+  };
   total_score: string;
   overall_rank: number;
   rank_change: number;
@@ -58,14 +65,14 @@ const LeaderboardSummary: React.FC<LeaderboardSummaryProps> = ({ entries, onView
                   {entry.profile_picture ? (
                     <Image 
                       src={entry.profile_picture} 
-                      alt={entry.candidate_name}
+                      alt={entry.candidate_info?.full_name}
                       width={40}
                       height={40}
                       className={`w-10 h-10 rounded-full object-cover border-2 border-[#F2F4F7] transition-colors ${onViewCandidate ? 'group-hover:border-[#3E4095]/20' : ''}`}
                     />
                   ) : (
                     <div className="w-10 h-10 rounded-full bg-[#F2F4F7] flex items-center justify-center text-[#667185] text-xs font-bold border border-[#E4E7EC]">
-                      {entry.candidate_name.charAt(0)}
+                      {entry.candidate_info?.full_name?.charAt(0)}
                     </div>
                   )}
                   
@@ -78,17 +85,25 @@ const LeaderboardSummary: React.FC<LeaderboardSummaryProps> = ({ entries, onView
                 <div className="flex flex-1 justify-between items-center min-w-0 ml-1">
                   <div className="flex flex-col min-w-0">
                     <span className="text-sm font-bold text-[#101828] truncate">
-                      {entry.candidate_name}
-                    </span>
-                    <span className="text-[8px] text-[#667185] font-semibold uppercase tracking-wider truncate">
-                      {entry.school_name}
+                      {entry.candidate_info?.full_name}
+                    </span>                    <span className="text-[8px] text-[#667185] font-semibold uppercase tracking-wider truncate">
+                      {entry.candidate_info?.school_name}
                     </span>
                   </div>
 
                   <div className="flex flex-col items-end pl-2">
-                    <span className="text-xs font-black text-[#3E4095] bg-white border border-[#3E4095]/60  px-1 py-0.5 rounded-md">
-                      {entry.total_score}
-                    </span>
+                    {(() => {
+                      const isAbsent = typeof entry.total_score === 'string' && entry.total_score.toLowerCase() === 'absent';
+                      return (
+                        <span className={`text-xs font-black px-1 py-0.5 rounded-md border ${
+                          isAbsent 
+                            ? "text-[#667185] bg-[#F2F4F7] border-[#E4E7EC]" 
+                            : "text-[#3E4095] bg-white border-[#3E4095]/60"
+                        }`}>
+                          {isAbsent ? "Absent" : entry.total_score}
+                        </span>
+                      );
+                    })()}
                     <div className="mt-0.5">
                       <RankChangeIndicator change={entry.rank_change} />
                     </div>
