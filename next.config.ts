@@ -32,7 +32,13 @@ const nextConfig: NextConfig = {
         hostname: 'vmlc-staging.s3.eu-central-1.amazonaws.com',
         port: '',
         pathname: '/**',
-      }
+      },
+      {
+        protocol: 'https',
+        hostname: 'https://vmlc-prod.s3.amazonaws.com',
+        port: '',
+        pathname: '/**',
+      },
     ],
   },
   async redirects() {

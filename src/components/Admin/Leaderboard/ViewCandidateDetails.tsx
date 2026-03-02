@@ -246,6 +246,7 @@ function CandidateInfoCard({
                     {faceCapture && !isLeague && (
                         <div className="flex flex-col items-center gap-1">
                             <span className="text-[10px] font-bold text-[#667185] uppercase tracking-wider">Face Capture</span>
+                            <span className="text-[8px] font-bold text-[#667185] uppercase tracking-wider">[Click to Expand]</span>
                             <a href={faceCapture} target="_blank" rel="noopener noreferrer" className="block cursor-zoom-in transition-transform hover:scale-105">
                                 <div className="w-16 h-16 rounded-full relative overflow-hidden bg-[#F2F4F7] border-2 border-white shadow-sm ring-1 ring-black/5">
                                     <Image
