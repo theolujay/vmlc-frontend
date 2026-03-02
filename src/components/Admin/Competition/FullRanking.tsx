@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import CustomTable from '@/components/ui/CustomTable';
 import ResponsiveContainer from '@/components/ui/ResponsiveContainer';
 import { AngleIcon, FilterIcon, SortIcon } from '../AdminIcons';
@@ -7,6 +7,7 @@ import Image from "next/image";
 import RankMedal from './RankMedal';
 import useGetRanking from '@/hooks/useGetRanking';
 import { RankingEntry, RankingResponse } from '@/types/LeaderBoardType';
+import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
 
 interface FullRankingProps {
   onBack: () => void;
@@ -16,19 +17,109 @@ interface FullRankingProps {
   isPublicView?: boolean;
 }
 
+type SortKey = 'rank' | 'name' | 'school' | 'class' | 'state';
+type SortDirection = 'asc' | 'desc';
+
+interface SortConfig {
+  key: SortKey;
+  direction: SortDirection;
+}
+
+interface FilterState {
+  state: string;
+  schoolType: string;
+  currentClass: string;
+}
+
 const FullRanking: React.FC<FullRankingProps> = ({ onBack, examId, examTitle, onViewDetails, isPublicView = false }) => {
   const [searchTerm, setSearchInput] = useState('');
+  const [sortConfig, setSortConfig] = useState<SortConfig>({ key: 'rank', direction: 'asc' });
+  const [filterState, setFilterState] = useState<FilterState>({
+    state: 'All States',
+    schoolType: 'All Types',
+    currentClass: 'All Classes',
+  });
+
   const { data, isLoading, error, refetch } = useGetRanking(examId);
 
-  const rankingData = (data as unknown as RankingResponse)?.entries || [];
+  const rankingData = useMemo(() => (data as unknown as RankingResponse)?.entries || [], [data]);
   const responseData = data as unknown as RankingResponse;
 
   const displayTitle = examTitle || (responseData ? `${responseData.stage_display} ${responseData.round ? `- Round ${responseData.round}` : ''}` : 'Ranking');
 
-  const filteredData = rankingData.filter(item =>
-    (item.candidate_info?.full_name?.toLowerCase() || '').includes(searchTerm.toLowerCase()) ||
-    (item.candidate_info?.school_name?.toLowerCase() || '').includes(searchTerm.toLowerCase())
-  );
+  // Dynamically derive filter options from data
+  const filterOptions = useMemo(() => {
+    const states = new Set<string>();
+    const types = new Set<string>();
+    const classes = new Set<string>();
+
+    rankingData.forEach(item => {
+      if (item.candidate_info?.state) states.add(item.candidate_info.state);
+      if (item.candidate_info?.school_type) types.add(item.candidate_info.school_type);
+      if (item.candidate_info?.current_class) classes.add(item.candidate_info.current_class);
+    });
+
+    return {
+      states: ['All States', ...Array.from(states).sort()],
+      schoolTypes: ['All Types', ...Array.from(types).sort()],
+      currentClasses: ['All Classes', ...Array.from(classes).sort()]
+    };
+  }, [rankingData]);
+
+  const processedData = useMemo(() => {
+    // 1. Filter
+    const result = rankingData.filter(item => {
+      const searchStr = searchTerm.toLowerCase();
+      const matchesSearch =
+        (item.candidate_info?.full_name?.toLowerCase() || '').includes(searchStr) ||
+        (item.candidate_info?.school_name?.toLowerCase() || '').includes(searchStr) ||
+        (item.candidate_info?.email?.toLowerCase() || '').includes(searchStr);
+
+      const matchesState = filterState.state === 'All States' || item.candidate_info?.state === filterState.state;
+      const matchesSchoolType = filterState.schoolType === 'All Types' || item.candidate_info?.school_type === filterState.schoolType;
+      const matchesClass = filterState.currentClass === 'All Classes' || item.candidate_info?.current_class === filterState.currentClass;
+
+      return matchesSearch && matchesState && matchesSchoolType && matchesClass;
+    });
+
+    // 2. Sort
+    result.sort((a, b) => {
+      let valA: any;
+      let valB: any;
+
+      switch (sortConfig.key) {
+        case 'rank':
+          valA = a.rank;
+          valB = b.rank;
+          break;
+        case 'name':
+          valA = a.candidate_info?.full_name?.toLowerCase() || '';
+          valB = b.candidate_info?.full_name?.toLowerCase() || '';
+          break;
+        case 'school':
+          valA = a.candidate_info?.school_name?.toLowerCase() || '';
+          valB = b.candidate_info?.school_name?.toLowerCase() || '';
+          break;
+        case 'class':
+          valA = a.candidate_info?.current_class?.toLowerCase() || '';
+          valB = a.candidate_info?.current_class?.toLowerCase() || '';
+          break;
+        case 'state':
+          valA = a.candidate_info?.state?.toLowerCase() || '';
+          valB = a.candidate_info?.state?.toLowerCase() || '';
+          break;
+        default:
+          return 0;
+      }
+
+      if (valA < valB) return sortConfig.direction === 'asc' ? -1 : 1;
+      if (valA > valB) return sortConfig.direction === 'asc' ? 1 : -1;
+      return 0;
+    });
+
+    return result;
+  }, [rankingData, searchTerm, sortConfig, filterState]);
+
   if (isLoading) {
     return (
       <div className="flex flex-col items-center justify-center p-20 w-full">
@@ -56,6 +147,15 @@ const FullRanking: React.FC<FullRankingProps> = ({ onBack, examId, examTitle, on
     );
   }
 
+  const handleSort = (key: SortKey) => {
+    setSortConfig(prev => ({
+      key,
+      direction: prev.key === key && prev.direction === 'asc' ? 'desc' : 'asc'
+    }));
+  };
+
+  const activeFiltersCount = Object.values(filterState).filter(val => val !== 'All States' && val !== 'All Types' && val !== 'All Classes').length;
+
   return (
     <div className="flex flex-col gap-4 w-full animate-in fade-in slide-in-from-bottom-2 duration-500">
       <div className="flex items-center gap-4 mb-2">
@@ -68,42 +168,129 @@ const FullRanking: React.FC<FullRankingProps> = ({ onBack, examId, examTitle, on
         <div className="flex items-center gap-3">
           <div className="w-1.5 h-8 bg-[#3E4095] rounded-full"></div>
           <div className="flex flex-col">
-            <h1 className="text-xl font-black text-gray-800 tracking-tight uppercase leading-none">Ranking: {displayTitle}</h1>
-            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-1">Detailed results for this round</p>
+            <h1 className="text-xl font-black text-gray-800 tracking-tight leading-none">Ranking: {displayTitle}</h1>
+            <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-1">Detailed results for this exam</p>
           </div>
         </div>
       </div>
 
       <ResponsiveContainer className="flex gap-4 py-8 px-0 flex-col w-full font-sans bg-white border border-gray-100 rounded-[2rem] shadow-sm overflow-hidden">
-        <div className="flex md:flex-row md:items-center justify-between px-8 gap-4 mb-2">
+        <div className="flex flex-col md:flex-row md:items-center justify-between px-8 gap-4 mb-2">
           <div className="relative group">
             <i className="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-[#3E4095] transition-colors text-xs"></i>
             <input
               value={searchTerm}
               onChange={(e) => setSearchInput(e.target.value)}
               type="text"
-              placeholder="Search candidate or school..."
+              placeholder="Search candidate, school, or email..."
               className="bg-gray-50/50 border border-gray-100 h-11 pl-11 pr-4 py-2 rounded-xl outline-none focus:ring-4 focus:ring-[#3E4095]/5 focus:border-[#3E4095] focus:bg-white transition-all text-sm font-semibold w-full md:w-80 shadow-inner"
             />
           </div>
           <div className="flex items-center gap-3">
-             <button className="inline-flex items-center justify-center gap-2 bg-white border border-gray-100 h-11 rounded-xl px-4 text-gray-600 hover:bg-gray-50 transition-all font-bold text-[10px] uppercase tracking-widest shadow-sm outline-none cursor-pointer">
-                <SortIcon className="w-4 h-4" />
-                <span>Sort</span>
-             </button>
-             <button className="inline-flex items-center justify-center gap-2 bg-white border border-gray-100 h-11 rounded-xl px-4 text-gray-600 hover:bg-gray-50 transition-all font-bold text-[10px] uppercase tracking-widest shadow-sm outline-none cursor-pointer">
-                <FilterIcon className="w-4 h-4" />
-                <span>Filter</span>
-             </button>
+             {/* Sort Dropdown */}
+             <DropdownMenu.Root>
+               <DropdownMenu.Trigger asChild>
+                 <button className="inline-flex items-center justify-center gap-2 bg-white border border-gray-100 h-11 rounded-xl px-4 text-gray-600 hover:bg-gray-50 transition-all font-bold text-[10px] uppercase tracking-widest shadow-sm outline-none cursor-pointer">
+                    <SortIcon className="w-4 h-4" />
+                    <span>Sort: {sortConfig.key}</span>
+                 </button>
+               </DropdownMenu.Trigger>
+               <DropdownMenu.Portal>
+                 <DropdownMenu.Content className="z-50 min-w-[180px] bg-white rounded-2xl p-2 shadow-2xl border border-gray-50 animate-in fade-in zoom-in-95 duration-200" align="end" sideOffset={8}>
+                   <DropdownMenu.Label className="px-3 py-2 text-[9px] font-black text-gray-400 uppercase tracking-[0.2em]">Sort By</DropdownMenu.Label>
+                   {[
+                     { label: 'Rank', key: 'rank' as SortKey },
+                     { label: 'Name', key: 'name' as SortKey },
+                     { label: 'School', key: 'school' as SortKey },
+                     { label: 'Class', key: 'class' as SortKey},
+                     { label: 'State', key: 'state' as SortKey},
+                   ].map((option) => (
+                     <DropdownMenu.Item
+                       key={option.key}
+                       onClick={() => handleSort(option.key)}
+                       className={`flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-bold outline-none cursor-pointer transition-colors ${
+                         sortConfig.key === option.key ? 'bg-blue-50 text-[#3E4095]' : 'text-gray-600 hover:bg-gray-50'
+                       }`}
+                     >
+                       {option.label}
+                       {sortConfig.key === option.key && (
+                         <span className="text-[10px]">{sortConfig.direction === 'asc' ? '↑' : '↓'}</span>
+                       )}
+                     </DropdownMenu.Item>
+                   ))}
+                 </DropdownMenu.Content>
+               </DropdownMenu.Portal>
+             </DropdownMenu.Root>
+
+             {/* Filter Dropdown */}
+             <DropdownMenu.Root>
+               <DropdownMenu.Trigger asChild>
+                 <button className={`inline-flex items-center justify-center gap-2 h-11 rounded-xl px-4 transition-all font-bold text-[10px] uppercase tracking-widest shadow-sm outline-none cursor-pointer border ${
+                   activeFiltersCount > 0
+                    ? 'bg-[#3E4095]/5 border-[#3E4095]/40 text-[#3E4095]'
+                    : 'bg-white border-gray-100 text-gray-600 hover:bg-gray-50'
+                 }`}>
+                    <FilterIcon className="w-4 h-4" />
+                    <span>Filter {activeFiltersCount > 0 && `(${activeFiltersCount})`}</span>
+                 </button>
+               </DropdownMenu.Trigger>
+               <DropdownMenu.Portal>
+                 <DropdownMenu.Content className="z-50 min-w-[220px] bg-white rounded-2xl p-3 shadow-2xl border border-gray-50 animate-in fade-in zoom-in-95 duration-200" align="end" sideOffset={8}>
+                   <div className="flex flex-col gap-4">
+                     <div className="flex flex-col gap-1.5">
+                       <label className="px-1 text-[9px] font-black text-gray-400 uppercase tracking-[0.2em]">State</label>
+                       <select
+                         value={filterState.state}
+                         onChange={(e) => setFilterState(prev => ({ ...prev, state: e.target.value }))}
+                         className="w-full bg-gray-50 border-none rounded-xl px-3 py-2 text-xs font-bold text-gray-700 outline-none focus:ring-2 focus:ring-blue-100 transition-all cursor-pointer"
+                       >
+                         {filterOptions.states.map(s => <option key={s} value={s}>{s}</option>)}
+                       </select>
+                     </div>
+
+                     <div className="flex flex-col gap-1.5">
+                       <label className="px-1 text-[9px] font-black text-gray-400 uppercase tracking-[0.2em]">School Type</label>
+                       <select
+                         value={filterState.schoolType}
+                         onChange={(e) => setFilterState(prev => ({ ...prev, schoolType: e.target.value }))}
+                         className="w-full bg-gray-50 border-none rounded-xl px-3 py-2 text-xs font-bold text-gray-700 outline-none focus:ring-2 focus:ring-blue-100 transition-all cursor-pointer"
+                       >
+                         {filterOptions.schoolTypes.map(t => <option key={t} value={t}>{t}</option>)}
+                       </select>
+                     </div>
+
+                     {!isPublicView && (
+                       <div className="flex flex-col gap-1.5">
+                         <label className="px-1 text-[9px] font-black text-gray-400 uppercase tracking-[0.2em]">Class</label>
+                         <select
+                           value={filterState.currentClass}
+                           onChange={(e) => setFilterState(prev => ({ ...prev, currentClass: e.target.value }))}
+                           className="w-full bg-gray-50 border-none rounded-xl px-3 py-2 text-xs font-bold text-gray-700 outline-none focus:ring-2 focus:ring-blue-100 transition-all cursor-pointer"
+                         >
+                           {filterOptions.currentClasses.map(c => <option key={c} value={c}>{c}</option>)}
+                         </select>
+                       </div>
+                     )}
+
+                     <button
+                       onClick={() => setFilterState({ state: 'All States', schoolType: 'All Types', currentClass: 'All Classes' })}
+                       className="w-full mt-1 py-2 text-[9px] font-black text-red-500 uppercase tracking-widest hover:bg-red-50 rounded-lg transition-colors"
+                     >
+                       Reset Filters
+                     </button>
+                   </div>
+                 </DropdownMenu.Content>
+               </DropdownMenu.Portal>
+             </DropdownMenu.Root>
           </div>
         </div>
 
         <CustomTable<RankingEntry>
-          data={filteredData}
+          data={processedData}
           getRowId={(row) => row.candidate}
           minWidth="900px"
-          emptyLabel="Results Empty"
-          emptyDesc="No ranking data has been processed for this exam yet."
+          emptyLabel="No matches found"
+          emptyDesc="Try adjusting your search or filters to find what you're looking for."
           columns={[
             {
               key: 'sn',
@@ -156,7 +343,7 @@ const FullRanking: React.FC<FullRankingProps> = ({ onBack, examId, examTitle, on
                 </div>
               )
             },
-            ...(isPublicView ? [
+            ...(!isPublicView ? [
               {
                 key: 'candidate_info',
                 header: 'Class',
