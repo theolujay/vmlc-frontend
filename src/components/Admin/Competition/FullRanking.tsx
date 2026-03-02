@@ -156,7 +156,7 @@ const FullRanking: React.FC<FullRankingProps> = ({ onBack, examId, examTitle, on
                 </div>
               )
             },
-            ...(isPublicView ? [
+            ...(!isPublicView ? [
               {
                 key: 'candidate_info',
                 header: 'Class',
