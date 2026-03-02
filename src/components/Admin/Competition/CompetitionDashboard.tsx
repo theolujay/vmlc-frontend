@@ -35,7 +35,7 @@ const CompetitionDashboard: React.FC<CompetitionDashboardProps> = ({
   const userRole = authState?.user?.role;
   const isVolunteer = userRole === 'volunteer';
   const isModeratorOrAbove = ['moderator', 'admin', 'manager', 'superadmin'].includes(userRole || '');
-  // const isAdminOrAbove = ['admin', 'manager', 'superadmin'].includes(userRole || '');
+  const isAdminOrAbove = ['admin', 'manager', 'superadmin'].includes(userRole || '');
   const isManagerOrAbove = ['manager', 'superadmin'].includes(userRole || '');
 
   const { data, isLoading, error, refetch } = useGetCompetitionDashboard();
@@ -69,7 +69,7 @@ const CompetitionDashboard: React.FC<CompetitionDashboardProps> = ({
   const handleView = (id: string) => {
     if (isVolunteer) return;
     const exam = data?.exams.find(e => e.id === id);
-    if (onViewRanking && exam && exam.ranking_status === 'published') {
+    if (onViewRanking && exam && (exam.ranking_status === 'published' || exam.ranking_status === 'ready')) {
       onViewRanking(id, exam.title);
     } else {
       // Fallback or handle operational navigation
@@ -154,7 +154,8 @@ const CompetitionDashboard: React.FC<CompetitionDashboardProps> = ({
               candidatesStats={{
                 enrolled: data.stats.enrolled,
                 active: data.stats.active,
-                eliminated: data.stats.eliminated
+                eliminated: data.stats.eliminated,
+                disqualified: data.stats.disqualified
               }}
             />
 
@@ -173,7 +174,13 @@ const CompetitionDashboard: React.FC<CompetitionDashboardProps> = ({
               onGenerate={handleGenerate}
               onPublish={handlePublish}
               onEdit={handleEdit}
-              canInteract={isModeratorOrAbove}
+              canInteract={(exam) =>
+                exam.ranking_status === 'published'
+                  ? isModeratorOrAbove
+                  : exam.ranking_status === 'ready'
+                    ? isAdminOrAbove
+                    : isModeratorOrAbove
+              }
             />
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 pb-10">

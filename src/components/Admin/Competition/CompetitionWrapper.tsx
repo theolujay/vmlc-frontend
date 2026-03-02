@@ -49,15 +49,15 @@ const CompetitionWrapper: React.FC = () => {
     setView('ranking');
   };
 
-  const handleViewCandidateDetails = ({ 
-    candidate_id, 
-    exam_id, 
-    isLeagueCumulative, 
-    stage, 
-    round 
-  }: { 
-    candidate_id: string, 
-    exam_id?: string, 
+  const handleViewCandidateDetails = ({
+    candidate_id,
+    exam_id,
+    isLeagueCumulative,
+    stage,
+    round
+  }: {
+    candidate_id: string,
+    exam_id?: string,
     isLeagueCumulative?: boolean,
     stage?: string,
     round?: string
@@ -77,7 +77,7 @@ const CompetitionWrapper: React.FC = () => {
   return (
     <div className="w-full font-sans">
       {currentView === 'dashboard' && (
-        <CompetitionDashboard 
+        <CompetitionDashboard
           onViewFullLeaderboard={isModeratorOrAbove ? () => setView('leaderboard') : undefined}
           onViewFullRanking={isModeratorOrAbove ? (id, title) => handleViewRanking(id, title) : undefined}
           onViewRanking={isModeratorOrAbove ? handleViewRanking : undefined}
@@ -87,11 +87,11 @@ const CompetitionWrapper: React.FC = () => {
 
       {currentView === 'leaderboard' && (
         <div className="p-4 sm:p-8">
-          <FullLeagueLeaderboard 
-            onBack={() => setView('dashboard')} 
-            onViewDetails={isModeratorOrAbove ? (id) => handleViewCandidateDetails({ 
-              candidate_id: id, 
-              isLeagueCumulative: true 
+          <FullLeagueLeaderboard
+            onBack={() => setView('dashboard')}
+            onViewDetails={isModeratorOrAbove ? (id) => handleViewCandidateDetails({
+              candidate_id: id,
+              isLeagueCumulative: true
             }) : undefined}
           />
         </div>
@@ -99,12 +99,12 @@ const CompetitionWrapper: React.FC = () => {
 
       {currentView === 'ranking' && (
         <div className="p-4 sm:p-8">
-          <FullRanking 
-            onBack={() => setView('dashboard')} 
+          <FullRanking
+            onBack={() => setView('dashboard')}
             examId={selectedExamId}
             examTitle={selectedExamTitle}
-            onViewDetails={isModeratorOrAbove ? (id) => handleViewCandidateDetails({ 
-              candidate_id: id, 
+            onViewDetails={isModeratorOrAbove ? (id) => handleViewCandidateDetails({
+              candidate_id: id,
               exam_id: selectedExamId,
               stage: 'League', // Default or derived from selectedExamTitle
               round: selectedExamTitle.includes('Round') ? selectedExamTitle.split('Round')[1].trim() : '1'
@@ -115,12 +115,10 @@ const CompetitionWrapper: React.FC = () => {
 
       {currentView === 'candidate-details' && detailContext && (
         <div className="p-4 sm:p-8">
-          <ViewCandidateDetails 
+          <ViewCandidateDetails
             candidate_id={detailContext.candidate_id}
             exam_id={detailContext.exam_id}
             isLeagueCumulative={detailContext.isLeagueCumulative}
-            stage={detailContext.stage}
-            round={detailContext.round}
             onBack={() => setView(detailContext.previousView)}
           />
         </div>

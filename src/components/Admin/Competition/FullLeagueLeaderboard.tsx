@@ -27,8 +27,8 @@ const FullLeagueLeaderboard: React.FC<FullLeagueLeaderboardProps> = ({ onBack, o
   const leaderboardData = (data as unknown as LeagueLeaderboardResponse)?.entries || [];
 
   const filteredData = leaderboardData.filter(item => 
-    item.candidate_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    item.school_name.toLowerCase().includes(searchTerm.toLowerCase())
+    (item.candidate_info?.full_name?.toLowerCase() || '').includes(searchTerm.toLowerCase()) ||
+    (item.candidate_info?.school_name?.toLowerCase() || '').includes(searchTerm.toLowerCase())
   );
 
   if (isLoading) {
@@ -128,39 +128,46 @@ const FullLeagueLeaderboard: React.FC<FullLeagueLeaderboardProps> = ({ onBack, o
               align: 'center'
             },
             {
-              key: 'candidate_name',
+              key: 'candidate_info',
               header: 'Candidate',
-              render: (_, row) => (
+              render: (val: any, row) => (
                 <div className="flex items-center gap-3">
                   <div className="relative flex items-center justify-center w-10 h-10 shrink-0">
                     <div className="w-10 h-10 rounded-full bg-[#F2F4F7] flex items-center justify-center text-[#667185] text-xs font-bold border border-[#E4E7EC] overflow-hidden relative">
                         {row.profile_picture ? (
                           <Image src={row.profile_picture} alt="" fill className="object-cover" />
-                        ) : row.candidate_name.charAt(0)}
+                        ) : val?.full_name?.charAt(0)}
                     </div>
                     <RankMedal rank={row.overall_rank} className="absolute -bottom-1 -right-1 drop-shadow-md" />
                   </div>
                   <div className="flex flex-col">
-                    <span className="font-bold text-[#101828] text-sm">{row.candidate_name}</span>
-                    {!isPublicView && <span className="text-[10px] text-[#667185]">{row.candidate_email}</span>}
+                    <span className="font-bold text-[#101828] text-sm">{val?.full_name}</span>
+                    {!isPublicView && <span className="text-[10px] text-[#667185]">{val?.email}</span>}
                   </div>
                 </div>
               )
             },
             {
-              key: 'school_name',
+              key: 'candidate_info',
               header: 'School',
               align: 'left',
-              render: (val) => <span className="text-sm text-[#475467] font-medium">{val}</span>
+              render: (val: any) => <span className="text-sm text-[#475467] font-medium">{val?.school_name}</span>
             },
             {
               key: 'total_score',
               header: 'Cumulative',
-              render: (val) => (
-                <span className="text-xs font-black text-[#3E4095] bg-white px-2 py-1 rounded-full border border-[#3E4095]/50">
-                  {val}
-                </span>
-              ),
+              render: (val) => {
+                const isAbsent = typeof val === 'string' && val.toLowerCase() === 'absent';
+                return (
+                  <span className={`text-xs font-black px-2 py-1 rounded-full border transition-colors ${
+                    isAbsent 
+                      ? "text-[#667185] bg-[#F2F4F7] border-[#E4E7EC]" 
+                      : "text-[#3E4095] bg-white border-[#3E4095]/50"
+                  }`}>
+                    {isAbsent ? "Absent" : val}
+                  </span>
+                );
+              },
               align: 'center'
             },
             ...(onViewDetails ? [{

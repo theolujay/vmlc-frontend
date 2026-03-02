@@ -89,3 +89,30 @@ export function EndTimeIcon(props: Readonly<React.SVGProps<SVGSVGElement>>) {
         <path d="M24 21.5V25.5L26.5 27M24 17C19.3056 17 15.5 20.8056 15.5 25.5C15.5 30.1944 19.3056 34 24 34C28.6944 34 32.5 30.1944 32.5 25.5C32.5 20.8056 28.6944 17 24 17ZM24 17V14M22 14H26M32.329 17.592L30.829 16.092L31.579 16.842M15.671 17.592L17.171 16.092L16.421 16.842" stroke="#01678C" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
 }
+
+export function ExamScoreIcon(props: Readonly<React.SVGProps<SVGSVGElement>>) {
+    return <svg {...props} width="48" height="48" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect width="48" height="48" rx="24" fill="#E6F7FD" />
+        <path
+            d="M16 19.2C16 18.0799 16 17.5198 16.218 17.092C16.4097 16.7157 16.7157 16.4097 17.092 16.218C17.5198 16 18.0799 16 19.2 16H28.8C29.9201 16 30.4802 16 30.908 16.218C31.2843 16.4097 31.5903 16.7157 31.782 17.092C32 17.5198 32 18.0799 32 19.2V28.8C32 29.9201 32 30.4802 31.782 30.908C31.5903 31.2843 31.2843 31.5903 30.908 31.782C30.4802 32 29.9201 32 28.8 32H19.2C18.0799 32 17.5198 32 17.092 31.782C16.7157 31.5903 16.4097 31.2843 16.218 30.908C16 30.4802 16 29.9201 16 28.8V19.2Z"
+            stroke="#01678C"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+        />
+        <path
+            d="M21 24L23.5 26.5L27.5 21.5"
+            stroke="#01678C"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+        />
+        <path
+            d="M21 16V15C21 14.4477 21.4477 14 22 14H26C26.5523 14 27 14.4477 27 15V16"
+            stroke="#01678C"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+        />
+    </svg>
+}

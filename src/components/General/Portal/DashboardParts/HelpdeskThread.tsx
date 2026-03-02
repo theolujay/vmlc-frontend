@@ -11,7 +11,7 @@ interface HelpdeskThreadProps {
   currentStage: string;
   onClose: () => void;
   candidateName: string;
-  exam_id?: string; // Add exam_id as an optional prop
+  exam_id?: string;
 }
 
 const HelpdeskThread: React.FC<HelpdeskThreadProps> = ({ currentStage, onClose, candidateName, exam_id }) => {

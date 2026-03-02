@@ -8,7 +8,7 @@ interface ExamStatusProps {
   onGenerate: (id: string) => void;
   onPublish: (id: string) => void;
   onEdit: (id: string) => void;
-  canInteract?: boolean;
+  canInteract?: boolean | ((exam: CompetitionExam) => boolean);
 }
 
 const ExamStatus: React.FC<ExamStatusProps> = ({ exams, onView, canInteract = true }) => {
@@ -21,14 +21,17 @@ const ExamStatus: React.FC<ExamStatusProps> = ({ exams, onView, canInteract = tr
       
       <div className="flex flex-col gap-3">
         {exams.length > 0 ? (
-          exams.map((exam) => (
-            <ExamResultRow 
-              key={exam.id} 
-              exam={exam}
-              onView={onView}
-              canInteract={canInteract}
-            />
-          ))
+          exams.map((exam) => {
+            const isRowInteractive = typeof canInteract === 'function' ? canInteract(exam) : canInteract;
+            return (
+              <ExamResultRow 
+                key={exam.id} 
+                exam={exam}
+                onView={onView}
+                canInteract={isRowInteractive}
+              />
+            );
+          })
         ) : (
           <div className="p-8 text-center bg-gray-50 rounded-lg border border-dashed border-gray-200 text-gray-400 text-sm">
             No upcoming or concluded exams yet.
