@@ -49,7 +49,7 @@ export default function Header() {
 
 
     return (
-        <header className="flex bg-white px-6 items-center sticky top-0 z-40 border-b border-gray-100">
+        <header className="flex font-sans bg-white px-6 items-center sticky top-0 z-40 border-b border-gray-100">
             <div className="flex mx-auto justify-between w-full py-4">
                 {/* Logo */}
                 <Link href="/">
@@ -74,7 +74,7 @@ export default function Header() {
                     <div className="flex gap-3 items-center">
                         <div className="hidden md:flex flex-col">
                             <span className="font-medium">{mounted ? userName : ''}</span>
-                            <span className="text-xs text-gray-500">{mounted ? authState?.user?.role : ''}</span>
+                            <span className="text-[8px] text-right text-gray-500 uppercase tracking-widest">{mounted ? authState?.user?.role : ''}</span>
                         </div>
                         <button
                             onClick={() => setProfileOpen(true)}
