@@ -102,11 +102,11 @@ const FullRanking: React.FC<FullRankingProps> = ({ onBack, examId, examTitle, on
           break;
         case 'class':
           valA = a.candidate_info?.current_class?.toLowerCase() || '';
-          valB = a.candidate_info?.current_class?.toLowerCase() || '';
+          valB = b.candidate_info?.current_class?.toLowerCase() || '';
           break;
         case 'state':
           valA = a.candidate_info?.state?.toLowerCase() || '';
-          valB = a.candidate_info?.state?.toLowerCase() || '';
+          valB = b.candidate_info?.state?.toLowerCase() || '';
           break;
         default:
           return 0;
