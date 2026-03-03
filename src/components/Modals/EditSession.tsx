@@ -55,7 +55,10 @@ export default function EditSessionModal({ open, close, exam_id, data }: Props) 
 
                 <div className="p-8 max-h-[70vh] overflow-y-auto">
                     <FormProvider {...form}>
-                        <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-6">
+                        <form 
+                            onSubmit={form.handleSubmit(onSubmit, (err) => console.log('Validation Errors:', err))} 
+                            className="flex flex-col gap-6"
+                        >
 
                             <div className="flex flex-col gap-1.5">
                                 <label className='text-[9px] font-black text-gray-400 uppercase tracking-widest flex items-center gap-2'>
@@ -148,7 +151,7 @@ export default function EditSessionModal({ open, close, exam_id, data }: Props) 
                                 >
                                     {isPending ? <Spinner /> : (
                                         <>
-                                            <span>Save Changes</span>
+                                            <span>Save & Upload</span>
                                             <i className="fas fa-check text-[8px]"></i>
                                         </>
                                     )}

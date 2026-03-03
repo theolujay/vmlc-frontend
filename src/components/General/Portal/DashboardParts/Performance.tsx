@@ -93,15 +93,15 @@ const Performance: React.FC<PerformanceSnapshotProps> = ({
 
     const currentContent = STAGE_CONFIG[stage];
     const isLinkDisabled = !activeRanking || ((stage === 'SCREENING' || stage === 'FINAL') && !activeRanking.exam_id);
-  
-    const title = stage === 'LEAGUE' 
+
+    const title = stage === 'LEAGUE'
       ? STAGE_CONFIG.LEAGUE.title(leagueRound, totalRounds)
       : (currentContent.title as string);
-  
+
     const pendingSub = stage === 'LEAGUE'
       ? STAGE_CONFIG.LEAGUE.pendingSub(leagueRound)
       : (currentContent.pendingSub as string);
-  
+
     return (    <section className="bg-white p-6 rounded-[24px] border border-[#E4E7EC] shadow-sm h-[310px] flex flex-col font-sans overflow-hidden">
       <div className="flex flex-col gap-4 flex-1">
         {/* Header */}
@@ -228,7 +228,7 @@ const Performance: React.FC<PerformanceSnapshotProps> = ({
             href={activeRanking?.exam_id ? `/exam-portal/rankings/${activeRanking.exam_id}` : "/exam-portal/leaderboard"}
             className="mt-6 pt-4 border-t border-slate-100 text-sm font-bold text-[#3E4095] hover:opacity-80 flex items-center justify-between transition-all"
           >
-            <span>{stage === 'SCREENING' ? 'Ranking' : 'Leaderboard'}</span>
+            <span>{stage === 'SCREENING' ? 'View Ranking Table' : 'View Leaderboard'}</span>
             <GotoIcon />
           </Link>
         )

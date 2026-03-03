@@ -17,7 +17,7 @@ export default function useRetractExam(onSuccessCallback?: () => void) {
         },
         onError: (error: unknown) => {
             const apiError = error as ApiError;
-            toast.error(apiError.response?.data?.message || 'Failed to retract exam')
+            toast.error(apiError.response?.data?.error || 'Failed to retract exam')
         }
     })
 

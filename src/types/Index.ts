@@ -55,6 +55,8 @@ export type CandidateSubmitAnswerType={
 export type ApiError = {
   response?: {
     data?: {
+      detail?: string;
+      error?: string;
       message?: string;
       email?: string[];
       [key: string]: unknown;

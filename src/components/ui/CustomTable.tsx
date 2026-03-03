@@ -17,6 +17,7 @@ type CustomTableProps<T> = {
   emptyDesc?: React.ReactNode;
   footer?: React.ReactNode;
   minWidth?: string;
+  stickyTopOffset?: string;
   // Selection props
   isAdminOrAbove?: boolean;
   onSelectAll?: (checked: boolean) => void;
@@ -32,6 +33,7 @@ export default function CustomTable<T extends object>({
   emptyDesc = "There are currently no entries to display.",
   footer,
   minWidth = "100%",
+  stickyTopOffset = "0px",
   isAdminOrAbove = false,
   onSelectAll,
   onSelectRow,
@@ -64,12 +66,13 @@ export default function CustomTable<T extends object>({
                 </th>
               )}
               {columns.map((col, i) => (
-                <th 
-                  key={i} 
+                <th
+                  key={i}
                   className={clsx(
-                    "py-3 px-3 text-[9px] font-black uppercase tracking-widest text-gray-500",
+                    "sticky top-0 z-10 py-3 px-3 text-[9px] font-black uppercase tracking-widest text-gray-500",
                     !col.align || col.align === 'left' ? "text-left" : col.align === 'center' ? "text-center" : "text-right"
                   )}
+                  style={{ top: stickyTopOffset }}
                 >
                   {col.header}
                 </th>
@@ -112,8 +115,8 @@ export default function CustomTable<T extends object>({
                         : (row as Record<string, unknown>)[col.key as string];
 
                     return (
-                      <td 
-                        key={ci} 
+                      <td
+                        key={ci}
                         className={clsx(
                           "py-2 px-3",
                           !col.align || col.align === 'left' ? "text-left" : col.align === 'center' ? "text-center" : "text-right"

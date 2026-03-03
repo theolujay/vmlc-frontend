@@ -39,6 +39,7 @@ export type CompetitionStage = {
   name: string;
   type: string;
   rounds?: number[];
+  available_rounds?: number[];
 };
 
 export type CompetitionData = {

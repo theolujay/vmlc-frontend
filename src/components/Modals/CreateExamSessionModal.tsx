@@ -26,13 +26,7 @@ export default function CreateExamSessionModal({ open, close }: Readonly<{ open:
 
     const roundOptions = useMemo(() => {
         if (!isLeague || !selectedStage) return []
-        const unavailableRounds = selectedStage.rounds || []
-        const maxUnavailable = unavailableRounds.length > 0 ? Math.max(...unavailableRounds) : 0
-        const startRound = maxUnavailable + 1
-
-        if (startRound > 6) return []
-
-        return Array.from({ length: 6 - startRound + 1 }, (_, i) => (startRound + i).toString())
+        return (selectedStage.available_rounds || [] ).map(r => r.toString())
     }, [isLeague, selectedStage])
 
     useEffect(() => {
