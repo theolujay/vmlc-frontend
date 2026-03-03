@@ -22,7 +22,7 @@ export default function usePublishRanking() {
     },
             onError: (error: unknown) => {
                 const apiError = error as ApiError;
-                toast.error(apiError.response?.data?.error || 'Failed to process ranking');
+                toast.error(apiError.response?.data?.detail || 'Failed to process ranking');
             },
   });
 

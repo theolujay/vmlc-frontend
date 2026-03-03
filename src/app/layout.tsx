@@ -1,9 +1,7 @@
-import Script from "next/script";
 import AuthProvider from "@/contexts/AuthProvider";
 import { NotificationProvider } from "@/contexts/NotificationProvider";
 import { SocketProvider } from "@/contexts/SocketProvider";
 import QueryProvider from "@/contexts/QueryProviders";
-import type { Metadata } from "next";
 import { Suspense } from "react";
 import "./globals.css";
 import "@fortawesome/fontawesome-free/css/all.min.css";
@@ -36,7 +34,7 @@ export default function RootLayout({
                   <Suspense fallback={<div className="grid w-full h-screen place-content-center"><Spinner/></div>}>
                     {children}
                   </Suspense>
-                  <ToastContainer 
+                  <ToastContainer
                     position="top-right"
                     autoClose={2000}
                     hideProgressBar={false}
