@@ -15,6 +15,16 @@ export class CompetitionService {
     }
   }
 
+  static async listRankings(page: number = 1) {
+    try {
+      const response = await client.get(competitionUrls.LIST_RANKINGS, { params: { page } });
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching rankings list:', error);
+      throw error;
+    }
+  }
+
   static async getRanking(exam_id: string) {
     try {
       const response = await client.get(competitionUrls.GET_RANKING(exam_id));

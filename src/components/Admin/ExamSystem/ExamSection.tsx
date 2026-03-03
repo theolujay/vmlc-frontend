@@ -21,9 +21,12 @@ import { formatExamTitle } from '@/utils/generalUtils'
 import dynamic from 'next/dynamic'
 import usePagination from '@/hooks/usePagination'
 import useListQuestions from '@/hooks/useListQuestions'
+import useListRankings from '@/hooks/useListRankings'
+import { RankingSnapshotType } from '@/types/Examtype'
 import QuestionPoolTable from './QuestionPoolTable'
 import QuestionPoolStats from './QuestionPoolStats'
 import { useAuth } from '@/contexts/AuthProvider'
+import usePublishRanking from '@/hooks/usePublishRanking'
 
 const AddQuestionModal = dynamic(() => import('../../Modals/AddQuestionModal'), {
   ssr: false,
@@ -37,11 +40,11 @@ export default function ExamSection() {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
-  
+
   // Exam Pagination
   const initialPage = Number(searchParams.get("page") || 1)
   const [currentPage, setCurrentPage] = useState(initialPage);
-  
+
   // Modals
   const [openCreateSession, setOpenCreateSession] = useState(false);
   const [openAddQuestion, setOpenAddQuestion] = useState(false);
@@ -49,6 +52,8 @@ export default function ExamSection() {
   // Data Fetching
   const { data: examData, isPending: isExamsPending } = useListExams(currentPage)
   const { data: statOverview } = useGetStatOverview()
+
+  const { data: rankingData, isPending: isRankingsPending } = useListRankings(1) // Show first few snapshots
 
   // Question Pool Logic
   const { page: questionPage, setPage: setQuestionPage } = usePagination()
@@ -70,7 +75,7 @@ export default function ExamSection() {
   useEffect(() => {
     const params = new URLSearchParams(searchParams.toString());
     const urlPage = params.get("page");
-    
+
     if (urlPage !== currentPage.toString()) {
       params.set("page", currentPage.toString());
       router.replace(`${pathname}?${params.toString()}`, { scroll: false })
@@ -81,31 +86,31 @@ export default function ExamSection() {
 
   return (
     <div className='flex flex-col gap-1 font-sans'>
-      <AdminHeader 
-        isExport={false} 
-        label={competitionTitle} 
+      <AdminHeader
+        isExport={false}
+        label={competitionTitle}
         actionButton={[
-          <button 
+          <button
             key="add-question"
-            onClick={() => setOpenAddQuestion(true)} 
+            onClick={() => setOpenAddQuestion(true)}
             className="inline-flex items-center gap-2.5 bg-white text-[#3E4095] border border-[#3E4095]/20 px-6 py-3 rounded-xl font-black text-[10px] tracking-widest hover:bg-gray-50 transition-all uppercase shadow-sm active:scale-95"
           >
             <i className="fas fa-plus text-xs"></i>
             <span>ADD QUESTION</span>
           </button>,
           isAdminOrAbove && (
-            <button 
+            <button
               key="create-session"
-              onClick={() => setOpenCreateSession(true)} 
+              onClick={() => setOpenCreateSession(true)}
               className="inline-flex items-center gap-2.5 bg-[#3E4095] text-white px-6 py-3 rounded-xl font-black text-[10px] tracking-widest hover:bg-[#2d2f6e] transition-all uppercase shadow-lg shadow-[#3E4095]/20 active:scale-95"
             >
               <i className="fas fa-calendar-plus text-xs"></i>
               <span>CREATE EXAM</span>
             </button>
           )
-        ].filter(Boolean) as React.ReactNode[]} 
+        ].filter(Boolean) as React.ReactNode[]}
       />
-      
+
       <div className="flex flex-col gap-6 mt-4 w-full sm:w-[96%] px-2 sm:px-0 sm:mx-auto pb-20">
         {/* Exams Section */}
         {isAdminOrAbove && (
@@ -118,12 +123,25 @@ export default function ExamSection() {
               isExamsPending ? <div className="grid w-full h-[20vh] place-content-center"><Spinner /></div> :
                 <QuestionSession currentPage={currentPage} onPageChange={setCurrentPage} total_pages={examData?.pagination.total_pages ?? 0} sessions={examData?.results ?? []} />
             }
-          </div>
-        )}
-        
-        {/* Global Question Pool Section */}
-        <div className="space-y-4">
-          <QuestionPoolStats 
+            </div>
+            )}
+
+            {/* Performance Ranking Section */}
+            {isAdminOrAbove && (
+            <div className='flex flex-col gap-4'>
+            <div className="flex items-center space-x-2.5 px-2">
+              <i className="fas fa-chart-line text-[#3E4095] text-[10px]"></i>
+              <h3 className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Ranking Tables</h3>
+            </div>
+            {
+              isRankingsPending ? <div className="grid w-full h-[15vh] place-content-center"><Spinner /></div> :
+                <PerformanceRanking rankings={rankingData?.results ?? []} />
+            }
+            </div>
+            )}
+
+            {/* Global Question Pool Section */}        <div className="space-y-4">
+          <QuestionPoolStats
             title='Questions Stats'
             activeDifficulty={questionFilters.difficulty}
             onDifficultyChange={(difficulty) => setQuestionFilters(prev => ({ ...prev, difficulty }))}
@@ -135,12 +153,12 @@ export default function ExamSection() {
             }}
           />
 
-          <QuestionPoolTable 
-            handleSearch={setQuestionFilters} 
-            page_count={questionData?.pagination.total_pages ?? 0} 
-            currentPage={questionPage} 
-            onPageChange={setQuestionPage} 
-            questions={questionData?.results ?? []} 
+          <QuestionPoolTable
+            handleSearch={setQuestionFilters}
+            page_count={questionData?.pagination.total_pages ?? 0}
+            currentPage={questionPage}
+            onPageChange={setQuestionPage}
+            questions={questionData?.results ?? []}
             hasNext={questionData?.pagination.has_next}
             hasPrevious={questionData?.pagination.has_previous}
           />
@@ -162,7 +180,7 @@ function QuestionSession({ sessions, total_pages, onPageChange, currentPage }: R
       <i className="fas fa-list-ul text-[#3E4095] text-[10px]"></i>
       <h3 className="text-[9px] font-black text-gray-400 uppercase tracking-widest">Active Sessions</h3>
     </div> */}
-    
+
     <ResponsiveContainer className='gap-6 p-0 bg-transparent border-none shadow-none'>
       {
         sortedSessions.length == 0 && <EmptySession label='No exam sessions yet' desc='Create one using "Create Exam"' />
@@ -224,7 +242,7 @@ function ExamSession({ data, id }: Readonly<{ id: string, data: ExamSessionType 
 
       <div className="flex flex-col gap-1">
         <h4 className='text-sm font-bold text-gray-800 uppercase line-clamp-1 group-hover:text-[#3E4095] transition-colors'>{formatExamTitle(data.title)}</h4>
-        <p className='text-[9px] text-gray-400 font-medium line-clamp-1'>{data.competition_title}</p>
+        {/* <p className='text-[9px] text-gray-400 font-medium line-clamp-1'>{data.competition_title}</p> */}
       </div>
 
       <div className="flex items-end justify-between mt-2">
@@ -240,3 +258,114 @@ function ExamSession({ data, id }: Readonly<{ id: string, data: ExamSessionType 
     <div className="h-1 w-full bg-gray-50 group-hover:bg-[#3E4095]/10 transition-colors"></div>
   </Link>
 }
+
+function PerformanceRanking({ rankings }: { rankings: RankingSnapshotType[] }) {
+  return (
+    <div className='flex flex-col gap-6'>
+      <ResponsiveContainer className='gap-6 p-0 bg-transparent border-none shadow-none'>
+        {rankings.length === 0 && (
+          <EmptySession
+            label='No ranking table available'
+            desc='Ranking tables will appear here after exams are concluded and ranking is generated'
+          />
+        )}
+
+        {rankings.length > 0 && (
+          <div className="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            {rankings.map((ranking) => (
+              <RankingSnapshotCard key={ranking.id} ranking={ranking} />
+            ))}
+          </div>
+        )}
+      </ResponsiveContainer>
+    </div>
+  );
+}
+
+function RankingSnapshotCard({ ranking }: { ranking: RankingSnapshotType }) {
+  const router = useRouter();
+  const { publishRanking, isPending: isPublishing } = usePublishRanking();
+
+  const handleViewRanking = (e: React.MouseEvent) => {
+    e.preventDefault();
+    router.push(`/admin/competition?view=ranking&id=${ranking.exam.id}&title=${encodeURIComponent(ranking.exam.title)}`);
+  };
+
+  const handleQuickPublish = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (confirm(`Are you sure you want to publish the ranking table for "${ranking.exam.title}"?`)) {
+      publishRanking({ exam_id: ranking.exam.id, publish_now: true });
+    }
+  };
+
+  return (
+    <div
+      onClick={handleViewRanking}
+      className='group flex flex-col bg-white border border-gray-100 rounded-[2rem] shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all overflow-hidden cursor-pointer'
+      title="View Ranking"
+    >
+      <div className="p-6 flex flex-col gap-5">
+        <div className="flex justify-between items-start">
+          <div className={clsx(
+            "px-3 py-1 rounded-full text-[8px] font-black uppercase tracking-widest flex items-center gap-1.5",
+            ranking.is_published ? "bg-emerald-50 text-emerald-600" : "bg-orange-50 text-orange-600"
+          )}>
+            <span className={clsx("w-1 h-1 rounded-full", ranking.is_published ? "bg-emerald-600" : "bg-orange-600")}></span>
+            {ranking.is_published ? "Published" : "Draft"}
+          </div>
+          <div className="text-[8px] font-black text-gray-400 uppercase tracking-widest">
+            {ranking.is_published && ranking.published_at ? formatDate(ranking.published_at) : formatDate(ranking.created_at)}
+          </div>
+        </div>
+
+        <div className="flex flex-col gap-1">
+          <h4 className='text-sm font-bold text-gray-800 uppercase line-clamp-1 group-hover:text-[#3E4095] transition-colors'>
+            {formatExamTitle(ranking.exam.title)}
+          </h4>
+          <p className='text-[8px] text-gray-400 font-medium flex items-center gap-1.5'>
+            <i className="fas fa-history text-[8px]"></i>
+            Snapshot #{ranking.id}
+          </p>
+        </div>
+
+        <div className="flex items-end justify-between mt-2">
+          <div className="flex flex-col">
+            <span className='text-[2rem] font-bold tracking-tight text-gray-900 leading-none'>
+              {ranking.entries_count}
+            </span>
+            <span className='text-[8px] font-black text-gray-400 uppercase tracking-widest mt-1'>Candidates</span>
+          </div>
+
+          <div className="flex gap-2">
+            {!ranking.is_published && (
+              <button
+                onClick={handleQuickPublish}
+                disabled={isPublishing}
+                className="w-10 h-10 rounded-xl bg-emerald-50/40 flex items-center justify-center text-emerald-600 hover:bg-emerald-600 hover:text-white transition-all disabled:opacity-50 hover:cursor-pointer"
+                title="Publish Ranking"
+              >
+                {isPublishing ? <i className="fas fa-spinner animate-spin"></i> : <i className="fas fa-upload"></i>}
+              </button>
+            )}
+            <div className="w-10 h-10 rounded-xl bg-gray-50 flex items-center justify-center text-gray-700 group-hover:bg-[#3E4095] group-hover:text-white transition-all">
+              <ExamCardGoTo />
+            </div>
+          </div>
+        </div>
+      </div>
+      <div className={clsx(
+        "h-1 w-full transition-colors",
+        ranking.is_published ? "bg-emerald-50 group-hover:bg-emerald-100" : "bg-orange-50 group-hover:bg-orange-100"
+      )}></div>
+    </div>
+  );
+}
+
+// function RankingIcon({ className }: { className?: string }) {
+//   return (
+//     <svg className={className} width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+//       <path d="M18 20V10M12 20V4M6 20V14" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+//     </svg>
+//   );
+// }

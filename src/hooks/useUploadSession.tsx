@@ -13,10 +13,10 @@ const uploadExamSchema = z.object({
 
 
   scheduled_date: z.string(),
-  countdown_minutes: z.string(),
+  countdown_minutes: z.union([z.string(), z.number()]),
   //   start_time: z.date(),
   scheduled_exam_time: z.string(),
-  open_duration_hours: z.string(),
+  open_duration_hours: z.union([z.string(), z.number()]),
   stage_id: z.number().optional(),
   round: z.number().optional(),
 })

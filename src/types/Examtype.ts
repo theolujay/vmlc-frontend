@@ -244,6 +244,26 @@ export type ExamSessionType = {
 
 
 
+export type RankingSnapshotType = {
+  id: number;
+  exam: {
+    id: string;
+    title: string;
+    question_count: number;
+    concluded_at: string;
+    delivery_mode: string;
+  };
+  entries_count: number;
+  is_published: boolean;
+  published_at: string | null;
+  created_at: string;
+};
+
+export type RankingSnapshotListType = {
+  results: RankingSnapshotType[];
+  pagination: PaginationType;
+};
+
 export type ExamStatType = {
   total_exams_taken: number,
   available_exams_count: number,
