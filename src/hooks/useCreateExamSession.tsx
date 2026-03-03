@@ -10,10 +10,9 @@ import { z } from 'zod'
 
 
 const createExamSchema = z.object({
-  stage_id: z.number().optional(),
-  round: z.number().optional(),
+  stage_id: z.number().nullable().optional(),
+  round: z.number().nullable().optional(),
   description: z.string().optional(),
-  is_active: z.boolean(),
 })
 
 
@@ -21,7 +20,6 @@ const defaultValues = {
   stage_id: undefined,
   round: undefined,
   description: '',
-  is_active: true,
 }
 
 

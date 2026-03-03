@@ -29,9 +29,9 @@ export default function CreateExamSessionModal({ open, close }: Readonly<{ open:
         const unavailableRounds = selectedStage.rounds || []
         const maxUnavailable = unavailableRounds.length > 0 ? Math.max(...unavailableRounds) : 0
         const startRound = maxUnavailable + 1
-        
+
         if (startRound > 6) return []
-        
+
         return Array.from({ length: 6 - startRound + 1 }, (_, i) => (startRound + i).toString())
     }, [isLeague, selectedStage])
 
@@ -128,11 +128,11 @@ export default function CreateExamSessionModal({ open, close }: Readonly<{ open:
                                     <i className="fas fa-align-left text-[#3E4095]"></i>
                                     Description
                                 </label>
-                                <textarea 
-                                    placeholder='Enter a detailed description for this session...' 
-                                    {...register('description')} 
-                                    className='w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold text-gray-800 focus:ring-4 focus:ring-[#3E4095]/5 focus:border-[#3E4095] outline-none transition-all h-32 resize-none' 
-                                    id="description" 
+                                <textarea
+                                    placeholder='Enter a detailed description for this session...'
+                                    {...register('description')}
+                                    className='w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold text-gray-800 focus:ring-4 focus:ring-[#3E4095]/5 focus:border-[#3E4095] outline-none transition-all h-32 resize-none'
+                                    id="description"
                                 />
                                 {errors.description && <p className="text-[10px] font-bold text-red-500 mt-1 uppercase tracking-tight">{errors.description.message}</p>}
                             </div>

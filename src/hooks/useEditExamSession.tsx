@@ -9,24 +9,23 @@ import z from 'zod'
 
 
 const editExamSessionSchema = z.object({
-    title: z.string().min(3, { message: 'Title must be at least 3 characters' }).optional(),
-    stage_id: z.number().optional(),
-    round: z.number().optional(),
-    description: z.string().min(3, { message: 'Description must be at least 3 characters' }),
+
+    stage_id: z.number().nullable().optional(),
+    round: z.number().nullable().optional(),
+    description: z.string().min(7, { message: 'Description must be at least 7 characters' }).optional(),
     scheduled_date: z.string().optional(),
     open_duration_hours: z.number().optional(),
     countdown_minutes: z.number().optional(),
-    is_active: z.boolean().optional(),
 })
 
 const defaultValues = {
-    title: '',
+
     stage_id: undefined,
     round: undefined,
     description: '',
     scheduled_date: '',
-    open_duration_hours: 12,
-    countdown_minutes: 60,
+    open_duration_hours: undefined,
+    countdown_minutes: undefined,
     is_active: true,
 }
 
@@ -42,11 +41,10 @@ export default function useEditExamSession(exam_id: string, onSuccessCallback: (
     useEffect(() => {
         if (data) {
             form.reset({
-                title: data.title,
+
                 description: data.description,
                 open_duration_hours: data.open_duration_hours,
                 countdown_minutes: data.countdown_minutes,
-                is_active: data.is_active,
                 scheduled_date: data.scheduled_date ? data.scheduled_date.split('T')[0] : '',
                 stage_id: data.stage_id,
                 round: data.round,
