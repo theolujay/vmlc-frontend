@@ -77,7 +77,7 @@ export default function Header() {
                             <span className="text-[8px] text-right text-gray-500 uppercase tracking-widest">{mounted ? authState?.user?.role : ''}</span>
                         </div>
                         <button
-                            onClick={() => setProfileOpen(true)}
+                        onClick={() => setProfileOpen(true)}
                             className="bg-[#CCEEFB] flex items-center justify-center w-[44px] h-[44px] rounded-full relative overflow-hidden cursor-pointer outline-none hover:ring-2 hover:ring-[#CCEEFB] transition-all"
                         >
                             {mounted && currentUser?.profile?.user?.profile_picture ? (
