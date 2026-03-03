@@ -7,12 +7,12 @@ import { getUserInitials } from '@/utils/capitalizeWords'
 import clsx from 'clsx'
 import { AngleIcon, CandidateIcon, SortIcon, FilterIcon } from '../AdminIcons'
 import { EndTimeIcon, PositionIcon, StartTimeIcon, ExamScoreIcon } from './LeaderBoardIcon'
-import { useAuth } from '@/contexts/AuthProvider'
 import { ReactNode, useState } from 'react'
 import Image from 'next/image'
 import MathRenderer from '@/components/Exam/MathRenderer'
 import RankMedal from '../Competition/RankMedal'
 import ProfileModal from '@/components/Modals/ProfileModal'
+import useGetAccountMgt from '@/hooks/useGetAccountMgt'
 
 interface ViewCandidateDetailsProps {
     candidate_id: string;
@@ -48,7 +48,7 @@ function ViewProfileButton({ role, id, onOpen }: { role: string; id: string; onO
 }
 
 export default function ViewCandidateDetails({ candidate_id, exam_id, isLeagueCumulative, onBack }: ViewCandidateDetailsProps) {
-    const { authState } = useAuth()
+    const { data: accountMgt } = useGetAccountMgt();
     const [profileOpen, setProfileOpen] = useState(false);
 
     const { data, isLoading } = useGetCompetitionCandidateDetail({
@@ -97,7 +97,7 @@ export default function ViewCandidateDetails({ candidate_id, exam_id, isLeagueCu
                 </div>
                 <div>
                     <ViewProfileButton
-                        role={authState?.user?.role || ''}
+                        role={accountMgt?.role || ''}
                         id={candidate_id}
                         onOpen={() => setProfileOpen(true)}
                     />

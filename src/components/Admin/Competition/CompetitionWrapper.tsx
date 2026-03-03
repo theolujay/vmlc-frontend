@@ -3,8 +3,9 @@ import CompetitionDashboard from './CompetitionDashboard';
 import FullLeagueLeaderboard from './FullLeagueLeaderboard';
 import FullRanking from './FullRanking';
 import ViewCandidateDetails from '../Leaderboard/ViewCandidateDetails';
-import { useAuth } from '@/contexts/AuthProvider';
 import { useSearchParams } from 'next/navigation';
+import useGetAccountMgt from '@/hooks/useGetAccountMgt';
+import Spinner from '@/components/ui/spinner/spinner';
 
 type ViewState = 'dashboard' | 'leaderboard' | 'ranking' | 'candidate-details';
 
@@ -18,13 +19,13 @@ interface DetailContext {
 }
 
 const CompetitionWrapper: React.FC = () => {
-  const { authState } = useAuth();
+  const { data: accountMgt, isPending } = useGetAccountMgt();
   const searchParams = useSearchParams();
   const viewParam = searchParams.get('view') as ViewState;
   const idParam = searchParams.get('id');
   const titleParam = searchParams.get('title');
 
-  const userRole = authState?.user?.role;
+  const userRole = accountMgt?.role;
   const isModeratorOrAbove = ['moderator', 'admin', 'manager', 'superadmin'].includes(userRole || '');
 
   const [currentView, setView] = useState<ViewState>('dashboard');
@@ -73,6 +74,8 @@ const CompetitionWrapper: React.FC = () => {
     });
     setView('candidate-details');
   };
+
+  if (isPending) return <div className="grid w-full h-[60vh] place-content-center"><Spinner /></div>;
 
   return (
     <div className="w-full font-sans">

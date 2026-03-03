@@ -5,11 +5,12 @@ import withAuthentication from '@/hocs/withAuthentication';
 import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
 import FullRanking from '@/components/Admin/Competition/FullRanking';
-import { useAuth } from '@/contexts/AuthProvider';
+import useGetAccountMgt from '@/hooks/useGetAccountMgt';
+import Spinner from '@/components/ui/spinner/spinner';
 
 function RankingPage() {
-  const { authState } = useAuth();
-  const userRole = authState?.user?.role;
+    const { data: accountMgt, isPending } = useGetAccountMgt();
+    const userRole = accountMgt?.role;
 //   const isCandidate = authState?.profile?.profile_type === "candidate"
 //   const isVolunteer = userRole === 'volunteer';
   const isModeratorOrAbove = ['moderator', 'admin', 'manager', 'superadmin'].includes(userRole || '');
@@ -17,6 +18,8 @@ function RankingPage() {
   const params = useParams();
   const router = useRouter();
   const examId = params?.examId as string;
+
+  if (isPending) return <div className="grid w-full h-screen place-content-center"><Spinner /></div>;
 
   return (
     <PageLayout>

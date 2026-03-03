@@ -1,5 +1,4 @@
 "use client"
-import { useAuth } from '@/contexts/AuthProvider'
 import withAuthentication from '@/hocs/withAuthentication'
 import {  TabType } from '@/types/TabType'
 import TabWrapper from '../ui/Tabs/TabWrapper'
@@ -73,10 +72,12 @@ import { useEffect, useState, useMemo } from 'react'
 import useGetRegistrationStatus from '@/hooks/useGetRegistrationStatus'
 import useGetStatOverview from '@/hooks/useGetStatOverview'
 import useListHelpdeskThreads from '@/hooks/useListHelpdeskThreads'
+import useGetAccountMgt from '@/hooks/useGetAccountMgt'
+import Spinner from '@/components/ui/spinner/spinner'
 
 export function OverviewTabs() {
-    const { authState } = useAuth()
-    const userRole = authState?.user?.role ?? '';
+    const { data: accountMgt, isPending: isAccountMgtPending } = useGetAccountMgt();
+    const userRole = accountMgt?.role ?? '';
     const hasHelpdeskAccess = ['moderator', 'admin', 'manager', 'superadmin'].includes(userRole);
 
     const { data: registrationStatus } = useGetRegistrationStatus();
@@ -102,7 +103,9 @@ export function OverviewTabs() {
         });
     }, [unreadCount]);
 
-    let userTabs = getTabsForRole(authState?.user?.role ?? '')
+    if (isAccountMgtPending) return <div className="grid w-full h-screen place-content-center"><Spinner/></div>;
+
+    let userTabs = getTabsForRole(userRole)
 
     // Re-map userTabs to include the dynamic HelpdeskLabel with unreadCount
     userTabs = userTabs.map(userTab => {

@@ -21,11 +21,12 @@ import TablePagination from '@/components/ui/Pagination/TablePagination'
 import { useDebouncedSearch } from '@/hooks/useDebouncedSearch'
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu'
 import clsx from 'clsx'
-import { useAuth } from '@/contexts/AuthProvider'
+import useGetAccountMgt from '@/hooks/useGetAccountMgt'
+import Spinner from '@/components/ui/spinner/spinner'
 
 export default function UserManagement() {
-    const { authState } = useAuth();
-    const userRole = authState?.user?.role;
+    const { data: accountMgt, isPending: isAccountMgtPending } = useGetAccountMgt();
+    const userRole = accountMgt?.role;
     const isVolunteer = userRole === 'volunteer';
 
     const pathName = usePathname();
@@ -59,6 +60,8 @@ export default function UserManagement() {
         setSelectedUserId(id);
         setProfileOpen(true);
     };
+
+    if (isAccountMgtPending) return <div className="grid w-full h-[60vh] place-content-center"><Spinner /></div>
 
     if (isVolunteer) {
         return (

@@ -5,7 +5,7 @@ import TablePagination from '@/components/ui/Pagination/TablePagination'
 import ResponsiveContainer from '@/components/ui/ResponsiveContainer'
 import Spinner from '@/components/ui/spinner/spinner'
 import ScreeningTabWrapper from '@/components/ui/Tabs/ScreeningTabWrapper'
-import { useAuth } from '@/contexts/AuthProvider'
+import useGetAccountMgt from '@/hooks/useGetAccountMgt'
 import useGetLeaderBoard from '@/hooks/useGetLeaderboard'
 import usePagination from '@/hooks/usePagination'
 import { getUserInitials } from '@/utils/capitalizeWords'
@@ -13,8 +13,8 @@ import { getOrdinal, getUserName } from '@/utils/generalUtils'
 import { useState } from 'react'
 
 export default function LeaderBoard() {
-    const { authState } = useAuth();
-    const userRole = authState?.user?.role?.toLowerCase();
+    const { data: accountMgt } = useGetAccountMgt();
+    const userRole = accountMgt?.role?.toLowerCase();
     const isScreening = userRole === 'screening';
 
     return (
@@ -22,13 +22,15 @@ export default function LeaderBoard() {
             <h2 className='font-bold p-2 border-b border-[#E4E7EC] text-xl'>
                 {isScreening ? 'Screening Ranking' : 'League Leaderboard'}
             </h2>
-            <Board userRole={userRole} />
+            <Board />
         </ResponsiveContainer>
     )
 }
 
 
-function Board({ userRole }: { userRole?: string }) {
+function Board() {
+    const { data: accountMgt } = useGetAccountMgt();
+    const userRole = accountMgt?.role?.toLowerCase();
     const { isPending, data } = useGetLeaderBoard()
 
     
@@ -68,7 +70,7 @@ function Board({ userRole }: { userRole?: string }) {
 function ScreeningTab({ stage, round }: { stage: string; round: number }) {
     const { page,setPage} = usePagination();
     const [filters] = useState({ stage, round });
-    const { authState } = useAuth();
+    const { data: accountMgt } = useGetAccountMgt();
     const { data } = useGetLeaderBoard(page, filters);
 
     
@@ -110,7 +112,7 @@ function ScreeningTab({ stage, round }: { stage: string; round: number }) {
     }else{
         allCandidates=[...data.remaining_candidates];
     }
-    const userName=getUserName(authState?.user?.first_name ?? '', authState?.user?.last_name ?? '');
+    const userName=getUserName(accountMgt?.user?.first_name ?? '', accountMgt?.user?.last_name ?? '');
     const user=allCandidates.find((item)=>item.candidate.full_name===userName);
 
 

@@ -14,7 +14,7 @@ import AddToExamSessionModal from "@/components/Modals/AddToExamSessionModal";
 import BulkRemoveQuestionsModal from "@/components/Modals/BulkRemoveQuestionsModal";
 import { useDebouncedSearch } from "@/hooks/useDebouncedSearch";
 import MathRenderer from "@/components/Exam/MathRenderer";
-import useGetCurrentUser from "@/hooks/useGetCurrentUser";
+import useGetAccountMgt from "@/hooks/useGetAccountMgt";
 import CustomTable from "@/components/ui/CustomTable";
 import dynamic from "next/dynamic";
 
@@ -52,8 +52,8 @@ export default function QuestionPoolTable<T extends { search?: string }>({
   const [openEditQuestion, setOpenEditQuestion] = useState(false);
   const [questionToEdit, setQuestionToEdit] = useState<SessionQuestionItemType | null>(null);
 
-  const currentUser = useGetCurrentUser();
-  const userRole = currentUser?.profile?.role || "";
+  const { data: accountMgt } = useGetAccountMgt();
+  const userRole = accountMgt?.role || "";
   const isAdminOrAbove = ["admin", "manager", "superadmin"].includes(userRole);
 
   // handle single selection
