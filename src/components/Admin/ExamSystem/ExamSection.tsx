@@ -25,20 +25,18 @@ import useListRankings from '@/hooks/useListRankings'
 import { RankingSnapshotType } from '@/types/Examtype'
 import QuestionPoolTable from './QuestionPoolTable'
 import QuestionPoolStats from './QuestionPoolStats'
-import { useAuth } from '@/contexts/AuthProvider'
 import usePublishRanking from '@/hooks/usePublishRanking'
+import useGetAccountMgt from '@/hooks/useGetAccountMgt'
 
 const AddQuestionModal = dynamic(() => import('../../Modals/AddQuestionModal'), {
   ssr: false,
 });
 
 export default function ExamSection() {
-  const { authState } = useAuth();
-  const userRole = authState?.user?.role;
+  const { data: accountMgt, isPending: isAccountMgtPending } = useGetAccountMgt();
+  const userRole = accountMgt?.role;
   const isModeratorOrAbove = ['moderator', 'admin', 'manager', 'superadmin'].includes(userRole || '');
   const isAdminOrAbove = ['admin', 'manager', 'superadmin'].includes(userRole || '');
-  const canPerformAdminActions = ['admin', 'manager', 'superadmin'].includes(userRole || '');
-  const canViewDetails = ['admin', 'manager', 'superadmin'].includes(userRole || '');
 
   const router = useRouter();
   const pathname = usePathname();
@@ -86,6 +84,8 @@ export default function ExamSection() {
   }, [currentPage, pathname, router, searchParams])
 
   const competitionTitle = statOverview?.competition?.active_competition || 'Exams & Questions';
+
+  if (isAccountMgtPending) return <div className="grid w-full h-[60vh] place-content-center"><Spinner /></div>
 
   return (
     <div className='flex flex-col gap-1 font-sans'>
@@ -142,6 +142,7 @@ export default function ExamSection() {
               isRankingsPending ? <div className="grid w-full h-[15vh] place-content-center"><Spinner /></div> :
                 <PerformanceRanking canViewDetails={isAdminOrAbove} rankings={rankingData?.results ?? []} />
             }
+
             </div>
             )}
 
@@ -286,7 +287,7 @@ function ExamSession({ data, id, canViewDetails }: Readonly<{ id: string, data: 
   );
 }
 
-function PerformanceRanking({ rankings, canViewDetails }: { rankings: RankingSnapshotType[], canViewDetails?: boolean }) {
+function PerformanceRanking({ rankings, canViewDetails, userRole }: { rankings: RankingSnapshotType[], canViewDetails?: boolean, userRole?: string }) {
   return (
     <div className='flex flex-col gap-6'>
       <ResponsiveContainer className='gap-6 p-0 bg-transparent border-none shadow-none'>
@@ -300,7 +301,7 @@ function PerformanceRanking({ rankings, canViewDetails }: { rankings: RankingSna
         {rankings.length > 0 && (
           <div className="grid gap-6 grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {rankings.map((ranking) => (
-              <RankingSnapshotCard key={ranking.id} ranking={ranking} canViewDetails={canViewDetails} />
+              <RankingSnapshotCard key={ranking.id} ranking={ranking} canViewDetails={canViewDetails} userRole={userRole} />
             ))}
           </div>
         )}
@@ -309,9 +310,7 @@ function PerformanceRanking({ rankings, canViewDetails }: { rankings: RankingSna
   );
 }
 
-function RankingSnapshotCard({ ranking, canViewDetails }: { ranking: RankingSnapshotType, canViewDetails?: boolean }) {
-  const { authState } = useAuth();
-  const userRole = authState?.user?.role;
+function RankingSnapshotCard({ ranking, canViewDetails, userRole }: { ranking: RankingSnapshotType, canViewDetails?: boolean, userRole?: string }) {
   const isSuperAdmin = ['superadmin'].includes(userRole || '');
 
   const router = useRouter();
