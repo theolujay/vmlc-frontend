@@ -6,7 +6,7 @@ import RemoveQuestionModal from '@/components/Modals/RemoveQuestionModal';
 import AppDropdownDialog from '@/components/ui/Dropdown/AppDropdownDialog';
 import { SessionQuestionItemType } from '@/types/Examtype';
 import { useMemo, useState } from 'react';
-import useGetCurrentUser from '@/hooks/useGetCurrentUser';
+import useGetAccountMgt from '@/hooks/useGetAccountMgt';
 
 type Props = Readonly<{ 
     question_id: number, 
@@ -19,8 +19,8 @@ type Props = Readonly<{
 export default function QuestionPoolDropdown({ question_id, information, onAddToExam, onEdit, onView }: Props) {
     const [openDeleteModal, setOpenDeleteModal] = useState(false)
 
-    const currentUser = useGetCurrentUser();
-    const userRole = currentUser?.profile?.role || "";
+    const { data: accountMgt } = useGetAccountMgt();
+    const userRole = accountMgt?.role || "";
     const isAdminOrAbove = ["admin", "manager", "superadmin"].includes(userRole);
 
     function handleDeleteModal() {
