@@ -20,7 +20,7 @@ export default function SelectInput({
     return (
         <Select.Root value={value} onValueChange={onValueChange} disabled={disabled}>
             <Select.Trigger
-                className="inline-flex h-[40px] w-full border border-[#D0D5DD] items-center justify-between gap-[5px] rounded-md bg-white px-[15px] leading-none outline-none"
+                className="inline-flex h-[40px] w-full border border-[#D0D5DD] items-center justify-between gap-[5px] rounded-xl bg-white px-[15px] leading-none outline-none"
                 aria-label="stages"
             >
                 {/* <Select.Value asChild>
@@ -41,7 +41,7 @@ export default function SelectInput({
                 <Select.Content align="start" className="z-50 shadow-md w-[var(--radix-select-trigger-width)] bg-white rounded-md" position="popper" sideOffset={5}>
                     <Select.Viewport className="p-2 w-full">
                         {items.map((val) => (
-                            <SelectItem key={val} value={val} className="capitalize w-full">{val}</SelectItem>
+                            <SelectItem key={val} value={val} className="capitalize w-full font-sans">{val}</SelectItem>
                         ))}
                     </Select.Viewport>
                 </Select.Content>
@@ -57,13 +57,13 @@ type SelectItemProps = React.ComponentPropsWithoutRef<typeof Select.Item> & {
 };
 
 const SelectItem = React.forwardRef<
-    React.ElementRef<typeof Select.Item>,
+    React.ComponentRef<typeof Select.Item>,
     SelectItemProps
 >(({ children, className, ...props }, forwardedRef) => {
     return (
         <Select.Item
             className={clsx(
-                "relative flex h-[30px] select-none items-center data-[highlighted]:bg-[#3e4095] data-[highlighted]:text-white rounded-[3px] pl-[25px] pr-[35px]  leading-none text-gray-700 data-[highlighted]:bg-violet9 ",
+                "relative flex h-[30px] select-none items-center data-[highlighted]:bg-[#3e4095] data-[highlighted]:text-white rounded-[3px] pl-[25px] pr-[35px] leading-none text-gray-700 data-[highlighted]:bg-violet9 ",
                 className
             )}
             {...props}

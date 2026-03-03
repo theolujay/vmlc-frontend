@@ -9,11 +9,11 @@ import SelectInput from '../ui/Select'
 import Spinner from '../ui/spinner/spinner'
 import { useMemo, useCallback } from 'react'
 
-type Props = Readonly<{ 
-    open: boolean, 
-    close: (close: boolean) => void, 
+type Props = Readonly<{
+    open: boolean,
+    close: (close: boolean) => void,
     exam_id: string,
-    data?: UpdatedSessionQuestionType 
+    data?: UpdatedSessionQuestionType
 }>
 
 export default function EditSessionModal({ open, close, exam_id, data }: Props) {
@@ -56,20 +56,15 @@ export default function EditSessionModal({ open, close, exam_id, data }: Props) 
                 <div className="p-8 max-h-[70vh] overflow-y-auto">
                     <FormProvider {...form}>
                         <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-6">
-                            
+
                             <div className="flex flex-col gap-1.5">
                                 <label className='text-[9px] font-black text-gray-400 uppercase tracking-widest flex items-center gap-2'>
                                     <i className="fas fa-font text-[#3E4095]"></i>
                                     Exam Session Title
                                 </label>
-                                <input 
-                                    {...register('title')} 
-                                    placeholder='Enter session title' 
-                                    readOnly 
-                                    type="text" 
-                                    className='w-full bg-gray-100 border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold text-gray-400 cursor-not-allowed outline-none transition-all' 
-                                />
-                                {errors.title && <p className="text-[10px] font-bold text-red-500 mt-1 uppercase tracking-tight">{errors.title.message}</p>}
+                                <p className='w-full bg-gray-100 border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold text-gray-800 cursor-not-allowed'>
+                                    {data?.title}
+                                </p>
                             </div>
 
                             <div className="grid grid-cols-2 gap-5">
@@ -126,11 +121,11 @@ export default function EditSessionModal({ open, close, exam_id, data }: Props) 
                                     <i className="fas fa-align-left text-[#3E4095]"></i>
                                     Description
                                 </label>
-                                <textarea  
-                                    {...register('description')} 
-                                    placeholder='Enter session description' 
-                                    readOnly 
-                                    className='w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold text-gray-800 focus:ring-4 focus:ring-[#3E4095]/5 focus:border-[#3E4095] outline-none transition-all h-32 resize-none' 
+                                <textarea
+                                    {...register('description')}
+                                    placeholder='Enter session description'
+                                    // readOnly
+                                    className='w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold text-gray-800 focus:ring-4 focus:ring-[#3E4095]/5 focus:border-[#3E4095] outline-none transition-all h-32 resize-none'
                                 />
                                 {errors.description && <p className="text-[10px] font-bold text-red-500 mt-1 uppercase tracking-tight">{errors.description.message}</p>}
                             </div>
