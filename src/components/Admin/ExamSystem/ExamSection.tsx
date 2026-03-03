@@ -283,6 +283,10 @@ function PerformanceRanking({ rankings }: { rankings: RankingSnapshotType[] }) {
 }
 
 function RankingSnapshotCard({ ranking }: { ranking: RankingSnapshotType }) {
+  const { authState } = useAuth();
+  const userRole = authState?.user?.role;
+  const isSuperAdmin = ['superadmin'].includes(userRole || '');
+
   const router = useRouter();
   const { publishRanking, isPending: isPublishing } = usePublishRanking();
 
@@ -291,7 +295,7 @@ function RankingSnapshotCard({ ranking }: { ranking: RankingSnapshotType }) {
     router.push(`/admin/competition?view=ranking&id=${ranking.exam.id}&title=${encodeURIComponent(ranking.exam.title)}`);
   };
 
-  const handleQuickPublish = (e: React.MouseEvent) => {
+  const handlePublishRanking = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
     if (confirm(`Are you sure you want to publish the ranking table for "${ranking.exam.title}"?`)) {
@@ -340,10 +344,13 @@ function RankingSnapshotCard({ ranking }: { ranking: RankingSnapshotType }) {
           <div className="flex gap-2">
             {!ranking.is_published && (
               <button
-                onClick={handleQuickPublish}
-                disabled={isPublishing}
-                className="w-10 h-10 rounded-xl bg-emerald-50/40 flex items-center justify-center text-emerald-600 hover:bg-emerald-600 hover:text-white transition-all disabled:opacity-50 hover:cursor-pointer"
-                title="Publish Ranking"
+                onClick={handlePublishRanking}
+                disabled={isPublishing || !isSuperAdmin}
+                className={clsx(
+                  "w-10 h-10 rounded-xl bg-emerald-50/40 flex items-center justify-center text-emerald-600 hover:bg-emerald-600 hover:text-white transition-all disabled:opacity-50",
+                  isSuperAdmin ? "hover:cursor-pointer" : "hover:cursor-not-allowed"
+            )}
+                title={isSuperAdmin ? "Publish ranking" : "Only Superadmin can publish rankings"}
               >
                 {isPublishing ? <i className="fas fa-spinner animate-spin"></i> : <i className="fas fa-upload"></i>}
               </button>
