@@ -8,6 +8,10 @@ This endpoint retrieves the official ranking for a specific exam within the comp
 **Method:** `GET`
 **Authentication:** Required (Candidates in the competition or Staff)
 
+## Caching
+
+The response is cached for 24 hours. The cache is automatically invalidated when a ranking is regenerated or the underlying exam is updated.
+
 ## Response Structure
 
 The response is a JSON object representing a `RankingSnapshot`.
@@ -23,7 +27,7 @@ The response is a JSON object representing a `RankingSnapshot`.
 | `facilitator_system`| String | The system that delivered the exam (`vmlc`, `esturdi`). |
 | `is_published` | Boolean | Whether this ranking is currently visible to candidates. |
 | `published_at` | DateTime \| null| When the ranking was officially published. |
-| `meta` | Object | Auxiliary metadata (e.g. `policy`, `tie_break`, `generated_by`). |
+| `meta` | Object | Auxiliary metadata (e.g. `ranking_policy`, `tie_break_strategy`, `generated_by`). `ranking_policy` defaults to `standard`. `tie_break_strategy` usually defaults to `submission_time_asc`. |
 | `created_at` | DateTime | When the snapshot was generated. |
 | `entries` | Array | List of individual candidate ranking entries. |
 
@@ -35,9 +39,10 @@ Represents a single candidate's performance and rank in this snapshot.
 | `candidate` | UUID | Unique identifier for the candidate. |
 | `candidate_info` | Object | Nested object containing candidate's profile details. |
 | `exam_score` | Float \| "absent"| The candidate's final score for this exam. Returns `"absent"` for absentees. |
-| `rank` | Integer | The dense rank assigned to the candidate. |
+| `rank` | Integer | The rank assigned to the candidate. |
 | `percentile` | Float \| null | Computed percentile score (0-100). |
-| `tie_break_reason` | String \| null | Reason for tie-breaking, if applicable. |
+| `time_used` | Integer \| null | Time taken to complete the exam in seconds. |
+<!-- | `tie_break_reason` | String \| null | Explanation for why a specific rank was assigned (e.g., tie-break details). | -->
 
 #### `candidate_info` Nested Object:
 | Field | Type | Description |
@@ -67,8 +72,8 @@ Represents a single candidate's performance and rank in this snapshot.
     "published_at": "2026-03-01T12:00:00Z",
     "meta": {
         "generated_by": "6ba7b810-9dad-11d1-80b4-00c04fd430c8",
-        "policy": "dense_rank",
-        "tie_break": "submission_time_asc"
+        "ranking_policy": "standard",
+        "tie_break_strategy": "submission_time_asc"
     },
     "created_at": "2026-03-01T11:45:00Z",
     "entries": [
@@ -85,8 +90,7 @@ Represents a single candidate's performance and rank in this snapshot.
             },
             "exam_score": 95.0,
             "rank": 1,
-            "percentile": 100.0,
-            "tie_break_reason": null
+            "percentile": 100.0
         },
         {
             "candidate": "b0eebc99-9c0b-4ef8-bb6d-6bb9bd380a22",
@@ -101,8 +105,7 @@ Represents a single candidate's performance and rank in this snapshot.
             },
             "exam_score": "absent",
             "rank": 115,
-            "percentile": 4.5,
-            "tie_break_reason": null
+            "percentile": 4.5
         }
     ]
 }

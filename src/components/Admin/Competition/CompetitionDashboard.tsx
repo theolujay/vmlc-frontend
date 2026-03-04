@@ -6,7 +6,7 @@ import ExamStatus from './ExamStatus';
 import LeaderboardSummary from './LeaderboardSummary';
 import RankingSummary from './RankingSummary';
 import useGetCompetitionDashboard from '@/hooks/useGetCompetitionDashboard';
-import { useAuth } from '@/contexts/AuthProvider';
+import useGetAccountMgt from '@/hooks/useGetAccountMgt';
 import { capitalizeWord } from '@/utils/capitalizeWords';
 import PromoteCandidatesModal from '@/components/Modals/PromoteCandidatesModal';
 import InfoBoard from '@/components/General/Portal/DashboardParts/InfoBoard';
@@ -31,8 +31,8 @@ const CompetitionDashboard: React.FC<CompetitionDashboardProps> = ({
   onViewRanking,
   onViewCandidateDetail
 }) => {
-  const { authState } = useAuth();
-  const userRole = authState?.user?.role;
+  const { data: accountMgt, isPending: isAccountMgtPending } = useGetAccountMgt();
+  const userRole = accountMgt?.role;
   const isVolunteer = userRole === 'volunteer';
   const isModeratorOrAbove = ['moderator', 'admin', 'manager', 'superadmin'].includes(userRole || '');
   const isAdminOrAbove = ['admin', 'manager', 'superadmin'].includes(userRole || '');
@@ -96,7 +96,7 @@ const CompetitionDashboard: React.FC<CompetitionDashboardProps> = ({
      console.log(`Editing exam ${id}`);
   };
 
-  if (isLoading) {
+  if (isLoading || isAccountMgtPending) {
     return (
       <div className="flex flex-col gap-2 min-h-screen">
         <AdminHeader label="Competition" actionButton={undefined} />

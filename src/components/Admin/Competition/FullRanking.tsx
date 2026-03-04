@@ -5,10 +5,12 @@ import { AngleIcon, FilterIcon, SortIcon } from '../AdminIcons';
 import Image from "next/image";
 import RankMedal from './RankMedal';
 import useGetRanking from '@/hooks/useGetRanking';
-import { RankingEntry, RankingResponse } from '@/types/LeaderBoardType';
+import { RankingEntry } from '@/types/LeaderBoardType';
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
 import Spinner from "@/components/ui/spinner/spinner";
 import clsx from 'clsx';
+import { formatDateTime } from '@/utils/formatFileSize';
+import { formatTime } from '@/utils/formatTime';
 
 interface FullRankingProps {
   onBack: () => void;
@@ -19,7 +21,7 @@ interface FullRankingProps {
   containerClassName?: string;
 }
 
-type SortKey = 'rank' | 'name' | 'school' | 'class' | 'state';
+type SortKey = 'rank' | 'name' | 'school' | 'class' | 'state' | 'score' | 'percentile' | 'time_used';
 type SortDirection = 'asc' | 'desc';
 
 interface SortConfig {
@@ -44,8 +46,8 @@ const FullRanking: React.FC<FullRankingProps> = ({ onBack, examId, examTitle, on
 
   const { data, isLoading, error, refetch } = useGetRanking(examId);
 
-  const rankingData = useMemo(() => (data as unknown as RankingResponse)?.entries || [], [data]);
-  const responseData = data as unknown as RankingResponse;
+  const rankingData = useMemo(() => data?.entries || [], [data]);
+  const responseData = data;
 
   const displayTitle = examTitle || (responseData ? `${responseData.stage_display} ${responseData.round ? `- Round ${responseData.round}` : ''}` : 'Ranking');
 
@@ -68,7 +70,7 @@ const FullRanking: React.FC<FullRankingProps> = ({ onBack, examId, examTitle, on
   }, [rankingData]);
 
   const processedData = useMemo(() => {
-    const result = rankingData.filter(item => {
+    const result = [...rankingData].filter(item => {
       const searchStr = searchTerm.toLowerCase();
       const matchesSearch =
         (item.candidate_info?.full_name?.toLowerCase() || '').includes(searchStr) ||
@@ -91,6 +93,14 @@ const FullRanking: React.FC<FullRankingProps> = ({ onBack, examId, examTitle, on
           valA = a.rank;
           valB = b.rank;
           break;
+        case 'score':
+          valA = typeof a.exam_score === 'string' ? -1 : a.exam_score;
+          valB = typeof b.exam_score === 'string' ? -1 : b.exam_score;
+          break;
+        case 'percentile':
+          valA = a.percentile || 0;
+          valB = b.percentile || 0;
+          break;
         case 'name':
           valA = a.candidate_info?.full_name?.toLowerCase() || '';
           valB = b.candidate_info?.full_name?.toLowerCase() || '';
@@ -106,6 +116,10 @@ const FullRanking: React.FC<FullRankingProps> = ({ onBack, examId, examTitle, on
         case 'state':
           valA = a.candidate_info?.state?.toLowerCase() || '';
           valB = b.candidate_info?.state?.toLowerCase() || '';
+          break;
+        case 'time_used':
+          valA = a.time_used || 0;
+          valB = b.time_used || 0;
           break;
         default:
           return 0;
@@ -159,20 +173,68 @@ const FullRanking: React.FC<FullRankingProps> = ({ onBack, examId, examTitle, on
       {/* Sticky Header Section */}
       <div className="sticky top-0 z-30 bg-[#f0f2f5] pt-4 pb-4 flex flex-col gap-6">
         {/* Title Area */}
-        <div className="flex items-center gap-4 bg-[#f0f2f5] px-1">
-          <button
-            onClick={onBack}
-            className="p-2.5 bg-white border border-gray-100 rounded-xl shadow-sm hover:bg-gray-50 transition-all active:scale-95 group"
-          >
-            <div className="rotate-180 group-hover:-translate-x-0.5 transition-transform"><AngleIcon width={8} height={14} /></div>
-          </button>
-          <div className="flex items-center gap-3 bg-[#f0f2f5]">
-            <div className="w-1.5 h-8 bg-[#3E4095] rounded-full"></div>
-            <div className="flex flex-col">
-              <h1 className="text-xl font-black text-gray-800 tracking-tight leading-none">Ranking: {displayTitle}</h1>
-              <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-1">Detailed results for this exam</p>
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-[#f0f2f5] px-1">
+          <div className="flex items-center gap-4">
+            <button
+              onClick={onBack}
+              className="p-2.5 bg-white border border-gray-100 rounded-xl shadow-sm hover:bg-gray-50 transition-all active:scale-95 group"
+            >
+              <div className="rotate-180 group-hover:-translate-x-0.5 transition-transform"><AngleIcon width={8} height={14} /></div>
+            </button>
+            <div className="flex items-center gap-3">
+              <div className="w-1.5 h-8 bg-[#3E4095] rounded-full"></div>
+              <div className="flex flex-col">
+                <h1 className="text-xl font-black text-gray-800 tracking-tight leading-none">Ranking: {displayTitle}</h1>
+                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-1">Detailed results for this exam</p>
+              </div>
             </div>
           </div>
+
+          {responseData && !isPublicView && (
+            <div
+              title="Exam Ranking Configuration & Status"
+              className={clsx(
+                "grid justify-items-center gap-2 px-4 py-2 bg-white rounded-2xl shadow-sm border border-gray-100",
+                responseData.published_at ? "grid-cols-4" : "grid-cols-3"
+              )}
+            >
+              <div
+                className="flex items-center gap-2 pr-3 border-r border-gray-100"
+                title={responseData.is_published ? "Live to candidates" : "Internal view only (Draft)"}
+              >
+                <div className={clsx("w-2 h-2 rounded-full animate-pulse", responseData.is_published ? "bg-emerald-500" : "bg-amber-500")}></div>
+                <span className="text-[9px] font-black uppercase tracking-widest text-gray-500">
+                  {responseData.is_published ? "Published" : "Draft"}
+                </span>
+              </div>
+              <div
+                className="flex flex-col justify-center items-center px-1 border-r border-gray-100 pr-3"
+                title="How candidates are ranked when scores are equal"
+              >
+                <span className="text-[7px] font-bold text-gray-400 uppercase tracking-tighter leading-none">Policy</span>
+                <span className="text-[9px] font-black text-[#3E4095] uppercase">{responseData.meta?.ranking_policy || 'Standard'}</span>
+              </div>
+              <div
+                className="flex flex-col justify-center items-center px-1 border-r border-gray-100 pr-3"
+                title="How ties are resolved when candidates share the same score"
+              >
+                <span className="text-[7px] font-bold text-gray-400 uppercase tracking-tighter leading-none">
+                  Ties Resolved By
+                </span>
+                <span className="text-[9px] font-black text-gray-600 uppercase tracking-tighter">
+                  {responseData.meta?.tie_break_strategy === 'random' ? 'Random' : 'Submission Time'}
+                </span>
+              </div>
+              {responseData.published_at && (
+                <div className="flex flex-col justify-center items-center pl-1" title={`Ranking was made public on ${formatDateTime(responseData.published_at)}`}>
+                  <span className="text-[7px] font-bold text-gray-400 uppercase tracking-tighter leading-none">Published</span>
+                  <span className="text-[9px] font-black text-gray-600">
+                    {new Date(responseData.published_at).toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric' })}
+                  </span>
+                </div>
+              )}
+            </div>
+          )}
         </div>
 
         {/* Controls Area */}
@@ -201,6 +263,9 @@ const FullRanking: React.FC<FullRankingProps> = ({ onBack, examId, examTitle, on
                    <DropdownMenu.Label className="px-3 py-2 text-[9px] font-black text-gray-400 uppercase tracking-[0.2em]">Sort By</DropdownMenu.Label>
                    {[
                      { label: 'Rank', key: 'rank' as SortKey },
+                     { label: 'Score', key: 'score' as SortKey },
+                     { label: 'Percentile', key: 'percentile' as SortKey },
+                     { label: 'Time Used', key: 'time_used' as SortKey },
                      { label: 'Name', key: 'name' as SortKey },
                      { label: 'School', key: 'school' as SortKey },
                      { label: 'Class', key: 'class' as SortKey},
@@ -379,6 +444,30 @@ const FullRanking: React.FC<FullRankingProps> = ({ onBack, examId, examTitle, on
                     </div>
                   );
                 },
+                align: 'center'
+              },
+              {
+                key: 'time_used',
+                header: 'Time Used',
+                render: (val) => (
+                  <div className="flex justify-center">
+                    <span className="text-[10px] font-black text-gray-500 bg-gray-50 px-2 py-1 rounded-md border border-gray-100 uppercase tracking-widest">
+                      {val ? formatTime(Number(val)) : '-'}
+                    </span>
+                  </div>
+                ),
+                align: 'center'
+              },
+              {
+                key: 'percentile',
+                header: 'Percentile',
+                render: (val) => (
+                  <div className="flex justify-center">
+                    <span className="text-[10px] font-black text-gray-500 bg-gray-50 px-2 py-1 rounded-md border border-gray-100 uppercase tracking-widest">
+                      {val ? `${Number(val).toFixed(1)}th` : '-'}
+                    </span>
+                  </div>
+                ),
                 align: 'center'
               },
               ...(onViewDetails && !isPublicView ? [{

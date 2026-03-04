@@ -14,7 +14,7 @@ import AddToExamSessionModal from "@/components/Modals/AddToExamSessionModal";
 import BulkRemoveQuestionsModal from "@/components/Modals/BulkRemoveQuestionsModal";
 import { useDebouncedSearch } from "@/hooks/useDebouncedSearch";
 import MathRenderer from "@/components/Exam/MathRenderer";
-import useGetCurrentUser from "@/hooks/useGetCurrentUser";
+import useGetAccountMgt from "@/hooks/useGetAccountMgt";
 import CustomTable from "@/components/ui/CustomTable";
 import dynamic from "next/dynamic";
 
@@ -52,8 +52,8 @@ export default function QuestionPoolTable<T extends { search?: string }>({
   const [openEditQuestion, setOpenEditQuestion] = useState(false);
   const [questionToEdit, setQuestionToEdit] = useState<SessionQuestionItemType | null>(null);
 
-  const currentUser = useGetCurrentUser();
-  const userRole = currentUser?.profile?.role || "";
+  const { data: accountMgt } = useGetAccountMgt();
+  const userRole = accountMgt?.role || "";
   const isAdminOrAbove = ["admin", "manager", "superadmin"].includes(userRole);
 
   // handle single selection
@@ -129,14 +129,14 @@ export default function QuestionPoolTable<T extends { search?: string }>({
             </span>
           </div>
           <div className="flex gap-3">
-            <button 
-              onClick={handleOpenDeleteModal} 
+            <button
+              onClick={handleOpenDeleteModal}
               className="rounded-xl py-2.5 px-5 font-black text-[10px] uppercase tracking-widest bg-red-500/60 text-white hover:bg-red-500/30 transition-all border border-red-500/20"
             >
               Delete
             </button>
-            <button 
-              onClick={() => handleOpenExamSessionModal()} 
+            <button
+              onClick={() => handleOpenExamSessionModal()}
               className="rounded-xl py-2.5 px-5 font-black text-[10px] uppercase tracking-widest bg-white text-[#3E4095] hover:bg-gray-50 transition-all shadow-sm"
             >
               Add to exam
@@ -148,6 +148,8 @@ export default function QuestionPoolTable<T extends { search?: string }>({
       <div className="px-1">
         <CustomTable
           data={questions}
+          emptyLabel="No questions found"
+          emptyDesc="Use Add Question to create new question in the pool"
           isAdminOrAbove={isAdminOrAbove}
           onSelectAll={handleSelectAll}
           onSelectRow={handleSelectRow}
@@ -187,8 +189,8 @@ export default function QuestionPoolTable<T extends { search?: string }>({
                         <div key={index} className="flex gap-2.5 items-center">
                           <div className={clsx(
                             "w-4 h-4 rounded-full border flex items-center justify-center shrink-0",
-                            val.optionKey.endsWith(row.correct_answer.toLowerCase()) 
-                              ? "bg-[#3E4095] border-[#3E4095]" 
+                            val.optionKey.endsWith(row.correct_answer.toLowerCase())
+                              ? "bg-[#3E4095] border-[#3E4095]"
                               : "border-gray-200"
                           )}>
                             {val.optionKey.endsWith(row.correct_answer.toLowerCase()) && (
@@ -240,7 +242,7 @@ export default function QuestionPoolTable<T extends { search?: string }>({
               align: 'center',
               render: (_, row) => (
                 <div className="flex justify-center items-center">
-                  <QuestionPoolDropdown 
+                  <QuestionPoolDropdown
                     onAddToExam={() => handleOpenExamSessionModal([row.id])}
                     onEdit={() => {
                       setQuestionToEdit(row);
@@ -250,8 +252,8 @@ export default function QuestionPoolTable<T extends { search?: string }>({
                       setCurrentQuestion(row);
                       setOpenDrawer(true);
                     }}
-                    information={row} 
-                    question_id={row.id} 
+                    information={row}
+                    question_id={row.id}
                   />
                 </div>
               ),
@@ -282,11 +284,11 @@ export default function QuestionPoolTable<T extends { search?: string }>({
         open={openRemoveQuestion}
       />
       {questionToEdit && (
-        <AddQuestionModal 
-          open={openEditQuestion} 
-          close={setOpenEditQuestion} 
-          initialData={questionToEdit} 
-          isEdit={true} 
+        <AddQuestionModal
+          open={openEditQuestion}
+          close={setOpenEditQuestion}
+          initialData={questionToEdit}
+          isEdit={true}
         />
       )}
     </ResponsiveContainer>

@@ -2,14 +2,17 @@
 import { useSearchParams } from "next/navigation";
 import OverviewSection from "./OverviewSection";
 import ViewDetails from "./ViewDetails";
-import { useAuth } from "@/contexts/AuthProvider";
+import useGetAccountMgt from "@/hooks/useGetAccountMgt";
+import Spinner from "@/components/ui/spinner/spinner";
 
 export default function OverviewSectionWrapper() {
   const searchParams = useSearchParams();
   const currentView = searchParams.get("view");
   const id = searchParams.get("id");
-  const { authState } = useAuth();
-  const isVolunteer = authState?.user?.role === 'volunteer';
+  const { data: accountMgt, isPending } = useGetAccountMgt();
+  const isVolunteer = accountMgt?.role === 'volunteer';
+
+  if (isPending) return <div className="grid w-full h-[60vh] place-content-center"><Spinner /></div>;
 
   return renderComponent(currentView, id, isVolunteer);
 }

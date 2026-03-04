@@ -3,8 +3,7 @@
 import AppDropdown from '@/components/ui/Dropdown/AppDropdown'
 import { NotificationIcon } from '@/components/ui/SvgAsset/GeneralAsset'
 import Logo from '@/components/ui/SvgAsset/Logo'
-import { useAuth } from '@/contexts/AuthProvider'
-import useGetCurrentUser from '@/hooks/useGetCurrentUser'
+import useGetAccountMgt from '@/hooks/useGetAccountMgt'
 import { getUserInitials } from '@/utils/capitalizeWords'
 import Link from 'next/link'
 import Image from 'next/image'
@@ -19,13 +18,11 @@ export default function Header() {
         setMounted(true);
     }, []);
 
-    const currentUser=useGetCurrentUser()
+    const { data: accountMgt } = useGetAccountMgt();
 
-    const userName = currentUser?.profile?.user?.first_name
-        ? [currentUser?.profile?.user?.first_name, currentUser?.profile?.user?.last_name].join(' ')
+    const userName = accountMgt?.user?.first_name
+        ? [accountMgt?.user?.first_name, accountMgt?.user?.last_name].join(' ')
         : '';
-
-    const {authState}=useAuth()
 
     const userInitials=getUserInitials(userName)
     const {
@@ -74,15 +71,15 @@ export default function Header() {
                     <div className="flex gap-3 items-center">
                         <div className="hidden md:flex flex-col">
                             <span className="font-medium">{mounted ? userName : ''}</span>
-                            <span className="text-[8px] text-right text-gray-500 uppercase tracking-widest">{mounted ? authState?.user?.role : ''}</span>
+                            <span className="text-[8px] text-right text-gray-500 uppercase tracking-widest">{mounted ? accountMgt?.role : ''}</span>
                         </div>
                         <button
                         onClick={() => setProfileOpen(true)}
                             className="bg-[#CCEEFB] flex items-center justify-center w-[44px] h-[44px] rounded-full relative overflow-hidden cursor-pointer outline-none hover:ring-2 hover:ring-[#CCEEFB] transition-all"
                         >
-                            {mounted && currentUser?.profile?.user?.profile_picture ? (
+                            {mounted && accountMgt?.user?.profile_picture ? (
                                 <Image
-                                    src={currentUser.profile.user.profile_picture}
+                                    src={accountMgt.user.profile_picture}
                                     alt="Profile"
                                     fill
                                     sizes="44px"
@@ -114,9 +111,9 @@ export default function Header() {
                 </Fragment>
             )}
 
-            {currentUser?.profile?.user?.id && (
+            {accountMgt?.user?.id && (
                 <ProfileModal
-                    id={currentUser.profile.user.id}
+                    id={accountMgt.user.id}
                     open={profileOpen}
                     close={setProfileOpen}
                     isOwnProfile={true}
