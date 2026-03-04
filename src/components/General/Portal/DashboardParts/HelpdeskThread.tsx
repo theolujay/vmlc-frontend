@@ -170,7 +170,7 @@ const HelpdeskThread: React.FC<HelpdeskThreadProps> = ({ currentStage, onClose, 
                         </p>
                     </div>
                     <p className="text-[9px] font-bold text-[#98A2B3] mt-1 uppercase mx-1">
-                        {isCandidate ? 'You' : msg.sender_name} • {new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                        {isCandidate ? 'You' : 'VMLC Team'} • {new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                     </p>
                 </div>
             );

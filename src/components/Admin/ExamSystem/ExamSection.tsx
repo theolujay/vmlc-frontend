@@ -140,7 +140,7 @@ export default function ExamSection() {
             </div>
             {
               isRankingsPending ? <div className="grid w-full h-[15vh] place-content-center"><Spinner /></div> :
-                <PerformanceRanking canViewDetails={isAdminOrAbove} rankings={rankingData?.results ?? []} />
+                <PerformanceRanking canViewDetails={isAdminOrAbove} rankings={rankingData?.results ?? []} userRole={userRole} />
             }
 
             </div>

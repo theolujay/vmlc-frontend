@@ -13,6 +13,7 @@ import MathRenderer from '@/components/Exam/MathRenderer'
 import RankMedal from '../Competition/RankMedal'
 import ProfileModal from '@/components/Modals/ProfileModal'
 import useGetAccountMgt from '@/hooks/useGetAccountMgt'
+import { SubmissionItem } from '@/types/LeaderBoardType'
 
 interface ViewCandidateDetailsProps {
     candidate_id: string;
@@ -180,7 +181,7 @@ function CandidateInfoCard({
     schoolName?: string,
     candidateEmail?: string,
     state?: string,
-    percentile?: number,
+    percentile?: number | null,
     currentClass?: string
 }) {
     const userInitials = getUserInitials(userName);
@@ -194,13 +195,6 @@ function CandidateInfoCard({
                 <h2 className='font-bold text-sm text-[#475367] uppercase tracking-widest'>
                     {isLeague ? 'League Statistics' : 'Candidate Attempt Details'}
                 </h2>
-                {/* {!isLeague && (
-                    <div className="flex items-center gap-2">
-                        <span className="text-[9px] bg-gray-100 px-2 py-0.5 rounded font-bold text-gray-600 uppercase tracking-tighter">{state || 'N/A'}</span>
-                        <span className="text-[9px] bg-blue-50 px-2 py-0.5 rounded font-bold text-[#3E4095] tracking-tight">{schoolName || ''}</span>
-                        {currentClass && <span className="text-[9px] bg-emerald-50 px-2 py-0.5 rounded font-bold text-emerald-600 uppercase tracking-tight">{currentClass}</span>}
-                    </div>
-                )} */}
             </div>
             </div>
 
@@ -246,7 +240,6 @@ function CandidateInfoCard({
                     {faceCapture && !isLeague && (
                         <div className="flex flex-col items-center gap-1">
                             <span className="text-[10px] font-bold text-[#667185] uppercase tracking-wider">Face Capture</span>
-                            {/* <span className="text-[8px] font-bold text-[#667185] uppercase tracking-wider">[Click to Expand]</span> */}
                             <a href={faceCapture} target="_blank" rel="noopener noreferrer" className="block cursor-zoom-in transition-transform hover:scale-105">
                                 <div className="w-16 h-16 rounded-full relative overflow-hidden bg-[#F2F4F7] border-2 border-white shadow-sm ring-1 ring-black/5">
                                     <Image
@@ -353,8 +346,8 @@ function CandidateInfoCard({
         </div>
     </ResponsiveContainer>
 }
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-function QuestionsTable({ questions }: { questions: any[] }) {
+
+function QuestionsTable({ questions }: { questions: SubmissionItem[] }) {
     const [searchTerm, setSearchTerm] = useState('');
 
     const filteredQuestions = questions.filter(q =>
@@ -385,13 +378,13 @@ function QuestionsTable({ questions }: { questions: any[] }) {
                 </button>
             </div>
         </div>
-        <CustomTable
+        <CustomTable<SubmissionItem>
             data={filteredQuestions}
             minWidth="800px"
             emptyLabel="No Questions Found"
             columns={[
                 {
-                    key: "S/N",
+                    key: "sn",
                     header: "S/N",
                     render: (_, __, index) => (
                         <div className="flex items-center justify-center">
@@ -401,11 +394,10 @@ function QuestionsTable({ questions }: { questions: any[] }) {
                     align: 'center'
                 },
                 {
-                    key: 'question_text',
+                    key: 'question',
                     header: 'Question & Answers',
                     align: 'left',
-                    render: (_, row) => {
-                        const question = row.question;
+                    render: (question, row) => {
                         if (!question) return <span className="text-gray-400 italic text-xs">Question data missing</span>;
                         const options = [
                             { optionKey: 'option_a', option: question.option_a },
@@ -451,11 +443,11 @@ function QuestionsTable({ questions }: { questions: any[] }) {
                     }
                 },
                 {
-                    key: 'is_correct',
+                    key: 'selected_option',
                     header: 'Result',
                     align: 'center',
-                    render: (_, row) => {
-                        const isCorrect = row.selected_option === row.question?.correct_answer;
+                    render: (selected, row) => {
+                        const isCorrect = selected === row.question?.correct_answer;
                         return <div className='flex justify-center'>
                             {questionPassedStatus(isCorrect)}
                         </div>
