@@ -104,6 +104,7 @@ export type ViewCandidateDetailType = {
         rank: number,
         score: number | string,
         percentile: number | null,
+        time_used: number | null,
         face_capture?: string | null,
         recorded_at?: string | null,
         auto_score?: boolean,
