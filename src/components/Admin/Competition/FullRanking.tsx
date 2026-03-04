@@ -404,30 +404,6 @@ const FullRanking: React.FC<FullRankingProps> = ({ onBack, examId, examTitle, on
                 align: 'left'
               },
               {
-                key: 'candidate_info',
-                header: 'School',
-                render: (val: any) => (
-                  <div className="flex flex-col">
-                    <span className="text-sm text-gray-700 font-bold">{val?.school_name}</span>
-                    {!isPublicView && <span className="text-[10px] font-bold text-gray-400 uppercase tracking-tight">{val?.school_type}</span>}
-                  </div>
-                )
-              },
-              ...(!isPublicView ? [
-                {
-                  key: 'candidate_info',
-                  header: 'Class',
-                  render: (val: any) => <span className="text-[10px] font-black text-gray-500 bg-gray-50 px-2 py-1 rounded-md border border-gray-100 uppercase tracking-widest">{val?.current_class}</span>,
-                  align: 'center' as const
-                },
-                {
-                  key: 'candidate_info',
-                  header: 'State',
-                  render: (val: any) => <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">{val?.state}</span>,
-                  align: 'center' as const
-                }
-              ] : []),
-              {
                 key: 'exam_score',
                 header: 'Score (%)',
                 render: (val) => {
@@ -470,6 +446,30 @@ const FullRanking: React.FC<FullRankingProps> = ({ onBack, examId, examTitle, on
                 ),
                 align: 'center'
               },
+              {
+                key: 'candidate_info',
+                header: 'School',
+                render: (val: any) => (
+                  <div className="flex flex-col">
+                    <span className="text-sm text-gray-700 font-bold">{val?.school_name}</span>
+                    {!isPublicView && <span className="text-[10px] font-bold text-gray-400 uppercase tracking-tight">{val?.school_type}</span>}
+                  </div>
+                )
+              },
+              ...(!isPublicView ? [
+                {
+                  key: 'candidate_info',
+                  header: 'Class',
+                  render: (val: any) => <span className="text-[10px] font-black text-gray-500 bg-gray-50 px-2 py-1 rounded-md border border-gray-100 uppercase tracking-widest">{val?.current_class}</span>,
+                  align: 'center' as const
+                },
+                {
+                  key: 'candidate_info',
+                  header: 'State',
+                  render: (val: any) => <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest">{val?.state}</span>,
+                  align: 'center' as const
+                }
+              ] : []),
               ...(onViewDetails && !isPublicView ? [{
                 key: 'details',
                 header: 'Details',

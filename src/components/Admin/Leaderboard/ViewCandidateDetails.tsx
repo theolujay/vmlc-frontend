@@ -2,6 +2,7 @@ import CustomTable from '@/components/ui/CustomTable'
 import ResponsiveContainer from '@/components/ui/ResponsiveContainer'
 import useGetCompetitionCandidateDetail from '@/hooks/useGetCompetitionCandidateDetail'
 import { formatDateTime } from '@/utils/formatFileSize'
+import { formatTime } from '@/utils/formatTime'
 import { getOrdinal } from '@/utils/generalUtils'
 import { getUserInitials } from '@/utils/capitalizeWords'
 import clsx from 'clsx'
@@ -121,6 +122,7 @@ export default function ViewCandidateDetails({ candidate_id, exam_id, isLeagueCu
                     state={candidateInfo?.state}
                     percentile={performanceData?.percentile}
                     currentClass={candidateInfo?.current_class}
+                    timeUsed={performanceData?.time_used}
                 />
 
                 {isRanking && performanceData?.submissions && (
@@ -167,7 +169,8 @@ function CandidateInfoCard({
     candidateEmail,
     state,
     percentile,
-    currentClass
+    currentClass,
+    timeUsed
 }: {
     userName: string,
     position: number,
@@ -182,9 +185,9 @@ function CandidateInfoCard({
     candidateEmail?: string,
     state?: string,
     percentile?: number | null,
-    currentClass?: string
-}) {
-    const userInitials = getUserInitials(userName);
+    currentClass?: string,
+    timeUsed?: number | null
+}) {    const userInitials = getUserInitials(userName);
     const isAbsent = typeof score === 'string' && score.toLowerCase() === 'absent';
     const numericScore = isAbsent ? null : (typeof score === 'string' ? parseFloat(score) : score);
     const hasScore = numericScore !== undefined && numericScore !== null && !isNaN(numericScore as number);
@@ -326,6 +329,18 @@ function CandidateInfoCard({
                 </>
             ) : (
                 <>
+                    <div className="flex gap-3 items-center">
+                        <div className="w-10 h-10 bg-[#F9F9FB] rounded-full flex items-center justify-center border border-[#E4E7EC]">
+                            <SortIcon className="w-5 h-5 text-[#3E4095]" />
+                        </div>
+                        <div className="flex flex-col">
+                            <span className='text-[10px] font-bold text-[#667185] uppercase'>Time Used</span>
+                            <p className="font-bold text-[#101828] text-xs">
+                                {timeUsed ? formatTime(Number(timeUsed)) : '--:--'}
+                            </p>
+                        </div>
+                    </div>
+
                     <div className="flex gap-3 items-center">
                         <StartTimeIcon className="w-10 h-10" />
                         <div className="flex flex-col">
