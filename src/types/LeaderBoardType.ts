@@ -26,8 +26,6 @@ export type LeaderBoardType = {
     available_leaderboards: LeaderItemType[]
 }
 
-
-
 export type RankedLeaderBoardType = {
     exam_details: ExamDetailsType,
     top_three: CandidateType[],
@@ -37,8 +35,6 @@ export type RankedLeaderBoardType = {
 }
 
 export type LeaderBoardResponse = LeaderBoardType | RankedLeaderBoardType;
-
-
 
 type ExamDetailsType = {
     id: string,
@@ -52,8 +48,6 @@ type ExamDetailsType = {
     average_score: number
 }
 
-
-
 export type CandidateType = {
     rank: number,
     candidate: EachCandidate,
@@ -61,20 +55,12 @@ export type CandidateType = {
     percentage: number
 }
 
-
 type EachCandidate = {
     id: string
     school_name: string
     full_name: string
     profile_picture: string | null
 }
-
-
-
-
-
-
-
 
 type CandidateExamDetailType = {
     id: string,
@@ -88,22 +74,24 @@ type CandidateExamDetailType = {
     average_score: number
 }
 
-
 export type SubmissionItem = {
-    option_a: string,
-    option_b: string,
-    option_c: string,
-    option_d: string,
-    is_correct: boolean,
-    answered_at: Date,
-    question_id: number,
-    question_text: string,
-    correct_answer: string,
-    selected_option: string
+    question: {
+        id: number;
+        text: string;
+        option_a: string;
+        option_b: string;
+        option_c: string;
+        option_d: string;
+        correct_answer: string;
+        difficulty: string;
+    },
+    selected_option: string | null,
+    answered_at: string
 }
+
 export type ViewCandidateDetailType = {
     exam_details: CandidateExamDetailType,
-    candidate_info?: {
+    candidate_info: {
         id: string;
         full_name: string;
         email: string;
@@ -115,43 +103,15 @@ export type ViewCandidateDetailType = {
     candidate_performance: {
         rank: number,
         score: number | string,
-        percentile?: number,
+        percentile: number | null,
         face_capture?: string | null,
-        percentage?: number,
-        participated_at?: Date,
-        started_at?: Date,
-        submitted_at?: Date,
-        recorded_at?: Date,
-        submissions?: SubmissionItem[]
+        recorded_at?: string | null,
+        auto_score?: boolean,
+        started_at?: string | null,
+        submitted_at?: string | null,
+        submissions: SubmissionItem[]
     }
 }
-
-
-
-
-
-
-
-
-
-// export type LeaderBoardType = {
-//     // total_pages: number,
-//     next: string | null,
-//     previous: string | null,
-//     exam_details: {
-//         total_exams: number,
-//         screening_exams: number,
-//         league_exams: number
-//     },
-//     list: LeaderItemType[]
-// }
-
-// export type LeaderItemType = {
-//     exam_id: number,
-//     exam_title: string,
-//     exam_stage: string,
-//     created_at: string,
-// }
 
 export type PaginatedType<T> = {
     count: number;
@@ -172,11 +132,11 @@ export interface RankingEntry {
     school_type: string;
     current_class: string;
   };
-  exam_score: string;
+  exam_score: string | number;
   rank: number;
   percentile: number;
   profile_picture?: string | null;
-  tie_break_reason?: string | null;
+  time_used?: number | null;
 }
 
 export interface RankingResponse {
@@ -189,6 +149,11 @@ export interface RankingResponse {
   facilitator_system: string;
   is_published: boolean;
   published_at: string;
+  meta: {
+    generated_by: string;
+    ranking_policy: string;
+    tie_break_strategy: string;
+  };
   created_at: string;
   entries: RankingEntry[];
 }

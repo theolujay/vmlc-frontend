@@ -9,6 +9,8 @@ import { RankingEntry } from '@/types/LeaderBoardType';
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
 import Spinner from "@/components/ui/spinner/spinner";
 import clsx from 'clsx';
+import { formatDateTime } from '@/utils/formatFileSize';
+import { formatTime } from '@/utils/formatTime';
 
 interface FullRankingProps {
   onBack: () => void;
@@ -19,7 +21,7 @@ interface FullRankingProps {
   containerClassName?: string;
 }
 
-type SortKey = 'rank' | 'name' | 'school' | 'class' | 'state' | 'score' | 'percentile';
+type SortKey = 'rank' | 'name' | 'school' | 'class' | 'state' | 'score' | 'percentile' | 'time_used';
 type SortDirection = 'asc' | 'desc';
 
 interface SortConfig {
@@ -115,6 +117,10 @@ const FullRanking: React.FC<FullRankingProps> = ({ onBack, examId, examTitle, on
           valA = a.candidate_info?.state?.toLowerCase() || '';
           valB = b.candidate_info?.state?.toLowerCase() || '';
           break;
+        case 'time_used':
+          valA = a.time_used || 0;
+          valB = b.time_used || 0;
+          break;
         default:
           return 0;
       }
@@ -185,21 +191,44 @@ const FullRanking: React.FC<FullRankingProps> = ({ onBack, examId, examTitle, on
           </div>
 
           {responseData && !isPublicView && (
-            <div className="grid grid-cols-3 justify-items-center gap-2 px-4 py-2 bg-white rounded-2xl shadow-sm border border-gray-100">
-              <div className="flex items-center gap-2 pr-3 border-r border-gray-100">
+            <div
+              title="Exam Ranking Configuration & Status"
+              className={clsx(
+                "grid justify-items-center gap-2 px-4 py-2 bg-white rounded-2xl shadow-sm border border-gray-100",
+                responseData.published_at ? "grid-cols-4" : "grid-cols-3"
+              )}
+            >
+              <div
+                className="flex items-center gap-2 pr-3 border-r border-gray-100"
+                title={responseData.is_published ? "Live to candidates" : "Internal view only (Draft)"}
+              >
                 <div className={clsx("w-2 h-2 rounded-full animate-pulse", responseData.is_published ? "bg-emerald-500" : "bg-amber-500")}></div>
-                <span className="text-[10px] font-black uppercase tracking-widest text-gray-500">
+                <span className="text-[9px] font-black uppercase tracking-widest text-gray-500">
                   {responseData.is_published ? "Published" : "Draft"}
                 </span>
               </div>
-              <div className="flex flex-col px-1 items-center">
-                <span className="text-[9px] font-bold text-gray-400 uppercase tracking-tighter leading-none">Delivered via</span>
-                <span className="text-[10px] font-black text-[#3E4095] uppercase">{responseData.facilitator_system || 'VMLC'}</span>
+              <div
+                className="flex flex-col justify-center items-center px-1 border-r border-gray-100 pr-3"
+                title="How candidates are ranked when scores are equal"
+              >
+                <span className="text-[7px] font-bold text-gray-400 uppercase tracking-tighter leading-none">Policy</span>
+                <span className="text-[9px] font-black text-[#3E4095] uppercase">{responseData.meta?.ranking_policy || 'Standard'}</span>
+              </div>
+              <div
+                className="flex flex-col justify-center items-center px-1 border-r border-gray-100 pr-3"
+                title="How ties are resolved when candidates share the same score"
+              >
+                <span className="text-[7px] font-bold text-gray-400 uppercase tracking-tighter leading-none">
+                  Ties Resolved By
+                </span>
+                <span className="text-[9px] font-black text-gray-600 uppercase tracking-tighter">
+                  {responseData.meta?.tie_break_strategy === 'random' ? 'Random' : 'Submission Time'}
+                </span>
               </div>
               {responseData.published_at && (
-                <div className="flex flex-col items-center pl-3 border-l border-gray-100">
-                  <span className="text-[9px] font-bold text-gray-400 uppercase tracking-tighter leading-none">Published on</span>
-                  <span className="text-[10px] font-black text-gray-600">
+                <div className="flex flex-col justify-center items-center pl-1" title={`Ranking was made public on ${formatDateTime(responseData.published_at)}`}>
+                  <span className="text-[7px] font-bold text-gray-400 uppercase tracking-tighter leading-none">Published</span>
+                  <span className="text-[9px] font-black text-gray-600">
                     {new Date(responseData.published_at).toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric' })}
                   </span>
                 </div>
@@ -236,6 +265,7 @@ const FullRanking: React.FC<FullRankingProps> = ({ onBack, examId, examTitle, on
                      { label: 'Rank', key: 'rank' as SortKey },
                      { label: 'Score', key: 'score' as SortKey },
                      { label: 'Percentile', key: 'percentile' as SortKey },
+                     { label: 'Time Used', key: 'time_used' as SortKey },
                      { label: 'Name', key: 'name' as SortKey },
                      { label: 'School', key: 'school' as SortKey },
                      { label: 'Class', key: 'class' as SortKey},
@@ -417,6 +447,18 @@ const FullRanking: React.FC<FullRankingProps> = ({ onBack, examId, examTitle, on
                 align: 'center'
               },
               {
+                key: 'time_used',
+                header: 'Time Used',
+                render: (val) => (
+                  <div className="flex justify-center">
+                    <span className="text-[10px] font-black text-gray-500 bg-gray-50 px-2 py-1 rounded-md border border-gray-100 uppercase tracking-widest">
+                      {val ? formatTime(Number(val)) : '-'}
+                    </span>
+                  </div>
+                ),
+                align: 'center'
+              },
+              {
                 key: 'percentile',
                 header: 'Percentile',
                 render: (val) => (
@@ -428,18 +470,6 @@ const FullRanking: React.FC<FullRankingProps> = ({ onBack, examId, examTitle, on
                 ),
                 align: 'center'
               },
-              ...(!isPublicView ? [{
-                key: 'tie_break_reason',
-                header: 'Tie-break',
-                render: (val: any) => (
-                  <div className="flex justify-center">
-                    <span className="text-[9px] font-bold text-gray-400 uppercase text-center max-w-[100px] leading-tight">
-                      {val || '-'}
-                    </span>
-                  </div>
-                ),
-                align: 'center' as const
-              }] : []),
               ...(onViewDetails && !isPublicView ? [{
                 key: 'details',
                 header: 'Details',
