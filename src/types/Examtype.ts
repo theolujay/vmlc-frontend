@@ -50,6 +50,13 @@ export type DashboardStageProgress = {
     };
     message: string;
   };
+  history: {
+    stage: string;
+    round: number;
+    status: string;
+    started_at: string;
+    completed_at: string | null;
+  }[];
 };
 
 export type AttemptType = {
@@ -102,31 +109,43 @@ export type LeaderboardRankingType = {
   percentile?: number;
 };
 
+export type PerformanceStatusMeta = {
+  status_type: 'success' | 'pending' | 'info' | 'warning' | 'error' | 'eliminated' | 'disqualified';
+  status_label: string;
+  status_subtext: string;
+  color: string;
+  bg_color: string;
+  icon: string;
+  metric_label: string;
+  metric_value_display: string;
+};
+
+export type PerformanceActiveContext = {
+  stage: string;
+  stage_display: string;
+  title: string;
+  accent_color: string;
+  ranking: {
+    position: number;
+    total_candidates: number;
+    score?: number;
+    percentile?: number;
+    rank_change?: number;
+    is_active?: boolean;
+    exam_id?: string;
+  };
+  status_meta: PerformanceStatusMeta;
+};
+
 export type PerformanceSnapshotType = {
-  screening_ranking: {
-    rank: number;
-    total_candidates: number;
-    score: number;
-    percentile: number;
-    exam_id: string;
-    exam_title: string;
-  } | null;
-  league_leaderboard: {
-    overall_rank: number;
-    total_candidates: number;
-    total_score: number;
-    rank_change: number;
-    as_of_round: number;
-    is_active: boolean;
-  } | null;
-  final_ranking?: {
-    rank: number;
-    total_candidates: number;
-    score: number;
-    percentile: number;
-    exam_id: string;
-    exam_title: string;
-  } | null;
+  active_context: PerformanceActiveContext;
+  history: {
+    stage: string;
+    ranking: {
+      position: number;
+      score: number;
+    };
+  }[];
 };
 
 export type TakeExamQuestionType = {
@@ -153,13 +172,14 @@ export type TakeExamType = {
 export type ExamHistoryItem = {
   exam_id: string;
   exam_title: string;
-  stage: string;
-  round: number | null;
   score: number | null;
-  percentage: number | null;
-  date: Date;
   status: string;
   is_published: boolean;
+  // Metadata for frontend processing
+  stage?: string;
+  round?: number | null;
+  percentage?: number | null;
+  date?: string | Date;
 };
 
 export type DashboardType = {

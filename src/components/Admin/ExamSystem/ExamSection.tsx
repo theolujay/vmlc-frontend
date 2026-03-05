@@ -27,6 +27,7 @@ import QuestionPoolTable from './QuestionPoolTable'
 import QuestionPoolStats from './QuestionPoolStats'
 import usePublishRanking from '@/hooks/usePublishRanking'
 import useGetAccountMgt from '@/hooks/useGetAccountMgt'
+import PublishRankingModal from '@/components/Modals/PublishRankingModal'
 
 const AddQuestionModal = dynamic(() => import('../../Modals/AddQuestionModal'), {
   ssr: false,
@@ -314,7 +315,7 @@ function RankingSnapshotCard({ ranking, canViewDetails, userRole }: { ranking: R
   const isSuperAdmin = ['superadmin'].includes(userRole || '');
 
   const router = useRouter();
-  const { publishRanking, isPending: isPublishing } = usePublishRanking();
+  const [openPublishModal, setOpenPublishModal] = useState(false);
 
   const handleViewRanking = (e: React.MouseEvent) => {
     if (!canViewDetails) return;
@@ -325,79 +326,85 @@ function RankingSnapshotCard({ ranking, canViewDetails, userRole }: { ranking: R
   const handlePublishRanking = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    if (confirm(`Are you sure you want to publish the ranking table for "${ranking.exam.title}"?`)) {
-      publishRanking({ exam_id: ranking.exam.id, publish_now: true });
-    }
+    setOpenPublishModal(true);
   };
 
   return (
-    <div
-      onClick={handleViewRanking}
-      className={clsx(
-        'group flex flex-col bg-white border border-gray-100 rounded-[2rem] shadow-sm transition-all overflow-hidden',
-        canViewDetails ? 'hover:shadow-xl hover:-translate-y-1 cursor-pointer' : 'opacity-90 cursor-default'
-      )}
-      title={canViewDetails ? "View Ranking" : ""}
-    >
-      <div className="p-6 flex flex-col gap-5">
-        <div className="flex justify-between items-start">
-          <div className={clsx(
-            "px-3 py-1 rounded-full text-[8px] font-black uppercase tracking-widest flex items-center gap-1.5",
-            ranking.is_published ? "bg-emerald-50 text-emerald-600" : "bg-orange-50 text-orange-600"
-          )}>
-            <span className={clsx("w-1 h-1 rounded-full", ranking.is_published ? "bg-emerald-600" : "bg-orange-600")}></span>
-            {ranking.is_published ? "Published" : "Draft"}
-          </div>
-          <div className="text-[8px] font-black text-gray-400 uppercase tracking-widest">
-            {ranking.is_published && ranking.published_at ? formatDate(ranking.published_at) : formatDate(ranking.created_at)}
-          </div>
-        </div>
-
-        <div className="flex flex-col gap-1">
-          <h4 className='text-sm font-bold text-gray-800 uppercase line-clamp-1 group-hover:text-[#3E4095] transition-colors'>
-            {formatExamTitle(ranking.exam.title)}
-          </h4>
-          <p className='text-[8px] text-gray-400 font-medium flex items-center gap-1.5'>
-            <i className="fas fa-history text-[8px]"></i>
-            Snapshot #{ranking.id}
-          </p>
-        </div>
-
-        <div className="flex items-end justify-between mt-2">
-          <div className="flex flex-col">
-            <span className='text-[2rem] font-bold tracking-tight text-gray-900 leading-none'>
-              {ranking.entries_count}
-            </span>
-            <span className='text-[8px] font-black text-gray-400 uppercase tracking-widest mt-1'>Candidates</span>
+    <>
+      <div
+        onClick={handleViewRanking}
+        className={clsx(
+          'group flex flex-col bg-white border border-gray-100 rounded-[2rem] shadow-sm transition-all overflow-hidden',
+          canViewDetails ? 'hover:shadow-xl hover:-translate-y-1 cursor-pointer' : 'opacity-90 cursor-default'
+        )}
+        title={canViewDetails ? "View Ranking" : ""}
+      >
+        <div className="p-6 flex flex-col gap-5">
+          <div className="flex justify-between items-start">
+            <div className={clsx(
+              "px-3 py-1 rounded-full text-[8px] font-black uppercase tracking-widest flex items-center gap-1.5",
+              ranking.is_published ? "bg-emerald-50 text-emerald-600" : "bg-orange-50 text-orange-600"
+            )}>
+              <span className={clsx("w-1 h-1 rounded-full", ranking.is_published ? "bg-emerald-600" : "bg-orange-600")}></span>
+              {ranking.is_published ? "Published" : "Draft"}
+            </div>
+            <div className="text-[8px] font-black text-gray-400 uppercase tracking-widest">
+              {ranking.is_published && ranking.published_at ? formatDate(ranking.published_at) : formatDate(ranking.created_at)}
+            </div>
           </div>
 
-          <div className="flex gap-2">
-            {!ranking.is_published && (
-              <button
-                onClick={handlePublishRanking}
-                disabled={isPublishing || !isSuperAdmin}
-                className={clsx(
-                  "w-10 h-10 rounded-xl bg-emerald-50/40 flex items-center justify-center text-emerald-600 hover:bg-emerald-600 hover:text-white transition-all disabled:opacity-50",
-                  isSuperAdmin ? "hover:cursor-pointer" : "hover:cursor-not-allowed"
-            )}
-                title={isSuperAdmin ? "Publish ranking" : "Only Superadmin can publish rankings"}
-              >
-                {isPublishing ? <i className="fas fa-spinner animate-spin"></i> : <i className="fas fa-upload"></i>}
-              </button>
-            )}
-            {canViewDetails && (
-              <div className="w-10 h-10 rounded-xl bg-gray-50 flex items-center justify-center text-gray-700 group-hover:bg-[#3E4095] group-hover:text-white transition-all">
-                <ExamCardGoTo />
-              </div>
-            )}
+          <div className="flex flex-col gap-1">
+            <h4 className='text-sm font-bold text-gray-800 uppercase line-clamp-1 group-hover:text-[#3E4095] transition-colors'>
+              {formatExamTitle(ranking.exam.title)}
+            </h4>
+            <p className='text-[8px] text-gray-400 font-medium flex items-center gap-1.5'>
+              <i className="fas fa-history text-[8px]"></i>
+              Snapshot #{ranking.id}
+            </p>
+          </div>
+
+          <div className="flex items-end justify-between mt-2">
+            <div className="flex flex-col">
+              <span className='text-[2rem] font-bold tracking-tight text-gray-900 leading-none'>
+                {ranking.entries_count}
+              </span>
+              <span className='text-[8px] font-black text-gray-400 uppercase tracking-widest mt-1'>Candidates</span>
+            </div>
+
+            <div className="flex gap-2">
+              {!ranking.is_published && (
+                <button
+                  onClick={handlePublishRanking}
+                  disabled={!isSuperAdmin}
+                  className={clsx(
+                    "w-10 h-10 rounded-xl bg-emerald-50/40 flex items-center justify-center text-emerald-600 hover:bg-emerald-600 hover:text-white transition-all disabled:opacity-50",
+                    isSuperAdmin ? "hover:cursor-pointer" : "hover:cursor-not-allowed"
+              )}
+                  title={isSuperAdmin ? "Publish ranking" : "Only Superadmin can publish rankings"}
+                >
+                  <i className="fas fa-upload"></i>
+                </button>
+              )}
+              {canViewDetails && (
+                <div className="w-10 h-10 rounded-xl bg-gray-50 flex items-center justify-center text-gray-700 group-hover:bg-[#3E4095] group-hover:text-white transition-all">
+                  <ExamCardGoTo />
+                </div>
+              )}
+            </div>
           </div>
         </div>
+        <div className={clsx(
+          "h-1 w-full transition-colors",
+          ranking.is_published ? "bg-emerald-50 group-hover:bg-emerald-100" : "bg-orange-50 group-hover:bg-orange-100"
+        )}></div>
       </div>
-      <div className={clsx(
-        "h-1 w-full transition-colors",
-        ranking.is_published ? "bg-emerald-50 group-hover:bg-emerald-100" : "bg-orange-50 group-hover:bg-orange-100"
-      )}></div>
-    </div>
+      <PublishRankingModal 
+        examId={ranking.exam.id} 
+        examTitle={ranking.exam.title} 
+        open={openPublishModal} 
+        close={setOpenPublishModal} 
+      />
+    </>
   );
 }
 

@@ -14,6 +14,7 @@ import usePublishRanking from '@/hooks/usePublishRanking';
 import { UpdatedSessionQuestionType } from '@/types/Examtype';
 import { SummaryIcon } from '../AdminIcons';
 import useRetractExam from '@/hooks/useRetractExam';
+import PublishRankingModal from '@/components/Modals/PublishRankingModal';
 
 const AddQuestionModal = dynamic(() => import('@/components/Modals/AddQuestionModal'), {
   ssr: false,
@@ -29,6 +30,7 @@ export default function ExamSessionDropdownDialog({ exam_id, data }: Props) {
     const [openDeleteModal, setOpenDeleteModal] = useState(false)
     const [openAddQuestion,setAddQuestion]=useState(false)
     const [openUpload, setOpenUpload] = useState(false);
+    const [openPublishRankingModal, setOpenPublishRankingModal] = useState(false);
     
     const { publishRanking, isPending: isPublishingRanking } = usePublishRanking();
     const { onSubmit: retractExam, isPending: isRetracting } = useRetractExam();
@@ -52,6 +54,10 @@ export default function ExamSessionDropdownDialog({ exam_id, data }: Props) {
 
     function handleOpenUpload() {
         setOpenUpload(true);
+    }
+
+    function handleOpenPublishRanking() {
+        setOpenPublishRankingModal(true);
     }
 
     const actionItems = [
@@ -112,7 +118,7 @@ export default function ExamSessionDropdownDialog({ exam_id, data }: Props) {
                     {isPublished ? 'PUBLISHED' : 'PUBLISH RANKING'}
                 </span>
             </div>,
-            onClick: () => publishRanking({ exam_id, publish_now: true }),
+            onClick: handleOpenPublishRanking,
             disabled: isPublished || status !== 'concluded' || !hasRanking || isPublishingRanking
         },
         status === 'scheduled' ? {
@@ -150,6 +156,12 @@ export default function ExamSessionDropdownDialog({ exam_id, data }: Props) {
             <AddQuestionModal examId={exam_id} open={openAddQuestion} close={setAddQuestion} />
             <DeleteExamSessionModal session_id={exam_id} open={openDeleteModal} close={setOpenDeleteModal} />
             <UploadExamSessionModal data={data} title={data?.title} exam_id={exam_id} open={openUpload} close={setOpenUpload} />
+            <PublishRankingModal 
+                examId={exam_id} 
+                examTitle={data?.title || ''} 
+                open={openPublishRankingModal} 
+                close={setOpenPublishRankingModal} 
+            />
         </AppDropdownDialog>
     )
 }

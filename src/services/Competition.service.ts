@@ -2,11 +2,12 @@ import client from "@/utils/axios";
 import { competitionUrls } from "@/constants/competitionUrls";
 
 export class CompetitionService {
-  static async publishRanking(exam_id: string, publish_now: boolean = true) {
+  static async publishRanking(exam_id: string, publish_now: boolean = true, publish_at: string | null = null) {
     try {
       const response = await client.post(competitionUrls.PUBLISH_RANKING, {
         exam_id,
-        publish_now,
+        publish_now: publish_at ? false : publish_now,
+        publish_at,
       });
       return response.data;
     } catch (error) {

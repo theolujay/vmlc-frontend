@@ -193,6 +193,7 @@ export interface CompetitionDashboardResponse {
     active: number;
     eliminated: number;
     disqualified: number;
+    stage_breakdown: Record<string, number>;
   };
   progress: {
     current_stage: string;
@@ -204,18 +205,24 @@ export interface CompetitionDashboardResponse {
     id: string;
     title: string;
     stage: string;
+    round: number;
     status: 'scheduled' | 'ongoing' | 'concluded';
     ranking_status: 'pending'| 'ready' | 'published';
     stats: {
       candidates_sat: number;
+      eligible_candidates: number;
+      participation_rate: number;
       avg_score: number;
-      absent?: number;
+      highest_score: number;
+      lowest_score: number;
     };
   }[];
   leaderboard_summary: LeagueLeaderboardEntry[];
   latest_ranking_summary: {
     exam_id: string;
     exam_title: string;
+    stage: string;
+    round: number;
     entries: RankingEntry[];
   } | null;
 }
