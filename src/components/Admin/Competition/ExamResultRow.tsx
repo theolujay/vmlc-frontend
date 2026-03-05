@@ -51,7 +51,7 @@ const ExamResultRow: React.FC<ExamResultRowProps> = ({ exam, onView, canInteract
             {exam.stats ? (
               <div className="flex flex-col md:flex-row md:flex-wrap gap-x-3 gap-y-1 text-[10px]">
                 <div className="flex gap-1">
-                    <span className="text-gray-400">Candidates sat:</span>
+                    <span className="text-gray-800">Candidates sat:</span>
                     <span className="text-[#101828] font-bold">{exam.stats.candidates_sat.toLocaleString()}</span>
                     <span className="text-gray-400">({exam.stats.participation_rate}%)</span>
                     <span className="text-gray-300 hidden md:inline">|</span>
