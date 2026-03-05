@@ -8,6 +8,7 @@ interface CompetitionStatsProps {
     active: number;
     eliminated: number;
     disqualified: number;
+    stage_breakdown: Record<string, number>;
   };
 }
 
@@ -23,14 +24,17 @@ const CompetitionStats: React.FC<CompetitionStatsProps> = ({ candidatesStats }) 
     {
       icon: <ActiveIcon />,
       label: 'ACTIVE',
-      title: 'Candidates active in the current stage of the competition. E.g. League',
+      title: `Active distribution: ${Object.entries(candidatesStats.stage_breakdown || {})
+        .filter(([, count]) => count > 0)
+        .map(([stage, count]) => `${stage.charAt(0).toUpperCase() + stage.slice(1)} (${count})`)
+        .join(', ') || 'No active candidates'}`,
       value: candidatesStats.active,
       color: 'text-[#039855]'
     },
     {
       icon: <InactiveIcon />,
       label: 'ELIMINATED',
-      title: 'Candidates who have been eliminated so far in the competion. E.g. During screening, league or final.',
+      title: 'Candidates who have been eliminated so far in the competition. E.g. During screening, league or final.',
       value: candidatesStats.eliminated,
       color: 'text-[#D92D20]'
     },
@@ -46,7 +50,7 @@ const CompetitionStats: React.FC<CompetitionStatsProps> = ({ candidatesStats }) 
   return (
     <ResponsiveContainer className="font-sans flex flex-col gap-4">
        <div className="flex justify-between items-center border-b border-gray-100 pb-2 mb-2">
-            <h1 className="text-xl font-bold text-[#101828]">Verboheit MLC 3.0</h1>
+            <h1 className="text-xl font-bold text-[#101828] tracking-wide">Verboheit Mathematics League Competition 3.0</h1>
             <h2 className="text-[10px] text-[#475367] font-bold px-2 py-0.5 uppercase tracking-widest">Candidate Stats</h2>
        </div>
 

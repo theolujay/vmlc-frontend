@@ -155,7 +155,8 @@ const CompetitionDashboard: React.FC<CompetitionDashboardProps> = ({
                 enrolled: data.stats.enrolled,
                 active: data.stats.active,
                 eliminated: data.stats.eliminated,
-                disqualified: data.stats.disqualified
+                disqualified: data.stats.disqualified,
+                stage_breakdown: data.stats.stage_breakdown
               }}
             />
 
@@ -191,6 +192,7 @@ const CompetitionDashboard: React.FC<CompetitionDashboardProps> = ({
                 isLeagueCumulative: true
               })) : undefined}
             />
+
             <RankingSummary
               examTitle={data.latest_ranking_summary?.exam_title || "Latest Exam"}
               entries={data.latest_ranking_summary?.entries || []}
@@ -204,6 +206,7 @@ const CompetitionDashboard: React.FC<CompetitionDashboardProps> = ({
                 round: String(data.progress.current_round)
               })) : undefined}
             />
+            
             </div>
           <PromoteCandidatesModal open={openPromoteModal} close={setOpenPromoteModal} />
       </div>

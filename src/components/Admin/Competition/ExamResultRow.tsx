@@ -3,12 +3,17 @@ import React from 'react';
 export type CompetitionExam = {
   id: string;
   title: string;
+  stage: string;
+  round: number;
   status: 'scheduled' | 'ongoing' | 'concluded';
   ranking_status: 'pending'| 'ready' | 'published';
   stats?: {
     candidates_sat: number;
-    avg_score?: number;
-    absent?: number;
+    eligible_candidates: number;
+    participation_rate: number;
+    avg_score: number;
+    highest_score: number;
+    lowest_score: number;
   };
 };
 
@@ -28,7 +33,7 @@ const ExamResultRow: React.FC<ExamResultRowProps> = ({ exam, onView, canInteract
     }
   };
 
-  const canView = exam.ranking_status === 'published' ||  exam.ranking_status === 'ready' && canInteract;
+  const canView = (exam.ranking_status === 'published' ||  exam.ranking_status === 'ready') && canInteract;
 
   return (
     <div className={`border border-[#E4E7EC] rounded-lg p-4 bg-white transition-colors group font-sans ${canInteract ? 'hover:border-[#3E4095]' : ''}`}>
@@ -44,30 +49,34 @@ const ExamResultRow: React.FC<ExamResultRowProps> = ({ exam, onView, canInteract
 
           <div className="pl-0 text-sm text-[#475467] space-y-1">
             {exam.stats ? (
-              <div className="flex flex-wrap gap-1.5 text-xs">
-                <span>Candidates sat: <strong className="text-[#101828]">{exam.stats.candidates_sat.toLocaleString()}</strong></span>
-                {exam.stats.avg_score !== undefined && (
-                  <>
-                     <span className="text-gray-300">|</span>
-                     <span>Avg: <strong className="text-[#101828]">{exam.stats.avg_score}</strong></span>
-                  </>
-                )}
-                {exam.stats.absent !== undefined && (
-                   <>
-                    <span className="text-gray-300">|</span>
-                    <span>Absent: <strong className="text-[#101828]">{exam.stats.absent}</strong></span>
-                   </>
-                )}
-                <span className="text-gray-300">|</span>
-                <span className="flex items-center gap-1">
-                  Ranking:
-                  <span className={`font-medium ${exam.ranking_status === 'published' ? 'text-[#3E4095]' : 'text-black-100'}`}>
-                    {exam.ranking_status === 'published' ? 'Published' : exam.ranking_status === 'ready' ? 'Ready' : 'Pending'}
+              <div className="flex flex-col md:flex-row md:flex-wrap gap-x-3 gap-y-1 text-[10px]">
+                <div className="flex gap-1">
+                    <span className="text-gray-400">Candidates sat:</span>
+                    <span className="text-[#101828] font-bold">{exam.stats.candidates_sat.toLocaleString()}</span>
+                    <span className="text-gray-400">({exam.stats.participation_rate}%)</span>
+                    <span className="text-gray-300 hidden md:inline">|</span>
+                </div>
+                <div className="flex gap-1">
+                    <span className="text-gray-400">Score (%) → </span>
+                    <span className="text-[#101828]">Avg: </span>
+                    <span className="text-[#101828]">
+                      <span className="font-bold">{exam.stats.avg_score}</span>,
+                    </span>
+                    <span className="text-[#101828]">Range:</span>
+                    <span className="text-[#101828] font-bold">{exam.stats.highest_score}</span>
+                    <span className="text-gray-600"> — </span>
+                    <span className="text-[#101828] font-bold">{exam.stats.lowest_score}</span>
+                    <span className="text-gray-300 hidden md:inline">|</span>
+                </div>
+                <div className="flex gap-1 items-center">
+                  <span className="text-gray-400">Ranking:</span>
+                  <span className={`font-black uppercase tracking-widest text-[8px] ${exam.ranking_status === 'published' ? 'text-emerald-600' : exam.ranking_status === 'ready' ? 'text-amber-600' : 'text-gray-400'}`}>
+                    {exam.ranking_status}
                   </span>
-                </span>
+                </div>
               </div>
             ) : (
-               <p className="text-xs text-gray-400 italic">No statistics available yet.</p>
+               <p className="text-[10px] text-gray-400 italic">No analytics available yet.</p>
             )}
           </div>
         </div>
@@ -77,9 +86,9 @@ const ExamResultRow: React.FC<ExamResultRowProps> = ({ exam, onView, canInteract
            {canView && (
              <button
                onClick={() => onView(exam.id)}
-               className="flex items-center gap-1 px-3 py-1.5 text-xs font-medium text-[#344054] bg-white border border-[#D0D5DD] rounded-full hover:bg-[#3E4095] hover:text-[#FFFFFF] hover:cursor-pointer"
+               className="flex items-center gap-1 px-2 py-1.5 text-[10px] font-black uppercase tracking-widest text-[#344054] bg-white border border-[#D0D5DD] rounded-full hover:bg-[#3E4095] hover:text-[#FFFFFF] hover:cursor-pointer transition-all active:scale-95"
              >
-               View
+               View <span className="hidden md:inline lg:inline">Details</span>
              </button>
            )}
         </div>
