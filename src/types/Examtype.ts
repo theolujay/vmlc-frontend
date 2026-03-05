@@ -50,6 +50,13 @@ export type DashboardStageProgress = {
     };
     message: string;
   };
+  history: {
+    stage: string;
+    round: number;
+    status: string;
+    started_at: string;
+    completed_at: string | null;
+  }[];
 };
 
 export type AttemptType = {
@@ -103,7 +110,7 @@ export type LeaderboardRankingType = {
 };
 
 export type PerformanceStatusMeta = {
-  status_type: 'success' | 'pending' | 'warning' | 'error';
+  status_type: 'success' | 'pending' | 'info' | 'warning' | 'error' | 'eliminated' | 'disqualified';
   status_label: string;
   status_subtext: string;
   color: string;
@@ -165,13 +172,14 @@ export type TakeExamType = {
 export type ExamHistoryItem = {
   exam_id: string;
   exam_title: string;
-  stage: string;
-  round: number | null;
   score: number | null;
-  percentage: number | null;
-  date: Date;
   status: string;
   is_published: boolean;
+  // Metadata for frontend processing
+  stage?: string;
+  round?: number | null;
+  percentage?: number | null;
+  date?: string | Date;
 };
 
 export type DashboardType = {

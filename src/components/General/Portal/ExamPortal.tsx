@@ -132,9 +132,9 @@ function ExamPortal() {
   const history = (examHistory || []).map(item => ({
     exam: item.exam_title,
     score: item.score,
-    percentage: item.percentage,
-    date: new Date(item.date),
-    exam_stage: item.stage,
+    percentage: item.percentage || (item.score ? (item.score / 100) * 100 : 0), // Fallback if percentage is missing
+    date: item.date ? new Date(item.date) : new Date(),
+    exam_stage: item.stage || 'N/A',
     isPublished: item.is_published
   }));
 
