@@ -7,10 +7,14 @@ export default function usePublishRanking() {
   const queryClient = useQueryClient();
 
   const { mutate, isPending } = useMutation({
-    mutationFn: ({ exam_id, publish_now }: { exam_id: string; publish_now: boolean }) =>
-      CompetitionService.publishRanking(exam_id, publish_now),
+    mutationFn: ({ exam_id, publish_now, publish_at }: { exam_id: string; publish_now: boolean; publish_at?: string | null }) =>
+      CompetitionService.publishRanking(exam_id, publish_now, publish_at),
     onSuccess: (data, variables) => {
-      toast.success(variables.publish_now ? 'Ranking published successfully' : 'Ranking generation started');
+      const message = variables.publish_at 
+        ? `Ranking scheduled for ${new Date(variables.publish_at).toLocaleString()}` 
+        : (variables.publish_now ? 'Ranking published successfully' : 'Ranking generation started');
+      
+      toast.success(message);
 
       // Delay invalidation to allow backend processing time
       setTimeout(() => {
