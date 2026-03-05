@@ -38,8 +38,9 @@ const PrimaryAction: React.FC<PrimaryActionProps> = ({ exam, isRankingAvailable 
       return;
     }
 
-    if (exam.status === 'awaiting_results') {
+    if (exam.status === 'awaiting_results' || exam.status === 'results_published' || exam.status === 'concluded') {
       setCanStart(false);
+      setTimeLeft(null);
       return;
     }
 
@@ -107,9 +108,10 @@ const PrimaryAction: React.FC<PrimaryActionProps> = ({ exam, isRankingAvailable 
   };
 
   const isFinals = exam?.stage?.toLowerCase() === 'final';
-  const hasSubmitted = exam?.access_status == "submitted";
+  const hasSubmitted = exam?.access_status === "submitted" || !!exam?.attempt?.submitted_at;
   const isAwaitingResults = exam?.status === 'awaiting_results' && !isRankingAvailable;
   const isOngoing = exam?.status === 'ongoing';
+  const isResultsPublished = exam?.status === 'results_published';
   // const isDeadlinePassed = exam?.attempt?.deadline ? new Date(exam.attempt.deadline) <= new Date() : false;
   const isDeadlineActive = exam?.attempt?.deadline ? new Date(exam.attempt.deadline) > new Date() : false;
   const canEnter = (isOngoing || isDeadlineActive) && !hasSubmitted && exam?.access_status !== "expired" && exam?.access_status !== "failed"
@@ -150,11 +152,11 @@ const PrimaryAction: React.FC<PrimaryActionProps> = ({ exam, isRankingAvailable 
         </p>
 
         <div className="mt-8 space-y-4">
-          {hasSubmitted || exam.access_status === "expired" ? (
+          {hasSubmitted || exam.access_status === "expired" || isAwaitingResults || isResultsPublished ? (
              <div className="p-4 bg-[#3E4095]/2 rounded-xl border border-[#3E4095]/20">
               <p className="text-xs font-bold text-[#3E4095] uppercase">Status</p>
               <p className="text-lg font-bold text-[#3E4095] mt-1">
-                {isAwaitingResults || exam.status === 'results_published' ? 'Concluded' : hasSubmitted ? 'Submitted' : 'Access Expired'}
+                {isAwaitingResults || isResultsPublished ? 'Concluded' : hasSubmitted ? 'Submitted' : 'Access Expired'}
               </p>
             </div>
           ) : !canEnter ? (
