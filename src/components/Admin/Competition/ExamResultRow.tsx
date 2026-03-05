@@ -57,7 +57,7 @@ const ExamResultRow: React.FC<ExamResultRowProps> = ({ exam, onView, canInteract
                     <span className="text-gray-300 hidden md:inline">|</span>
                 </div>
                 <div className="flex gap-1">
-                    <span className="text-gray-400">Score (%) → </span>
+                    <span className="text-gray-800">Scores (%) → </span>
                     <span className="text-[#101828]">Avg: </span>
                     <span className="text-[#101828]">
                       <span className="font-bold">{exam.stats.avg_score}</span>,
@@ -69,7 +69,7 @@ const ExamResultRow: React.FC<ExamResultRowProps> = ({ exam, onView, canInteract
                     <span className="text-gray-300 hidden md:inline">|</span>
                 </div>
                 <div className="flex gap-1 items-center">
-                  <span className="text-gray-400">Ranking:</span>
+                  <span className="text-gray-800">Ranking:</span>
                   <span className={`font-black uppercase tracking-widest text-[8px] ${exam.ranking_status === 'published' ? 'text-emerald-600' : exam.ranking_status === 'ready' ? 'text-amber-600' : 'text-gray-400'}`}>
                     {exam.ranking_status}
                   </span>
