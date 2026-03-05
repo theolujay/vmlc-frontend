@@ -100,15 +100,15 @@ const Performance: React.FC<PerformanceSnapshotProps> = ({
         </div>
 
         {/* Secondary Statistics (Score/Percentile) */}
-        {(ranking?.score !== undefined || ranking?.percentile !== undefined) && (
+        {(ranking?.score != null || ranking?.percentile != null) && (
             <div className="flex items-center gap-6 mt-1 pb-2 border-b border-slate-50">
-                {ranking?.score !== undefined && (
+                {ranking?.score != null && (
                     <div className="flex flex-col">
                         <span className="text-[10px] text-[#98A2B3] font-bold uppercase tracking-tight">Total Score</span>
                         <span className="text-sm font-bold text-[#475367]">{ranking.score.toLocaleString()} pts</span>
                     </div>
                 )}
-                {ranking?.percentile !== undefined && (
+                {ranking?.percentile != null && (
                     <div className="flex flex-col">
                         <span className="text-[10px] text-[#98A2B3] font-bold uppercase tracking-tight">Percentile</span>
                         <span className="text-sm font-bold text-[#475367]">{ranking.percentile.toFixed(1)}TH</span>
