@@ -138,74 +138,7 @@ function ExamPortal() {
     isPublished: item.is_published
   }));
 
-  // Map Performance Snapshot
-  const leagueRanking = performance?.league_leaderboard ? {
-      current_rank: performance.league_leaderboard.overall_rank,
-      position: performance.league_leaderboard.overall_rank,
-      total_candidates: performance.league_leaderboard.total_candidates,
-      rank_change: performance.league_leaderboard.rank_change,
-      as_of_round: performance.league_leaderboard.as_of_round,
-      is_active: performance.league_leaderboard.is_active,
-      score: performance.league_leaderboard.total_score
-  } : null;
-
-  const screeningRanking = performance?.screening_ranking ? {
-      current_rank: performance.screening_ranking.rank,
-      position: performance.screening_ranking.rank,
-      total_candidates: performance.screening_ranking.total_candidates,
-      exam_id: performance.screening_ranking.exam_id,
-      exam_title: performance.screening_ranking.exam_title,
-      is_active: true,
-      score: performance.screening_ranking.score,
-      percentile: performance.screening_ranking.percentile
-  } : null;
-
-  const finalRanking = performance?.final_ranking ? {
-      current_rank: performance.final_ranking.rank,
-      position: performance.final_ranking.rank,
-      total_candidates: performance.final_ranking.total_candidates,
-      exam_id: performance.final_ranking.exam_id,
-      exam_title: performance.final_ranking.exam_title,
-      is_active: true,
-      score: performance.final_ranking.score,
-      percentile: performance.final_ranking.percentile
-  } : null;
-
-  // Qualification Threshold logic
-  let qualificationThreshold = 0;
-  let cutoffDisplay = '-';
-  const activeRanking = currentStage === 'SCREENING' ? screeningRanking : currentStage === 'FINAL' ? finalRanking : leagueRanking;
-
-  if (stageProgressData?.qualification_status?.advancement_policy) {
-      const { mode, value } = stageProgressData.qualification_status.advancement_policy;
-      if (mode === 'top_percent') {
-           cutoffDisplay = `Top ${value * 100}%`;
-           const total = activeRanking?.total_candidates;
-           if (total) {
-               qualificationThreshold = Math.ceil(total * value);
-           }
-      } else {
-          qualificationThreshold = value;
-          cutoffDisplay = `Top ${value}`;
-      }
-  }
-
-  // Determine if awaiting results
-  const hasTakenExam = stageProgressData?.has_taken_current_round || activeExamData?.access_status === 'submitted' || false;
-  let isAwaitingResults = false;
-
-  if (hasTakenExam) {
-      if (currentStage === 'LEAGUE') {
-          const roundsPublished = stageProgressData?.published_rounds || 0;
-          isAwaitingResults = !leagueRanking || roundsPublished < leagueRound;
-      } else {
-          isAwaitingResults = !activeRanking;
-      }
-  }
-
-  if (activeExamData?.status === 'awaiting_results' && !activeRanking) {
-      isAwaitingResults = true;
-  }
+  const activeContext = performance?.active_context;
 
   return (
     <PageLayout>
@@ -258,26 +191,16 @@ function ExamPortal() {
             <PrimaryAction
               exam={currentExam}
               candidateName={candidateName}
-              isRankingAvailable={!!activeRanking}
+              isRankingAvailable={!!activeContext?.ranking}
               onCountdownEnd={handleCountdownEnd}
             />
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {/* PERFORMANCE SNAPSHOT */}
               <Performance
-                leagueRanking={leagueRanking}
-                screeningRanking={screeningRanking}
-                finalRanking={finalRanking}
-                stage={currentStage}
+                context={activeContext}
                 leagueRound={leagueRound}
                 totalRounds={stageProgressData?.total_rounds}
-                qualificationThreshold={qualificationThreshold}
-                cutoffDisplay={cutoffDisplay}
-                hasTakenExam={hasTakenExam}
-                isQualified={stageProgressData?.qualification_status?.is_qualified}
-                isAwaitingResults={isAwaitingResults}
-                isActive={activeRanking?.is_active}
-                qualificationMessage={stageProgressData?.qualification_status?.message}
                 onViewLeaderboard={() => setShowLeaderboard(true)}
               />
 

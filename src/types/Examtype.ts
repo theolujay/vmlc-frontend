@@ -102,31 +102,43 @@ export type LeaderboardRankingType = {
   percentile?: number;
 };
 
+export type PerformanceStatusMeta = {
+  status_type: 'success' | 'pending' | 'warning' | 'error';
+  status_label: string;
+  status_subtext: string;
+  color: string;
+  bg_color: string;
+  icon: string;
+  metric_label: string;
+  metric_value_display: string;
+};
+
+export type PerformanceActiveContext = {
+  stage: string;
+  stage_display: string;
+  title: string;
+  accent_color: string;
+  ranking: {
+    position: number;
+    total_candidates: number;
+    score?: number;
+    percentile?: number;
+    rank_change?: number;
+    is_active?: boolean;
+    exam_id?: string;
+  };
+  status_meta: PerformanceStatusMeta;
+};
+
 export type PerformanceSnapshotType = {
-  screening_ranking: {
-    rank: number;
-    total_candidates: number;
-    score: number;
-    percentile: number;
-    exam_id: string;
-    exam_title: string;
-  } | null;
-  league_leaderboard: {
-    overall_rank: number;
-    total_candidates: number;
-    total_score: number;
-    rank_change: number;
-    as_of_round: number;
-    is_active: boolean;
-  } | null;
-  final_ranking?: {
-    rank: number;
-    total_candidates: number;
-    score: number;
-    percentile: number;
-    exam_id: string;
-    exam_title: string;
-  } | null;
+  active_context: PerformanceActiveContext;
+  history: {
+    stage: string;
+    ranking: {
+      position: number;
+      score: number;
+    };
+  }[];
 };
 
 export type TakeExamQuestionType = {
