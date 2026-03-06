@@ -192,6 +192,7 @@ function ExamPortal() {
               exam={currentExam}
               candidateName={candidateName}
               isRankingAvailable={!!activeContext?.ranking}
+              isEliminated={stageProgressData?.qualification_status?.is_qualified === false}
               onCountdownEnd={handleCountdownEnd}
             />
 
