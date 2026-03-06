@@ -209,10 +209,10 @@ const FullRanking: React.FC<FullRankingProps> = ({ onBack, examId, examTitle, on
 
               <div
                 className="flex flex-col justify-center items-center px-4 lg:border-r border-gray-100"
-                title="How candidates are ranked when scores are equal"
+                title={responseData.meta?.ranking_policy === "standard" ? "Candidates with same score share same rank" : "Candidates with same score are ranked based on submission time"}
               >
                 <span className="text-[8px] font-bold text-gray-400 uppercase tracking-tight leading-none mb-1">Policy</span>
-                <span className="text-[10px] font-black text-[#3E4095] uppercase leading-none h-3">{responseData.meta?.ranking_policy || 'Standard'}</span>
+                <span className="text-[10px] font-black text-[#3E4095] uppercase leading-none h-3">{responseData.meta?.ranking_policy|| 'Standard'}</span>
               </div>
 
               <div
@@ -223,7 +223,7 @@ const FullRanking: React.FC<FullRankingProps> = ({ onBack, examId, examTitle, on
                   Ties Resolved By
                 </span>
                 <span className="text-[10px] font-black text-gray-600 uppercase tracking-tight leading-none h-3">
-                  {responseData.meta?.tie_break_strategy === 'random' ? 'Random' : 'Submission Time'}
+                  {responseData.meta?.tie_break_strategy === 'dense' ? 'Submission Time' : 'N/A'}
                 </span>
               </div>
               <div className="flex flex-col justify-center items-center px-4" title={`Ranking was made public on ${formatDateTime(responseData.published_at)}`}>
