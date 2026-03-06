@@ -9,6 +9,7 @@ interface PrimaryActionProps {
   exam: AvailableExamType | null;
   candidateName: string;
   isRankingAvailable?: boolean;
+  isEliminated?: boolean;
   onCountdownEnd?: () => void;
 }
 
@@ -23,7 +24,7 @@ const TimeUnit: React.FC<{ value: number; unit: string }> = ({ value, unit }) =>
   </div>
 );
 
-const PrimaryAction: React.FC<PrimaryActionProps> = ({ exam, isRankingAvailable = false, onCountdownEnd }) => {
+const PrimaryAction: React.FC<PrimaryActionProps> = ({ exam, isRankingAvailable = false, isEliminated = false, onCountdownEnd }) => {
   const [timeLeft, setTimeLeft] = useState<{ days: number; hours: number; minutes: number; seconds: number } | null>(null);
   const [canStart, setCanStart] = useState(false);
   const router = useRouter();
@@ -120,14 +121,16 @@ const PrimaryAction: React.FC<PrimaryActionProps> = ({ exam, isRankingAvailable 
      return (
         <section className="font-sans bg-white p-8 rounded-[24px] border border-[#E4E7EC] shadow-sm text-center">
         <div className="max-w-md mx-auto">
-          <span className="bg-[#F0F2F5] text-[#475367] px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide">
-            Exam Status
+          <span className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide ${isEliminated ? 'bg-red-50 text-red-600' : 'bg-[#F0F2F5] text-[#475367]'}`}>
+            {isEliminated ? 'Competition Status' : 'Exam Status'}
           </span>
           <h2 className="text-2xl font-bold text-slate-800 mt-3">
-            Awaiting challenge...
+            {isEliminated ? 'Better luck next time!' : 'Awaiting challenge...'}
           </h2>
           <p className="text-[#667185] mt-2 text-sm leading-relaxed">
-            You&apos;ll be notified if anything changes
+            {isEliminated 
+              ? "You didn't make the cut for the next stage this time, but we're rooting for you in your future endeavors!" 
+              : "You'll be notified if anything changes"}
           </p>
         </div>
       </section>

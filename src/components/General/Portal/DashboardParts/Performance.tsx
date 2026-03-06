@@ -32,11 +32,14 @@ const Performance: React.FC<PerformanceSnapshotProps> = ({
   const rank = ranking?.position || 0;
   const totalCandidates = ranking?.total_candidates || 0;
   const isLeague = stage?.toLowerCase().includes('league');
-
   // Logic to determine if we should show the rank (active rank or finalized)
   const showRank = rank > 0 && (!isLeague || ranking?.is_active);
-
-  const isLinkDisabled = !ranking?.exam_id && !isLeague;
+  const isScreening = stage?.toLowerCase().includes('screening');
+  const isFinal = stage?.toLowerCase().includes('final');
+  // Link is enabled if:
+  // 1. It's the League stage (always has a leaderboard)
+  // 2. It's the Screening or Final stage AND we have an exam_id to link to
+  const isLinkEnabled = isLeague || ((isScreening || isFinal) && !!ranking?.exam_id);
 
   return (
     <section className="bg-white p-6 rounded-[24px] border border-[#E4E7EC] shadow-sm h-[310px] flex flex-col font-sans overflow-hidden">
@@ -105,7 +108,7 @@ const Performance: React.FC<PerformanceSnapshotProps> = ({
                 {ranking?.score != null && (
                     <div className="flex flex-col">
                         <span className="text-[10px] text-[#98A2B3] font-bold uppercase tracking-tight">Total Score</span>
-                        <span className="text-sm font-bold text-[#475367]">{ranking.score.toLocaleString()} pts</span>
+                        <span className="text-sm font-bold text-[#475367]">{ranking.score.toLocaleString()}%</span>
                     </div>
                 )}
                 {ranking?.percentile != null && (
@@ -160,7 +163,7 @@ const Performance: React.FC<PerformanceSnapshotProps> = ({
       </div>
 
       {/* Footer Link */}
-      {!isLinkDisabled ? (
+      {isLinkEnabled ? (
         isLeague && onViewLeaderboard ? (
           <button
             onClick={onViewLeaderboard}
@@ -174,13 +177,13 @@ const Performance: React.FC<PerformanceSnapshotProps> = ({
             href={ranking?.exam_id ? `/exam-portal/rankings/${ranking.exam_id}` : "/exam-portal/leaderboard"}
             className="mt-6 pt-4 border-t border-slate-100 text-sm font-bold text-[#3E4095] hover:opacity-80 flex items-center justify-between transition-all"
           >
-            <span>{stage?.toLowerCase().includes('screening') ? 'View Ranking Table' : 'View Leaderboard'}</span>
+            <span>{(isScreening || isFinal) ? 'View Ranking Table' : 'View Leaderboard'}</span>
             <GotoIcon />
           </Link>
         )
       ) : (
         <div className="mt-6 pt-4 border-t border-slate-100 text-sm font-bold text-slate-300 flex items-center justify-between cursor-not-allowed grayscale">
-          <span>{stage?.toLowerCase().includes('screening') ? 'Ranking' : 'Leaderboard'}</span>
+          <span>{(isScreening || isFinal) ? 'Ranking' : 'Leaderboard'}</span>
           <GotoIcon />
         </div>
       )}
