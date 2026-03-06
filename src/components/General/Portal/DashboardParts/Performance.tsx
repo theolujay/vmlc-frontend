@@ -42,7 +42,7 @@ const Performance: React.FC<PerformanceSnapshotProps> = ({
   const isLinkEnabled = isLeague || ((isScreening || isFinal) && !!ranking?.exam_id);
 
   return (
-    <section className="bg-white p-6 rounded-[24px] border border-[#E4E7EC] shadow-sm h-[310px] flex flex-col font-sans overflow-hidden">
+    <section className="bg-white p-6 rounded-[24px] border border-[#E4E7EC] shadow-sm min-h-[310px] flex flex-col font-sans">
       <div className="flex flex-col gap-4 flex-1">
         {/* Header */}
         <div className='flex justify-between items-center'>
