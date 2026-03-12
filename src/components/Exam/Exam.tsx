@@ -28,12 +28,12 @@ export default function Exam() {
   const params = useParams();
   const examId = params?.examId as string;
 
-  const { isPending, data, isError, error } = useCandidateTakeExam(examId);
+  const [examStarted, setExamStarted] = useState(false);
+  const { isPending, data, isError, error } = useCandidateTakeExam(examId, examStarted);
   const { data: dashboardData, isPending: dashboardPending } = useGetExamPortal();
   const [answers, setAnswers] = useState<Record<number, string>>({});
   const { onSubmit, isPending: submitPending } = useSubmitAnswers(examId)
   const [isLoaded, setIsLoaded] = useState(false);
-  const [examStarted, setExamStarted] = useState(false);
 
   const handleReturnToExam = useCallback(() => {
     // Refresh page as requested to reset environment and sync state
@@ -233,7 +233,7 @@ export default function Exam() {
     }
   }
 
-  if (dashboardPending || isPending) {
+  if (dashboardPending || (examStarted && isPending)) {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#3E4095]"></div>

@@ -6,16 +6,16 @@ export default function SubmissionConfirmationModal({ open, close, totalAnswered
     function handleClose() {
         close(false)
     }
-    
+
     const remaining = totalQuestions - totalAnswered;
 
     return (
         <AppDialog open={open} onOpenChange={handleClose}>
-            <div className="flex flex-col p-8 bg-white items-center text-center rounded-tr">
+            <div className="flex flex-col p-8 bg-white items-center text-center rounded-2xl">
                 <div className="w-20 h-20 bg-[#3E4095]/5 rounded-[2rem] flex items-center justify-center text-[#3E4095] mb-8">
                     <i className="fas fa-paper-plane text-3xl"></i>
                 </div>
-                
+
                 <h2 className="text-2xl font-black text-gray-800 tracking-tight mb-2">Ready to submit?</h2>
                 <p className="text-gray-500 text-sm leading-relaxed mb-8 max-w-xs">
                     You have answered <span className="font-bold text-gray-800">{totalAnswered}</span> out of <span className="font-bold text-gray-800">{totalQuestions}</span> questions.
