@@ -56,25 +56,33 @@ export default function CaptureDialog({
       if (!webcamRef.current?.video) return;
       const video = webcamRef.current.video;
 
-      const detections = await faceapi
-        .detectSingleFace(video, options)
-        .withFaceLandmarks();
+      // Ensure video is ready and has dimensions
+      if (video.readyState !== 4 || video.videoWidth === 0) return;
 
-      if (detections) {
-        const box = detections.detection.box;
-        const centerX = box.x + box.width / 2;
-        const centerY = box.y + box.height / 2;
+      try {
+        const detections = await faceapi
+          .detectSingleFace(video, options)
+          .withFaceLandmarks();
 
-        const circleCenter = FRAME_WIDTH / 2;
-        const dx = Math.abs(centerX - circleCenter);
-        const dy = Math.abs(centerY - circleCenter);
-        const radius = CIRCLE_SIZE / 2;
+        if (detections) {
+          const box = detections.detection.box;
+          const centerX = box.x + box.width / 2;
+          const centerY = box.y + box.height / 2;
 
-        const isCentered = dx < radius / 2 && dy < radius / 2;
-        const isSized = box.width > radius * 0.6 && box.width < radius * 1.4;
+          const circleCenter = FRAME_WIDTH / 2;
+          const dx = Math.abs(centerX - circleCenter);
+          const dy = Math.abs(centerY - circleCenter);
+          const radius = CIRCLE_SIZE / 2;
 
-        setIsAligned(isCentered && isSized);
-      } else {
+          const isCentered = dx < radius / 2 && dy < radius / 2;
+          const isSized = box.width > radius * 0.6 && box.width < radius * 1.4;
+
+          setIsAligned(isCentered && isSized);
+        } else {
+          setIsAligned(false);
+        }
+      } catch (error) {
+        console.error("Face detection error in CaptureDialog:", error);
         setIsAligned(false);
       }
     }, 300);
