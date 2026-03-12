@@ -1,4 +1,3 @@
-import VerificationMessage from '@/components/General/BioVerification/VerificationMessage';
 import { VerificationService } from '@/services/verification.service';
 import { VerificationDocumentType } from '@/types/Index';
 import { useMutation } from '@tanstack/react-query';

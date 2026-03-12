@@ -25,7 +25,6 @@ import useListRankings from '@/hooks/useListRankings'
 import { RankingSnapshotType } from '@/types/Examtype'
 import QuestionPoolTable from './QuestionPoolTable'
 import QuestionPoolStats from './QuestionPoolStats'
-import usePublishRanking from '@/hooks/usePublishRanking'
 import useGetAccountMgt from '@/hooks/useGetAccountMgt'
 import PublishRankingModal from '@/components/Modals/PublishRankingModal'
 

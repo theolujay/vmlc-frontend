@@ -21,7 +21,7 @@ export default function useGetHelpdeskThreadDetail(threadId: string | null) {
                 if (response.messages) {
                     setMessages(response.messages);
                 }
-            } catch (_err) {
+            } catch {
                 setError('Failed to fetch thread detail');
             } finally {
                 setLoading(false);

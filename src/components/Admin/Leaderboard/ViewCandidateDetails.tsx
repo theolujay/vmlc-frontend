@@ -25,7 +25,7 @@ interface ViewCandidateDetailsProps {
     onBack?: () => void;
 }
 
-function ViewProfileButton({ role, id, onOpen }: { role: string; id: string; onOpen: () => void }): ReactNode {
+function ViewProfileButton({ role, onOpen }: { role: string; onOpen: () => void }): ReactNode {
     switch (role) {
         case 'volunteer':
         case 'moderator':
@@ -100,7 +100,6 @@ export default function ViewCandidateDetails({ candidate_id, exam_id, isLeagueCu
                 <div>
                     <ViewProfileButton
                         role={accountMgt?.role || ''}
-                        id={candidate_id}
                         onOpen={() => setProfileOpen(true)}
                     />
                 </div>

@@ -6,7 +6,7 @@ export default function useLogout(onSuccessCallback: () => void) {
   const { dispatch, authState } = useAuth()
   const { mutate } = useMutation({
     mutationFn: AuthService.logout,
-    onSuccess: (value) => {
+    onSuccess: () => {
       onSuccessCallback()
       dispatch({ type: 'logout' })
     }

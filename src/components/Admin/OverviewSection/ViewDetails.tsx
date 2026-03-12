@@ -1,12 +1,10 @@
 "use client"
 import { AverageIcon, GotoSummaryIcon, LeaderBoardSummaryIcon, ScreeningSummaryIcon } from '@/components/General/GeneralIcon'
-import Button from '@/components/ui/Button'
 import ResponsiveContainer from '@/components/ui/ResponsiveContainer'
-import Table from '@/components/ui/Table'
 import ScreeningTabWrapper from '@/components/ui/Tabs/ScreeningTabWrapper'
 import withAuthentication from '@/hocs/withAuthentication'
 import useGetCandidateDetails from '@/hooks/useGetCandidateDetails'
-import { ExamTakenType, RecordsType, submissionItemType } from '@/types/CandidateType'
+import { ExamTakenType, RecordsType } from '@/types/CandidateType'
 import { getUserInitials } from '@/utils/capitalizeWords'
 import { formatDate } from '@/utils/formatFileSize'
 import AdminHeader from '../AdminHeader'
@@ -22,8 +20,8 @@ function ViewUserDetails({ id }: Readonly<{ id: string }>) {
 
 
     // const userName = [data?.user?.first_name, data?.user?.last_name].join(' ')
-    
-    
+
+
     if (!data||Object.entries(data).length==0) {
         return <ResponsiveContainer>
             <EmptySession label='Cannot load user details at this time' desc='User details on this platform would appear here ' />
@@ -38,8 +36,8 @@ function ViewUserDetails({ id }: Readonly<{ id: string }>) {
                 <Spinner />
             </div> :
                 <div className="flex flex-col gap-3 mt-3  w-[96%] mx-auto">
-                    <Details role={data?.role ?? ''} status={data?.status ?? ''} school_name={data?.school_name ?? ''} dateJoined={data?.user?.date_joined ?? new Date()}
-                        // userName={data?.candidate_info?.name??''} 
+                    <Details status={data?.status ?? ''} school_name={data?.school_name ?? ''} dateJoined={data?.user?.date_joined ?? new Date()}
+                        // userName={data?.candidate_info?.name??''}
                         userName={userName}
                         email={data?.user?.email ?? ''} />
                     <ViewDetailsTabSection detailsData={data?.records as RecordsType} />
@@ -54,7 +52,7 @@ export default withAuthentication(ViewUserDetails)
 
 
 
-function Details({ userName, email, dateJoined, school_name, role, status }: { status: string, userName: string, email: string, dateJoined: Date, school_name: string, role: string }) {
+function Details({ userName, email, dateJoined, school_name, status }: { status: string, userName: string, email: string, dateJoined: Date, school_name: string }) {
     const userInitials = getUserInitials(userName)
     return <ResponsiveContainer className='flex gap-3 flex-col p-8'>
         <div className="flex items-center gap-2">
@@ -202,28 +200,6 @@ function ScreeningScore({ screening }: Readonly<{ screening: number | null }>) {
                     </div>
                 }
             </div>
-        </div>
-    </div>
-}
-
-
-function LeagueScoresWrapper({ scores }: { scores: ExamTakenType[] }) {
-    return <div className="flex flex-wrap gap-2 justify-between">
-        {scores.map((val, index) => <LeagueScore key={`league-score-${index}`} label={val.exam_stage} score={val.score} />)}
-
-    </div>
-}
-
-
-function LeagueScore({ label, score }: { label: string, score: number }) {
-    return <div className="flex justify-between gap-2 bg-[#F0F2F5] flex-1 rounded-xl last:bg-[#018ABB] last:text-white  p-2 flex-col">
-        <div className="flex flex-col">
-            <span><ScreeningSummaryIcon /></span>
-            <span className="text-sm">{label}</span>
-        </div>
-        <div className="flex font-bold text-xl justify-between">
-            <span>{score}%</span>
-            <span><GotoSummaryIcon /></span>
         </div>
     </div>
 }

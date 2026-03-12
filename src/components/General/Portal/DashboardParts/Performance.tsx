@@ -169,17 +169,16 @@ const Performance: React.FC<PerformanceSnapshotProps> = ({
             <span className="text-[10px] text-[#98A2B3] font-bold uppercase tracking-wider mb-1">Available Scoreboards</span>
             <div className="flex flex-col gap-2">
               {context.scoreboards.map((board, idx) => {
-                const boardHref = board.type === 'leaderboard' 
-                  ? "/exam-portal/leaderboard" 
+                const boardHref = board.type === 'leaderboard'
+                  ? "/exam-portal/leaderboard"
                   : `/exam-portal/rankings/${board.exam_id}`;
-
                 return (
                   <Link
                     key={idx}
                     href={boardHref}
                     className={`flex items-center justify-between p-3 rounded-xl border transition-all ${
-                      board.is_current 
-                        ? 'bg-[#3E4095]/5 border-[#3E4095]/10 text-[#3E4095]' 
+                      board.is_current
+                        ? 'bg-[#3E4095]/5 border-[#3E4095]/10 text-[#3E4095]'
                         : 'bg-slate-50 border-slate-100 text-[#475367] hover:bg-slate-100'
                     }`}
                   >

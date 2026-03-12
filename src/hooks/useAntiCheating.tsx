@@ -185,7 +185,7 @@ export const useAntiCheating = (onReturn?: () => void) => {
           if (navigator.clipboard && navigator.clipboard.writeText) {
              navigator.clipboard.writeText(" ");
           }
-        } catch (e) { }
+        } catch { }
 
         wasInactive = false;
         

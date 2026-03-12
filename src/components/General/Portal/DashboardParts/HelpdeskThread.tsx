@@ -25,7 +25,7 @@ const HelpdeskThread: React.FC<HelpdeskThreadProps> = ({ currentStage, onClose, 
   try {
     // eslint-disable-next-line react-hooks/rules-of-hooks
     examContext = useExamContext();
-  } catch (e) {
+  } catch {
     // Not in an exam session, useExamContext will throw an error if called outside of provider
   }
 

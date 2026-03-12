@@ -155,7 +155,7 @@ export default function CaptureDialog({
                   />
                 </div>
               </div>
-              
+
               <div className="flex gap-4 mt-10 w-full">
                 <button
                   onClick={handleRecapture}
@@ -204,14 +204,14 @@ export default function CaptureDialog({
                       }}
                       className="w-full h-full object-cover scale-x-[-1]"
                     />
-                    
+
                     {/* Alignment Overlay */}
                     <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
                         <div className={clsx(
                             "w-[200px] h-[200px] border-2 border-dashed rounded-full transition-all duration-300",
                             isAligned ? "border-emerald-400 scale-105" : "border-white/40 scale-100"
                         )} />
-                        
+
                         {/* Corner markers for visual interest */}
                         <div className={clsx(
                             "absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[240px] h-[240px] border-t-2 border-l-2 rounded-tl-[60px] transition-all",
@@ -240,8 +240,8 @@ export default function CaptureDialog({
                   disabled={!isAligned}
                   className={clsx(
                     "flex-[1.5] px-6 py-4 rounded-xl font-black text-[10px] tracking-widest uppercase text-white transition-all cursor-pointer flex items-center justify-center gap-2",
-                    isAligned 
-                      ? "bg-[#3E4095] shadow-lg shadow-[#3E4095]/20 hover:-translate-y-0.5" 
+                    isAligned
+                      ? "bg-[#3E4095] shadow-lg shadow-[#3E4095]/20 hover:-translate-y-0.5"
                       : "bg-[#98A2B3] cursor-not-allowed shadow-none"
                   )}
                 >

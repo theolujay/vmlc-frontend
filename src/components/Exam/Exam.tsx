@@ -87,7 +87,7 @@ export default function Exam() {
         } else {
           shuffledQuestions = shuffleQuestions(data.questions);
         }
-      } catch (e) {
+      } catch {
         shuffledQuestions = shuffleQuestions(data.questions);
       }
     } else {
@@ -151,7 +151,7 @@ export default function Exam() {
       const question = processedData?.questions.find(q => q.id === questionId);
 
       if (question?._optionMapping) {
-        const displayedOpt = Object.entries(question._optionMapping).find(([_, orig]) => orig === originalOpt)?.[0];
+        const displayedOpt = Object.entries(question._optionMapping).find(([, orig]) => orig === originalOpt)?.[0];
         if (displayedOpt) mapped[questionId] = displayedOpt;
       } else {
         mapped[questionId] = originalOpt;

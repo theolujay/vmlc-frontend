@@ -1,31 +1,28 @@
 "use client";
-import QuestionInformation from '@/components/Drawer/QuestionInformation';
 import { DeleteIcon } from '@/components/General/GeneralIcon';
 import { AddIcon, EyeIcon, GotoIcon } from '@/components/General/GettingStarted/GettingStartedAssets';
 import RemoveQuestionModal from '@/components/Modals/RemoveQuestionModal';
 import AppDropdownDialog from '@/components/ui/Dropdown/AppDropdownDialog';
-import { SessionQuestionItemType } from '@/types/Examtype';
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useCallback } from 'react';
 import useGetAccountMgt from '@/hooks/useGetAccountMgt';
 
-type Props = Readonly<{ 
-    question_id: number, 
-    information: SessionQuestionItemType,
+type Props = Readonly<{
+    question_id: number,
     onAddToExam?: () => void,
     onEdit?: () => void,
     onView?: () => void,
 }>
 
-export default function QuestionPoolDropdown({ question_id, information, onAddToExam, onEdit, onView }: Props) {
+export default function QuestionPoolDropdown({ question_id, onAddToExam, onEdit, onView }: Props) {
     const [openDeleteModal, setOpenDeleteModal] = useState(false)
 
     const { data: accountMgt } = useGetAccountMgt();
     const userRole = accountMgt?.role || "";
     const isAdminOrAbove = ["admin", "manager", "superadmin"].includes(userRole);
 
-    function handleDeleteModal() {
+    const handleDeleteModal = useCallback(() => {
         setOpenDeleteModal(true)
-    }
+    }, []);
 
     const actionItems = useMemo(() => {
         const items = [];
@@ -85,17 +82,17 @@ export default function QuestionPoolDropdown({ question_id, information, onAddTo
         }
 
         return items;
-    }, [isAdminOrAbove, handleDeleteModal, onView]);
+    }, [isAdminOrAbove, handleDeleteModal, onView, onAddToExam, onEdit]);
 
     return (
-        <AppDropdownDialog 
-            actionItems={actionItems} 
+        <AppDropdownDialog
+            actionItems={actionItems}
             triggerButton={
                 <button key='actions-trigger' className="inline-flex items-center gap-2 bg-[#3E4095] text-white px-2 py-2 rounded-xl font-black text-[9px] tracking-widest hover:bg-[#2d2f6e] transition-all uppercase shadow-md shadow-[#3E4095]/10 active:scale-95">
                     <span>ACTIONS</span>
                     <GotoIcon className="rotate-90 w-2.5 h-2.5 opacity-80" />
                 </button>
-            } 
+            }
         >
 
             <RemoveQuestionModal question_id={question_id} open={openDeleteModal} close={setOpenDeleteModal} />

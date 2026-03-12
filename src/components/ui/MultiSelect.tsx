@@ -3,7 +3,7 @@
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import { SelectItem } from "@/types/Index";
 import clsx from "clsx";
-import { CheckedIcon, ChevronDownIcon } from "./SvgAsset/GeneralAsset";
+import { ChevronDownIcon } from "./SvgAsset/GeneralAsset";
 
 interface MultiSelectDropdownProps {
   items: SelectItem[];

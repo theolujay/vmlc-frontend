@@ -2,7 +2,6 @@
 import React from 'react';
 import PageLayout from '@/components/General/Layout/PageLayout';
 import withAuthentication from '@/hocs/withAuthentication';
-import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
 import FullRanking from '@/components/Admin/Competition/FullRanking';
 import useGetAccountMgt from '@/hooks/useGetAccountMgt';
