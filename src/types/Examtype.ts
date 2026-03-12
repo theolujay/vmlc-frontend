@@ -120,6 +120,14 @@ export type PerformanceStatusMeta = {
   metric_value_display: string;
 };
 
+export type ScoreboardEntry = {
+  label: string;
+  type: 'ranking' | 'leaderboard';
+  exam_id?: string;
+  stage: string;
+  is_current: boolean;
+};
+
 export type PerformanceActiveContext = {
   stage: string;
   stage_display: string;
@@ -134,6 +142,7 @@ export type PerformanceActiveContext = {
     is_active?: boolean;
     exam_id?: string;
   };
+  scoreboards?: ScoreboardEntry[];
   status_meta: PerformanceStatusMeta;
 };
 
