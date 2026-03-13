@@ -58,7 +58,7 @@ export default function useHelpdeskSocket(
 
     const handleTypingEvent = useCallback((event: SocketMessage) => {
         const typedEvent = event as unknown as HelpdeskSocketEvent;
-        if (typedEvent.type === 'helpdesk.thread_typing' && typedEvent.data.thread_id === threadId) {
+        if (typedEvent.type === 'helpdesk.thread.typing' && typedEvent.data.thread_id === threadId) {
             const { user_id, is_typing } = typedEvent.data;
             const identifier = user_id;
 
@@ -93,7 +93,7 @@ export default function useHelpdeskSocket(
         sendAction('subscribe_thread', { thread_id: threadId });
 
         addListener('helpdesk.thread', handleThreadEvent);
-        addListener('helpdesk.thread_typing', handleTypingEvent);
+        addListener('helpdesk.thread.typing', handleTypingEvent);
 
         return () => {
             // Cleanup timeouts
@@ -103,7 +103,7 @@ export default function useHelpdeskSocket(
             // Unsubscribe from the thread
             sendAction('unsubscribe_thread', { thread_id: threadId });
             removeListener('helpdesk.thread', handleThreadEvent);
-            removeListener('helpdesk.thread_typing', handleTypingEvent);
+            removeListener('helpdesk.thread.typing', handleTypingEvent);
         };
     }, [threadId, isConnected, addListener, removeListener, sendAction, handleThreadEvent, handleTypingEvent]);
 

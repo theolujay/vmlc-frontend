@@ -27,7 +27,7 @@ export default function HelpdeskSection() {
         search: '',
     });
 
-    const { results, summary, loading, loadMore, pagination, loadingMore, refetch } = useListHelpdeskThreads(filters);
+    const { results, summary, loading, refetch } = useListHelpdeskThreads(filters);
 
     return (
         <div className="flex flex-col gap-1 font-sans h-full">
@@ -49,9 +49,6 @@ export default function HelpdeskSection() {
                         handleSearch={setFilters}
                         filters={filters}
                         setFilters={setFilters}
-                        loadMore={loadMore}
-                        hasNext={pagination?.has_next}
-                        loadingMore={loadingMore}
                         refetch={refetch}
                     />
                 )}
@@ -124,18 +121,12 @@ function HelpdeskThreadListCard({
     handleSearch,
     filters,
     setFilters,
-    loadMore,
-    hasNext,
-    loadingMore,
     refetch,
 }: Readonly<{
     data: HelpdeskThreadType[];
     handleSearch: Dispatch<SetStateAction<Record<string, string>>>;
     filters: Record<string, string>;
     setFilters: Dispatch<SetStateAction<Record<string, string>>>;
-    loadMore: () => void;
-    hasNext?: boolean;
-    loadingMore?: boolean;
     refetch: () => void;
 }>) {
     const { searchInput, setSearchInput } = useDebouncedSearch(handleSearch);
@@ -421,29 +412,6 @@ function HelpdeskThreadListCard({
                             }
                         }
                     ]}
-                    footer={
-                        hasNext && (
-                            <div className="px-8 border-t border-gray-50 py-6 flex justify-center">
-                                <button
-                                    onClick={loadMore}
-                                    disabled={loadingMore}
-                                    className="bg-white border border-[#3E4095] text-[#3E4095] font-black px-8 py-3 rounded-xl text-[10px] uppercase tracking-widest hover:bg-[#3E4095] hover:text-white transition-all shadow-sm active:scale-95 disabled:opacity-50 flex items-center gap-3"
-                                >
-                                    {loadingMore ? (
-                                        <>
-                                            <Spinner size={16} />
-                                            <span>Streaming...</span>
-                                        </>
-                                    ) : (
-                                        <>
-                                            <i className="fas fa-arrow-down"></i>
-                                            <span>Stream More Threads</span>
-                                        </>
-                                    )}
-                                </button>
-                            </div>
-                        )
-                    }
                 />
                 <SnoozeModal
                     open={snoozeModal.open}

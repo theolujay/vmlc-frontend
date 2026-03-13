@@ -1,97 +1,130 @@
 import { useEffect, useState, useCallback, useRef, useMemo } from 'react';
-import { HelpdeskSocketEvent, HelpdeskThreadType, PaginationData } from '@/types/HelpdeskType';
+import { HelpdeskSocketEvent, HelpdeskThreadType } from '@/types/HelpdeskType';
 import { HelpdeskService } from '@/services/Helpdesk.service';
 import { useSocket, SocketMessage } from '@/contexts/SocketProvider';
 import { HelpdeskStatData } from '@/types/UserMgtType';
 
 /**
  * Hook to list helpdesk threads for staff using Unified WebSocket for real-time updates.
- * Supports "streaming" by accumulating results.
+ * Prioritizes WebSocket for live updates and manages a single "live list" of threads.
  */
 export default function useListHelpdeskThreads(filters?: Record<string, string>, enabled: boolean = true) {
     const { isConnected, addListener, removeListener, sendAction } = useSocket();
     const [results, setResults] = useState<HelpdeskThreadType[]>([]);
     const [summary, setSummary] = useState<HelpdeskStatData | null>(null);
-    const [pagination, setPagination] = useState<PaginationData | null>(null);
     const [loading, setLoading] = useState(true);
-    const [loadingMore, setLoadingMore] = useState(false);
-    const [page, setPage] = useState(1);
-
-    const filtersRef = useRef(filters);
+    
+    // Track what has been fetched to avoid duplicate initial calls
     const lastFiltersStringRef = useRef(JSON.stringify(filters || {}));
+    const hasFetchedWsRef = useRef(false);
+    const filtersRef = useRef(filters);
 
-    // Effect to handle filter changes - resets state only when stringified filters actually change
+    const fetchThreadsSocket = useCallback((f?: Record<string, string>) => {
+        sendAction('list_threads', { filters: f });
+        hasFetchedWsRef.current = true;
+    }, [sendAction]);
+
+    const fetchThreadsRest = useCallback(async (f?: Record<string, string>) => {
+        try {
+            const res = await HelpdeskService.listThreads(1, f); // Fetch first page as baseline
+            
+            // If WebSocket already responded, don't overwrite with potentially stale REST data
+            if (hasFetchedWsRef.current) return;
+
+            setResults(res.results);
+            setSummary(res.helpdesk_summary_data ?? null);
+            setLoading(false);
+        } catch (err) {
+            console.error('Error fetching helpdesk threads via REST:', err);
+            setLoading(false);
+        }
+    }, []);
+
+    // Effect to handle filter changes
     useEffect(() => {
         const currentFiltersString = JSON.stringify(filters || {});
         if (currentFiltersString !== lastFiltersStringRef.current) {
             lastFiltersStringRef.current = currentFiltersString;
             filtersRef.current = filters;
+            hasFetchedWsRef.current = false;
             setResults([]);
-            setPage(1);
             setLoading(true);
+            
+            // Re-fetch immediately
+            if (isConnected) {
+                fetchThreadsSocket(filters);
+            } else {
+                fetchThreadsRest(filters);
+            }
         }
-    }, [filters]); // We can use filters here since we have an internal guard
+    }, [filters, isConnected, fetchThreadsSocket, fetchThreadsRest]);
 
-    const fetchThreadsSocket = useCallback((p: number, f?: Record<string, string>, isLoadMore = false) => {
-        if (isLoadMore) setLoadingMore(true);
-        sendAction('list_threads', {
-            page: p,
-            filters: f
-        });
-    }, [sendAction]);
-
-    const fetchThreadsRest = useCallback(async (p: number, f?: Record<string, string>, isLoadMore = false) => {
-        try {
-            if (isLoadMore) setLoadingMore(true);
-            const res = await HelpdeskService.listThreads(p, f);
-            setResults(prev => p === 1 ? res.results : [...prev, ...res.results]);
-            setPagination(res.pagination);
-            setSummary(res.helpdesk_summary_data ?? null);
-            setLoading(false);
-            setLoadingMore(false);
-        } catch (err) {
-            console.error('Error fetching helpdesk threads via REST:', err);
-            setLoading(false);
-            setLoadingMore(false);
-        }
-    }, []);
-
-    // Initial load / Refetch on connection/page change
+    // Initial load / Transition to WebSocket
     useEffect(() => {
         if (!enabled) return;
 
         if (isConnected) {
-            if (page === 1 || loadingMore) {
-                fetchThreadsSocket(page, filtersRef.current, page > 1);
-            }
-        } else if (page === 1) {
-            fetchThreadsRest(1, filtersRef.current);
+            // Always fetch via WS when connection is established or becomes available
+            fetchThreadsSocket(filtersRef.current);
+        } else if (results.length === 0 && !hasFetchedWsRef.current) {
+            // Initial fallback to REST if not connected
+            fetchThreadsRest(filtersRef.current);
         }
-    }, [enabled, isConnected, page, loadingMore, fetchThreadsSocket, fetchThreadsRest]);
+    }, [enabled, isConnected]); // Stable deps to prevent loops
 
     const handleHelpdeskList = useCallback((event: SocketMessage) => {
         const typedEvent = event as unknown as HelpdeskSocketEvent;
         if (typedEvent.type === 'helpdesk.list' && typedEvent.data) {
-            const newResults = typedEvent.data.results ?? [];
-            const newPagination = typedEvent.data.pagination;
-
-            setResults(prev => {
-                if (newPagination?.page === 1) {
-                    return newResults;
-                }
-                const existingIds = new Set(prev.map(r => r.id));
-                const filteredNew = newResults.filter(r => !existingIds.has(r.id));
-                return [...prev, ...filteredNew];
-            });
-
-            setPagination(newPagination ?? null);
+            setResults(typedEvent.data.results ?? []);
             if (typedEvent.data.helpdesk_summary_data) {
                 setSummary(typedEvent.data.helpdesk_summary_data);
             }
             setLoading(false);
-            setLoadingMore(false);
+            hasFetchedWsRef.current = true;
         }
     }, []);
+
+    const handleHelpdeskThread = useCallback((event: SocketMessage) => {
+        const typedEvent = event as unknown as HelpdeskSocketEvent;
+        if (typedEvent.type === 'helpdesk.thread' && typedEvent.data) {
+            const { thread_id, update_type, message, thread: threadPatch } = typedEvent.data;
+            
+            setResults(prev => {
+                const threadIndex = prev.findIndex(t => t.id === thread_id);
+                
+                if (threadIndex === -1) {
+                    // If thread not in list, it might be new or re-opened.
+                    // We re-fetch the list to ensure accurate ordering and content.
+                    if (isConnected) fetchThreadsSocket(filtersRef.current);
+                    return prev;
+                }
+
+                const updatedResults = [...prev];
+                let updatedThread = { ...updatedResults[threadIndex] };
+
+                if (update_type === 'message' && message) {
+                    updatedThread = {
+                        ...updatedThread,
+                        last_message_at: message.created_at,
+                        candidate_last_msg_preview: message.sender_type === 'candidate' ? message.text : updatedThread.candidate_last_msg_preview,
+                        unread_by_staff_count: message.sender_type === 'candidate' ? (updatedThread.unread_by_staff_count || 0) + 1 : updatedThread.unread_by_staff_count,
+                    };
+                } else if (update_type === 'metadata' && threadPatch) {
+                    updatedThread = { ...updatedThread, ...threadPatch };
+                }
+
+                updatedResults[threadIndex] = updatedThread as HelpdeskThreadType;
+
+                // Move to top on new message
+                if (update_type === 'message') {
+                    const [removed] = updatedResults.splice(threadIndex, 1);
+                    updatedResults.unshift(removed);
+                }
+
+                return updatedResults;
+            });
+        }
+    }, [isConnected, fetchThreadsSocket]);
 
     const handleHelpdeskUpdate = useCallback((event: SocketMessage) => {
         const typedEvent = event as unknown as HelpdeskSocketEvent;
@@ -99,54 +132,36 @@ export default function useListHelpdeskThreads(filters?: Record<string, string>,
             if (typedEvent.data.stats) {
                 setSummary(typedEvent.data.stats);
             }
-            if (typedEvent.data.refresh_threads) {
-                // Refresh current view
-                if (isConnected) {
-                    fetchThreadsSocket(1, filtersRef.current);
-                } else {
-                    fetchThreadsRest(1, filtersRef.current);
-                }
+            if (typedEvent.data.refresh_threads && isConnected) {
+                fetchThreadsSocket(filtersRef.current);
             }
         }
-    }, [isConnected, fetchThreadsSocket, fetchThreadsRest]);
+    }, [isConnected, fetchThreadsSocket]);
 
     useEffect(() => {
         if (enabled) {
             addListener('helpdesk.list', handleHelpdeskList);
             addListener('helpdesk.update', handleHelpdeskUpdate);
+            addListener('helpdesk.thread', handleHelpdeskThread);
         }
         return () => {
             removeListener('helpdesk.list', handleHelpdeskList);
             removeListener('helpdesk.update', handleHelpdeskUpdate);
+            removeListener('helpdesk.thread', handleHelpdeskThread);
         };
-    }, [enabled, addListener, removeListener, handleHelpdeskList, handleHelpdeskUpdate]);
-
-    const loadMore = useCallback(() => {
-        if (pagination?.has_next && !loadingMore) {
-            setPage(prev => prev + 1);
-            setLoadingMore(true);
-        }
-    }, [pagination, loadingMore]);
+    }, [enabled, addListener, removeListener, handleHelpdeskList, handleHelpdeskUpdate, handleHelpdeskThread]);
 
     const refetch = useCallback(() => {
-        setResults([]);
-        setPage(1);
         setLoading(true);
-        if (isConnected) {
-            fetchThreadsSocket(1, filtersRef.current);
-        } else {
-            fetchThreadsRest(1, filtersRef.current);
-        }
+        if (isConnected) fetchThreadsSocket(filtersRef.current);
+        else fetchThreadsRest(filtersRef.current);
     }, [isConnected, fetchThreadsSocket, fetchThreadsRest]);
 
     return useMemo(() => ({
         results,
         summary,
-        pagination,
         loading,
-        loadingMore,
         connected: isConnected,
-        loadMore,
         refetch
-    }), [results, summary, pagination, loading, loadingMore, isConnected, loadMore, refetch]);
+    }), [results, summary, loading, isConnected, refetch]);
 }
