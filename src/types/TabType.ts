@@ -1,12 +1,12 @@
 export type TabType = {
-  value: string
-  label: React.ReactNode
-  content: React.ReactNode
-}
+  value: string;
+  label: React.ReactNode;
+  content: React.ReactNode;
+};
 
 export type TabWrapperProps = {
-  tabs: TabType[]
-  defaultValue?: string
-  tabListClassName?: string
-  triggerClassName?: string
-}
+  tabs: TabType[];
+  defaultValue?: string;
+  tabListClassName?: string;
+  triggerClassName?: string;
+};

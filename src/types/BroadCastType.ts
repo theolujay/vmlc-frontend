@@ -1,12 +1,18 @@
-import { CreatedByType } from './auth';
+import { CreatedByType } from "./auth";
 
 // Target roles structure for broadcast
 export type TargetRolesType = {
-  staff?: ('volunteer' | 'moderator' | 'admin' | 'manager' | 'superadmin')[];
-  candidate?: ('screening' | 'league' | 'final' | 'winner')[];
+  staff?: ("volunteer" | "moderator" | "admin" | "manager" | "superadmin")[];
+  candidate?: ("screening" | "league" | "final" | "winner")[];
 };
 
-export type BroadcastStatus = 'pending' | 'in_progress' | 'sent' | 'partial' | 'failed' | 'completed';
+export type BroadcastStatus =
+  | "pending"
+  | "in_progress"
+  | "sent"
+  | "partial"
+  | "failed"
+  | "completed";
 
 export type DeliveryLogType = {
   id: number;
@@ -60,7 +66,7 @@ export type BroadcastItemType = {
 export type CreateBroadCastType = {
   subject: string;
   message: string;
-  mediums: ('email' | 'platform' | 'sms' | 'whatsapp')[];
+  mediums: ("email" | "platform" | "sms" | "whatsapp")[];
   target_roles: TargetRolesType;
   scheduled_at?: string;
 };

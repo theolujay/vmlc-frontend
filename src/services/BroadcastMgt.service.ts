@@ -1,10 +1,10 @@
-import { BroadcastUrls } from '@/constants/broadCastUrls';
+import { BroadcastUrls } from "@/constants/broadCastUrls";
 import {
   BroadcastItemType,
   BroadcastType,
   CreateBroadCastType,
-} from '@/types/BroadCastType';
-import client from '@/utils/axios';
+} from "@/types/BroadCastType";
+import client from "@/utils/axios";
 
 export class BroadcastMgtService {
   static async getBroadcastList(params?: {
@@ -25,7 +25,7 @@ export class BroadcastMgtService {
   }
 
   static async getBroadcastDetail(
-    id: number
+    id: number,
   ): Promise<BroadcastItemType | undefined> {
     try {
       const response = await client.get(BroadcastUrls.get_broadcast_detail(id));
@@ -40,7 +40,7 @@ export class BroadcastMgtService {
     try {
       const response = await client.post(
         BroadcastUrls.create_broadcast,
-        payload
+        payload,
       );
       return response.data;
     } catch (error) {

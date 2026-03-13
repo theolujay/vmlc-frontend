@@ -13,8 +13,6 @@ export type QuestionProps = {
   totalQuestions: number;
 };
 
-
-
 // New API Types based on CANDIDATE_DASHBOARD.md
 export type NotificationItem = {
   id: number;
@@ -110,7 +108,14 @@ export type LeaderboardRankingType = {
 };
 
 export type PerformanceStatusMeta = {
-  status_type: 'success' | 'pending' | 'info' | 'warning' | 'error' | 'eliminated' | 'disqualified';
+  status_type:
+    | "success"
+    | "pending"
+    | "info"
+    | "warning"
+    | "error"
+    | "eliminated"
+    | "disqualified";
   status_label: string;
   status_subtext: string;
   color: string;
@@ -122,7 +127,7 @@ export type PerformanceStatusMeta = {
 
 export type ScoreboardEntry = {
   label: string;
-  type: 'ranking' | 'leaderboard';
+  type: "ranking" | "leaderboard";
   exam_id?: string;
   stage: string;
   is_current: boolean;
@@ -196,21 +201,18 @@ export type DashboardType = {
   active_exam: ActiveExamType | null;
   performance: PerformanceSnapshotType;
   exam_history: ExamHistoryItem[];
-}
+};
 
-
-
-
-export type PaginationType= {
-        count: number,
-        page: number,
-        page_size: number,
-        total_pages: number,
-        has_next: boolean,
-        has_previous: boolean,
-        next: string,
-        previous: string|null
-    }
+export type PaginationType = {
+  count: number;
+  page: number;
+  page_size: number;
+  total_pages: number;
+  has_next: boolean;
+  has_previous: boolean;
+  next: string;
+  previous: string | null;
+};
 
 export type SessionType = {
   count: number;
@@ -226,26 +228,21 @@ export type SessionType = {
   };
 };
 
-
-export type QuestionPoolType= {
+export type QuestionPoolType = {
   // count: number,
   // total_pages: number,
   // next: string,
   // previous: string | null,
   // results: ExamSessionType[],
-  results:SessionQuestionItemType[],
-  pagination:PaginationType,
+  results: SessionQuestionItemType[];
+  pagination: PaginationType;
   question_pool_data: {
-    total_questions: number,
-    hard_questions_count: number,
-    moderate_questions_count: number,
-    easy_questions_count: number
-  },
-
-}
-
-
-
+    total_questions: number;
+    hard_questions_count: number;
+    moderate_questions_count: number;
+    easy_questions_count: number;
+  };
+};
 
 export type ExamSessionType = {
   id: string;
@@ -263,15 +260,6 @@ export type ExamSessionType = {
     published_at: string | null;
   };
 };
-
-
-
-
-
-
-
-
-
 
 export type RankingSnapshotType = {
   id: number;
@@ -295,20 +283,19 @@ export type RankingSnapshotListType = {
 };
 
 export type ExamStatType = {
-  total_exams_taken: number,
-  available_exams_count: number,
-  average_score: number,
-  highest_score: number,
-  lowest_score: number,
-  latest_score: number
-}
-
+  total_exams_taken: number;
+  available_exams_count: number;
+  average_score: number;
+  highest_score: number;
+  lowest_score: number;
+  latest_score: number;
+};
 
 export type CandidateInfoType = {
-  first_name: string,
-  last_name: string,
-  role: string,
-}
+  first_name: string;
+  last_name: string;
+  role: string;
+};
 
 export type CreateExamSessionType = {
   description?: string;
@@ -333,17 +320,16 @@ export type EditExamSession = {
 };
 
 export type CreateQuestionType = {
-  text: string,
-  image?: File | string | null,
-  option_a: string,
-  option_b: string,
-  option_c: string,
-  option_d: string,
-  correct_answer: string,
-  difficulty: string,
-  exam_ids?: string[]
-}
-
+  text: string;
+  image?: File | string | null;
+  option_a: string;
+  option_b: string;
+  option_c: string;
+  option_d: string;
+  correct_answer: string;
+  difficulty: string;
+  exam_ids?: string[];
+};
 
 // export type QuestionType = {
 //   id: number,
@@ -362,55 +348,39 @@ export type CreateQuestionType = {
 //   }
 // }
 
-
-
-
-
 export type SessionQuestionType = {
-  count: number,
-  total_pages: number,
-  next: string | null,
-  previous: string | null,
-  results: SessionQuestionItemType[]
-
-
-}
-
-
-
-
-
+  count: number;
+  total_pages: number;
+  next: string | null;
+  previous: string | null;
+  results: SessionQuestionItemType[];
+};
 
 export type SessionQuestionItemType = {
-  id: number,
-  text: string,
-  image?: string | null,
-  option_a: string,
-  option_b: string,
-  option_c: string,
-  option_d: string,
-  correct_answer: string,
-  difficulty: string,
-  related_exams_count?: number,
+  id: number;
+  text: string;
+  image?: string | null;
+  option_a: string;
+  option_b: string;
+  option_c: string;
+  option_d: string;
+  correct_answer: string;
+  difficulty: string;
+  related_exams_count?: number;
   related_exams?: {
-    id: string,
-    title: string,
-    competition_title: string,
-    stage: string,
-    round: number,
-    scheduled_date: string,
-    status: string
-  }[],
-  created_at: Date,
-  created_by:CreatedByType,
-  updated_at:Date,
-  updated_by:string|null,
-}
-
-
-
-
-
+    id: string;
+    title: string;
+    competition_title: string;
+    stage: string;
+    round: number;
+    scheduled_date: string;
+    status: string;
+  }[];
+  created_at: Date;
+  created_by: CreatedByType;
+  updated_at: Date;
+  updated_by: string | null;
+};
 
 export type UpdatedSessionQuestionType = {
   id: string;
@@ -446,21 +416,20 @@ export type UpdatedSessionQuestionType = {
   questions: QuestionType;
 };
 
-
 type QuestionType = {
-  count: number,
-  total_pages: number,
-  next: string | null,
-  previous: string | null,
+  count: number;
+  total_pages: number;
+  next: string | null;
+  previous: string | null;
   // meta: MetaType,
   // results: QuestionItemType[],
-  results:SessionQuestionItemType[]
-  pagination:PaginationType,
-  question_pool_data: QuestionPoolDataType
-}
+  results: SessionQuestionItemType[];
+  pagination: PaginationType;
+  question_pool_data: QuestionPoolDataType;
+};
 type QuestionPoolDataType = {
-  total_questions: number,
-  hard_questions_count: number,
-  moderate_questions_count: number,
-  easy_questions_count: number
-}
+  total_questions: number;
+  hard_questions_count: number;
+  moderate_questions_count: number;
+  easy_questions_count: number;
+};

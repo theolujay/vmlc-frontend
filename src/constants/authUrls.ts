@@ -1,16 +1,16 @@
-export const authUrls={
-    is_registrations_available:'/v1/registration/',
-    candidate_registeration:'/v1/register/candidate/',
-    staff_registeration:'/v1/register/staff/',
-    login:'/v1/auth/login/',
-    verify:'/v1/verify-email-otp/',
-    sendOtp:'/v1/send-email-otp/',
-    // resendOtp:'/v1/resend-email-otp/',
-    passwordChange:'/v1/auth/password-change/request/',
-    sendOtpForForgotPassword:'/v1/auth/password-change/confirm-otp/',
-    setNewPassword:'/v1/auth/password-change/',
-    passwordChangeResendOtp:'/v1/auth/password-change/resend-otp/',
-    logout:'/v1/auth/logout/',
-    tokenRefresh: '/v1/auth/token/refresh/',
-    directAccess: '/v2/auth/direct-access/'
-}
+export const authUrls = {
+  is_registrations_available: "/v1/registration/",
+  candidate_registeration: "/v1/register/candidate/",
+  staff_registeration: "/v1/register/staff/",
+  login: "/v1/auth/login/",
+  verify: "/v1/verify-email-otp/",
+  sendOtp: "/v1/send-email-otp/",
+  // resendOtp:'/v1/resend-email-otp/',
+  passwordChange: "/v1/auth/password-change/request/",
+  sendOtpForForgotPassword: "/v1/auth/password-change/confirm-otp/",
+  setNewPassword: "/v1/auth/password-change/",
+  passwordChangeResendOtp: "/v1/auth/password-change/resend-otp/",
+  logout: "/v1/auth/logout/",
+  tokenRefresh: "/v1/auth/token/refresh/",
+  directAccess: "/v2/auth/direct-access/",
+};

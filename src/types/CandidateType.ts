@@ -1,12 +1,10 @@
-import { RegisteredCandidatesType, RequestUserType } from "./auth"
-import { PaginationType } from "./Examtype"
-
+import { RegisteredCandidatesType, RequestUserType } from "./auth";
+import { PaginationType } from "./Examtype";
 
 export type CandidateListType = {
-    results: RegisteredCandidatesType[],
-    pagination: PaginationType
-}
-
+  results: RegisteredCandidatesType[];
+  pagination: PaginationType;
+};
 
 // export type CandidateItemType = {
 //     user: RequestUserType,
@@ -15,47 +13,45 @@ export type CandidateListType = {
 //     is_user_verified: boolean
 // }
 
-
 export type CandidateType = {
-    user: RequestUserType,
-    school_name: string,
-    status: string,
-    role: string,
-    is_active: boolean,
-    verification_document: string | null,
-    verification_document_type: string | null,
-    created_at: Date,
-    updated_at: Date,
-    records: RecordsType
-}
-
+  user: RequestUserType;
+  school_name: string;
+  status: string;
+  role: string;
+  is_active: boolean;
+  verification_document: string | null;
+  verification_document_type: string | null;
+  created_at: Date;
+  updated_at: Date;
+  records: RecordsType;
+};
 
 export type RecordsType = {
-    performance: {
-        stats: StatsType
-        exams_taken: ExamTakenType[]
-    },
-    available_exams: unknown[]
-}
+  performance: {
+    stats: StatsType;
+    exams_taken: ExamTakenType[];
+  };
+  available_exams: unknown[];
+};
 
 export type StatsType = {
-    total_score: number,
-    average_score: number,
-    leaderboard_ranking:{
-                    current_rank: number,
-                    total_candidates: number
-                } | null,
-    // leaderboard_ranking: number | null,
-    latest_score: {
-        score: number | null,
-        exam_title: number | null,
-        date: Date
-    },
-    highest_score: number,
-    total_exams_taken: number,
-    lowest_score: number,
-    highest_obtainable_score: number
-}
+  total_score: number;
+  average_score: number;
+  leaderboard_ranking: {
+    current_rank: number;
+    total_candidates: number;
+  } | null;
+  // leaderboard_ranking: number | null,
+  latest_score: {
+    score: number | null;
+    exam_title: number | null;
+    date: Date;
+  };
+  highest_score: number;
+  total_exams_taken: number;
+  lowest_score: number;
+  highest_obtainable_score: number;
+};
 
 // export type CandidateType = {
 //     candidate_info: {
@@ -73,38 +69,32 @@ export type StatsType = {
 //     available_exams: string[] | null
 // }
 
-
-
 export type ExamTakenType = {
-    exam_id: string,
-    exam_title: string,
-    exam_stage: string,
-    exam_date: Date,
-    score: number,
-    recorded_at: Date,
-    submitted_by: string,
-    auto_score: boolean,
-    submission: submissionItemType[]
-}
+  exam_id: string;
+  exam_title: string;
+  exam_stage: string;
+  exam_date: Date;
+  score: number;
+  recorded_at: Date;
+  submitted_by: string;
+  auto_score: boolean;
+  submission: submissionItemType[];
+};
 
 export type RecentResultType = {
-    exam_title: string,
-    score: number,
-    date: Date,
-    exam_stage: string
-}
-
-
-
-
+  exam_title: string;
+  score: number;
+  date: Date;
+  exam_stage: string;
+};
 
 export type submissionItemType = {
-    question_id: number,
-    question_text: string,
-    option_a: string,
-    option_b: string,
-    option_c: string,
-    option_d: string,
-    selected_option: string,
-    answered_at: Date
-}
+  question_id: number;
+  question_text: string;
+  option_a: string;
+  option_b: string;
+  option_c: string;
+  option_d: string;
+  selected_option: string;
+  answered_at: Date;
+};
