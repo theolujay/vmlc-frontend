@@ -28,11 +28,11 @@ export default function BroadcastDetailsModal({
   if (!broadcast) return null;
 
   const userName =
-    broadcast.created_by.full_name ||
+    broadcast.created_by?.full_name ||
     getUserName(
-      broadcast.created_by.user?.first_name || "",
-      broadcast.created_by.user?.last_name || ""
-    );
+      broadcast.created_by?.user?.first_name || "",
+      broadcast.created_by?.user?.last_name || ""
+    ) || "System";
   const createdDate = formatDate(broadcast.created_at);
   const createdTime = formatTimeToString(broadcast.created_at);
 
@@ -231,7 +231,7 @@ export default function BroadcastDetailsModal({
                   </div>
                   <div>
                     <h4 className="font-black text-gray-800 tracking-tight">{userName}</h4>
-                    <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">{broadcast.created_by.role || 'Staff Member'}</p>
+                    <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest">{broadcast.created_by?.role || 'Staff Member'}</p>
                   </div>
                 </div>
               </div>
