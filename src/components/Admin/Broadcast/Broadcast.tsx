@@ -4,9 +4,9 @@ import useGetBroadcast from '@/hooks/useGetBroadcast';
 import usePagination from '@/hooks/usePagination';
 import { useDebounce } from '@/hooks/useDebouce';
 import { formatDate, formatTimeToString } from '@/utils/formatFileSize';
-import { getUserName } from '@/utils/generalUtils';
 import clsx from 'clsx';
 import { Dispatch, SetStateAction, useState } from 'react';
+import Image from 'next/image';
 import BroadcastDetailsModal from '../../Modals/BroadcastDetailsModal';
 import SendBulkMessageModal from '../../Modals/SendBulkMessageModal';
 import AdminHeader from '../AdminHeader';
@@ -267,15 +267,21 @@ export function BroadcastHistoryTable({
               align: 'center',
               render: (_, row) => {
                 const userName =
-                  row.created_by.full_name ||
-                  getUserName(
-                    row.created_by.user?.first_name || '',
-                    row.created_by.user?.last_name || ''
-                  );
+                  row.created_by?.full_name || "System";
                 return (
                   <div className="flex justify-center gap-1.5">
                     <div className="w-7 h-7 rounded-full bg-gray-50 border border-gray-100 flex items-center justify-center text-[10px] font-bold text-[#3E4095]">
-                      {userName.charAt(0)}
+                      {row.created_by ? (
+                        userName.charAt(0)
+                      ) : (
+                        <Image
+                          src="/vmlc_logo.png"
+                          alt="VMLC Logo"
+                          width={20}
+                          height={20}
+                          className="object-contain"
+                        />
+                      )}
                     </div>
                     <span className="flex items-center text-xs font-bold text-gray-600">{userName}</span>
                   </div>
