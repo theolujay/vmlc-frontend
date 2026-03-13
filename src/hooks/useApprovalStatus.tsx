@@ -1,4 +1,3 @@
-import { ExamPortal } from '@/services/examPortal.service'
 import { UserMgtService } from '@/services/UserMgt.service'
 import { HandleVerificationStatusPayloadType } from '@/types/UserMgtType'
 import { zodResolver } from '@hookform/resolvers/zod'

@@ -1,9 +1,9 @@
 "use client"
 import InviteActionConfirmationModal from '@/components/Modals/InviteActionConfirmationModal'
 import Button from '@/components/ui/Button'
-import Input, { ConfirmPasswordInput, PasswordInput, PhoneNumberInput } from '@/components/ui/Input'
+import Input, { PhoneNumberInput } from '@/components/ui/Input'
 import ResponsiveContainer from '@/components/ui/ResponsiveContainer'
-import { ChevronDownIcon, ChevronUpIcon, MailIcon, OccupationIcon, PasswordIcon, PersonIcon } from '@/components/ui/SvgAsset/GeneralAsset'
+import { ChevronDownIcon, ChevronUpIcon, MailIcon, OccupationIcon, PersonIcon } from '@/components/ui/SvgAsset/GeneralAsset'
 import useInviteStaffMember, { InviteStaffValueType } from '@/hooks/useInviteStaffMember'
 import { AddStaffMemberFormProps } from '@/types/UserMgtType'
 import clsx from 'clsx'

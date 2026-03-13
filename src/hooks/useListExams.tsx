@@ -1,6 +1,5 @@
 import { ExamPortal } from '@/services/examPortal.service'
 import { useQuery } from '@tanstack/react-query'
-import React from 'react'
 
 export default function useListExams(id:number) {
   const {isPending,data}=useQuery({

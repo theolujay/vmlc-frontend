@@ -19,7 +19,8 @@ export interface HelpdeskThreadType {
     assigned_staff: number | null;
     assigned_staff_name?: string;
     participating_staff_names?: string[];
-    status: 'open' | 'in_progress' | 'resolved' | 'closed';
+    status: 'open' | 'in_progress' | 'closed' | 'snoozed' | 'resolved';
+    snoozed_until?: string;
     priority: 'low' | 'medium' | 'high' | 'urgent';
     last_message_at: string;
     messages?: HelpdeskMessageType[];
@@ -28,6 +29,7 @@ export interface HelpdeskThreadType {
     unread_by_staff_count?: number;
     candidate_last_msg_preview?: string;
     is_candidate_online?: boolean;
+    is_candidate_typing?: boolean;
 }
 
 export interface PaginationData {
@@ -64,14 +66,14 @@ export type HelpdeskSocketEvent =
         }
       }
     | {
-        type: 'helpdesk.thread_typing';
+        type: 'helpdesk.thread.typing';
         data: {
             thread_id: string;
             user_id: string;
             is_typing: boolean;
         }
       }
-    | { type: 'helpdesk.update'; data: { stats: HelpdeskThreadListResponse['helpdesk_summary_data']; refresh_threads: boolean } }
-    | { type: 'helpdesk.list'; data: { results: HelpdeskThreadType[]; pagination: PaginationData } }
+    | { type: 'helpdesk.update'; data: { stats: HelpdeskStatData; refresh_threads: boolean } }
+    | { type: 'helpdesk.list'; data: { results: HelpdeskThreadType[]; helpdesk_summary_data?: HelpdeskStatData } }
     | { type: 'notification_activity'; id: number; subject: string; message: string; notification_type: 'info' | 'success' | 'alert' | 'error' | 'warning'; link: string; is_read: boolean; created_at: string }
     | { type: 'error'; message: string };

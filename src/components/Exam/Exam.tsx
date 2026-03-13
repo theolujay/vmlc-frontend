@@ -28,12 +28,12 @@ export default function Exam() {
   const params = useParams();
   const examId = params?.examId as string;
 
-  const { isPending, data, isError, error } = useCandidateTakeExam(examId);
+  const [examStarted, setExamStarted] = useState(false);
+  const { isPending, data, isError, error } = useCandidateTakeExam(examId, examStarted);
   const { data: dashboardData, isPending: dashboardPending } = useGetExamPortal();
   const [answers, setAnswers] = useState<Record<number, string>>({});
   const { onSubmit, isPending: submitPending } = useSubmitAnswers(examId)
   const [isLoaded, setIsLoaded] = useState(false);
-  const [examStarted, setExamStarted] = useState(false);
 
   const handleReturnToExam = useCallback(() => {
     // Refresh page as requested to reset environment and sync state
@@ -87,7 +87,7 @@ export default function Exam() {
         } else {
           shuffledQuestions = shuffleQuestions(data.questions);
         }
-      } catch (e) {
+      } catch {
         shuffledQuestions = shuffleQuestions(data.questions);
       }
     } else {
@@ -151,7 +151,7 @@ export default function Exam() {
       const question = processedData?.questions.find(q => q.id === questionId);
 
       if (question?._optionMapping) {
-        const displayedOpt = Object.entries(question._optionMapping).find(([_, orig]) => orig === originalOpt)?.[0];
+        const displayedOpt = Object.entries(question._optionMapping).find(([, orig]) => orig === originalOpt)?.[0];
         if (displayedOpt) mapped[questionId] = displayedOpt;
       } else {
         mapped[questionId] = originalOpt;
@@ -233,7 +233,7 @@ export default function Exam() {
     }
   }
 
-  if (dashboardPending || isPending) {
+  if (dashboardPending || (examStarted && isPending)) {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#3E4095]"></div>

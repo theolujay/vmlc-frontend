@@ -25,7 +25,7 @@ export default function PublishRankingModal({ open, close, examId, examTitle }: 
 
     const { publishRanking, isPending } = usePublishRanking()
     const [mode, setMode] = useState<'immediate' | 'scheduled'>('immediate');
-    
+
     const form = useForm<PublishRankingFormValues>({
         defaultValues: {
             publish_now: true,
@@ -33,7 +33,7 @@ export default function PublishRankingModal({ open, close, examId, examTitle }: 
         }
     })
 
-    const { register, handleSubmit, watch, setValue, formState: { errors, isSubmitSuccessful } } = form
+    const { register, handleSubmit, setValue, formState: { errors, isSubmitSuccessful } } = form
 
     const onSubmit = (values: PublishRankingFormValues) => {
         publishRanking({
@@ -65,18 +65,18 @@ export default function PublishRankingModal({ open, close, examId, examTitle }: 
                             <h2 className='text-xl font-bold text-gray-800 tracking-tight uppercase'>Publish Ranking</h2>
                         </div>
                     </div>
-                    <p className="text-[11px] text-gray-500 font-medium">Release the ranking snapshot for <span className="text-[#3E4095] font-bold">"{examTitle}"</span> to candidates.</p>
+                    <p className="text-[11px] text-gray-500 font-medium">Release the ranking snapshot for <span className="text-[#3E4095] font-bold">&quot;{examTitle}&quot;</span> to candidates.</p>
                 </div>
 
                 <div className="p-8 max-h-[70vh] overflow-y-auto">
                     <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-6">
-                        
+
                         <div className="flex flex-col gap-3">
                             <label className='text-[9px] font-black text-gray-400 uppercase tracking-widest flex items-center gap-2'>
                                 <i className="fas fa-bullhorn text-[#3E4095]"></i>
                                 Publication Mode
                             </label>
-                            
+
                             <div className="grid grid-cols-2 gap-3">
                                 <button
                                     type="button"
@@ -86,8 +86,8 @@ export default function PublishRankingModal({ open, close, examId, examTitle }: 
                                     }}
                                     className={clsx(
                                         "flex flex-col gap-2 p-4 rounded-2xl border-2 text-left transition-all",
-                                        mode === 'immediate' 
-                                            ? "bg-emerald-50 border-emerald-500 ring-4 ring-emerald-500/5" 
+                                        mode === 'immediate'
+                                            ? "bg-emerald-50 border-emerald-500 ring-4 ring-emerald-500/5"
                                             : "bg-white border-gray-100 hover:border-gray-200"
                                     )}
                                 >
@@ -103,8 +103,8 @@ export default function PublishRankingModal({ open, close, examId, examTitle }: 
                                     }}
                                     className={clsx(
                                         "flex flex-col gap-2 p-4 rounded-2xl border-2 text-left transition-all",
-                                        mode === 'scheduled' 
-                                            ? "bg-blue-50 border-[#3E4095] ring-4 ring-[#3E4095]/5" 
+                                        mode === 'scheduled'
+                                            ? "bg-blue-50 border-[#3E4095] ring-4 ring-[#3E4095]/5"
                                             : "bg-white border-gray-100 hover:border-gray-200"
                                     )}
                                 >
@@ -120,9 +120,9 @@ export default function PublishRankingModal({ open, close, examId, examTitle }: 
                                     <i className="fas fa-calendar-alt text-[#3E4095]"></i>
                                     Publication Date & Time
                                 </label>
-                                <input 
+                                <input
                                     type="datetime-local"
-                                    {...register('publish_at', { 
+                                    {...register('publish_at', {
                                         required: mode === 'scheduled' ? "Publication time is required for scheduling" : false,
                                         validate: (value) => {
                                             if (mode === 'scheduled' && value) {
@@ -132,9 +132,9 @@ export default function PublishRankingModal({ open, close, examId, examTitle }: 
                                             }
                                             return true;
                                         }
-                                    })} 
-                                    className='w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold text-gray-800 focus:ring-4 focus:ring-[#3E4095]/5 focus:border-[#3E4095] outline-none transition-all' 
-                                    id="publish_at" 
+                                    })}
+                                    className='w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold text-gray-800 focus:ring-4 focus:ring-[#3E4095]/5 focus:border-[#3E4095] outline-none transition-all'
+                                    id="publish_at"
                                 />
                                 {errors.publish_at && <p className="text-[10px] font-bold text-red-500 mt-1 uppercase tracking-tight">{errors.publish_at.message}</p>}
                             </div>

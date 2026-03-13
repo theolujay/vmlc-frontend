@@ -52,7 +52,8 @@ export type HelpdeskStatData = {
   total_threads: number;
   open_threads: number;
   in_progress_threads: number;
-  resolved_threads: number;
+  closed_threads: number;
+  snoozed_threads: number;
   unattended_candidates: number;
   unassigned_threads: number;
   unread_messages: number;

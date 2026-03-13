@@ -162,31 +162,63 @@ const Performance: React.FC<PerformanceSnapshotProps> = ({
         </div>
       </div>
 
-      {/* Footer Link */}
-      {isLinkEnabled ? (
-        isLeague && onViewLeaderboard ? (
-          <button
-            onClick={onViewLeaderboard}
-            className="mt-6 pt-4 border-t border-slate-100 text-sm font-bold text-[#3E4095] hover:opacity-80 flex items-center justify-between transition-all w-full text-left"
-          >
-            <span>Leaderboard</span>
-            <GotoIcon />
-          </button>
+      {/* Scoreboards / Footer Link */}
+      <div className="mt-6 pt-4 border-t border-slate-100 flex flex-col gap-3">
+        {context.scoreboards && context.scoreboards.length > 0 ? (
+          <>
+            <span className="text-[10px] text-[#98A2B3] font-bold uppercase tracking-wider mb-1">Available Scoreboards</span>
+            <div className="flex flex-col gap-2">
+              {context.scoreboards.map((board, idx) => {
+                const boardHref = board.type === 'leaderboard'
+                  ? "/exam-portal/leaderboard"
+                  : `/exam-portal/rankings/${board.exam_id}`;
+                return (
+                  <Link
+                    key={idx}
+                    href={boardHref}
+                    className={`flex items-center justify-between p-3 rounded-xl border transition-all ${
+                      board.is_current
+                        ? 'bg-[#3E4095]/5 border-[#3E4095]/10 text-[#3E4095]'
+                        : 'bg-slate-50 border-slate-100 text-[#475367] hover:bg-slate-100'
+                    }`}
+                  >
+                    <div className="flex flex-col">
+                      <span className="text-xs font-bold">{board.label}</span>
+                      <span className="text-[10px] opacity-70 uppercase tracking-tight">{board.stage}</span>
+                    </div>
+                    <GotoIcon />
+                  </Link>
+                );
+              })}
+            </div>
+          </>
         ) : (
-          <Link
-            href={ranking?.exam_id ? `/exam-portal/rankings/${ranking.exam_id}` : "/exam-portal/leaderboard"}
-            className="mt-6 pt-4 border-t border-slate-100 text-sm font-bold text-[#3E4095] hover:opacity-80 flex items-center justify-between transition-all"
-          >
-            <span>{(isScreening || isFinal) ? 'View Ranking Table' : 'View Leaderboard'}</span>
-            <GotoIcon />
-          </Link>
-        )
-      ) : (
-        <div className="mt-6 pt-4 border-t border-slate-100 text-sm font-bold text-slate-300 flex items-center justify-between cursor-not-allowed grayscale">
-          <span>{(isScreening || isFinal) ? 'Ranking' : 'Leaderboard'}</span>
-          <GotoIcon />
-        </div>
-      )}
+          isLinkEnabled ? (
+            isLeague && onViewLeaderboard ? (
+              <button
+                onClick={onViewLeaderboard}
+                className="text-sm font-bold text-[#3E4095] hover:opacity-80 flex items-center justify-between transition-all w-full text-left"
+              >
+                <span>Leaderboard</span>
+                <GotoIcon />
+              </button>
+            ) : (
+              <Link
+                href={ranking?.exam_id ? `/exam-portal/rankings/${ranking.exam_id}` : "/exam-portal/leaderboard"}
+                className="text-sm font-bold text-[#3E4095] hover:opacity-80 flex items-center justify-between transition-all"
+              >
+                <span>{(isScreening || isFinal) ? 'View Ranking Table' : 'View Leaderboard'}</span>
+                <GotoIcon />
+              </Link>
+            )
+          ) : (
+            <div className="text-sm font-bold text-slate-300 flex items-center justify-between cursor-not-allowed grayscale">
+              <span>{(isScreening || isFinal) ? 'Ranking' : 'Leaderboard'}</span>
+              <GotoIcon />
+            </div>
+          )
+        )}
+      </div>
     </section>
   );
 };

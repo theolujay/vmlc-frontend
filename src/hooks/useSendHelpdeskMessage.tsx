@@ -15,7 +15,7 @@ export default function useSendHelpdeskMessage() {
         try {
             const response = await HelpdeskService.postMessage(payload);
             return response;
-        } catch (_err) {
+        } catch {
             setError('Failed to send message');
             return null;
         } finally {

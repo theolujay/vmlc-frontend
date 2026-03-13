@@ -29,7 +29,7 @@ export default function useVerifyEmailForCandidates(onSuccessCallback: () => voi
 
   const { isPending, mutate } = useMutation({
     mutationFn: AuthService.verifyEmail,
-    onSuccess: (value) => {
+    onSuccess: () => {
       toast.success('Otp verified successfully')
       // localStorage.removeItem('email');
       onSuccessCallback()

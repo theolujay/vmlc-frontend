@@ -6,6 +6,7 @@ export const HelpdeskUrls = {
     // Staff
     listThreads: (query?: string) => query ? `/v1/staff/helpdesk/threads/?${query}` : `/v1/staff/helpdesk/threads/`,
     getThreadDetail: (threadId: string) => `/v1/staff/helpdesk/threads/${threadId}/`,
+    threadAction: (threadId: string) => `/v1/staff/helpdesk/threads/${threadId}/action`,
 
     // WebSocket
     helpdeskSocket: (threadId: string) => `/v1/ws/helpdesk/thread/${threadId}/`

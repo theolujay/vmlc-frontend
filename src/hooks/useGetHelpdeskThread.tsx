@@ -24,7 +24,7 @@ export default function useGetHelpdeskThread() {
                 if (response.messages) {
                     setMessages(response.messages);
                 }
-            } catch (_err) {
+            } catch {
                 setError('Failed to fetch helpdesk thread');
             } finally {
                 setLoading(false);

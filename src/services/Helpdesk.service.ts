@@ -67,4 +67,16 @@ export class HelpdeskService {
             throw error;
         }
     }
+
+    /**
+     * Perform an action on a helpdesk thread (Staff).
+     */
+    static async performThreadAction(threadId: string, payload: { status: string; snoozed_until?: string }): Promise<void> {
+        try {
+            await client.patch(HelpdeskUrls.threadAction(threadId), payload);
+        } catch (error) {
+            console.error('Error performing thread action:', error);
+            throw error;
+        }
+    }
 }

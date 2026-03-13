@@ -1,7 +1,6 @@
 
 
 "use client"
-import { AverageIcon, GotoSummaryIcon, LeaderBoardSummaryIcon, ScreeningSummaryIcon } from '@/components/General/GeneralIcon'
 import Button from '@/components/ui/Button'
 import CustomTable from '@/components/ui/CustomTable'
 import ResponsiveContainer from '@/components/ui/ResponsiveContainer'
@@ -220,82 +219,4 @@ function ActionsComponent(
     </div>
 }
 
-
-function ProfileComponentReuse(
-    // {scoresData}:{scoresData:RecordsType}
-) {
-
-    const scoresData: Record<string, unknown> = {}
-    return <div className="flex gap-2 p-3 flex-col">
-        {/* <AverageScore position={scoresData.performance.stats.leaderboard_ranking} percentage={scoresData.performance.stats.average_score} /> */}
-        {/* <ScreeningScore screening={null} /> */}
-        {/* <LeagueScoresWrapper scores={scoresData.performance.exams}/> */}
-    </div>
-}
-
-
-function AverageScore({ percentage, position }: { percentage: number, position: number | null }) {
-    return <div className='bg-[#3E4095]  rounded-[24px]   w-full  flex flex-col p-3'>
-        <div className="grid grid-cols-2">
-            <div className="flex gap-2 flex-col">
-                <div className='flex gap-2'>
-                    <span><AverageIcon /></span>
-                    <span className='text-white text-sm'>AVERAGE SCORE</span>
-                </div>
-                <span className="font-bold text-white text-2xl">{percentage}%</span>
-            </div>
-
-            <div className="flex gap-2 flex-col">
-                <div className='flex gap-2'>
-                    <span><LeaderBoardSummaryIcon /></span>
-                    <span className='text-white text-sm'>LEADERBOARD POSTION</span>
-                </div>
-                <span className="font-bold text-white text-2xl">{position}</span>
-            </div>
-        </div>
-    </div>
-}
-
-
-function ScreeningScore({ screening }: Readonly<{ screening: number | null }>) {
-    return <div className='bg-[#E6F7FD]  rounded-[24px]   w-full  flex flex-col p-3'>
-        <div className="flex">
-            <div className="flex gap-2 flex-col w-full">
-                <div className='flex gap-2'>
-                    <span><ScreeningSummaryIcon /></span>
-                    <span className=' text-[#344054] text-sm'>SCREENING SCORE</span>
-                </div>
-                {
-                    screening &&
-                    <div className="flex justify-between items-center">
-                        <span className="font-bold text-2xl">{screening}%</span>
-                        <GotoSummaryIcon />
-                    </div>
-                }
-            </div>
-        </div>
-    </div>
-}
-
-
-function LeagueScoresWrapper({ scores }: { scores: ExamTakenType[] }) {
-    return <div className="flex flex-wrap gap-2 justify-between">
-        {scores.map((val, index) => <LeagueScore key={`league-score-${index}`} label={val.exam_stage} score={val.score} />)}
-
-    </div>
-}
-
-
-function LeagueScore({ label, score }: { label: string, score: number }) {
-    return <div className="flex justify-between gap-2 bg-[#F0F2F5] flex-1 rounded-xl last:bg-[#018ABB] last:text-white  p-2 flex-col">
-        <div className="flex flex-col">
-            <span><ScreeningSummaryIcon /></span>
-            <span className="text-sm">{label}</span>
-        </div>
-        <div className="flex font-bold text-xl justify-between">
-            <span>{score}%</span>
-            <span><GotoSummaryIcon /></span>
-        </div>
-    </div>
-}
 

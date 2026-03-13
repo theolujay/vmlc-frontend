@@ -1,6 +1,4 @@
 import { authUrls } from "@/constants/authUrls";
-// import { ValueType } from "@/hooks/useRegister";
-import { StaffValueType } from "@/hooks/useRegisterStaff";
 import { AuthLoginResponse, AuthRegisterResponse, DirectAccessLoginResponse, LoginRequest, LogoutRequest, RegAvailableType, RegisterRequestValueType, RegisterStaffRequestValueType, SetNewPasswordType, VerifyRequest, } from "@/types/auth";
 import client from "@/utils/axios";
 

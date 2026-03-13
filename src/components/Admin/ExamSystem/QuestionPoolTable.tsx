@@ -1,7 +1,6 @@
 "use client";
 import { useState, Dispatch, SetStateAction } from "react";
 import QuestionInformation from "@/components/Drawer/QuestionInformation";
-import RemoveQuestionModal from "@/components/Modals/RemoveQuestionModal";
 import TablePagination from "@/components/ui/Pagination/TablePagination";
 import ResponsiveContainer from "@/components/ui/ResponsiveContainer";
 import { SessionQuestionItemType } from "@/types/Examtype";
@@ -43,11 +42,9 @@ export default function QuestionPoolTable<T extends { search?: string }>({
 }>) {
   const [selectedQuestions, setSelectedQuestions] = useState<(string | number)[]>([]);
   const [modalQuestionIds, setModalQuestionIds] = useState<(string | number)[]>([]);
-  const [openRemoveQuestion, setOpenRemoveQuestion] = useState(false);
   const [openExamSession, setOpenExamSession] = useState(false)
   const [openBulkDelete, setOpenBulkDelete] = useState(false)
   const [openDrawer, setOpenDrawer] = useState(false);
-  const [selectedQuestionId, setSelectedQuestionId] = useState<number>(0);
   const [currentQuestion, setCurrentQuestion] = useState<SessionQuestionItemType | null>(null);
   const [openEditQuestion, setOpenEditQuestion] = useState(false);
   const [questionToEdit, setQuestionToEdit] = useState<SessionQuestionItemType | null>(null);
@@ -252,7 +249,6 @@ export default function QuestionPoolTable<T extends { search?: string }>({
                       setCurrentQuestion(row);
                       setOpenDrawer(true);
                     }}
-                    information={row}
                     question_id={row.id}
                   />
                 </div>
@@ -278,11 +274,6 @@ export default function QuestionPoolTable<T extends { search?: string }>({
       )}
       <BulkRemoveQuestionsModal questions={selectedQuestions} open={openBulkDelete} close={setOpenBulkDelete} />
       <AddToExamSessionModal selectedQuestionIds={modalQuestionIds} open={openExamSession} close={setOpenExamSession} />
-      <RemoveQuestionModal
-        question_id={selectedQuestionId}
-        close={setOpenRemoveQuestion}
-        open={openRemoveQuestion}
-      />
       {questionToEdit && (
         <AddQuestionModal
           open={openEditQuestion}

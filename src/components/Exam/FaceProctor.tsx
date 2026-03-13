@@ -36,50 +36,56 @@ const FaceProctor = () => {
       webcamRef.current &&
       webcamRef.current.video &&
       webcamRef.current.video.readyState === 4 &&
+      webcamRef.current.video.videoWidth > 0 &&
       modelsLoaded
     ) {
-      const video = webcamRef.current.video;
-      const detections = await faceapi
-        .detectAllFaces(video, new faceapi.TinyFaceDetectorOptions())
-        .withFaceLandmarks();
+      try {
+        const video = webcamRef.current.video;
+        const detections = await faceapi
+          .detectAllFaces(video, new faceapi.TinyFaceDetectorOptions({ inputSize: 160 }))
+          .withFaceLandmarks();
 
-      if (detections.length === 0) {
-        setStatus('error');
-        setStatusMessage('NO FACE DETECTED');
-        setViolationCount(prev => ({ ...prev, noFace: prev.noFace + 1 }));
-        if (violationCount.noFace % 10 === 0) {
-           toast.error("FACE NOT DETECTED: Please stay in front of the camera.");
-        }
-      } else if (detections.length > 1) {
-        setStatus('error');
-        setStatusMessage('MULTIPLE FACES DETECTED');
-        setViolationCount(prev => ({ ...prev, multiFace: prev.multiFace + 1 }));
-        if (violationCount.multiFace % 5 === 0) {
-           toast.error("MULTIPLE FACES DETECTED: This is a strictly proctored exam.");
-        }
-      } else {
-        // Single face detected - check landmarks for "Looking Away"
-        const landmarks = detections[0].landmarks;
-        const nose = landmarks.getNose();
-        const leftEye = landmarks.getLeftEye();
-        const rightEye = landmarks.getRightEye();
-
-        // Very simple heuristic for looking away (check if nose is relatively centered between eyes horizontally)
-        const eyeCenter = (leftEye[0].x + rightEye[3].x) / 2;
-        const noseX = nose[0].x;
-        const offset = Math.abs(noseX - eyeCenter);
-
-        if (offset > 25) { // Heuristic threshold
-          setStatus('warning');
-          setStatusMessage('ATTENTION LAPSE');
-          setViolationCount(prev => ({ ...prev, lookingAway: prev.lookingAway + 1 }));
-          if (violationCount.lookingAway % 15 === 0) {
-            toast.warn("Please keep your eyes on the screen.");
+        if (detections.length === 0) {
+          setStatus('error');
+          setStatusMessage('NO FACE DETECTED');
+          setViolationCount(prev => ({ ...prev, noFace: prev.noFace + 1 }));
+          if (violationCount.noFace % 10 === 0) {
+             toast.error("FACE NOT DETECTED: Please stay in front of the camera.");
+          }
+        } else if (detections.length > 1) {
+          setStatus('error');
+          setStatusMessage('MULTIPLE FACES DETECTED');
+          setViolationCount(prev => ({ ...prev, multiFace: prev.multiFace + 1 }));
+          if (violationCount.multiFace % 5 === 0) {
+             toast.error("MULTIPLE FACES DETECTED: This is a strictly proctored exam.");
           }
         } else {
-          setStatus('normal');
-          setStatusMessage('Monitoring Active');
+          // Single face detected - check landmarks for "Looking Away"
+          const landmarks = detections[0].landmarks;
+          const nose = landmarks.getNose();
+          const leftEye = landmarks.getLeftEye();
+          const rightEye = landmarks.getRightEye();
+
+          // Very simple heuristic for looking away (check if nose is relatively centered between eyes horizontally)
+          const eyeCenter = (leftEye[0].x + rightEye[3].x) / 2;
+          const noseX = nose[0].x;
+          const offset = Math.abs(noseX - eyeCenter);
+
+          if (offset > 25) { // Heuristic threshold
+            setStatus('warning');
+            setStatusMessage('ATTENTION LAPSE');
+            setViolationCount(prev => ({ ...prev, lookingAway: prev.lookingAway + 1 }));
+            if (violationCount.lookingAway % 15 === 0) {
+              toast.warn("Please keep your eyes on the screen.");
+            }
+          } else {
+            setStatus('normal');
+            setStatusMessage('Monitoring Active');
+          }
         }
+      } catch (error) {
+        console.error("Face detection error:", error);
+        // Don't toast here to avoid spamming the user if it's a transient error
       }
     }
   }, [modelsLoaded, violationCount]);

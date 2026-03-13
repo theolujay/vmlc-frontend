@@ -43,6 +43,7 @@ export default function useLogin() {
 
   const { isPending, mutate } = useMutation({
     mutationFn: (variables: LoginType) => {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       const { remember, ...loginData } = variables;
       return AuthService.login(loginData);
     },

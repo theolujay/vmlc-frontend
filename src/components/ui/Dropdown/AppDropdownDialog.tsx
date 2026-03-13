@@ -23,7 +23,7 @@ export default function AppDropdownDialog({triggerButton,actionItems,children}: 
                         actionItems.map((item,index)=>(
                             <DropdownMenu.Item 
                                 disabled={item.disabled}
-                                onClick={e=>{
+                                onClick={()=>{
                                     if (!item.disabled) item.onClick?.()
                                 }} 
                                 key={`dropdown-${index}`}  
