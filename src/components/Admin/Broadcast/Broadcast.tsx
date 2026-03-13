@@ -91,6 +91,7 @@ export default function Broadcast() {
 }
 
 import { BroadcastSummaryDataType } from '@/types/BroadCastType';
+import { getUserName } from '@/utils/generalUtils';
 
 function BroadcastStats({
   summary,
@@ -267,7 +268,10 @@ export function BroadcastHistoryTable({
               align: 'center',
               render: (_, row) => {
                 const userName =
-                  row.created_by?.full_name || "System";
+                  row.created_by ? getUserName(
+                    row.created_by.user?.first_name || '',
+                    row.created_by.user?.last_name || ''
+                  ) : "System";
                 return (
                   <div className="flex justify-center gap-1.5">
                     <div className="w-7 h-7 rounded-full bg-gray-50 border border-gray-100 flex items-center justify-center text-[10px] font-bold text-[#3E4095]">
