@@ -75,7 +75,7 @@ function HelpdeskStats({ stats }: { stats: HelpdeskStatData }) {
                     <span className="text-[10px] font-black text-[#3E4095] uppercase tracking-widest mb-1">Candidate Threads</span>
                     <div className="flex justify-between w-full gap-3">
                         <div className="flex flex-col items-center">
-                            <span className="text-2xl font-black text-r[#3E4095]">{stats.open_threads}</span>
+                            <span className="text-2xl font-black text-[#3E4095]">{stats.open_threads}</span>
                             <span className="text-[8px] font-bold text-[#3E4095]/70 tracking-tight uppercase">Open</span>
                         </div>
                         {/* <div className="w-px h-8 bg-[#3E4095]/50"></div> */}
