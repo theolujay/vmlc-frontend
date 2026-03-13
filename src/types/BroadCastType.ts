@@ -44,7 +44,7 @@ export type BroadcastItemType = {
   id: number;
   subject: string;
   message: string;
-  created_by: CreatedByType;
+  created_by?: CreatedByType;
   created_at: string;
   mediums: string[];
   target_roles: TargetRolesType;

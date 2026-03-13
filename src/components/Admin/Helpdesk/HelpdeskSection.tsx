@@ -261,6 +261,8 @@ function HelpdeskThreadListCard({
                 <CustomTable
                     data={data}
                     getRowId={(row) => row.id}
+                    emptyLabel = "No threads to display"
+                    emptyDesc = "Use the filter to load closed or snoozed threads"
                     onRowClick={(row) => {
                         const query = new URLSearchParams(searchParams.toString());
                         query.set('view', 'conversation-details');
