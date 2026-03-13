@@ -1,12 +1,10 @@
 'use client';
-import TablePagination from '@/components/ui/Pagination/TablePagination';
 import { useDebouncedSearch } from '@/hooks/useDebouncedSearch';
 import useListHelpdeskThreads from '@/hooks/useListHelpdeskThreads';
-import usePagination from '@/hooks/usePagination';
 import { HelpdeskThreadType } from '@/types/HelpdeskType';
 import { formatDateTime } from '@/utils/formatFileSize';
 import Link from 'next/link';
-import { usePathname, useSearchParams } from 'next/navigation';
+import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { Dispatch, SetStateAction, useState } from 'react';
 import ResponsiveContainer from '../../ui/ResponsiveContainer';
 import AdminHeader from '../AdminHeader';
@@ -18,43 +16,43 @@ import Spinner from '@/components/ui/spinner/spinner';
 import CustomTable from '@/components/ui/CustomTable';
 import React from 'react';
 import { HelpdeskStatData } from '@/types/UserMgtType';
+import { useHelpdeskAction } from '@/hooks/useHelpdeskAction';
+import SnoozeModal from '@/components/Modals/SnoozeModal';
 
 export default function HelpdeskSection() {
     const searchParams = useSearchParams();
     const view = searchParams.get('view');
     const threadId = searchParams.get('id'); // Extract the ID from search params
-    const { page, setPage } = usePagination();
     const [filters, setFilters] = useState<Record<string, string>>({
         search: '',
     });
 
-    const { data, loading } = useListHelpdeskThreads(page, filters);
+    const { results, summary, loading, loadMore, pagination, loadingMore, refetch } = useListHelpdeskThreads(filters);
 
     return (
         <div className="flex flex-col gap-1 font-sans h-full">
             <AdminHeader label="Helpdesk Thread" actionButton={undefined} />
             <div className="flex flex-col gap-3 sm:gap-4 mt-3 w-full sm:w-[96%] px-2 sm:px-0 sm:mx-auto flex-1 pb-10">
-                {view !== 'conversation-details' && data?.helpdesk_summary_data && (
-                    <HelpdeskStats stats={data.helpdesk_summary_data} />
+                {view !== 'conversation-details' && summary && (
+                    <HelpdeskStats stats={summary} />
                 )}
 
                 {view === 'conversation-details' && threadId ? ( // Conditionally render if threadId exists
                     <HelpdeskThreadDetails id={threadId} />
-                ) : loading && !data ? (
+                ) : loading && results.length === 0 ? (
                     <div className="grid w-full h-[40vh] place-content-center bg-white rounded-[2rem] border border-gray-100 shadow-sm">
                         <Spinner />
                     </div>
                 ) : (
                     <HelpdeskThreadListCard
-                        data={data?.results ?? []}
-                        page_count={data?.pagination?.total_pages ?? 0}
-                        currentPage={page}
-                        onPageChange={setPage}
+                        data={results}
                         handleSearch={setFilters}
                         filters={filters}
                         setFilters={setFilters}
-                        hasNext={data?.pagination?.has_next}
-                        hasPrevious={data?.pagination?.has_previous}
+                        loadMore={loadMore}
+                        hasNext={pagination?.has_next}
+                        loadingMore={loadingMore}
+                        refetch={refetch}
                     />
                 )}
             </div>
@@ -70,44 +68,30 @@ function HelpdeskStats({ stats }: { stats: HelpdeskStatData }) {
                 <h2 className="text-lg font-black text-gray-800 tracking-tight uppercase">Overview</h2>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                {/* <div className="flex flex-col p-5 bg-blue-50/30 rounded-2xl border border-blue-100/50">
-                    <span className="text-[10px] font-black text-blue-400 uppercase tracking-widest mb-1">Total Threads</span>
-                    <span className="text-3xl font-black text-[#3E4095]">{stats.total_threads}</span>
-                    <div className="mt-2 flex items-center gap-2">
-                        <span className="text-[10px] font-bold text-gray-400 uppercase tracking-tight">Public Requests:</span>
-                        <span className="text-xs font-black text-blue-600">{stats.public_requests}</span>
-                    </div>
-                </div>
-
-                <div className="flex flex-col p-5 bg-amber-50/30 rounded-2xl border border-amber-100/50">
-                    <span className="text-[10px] font-black text-amber-500 uppercase tracking-widest mb-1">Active Support</span>
-                    <div className="flex items-end gap-3">
-                        <div className="flex flex-col">
-                            <span className="text-2xl font-black text-amber-700">{stats.open_threads}</span>
-                            <span className="text-[9px] font-bold text-amber-600/70 uppercase">Open</span>
-                        </div>
-                        <div className="w-px h-8 bg-amber-200/50 mb-1"></div>
-                        <div className="flex flex-col">
-                            <span className="text-2xl font-black text-amber-700">{stats.in_progress_threads}</span>
-                            <span className="text-[9px] font-bold text-amber-600/70 uppercase">In Progress</span>
-                        </div>
-                    </div>
-                </div> */}
-
-                <div className="flex flex-col gap-3 p-4 bg-red-50/5 rounded-2xl border border-red-100 shadow-sm shadow-red-500/5 relative overflow-hidden group">
+                <div className="flex flex-col gap-3 p-4 bg-red-50/5 rounded-2xl border border-[#3E4095]/30 shadow-sm shadow-red-500/5 relative overflow-hidden group">
                     <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:scale-110 transition-transform">
-                        <i className="fas fa-envelope-open-text text-3xl text-red-600"></i>
+                        <i className="fas fa-envelope-open-text text-3xl text-[#3E4095]"></i>
                     </div>
-                    <span className="text-[10px] font-black text-red-500 uppercase tracking-widest mb-1">Candidate Messages</span>
-                    <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-3">
+                    <span className="text-[10px] font-black text-[#3E4095] uppercase tracking-widest mb-1">Candidate Threads</span>
+                    <div className="flex justify-between w-full gap-3">
                         <div className="flex flex-col items-center">
-                            <span className="text-2xl font-black text-red-900">{stats.unattended_candidates}</span>
-                            <span className="text-[8px] font-bold text-red-800/70 tracking-tight uppercase">Without Staff Reply</span>
+                            <span className="text-2xl font-black text-r[#3E4095]">{stats.open_threads}</span>
+                            <span className="text-[8px] font-bold text-[#3E4095]/70 tracking-tight uppercase">Open</span>
                         </div>
-                        <div className="w-px h-8 bg-red-200/50"></div>
+                        {/* <div className="w-px h-8 bg-[#3E4095]/50"></div> */}
                         <div className="flex flex-col items-center">
-                            <span className="text-2xl font-black text-red-900">{stats.unread_messages}</span>
-                            <span className="text-[8px] font-bold text-red-800/70 uppercase">Total unread</span>
+                            <span className="text-2xl font-black text-[#3E4095]">{stats.in_progress_threads}</span>
+                            <span className="text-[8px] font-bold text-[#3E4095]/70 uppercase">In Progress</span>
+                        </div>
+                        {/* <div className="w-px h-8 bg-[#3E4095]/50"></div> */}
+                        <div className="flex flex-col items-center">
+                            <span className="text-2xl font-black text-[#3E4095]">{stats.snoozed_threads}</span>
+                            <span className="text-[8px] font-bold text-[#3E4095]/70 tracking-tight uppercase">Snoozed</span>
+                        </div>
+                        {/* <div className="w-px h-8 bg-[#3E4095]/50"></div> */}
+                        <div className="flex flex-col items-center">
+                            <span className="text-2xl font-black text-[#3E4095]">{stats.closed_threads}</span>
+                            <span className="text-[8px] font-bold text-[#3E4095]/70 tracking-tight uppercase">Closed</span>
                         </div>
                     </div>
                 </div>
@@ -135,44 +119,59 @@ function HelpdeskStats({ stats }: { stats: HelpdeskStatData }) {
     );
 }
 
-
-
-
 function HelpdeskThreadListCard({
     data,
-    onPageChange,
-    currentPage,
-    page_count,
     handleSearch,
     filters,
     setFilters,
+    loadMore,
     hasNext,
-    hasPrevious,
-    pageSize = 20,
+    loadingMore,
+    refetch,
 }: Readonly<{
     data: HelpdeskThreadType[];
     handleSearch: Dispatch<SetStateAction<Record<string, string>>>;
-    onPageChange: Dispatch<SetStateAction<number>>;
-    currentPage: number;
-    page_count: number;
     filters: Record<string, string>;
     setFilters: Dispatch<SetStateAction<Record<string, string>>>;
+    loadMore: () => void;
     hasNext?: boolean;
-    hasPrevious?: boolean;
-    pageSize?: number;
+    loadingMore?: boolean;
+    refetch: () => void;
 }>) {
     const { searchInput, setSearchInput } = useDebouncedSearch(handleSearch);
     const pathName = usePathname();
+    const router = useRouter();
     const searchParams = useSearchParams();
+    const { performAction, loading: actionLoading } = useHelpdeskAction();
+    const [snoozeModal, setSnoozeModal] = useState<{ open: boolean; threadId: string | null }>({
+        open: false,
+        threadId: null,
+    });
 
     const handleSort = (sortKey: string) => {
         setFilters(prev => ({ ...prev, ordering: sortKey }));
-        onPageChange(1);
     };
 
     const handleFilterChange = (key: string, value: string) => {
         setFilters(prev => ({ ...prev, [key]: value }));
-        onPageChange(1);
+    };
+
+    const onAction = async (id: string, status: 'closed' | 'snoozed', snoozedUntil?: string) => {
+        const success = await performAction(id, status, snoozedUntil);
+        if (success) {
+            refetch();
+            if (status === 'snoozed') {
+                setSnoozeModal({ open: false, threadId: null });
+            }
+        }
+    };
+
+    const handleSnooze = (minutes: number) => {
+        if (snoozeModal.threadId) {
+            const until = new Date();
+            until.setMinutes(until.getMinutes() + minutes);
+            onAction(snoozeModal.threadId, 'snoozed', until.toISOString());
+        }
     };
 
     return (
@@ -232,12 +231,12 @@ function HelpdeskThreadListCard({
                                             <option value="">All Statuses</option>
                                             <option value="open">Open</option>
                                             <option value="in_progress">In Progress</option>
-                                            <option value="resolved">Resolved</option>
-                                            <option value="closed">Closed</option>
+                                            {/* <option value="closed">Closed</option> */}
+                                            <option value="snoozed">Snoozed</option>
                                         </select>
                                     </div>
 
-                                    <div className="flex flex-col gap-1.5">
+                                    {/* <div className="flex flex-col gap-1.5">
                                         <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Priority</label>
                                         <select
                                             value={filters.priority || ''}
@@ -250,12 +249,11 @@ function HelpdeskThreadListCard({
                                             <option value="medium">Medium</option>
                                             <option value="low">Low</option>
                                         </select>
-                                    </div>
+                                    </div> */}
 
                                     <button
                                         onClick={() => {
                                             setFilters({ search: '' });
-                                            onPageChange(1);
                                         }}
                                         className="mt-1 text-[10px] text-red-500 font-black uppercase tracking-widest hover:underline text-left"
                                     >
@@ -272,6 +270,12 @@ function HelpdeskThreadListCard({
                 <CustomTable
                     data={data}
                     getRowId={(row) => row.id}
+                    onRowClick={(row) => {
+                        const query = new URLSearchParams(searchParams.toString());
+                        query.set('view', 'conversation-details');
+                        query.set('id', row.id);
+                        router.push(`${pathName}?${query.toString()}`);
+                    }}
                     columns={[
                         {
                             key: 'id',
@@ -280,7 +284,7 @@ function HelpdeskThreadListCard({
                             render: (_, __, index) => (
                                 <div className="flex justify-center">
                                     <span className="text-xs font-bold text-gray-400">
-                                        {(currentPage - 1) * pageSize + index + 1}
+                                        {index + 1}
                                     </span>
                                 </div>
                             ),
@@ -301,47 +305,32 @@ function HelpdeskThreadListCard({
                                     </div>
                                     <div className="flex flex-col gap-0.5">
                                         <span className="font-bold text-gray-800 text-sm">{row.candidate_name}</span>
-                                        <span className="text-[10px] font-bold text-gray-400 uppercase tracking-tight">{row.candidate_email}</span>
+                                        <span className="text-[10px] font-bold text-gray-400 lowercase tracking-tight">{row.candidate_email}</span>
                                     </div>
                                 </div>
                             ),
                         },
-                        // {
-                        //     key: 'status',
-                        //     header: 'Status',
-                        //     align: 'center',
-                        //     render: (_, row) => (
-                        //         <div className="flex justify-center">
-                        //             <span className={clsx(
-                        //                 "capitalize text-[9px] font-black px-3 py-1 rounded-full border tracking-widest",
-                        //                 row.status === 'open' ? 'bg-red-50 text-[#9E0A05] border-[#9E0A05]/20' :
-                        //                 row.status === 'in_progress' ? 'bg-amber-50 text-[#865503] border-[#865503]/20' :
-                        //                 row.status === 'resolved' ? 'bg-emerald-50 text-emerald-600 border-emerald-600/20' :
-                        //                 'bg-gray-50 text-gray-500 border-gray-200'
-                        //             )}>
-                        //                 {row.status.replace('_', ' ')}
-                        //             </span>
-                        //         </div>
-                        //     ),
-                        // },
-                        // {
-                        //     key: 'priority',
-                        //     header: 'Priority',
-                        //     align: 'center',
-                        //     render: (_, row) => (
-                        //         <div className="flex justify-center">
-                        //             <span className={clsx(
-                        //                 "capitalize text-[9px] font-black px-3 py-1 rounded-full border tracking-widest",
-                        //                 row.priority === 'urgent' ? 'bg-red-50 text-[#9E0A05] border-[#9E0A05]/20' :
-                        //                 row.priority === 'high' ? 'bg-orange-50 border-orange-100 text-[#FC6A03]' :
-                        //                 row.priority === 'medium' ? 'bg-indigo-50 border-indigo-100 text-[#3E4095]' :
-                        //                 'bg-gray-50 text-gray-500 border-gray-200'
-                        //             )}>
-                        //                 {row.priority}
-                        //             </span>
-                        //         </div>
-                        //     ),
-                        // },
+                        {
+                            key: 'status',
+                            header: 'Status',
+                            align: 'center',
+                            render: (_, row) => {
+                                const statusConfig: Record<string, { color: string, bg: string, border: string }> = {
+                                    open: { color: "text-red-600", bg: "bg-red-50", border: "border-red-100" },
+                                    in_progress: { color: "text-[#3E4095]", bg: "bg-indigo-50", border: "border-[#3E4095]/20" },
+                                    closed: { color: "text-gray-500", bg: "bg-gray-50", border: "border-gray-200" },
+                                    snoozed: { color: "text-amber-600", bg: "bg-amber-50", border: "border-amber-100" },
+                                };
+                                const config = statusConfig[row.status] || { color: "text-gray-400", bg: "bg-gray-50", border: "border-gray-200" };
+                                return (
+                                    <div className="flex justify-center">
+                                        <span className={`text-[9px] font-black px-3 py-1 rounded-full border uppercase tracking-widest transition-all shadow-sm ${config.bg} ${config.color} ${config.border}`}>
+                                            {row.status.replace('_', ' ')}
+                                        </span>
+                                    </div>
+                                );
+                            },
+                        },
                         {
                             key: 'candidate_last_msg_preview',
                             header: 'Last Message (Candidate)',
@@ -404,9 +393,28 @@ function HelpdeskThreadListCard({
                                     return `${pathName}?${query.toString()}`;
                                 })();
                                 return (
-                                    <div className="flex justify-center">
-                                        <Link href={href} className="bg-[#3E4095] text-white font-black px-4 py-2 rounded-xl text-[10px] uppercase tracking-widest hover:bg-[#2d2f6e] transition-all shadow-md shadow-[#3E4095]/10 active:scale-95">
-                                            Engage
+                                    <div className="flex justify-center gap-2" onClick={(e) => e.stopPropagation()}>
+                                        <DropdownMenu.Root>
+                                            <DropdownMenu.Trigger asChild>
+                                                <button className="w-8 h-8 rounded-full border border-gray-200 flex items-center justify-center text-gray-500 hover:bg-gray-50 transition-all outline-none">
+                                                    <i className="fas fa-arrow-down text-[10px]"></i>
+                                                </button>
+                                            </DropdownMenu.Trigger>
+                                            <DropdownMenu.Portal>
+                                                <DropdownMenu.Content className="z-50 min-w-[120px] bg-white rounded-xl p-1 shadow-xl border border-gray-100 animate-in fade-in zoom-in-95 duration-100" sideOffset={5}>
+                                                    <DropdownMenu.Item onClick={() => onAction(row.id, 'closed')} className="px-3 py-2 text-xs font-bold text-red-600 outline-none cursor-pointer hover:bg-red-50 rounded-lg flex items-center gap-2">
+                                                        <i className="fas fa-times-circle"></i>
+                                                        <span>CLOSE</span>
+                                                    </DropdownMenu.Item>
+                                                    <DropdownMenu.Item onClick={() => setSnoozeModal({ open: true, threadId: row.id })} className="px-3 py-2 text-xs font-bold text-amber-600 outline-none cursor-pointer hover:bg-amber-50 rounded-lg flex items-center gap-2">
+                                                        <i className="fas fa-clock"></i>
+                                                        <span>SNOOZE</span>
+                                                    </DropdownMenu.Item>
+                                                </DropdownMenu.Content>
+                                            </DropdownMenu.Portal>
+                                        </DropdownMenu.Root>
+                                        <Link href={href} className="w-8 h-8 rounded-full bg-[#3E4095] text-white flex items-center justify-center hover:bg-[#2d2f6e] transition-all shadow-md shadow-[#3E4095]/10 active:scale-95">
+                                            <i className="fas fa-arrow-right text-[10px]"></i>
                                         </Link>
                                     </div>
                                 );
@@ -414,16 +422,34 @@ function HelpdeskThreadListCard({
                         }
                     ]}
                     footer={
-                        <div className="px-8 border-t border-gray-50 py-3">
-                            <TablePagination
-                                currentPage={currentPage}
-                                pageCount={page_count}
-                                onPageChange={onPageChange}
-                                hasNext={hasNext}
-                                hasPrevious={hasPrevious}
-                            />
-                        </div>
+                        hasNext && (
+                            <div className="px-8 border-t border-gray-50 py-6 flex justify-center">
+                                <button
+                                    onClick={loadMore}
+                                    disabled={loadingMore}
+                                    className="bg-white border border-[#3E4095] text-[#3E4095] font-black px-8 py-3 rounded-xl text-[10px] uppercase tracking-widest hover:bg-[#3E4095] hover:text-white transition-all shadow-sm active:scale-95 disabled:opacity-50 flex items-center gap-3"
+                                >
+                                    {loadingMore ? (
+                                        <>
+                                            <Spinner size={16} />
+                                            <span>Streaming...</span>
+                                        </>
+                                    ) : (
+                                        <>
+                                            <i className="fas fa-arrow-down"></i>
+                                            <span>Stream More Threads</span>
+                                        </>
+                                    )}
+                                </button>
+                            </div>
+                        )
                     }
+                />
+                <SnoozeModal
+                    open={snoozeModal.open}
+                    close={(open) => setSnoozeModal(prev => ({ ...prev, open }))}
+                    onSnooze={handleSnooze}
+                    loading={actionLoading}
                 />
             </React.Fragment>
         </ResponsiveContainer>

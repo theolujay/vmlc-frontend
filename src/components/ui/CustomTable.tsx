@@ -24,6 +24,7 @@ type CustomTableProps<T> = {
   onSelectRow?: (id: string | number, checked: boolean) => void;
   selectedIds?: (string | number)[];
   getRowId?: (row: T) => string | number;
+  onRowClick?: (row: T) => void;
 };
 
 export default function CustomTable<T extends object>({
@@ -39,6 +40,7 @@ export default function CustomTable<T extends object>({
   onSelectRow,
   selectedIds = [],
   getRowId = (row: T) => (row as Record<string, unknown>).id ? String((row as Record<string, unknown>).id) : JSON.stringify(row),
+  onRowClick,
 }: Readonly<CustomTableProps<T>>) {
   const allSelected =
     data.length > 0 &&
@@ -91,7 +93,11 @@ export default function CustomTable<T extends object>({
               data.map((row, index) => (
                 <tr
                   key={getRowId(row)}
-                  className="border-b border-[#E4E7EC] last:border-0 hover:bg-gray-50 transition-colors"
+                  onClick={() => onRowClick?.(row)}
+                  className={clsx(
+                    "border-b border-[#E4E7EC] last:border-0 hover:bg-gray-50 transition-colors",
+                    onRowClick && "cursor-pointer"
+                  )}
                 >
                   {isAdminOrAbove && (
                     <td className="py-2 px-3">

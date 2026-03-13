@@ -82,14 +82,15 @@ export function OverviewTabs() {
 
     const { data: registrationStatus } = useGetRegistrationStatus();
     const { data: statOverview } = useGetStatOverview();
-    const { data: helpdeskData } = useListHelpdeskThreads(1, {}, hasHelpdeskAccess);
+    const emptyFilters = useMemo(() => ({}), []);
+    const { summary: helpdeskSummary } = useListHelpdeskThreads(emptyFilters, hasHelpdeskAccess);
     const [mounted, setMounted] = useState(false);
 
     useEffect(() => {
         setMounted(true);
     }, []);
 
-    const unreadCount = helpdeskData?.helpdesk_summary_data?.unread_messages ?? statOverview?.helpdesk?.unread_messages ?? 0;
+    const unreadCount = helpdeskSummary?.unattended_candidates ?? statOverview?.helpdesk?.unattended_candidates ?? 0;
 
     const dynamicTabs = useMemo(() => {
         return tabs.map(tab => {
