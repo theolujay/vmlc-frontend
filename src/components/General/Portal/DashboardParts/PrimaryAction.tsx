@@ -31,13 +31,7 @@ const PrimaryAction: React.FC<PrimaryActionProps> = ({ exam, isRankingAvailable 
   const hasRefetchedFor = useRef<string | null>(null);
 
   useEffect(() => {
-    if (!exam || !exam.scheduled_date) return;
-
-    if (exam.status === 'ongoing') {
-      setCanStart(true);
-      setTimeLeft(null);
-      return;
-    }
+    if (!exam) return;
 
     if (exam.status === 'awaiting_results' || exam.status === 'results_published' || exam.status === 'concluded') {
       setCanStart(false);
@@ -45,7 +39,30 @@ const PrimaryAction: React.FC<PrimaryActionProps> = ({ exam, isRankingAvailable 
       return;
     }
 
-    const targetDate = new Date(exam.scheduled_date);
+    // Determine target date: either the deadline (if started) or the scheduled start date (if upcoming)
+    const getTargetDate = () => {
+      if (exam.access_status === 'started' && exam.attempt?.deadline) {
+        const deadline = new Date(exam.attempt.deadline);
+        if (deadline > new Date()) return deadline;
+      }
+
+      if (exam.scheduled_date) {
+        const scheduled = new Date(exam.scheduled_date);
+        if (scheduled > new Date()) return scheduled;
+      }
+
+      return null;
+    };
+
+    const targetDate = getTargetDate();
+
+    if (!targetDate) {
+      if (exam.status === 'ongoing' || exam.access_status === 'started') {
+        setCanStart(true);
+      }
+      setTimeLeft(null);
+      return;
+    }
 
     const updateTimer = () => {
       const now = new Date();
@@ -128,8 +145,8 @@ const PrimaryAction: React.FC<PrimaryActionProps> = ({ exam, isRankingAvailable 
             {isEliminated ? 'Better luck next time!' : 'Awaiting challenge...'}
           </h2>
           <p className="text-[#667185] mt-2 text-sm leading-relaxed">
-            {isEliminated 
-              ? "You didn't make the cut for the next stage this time, but we're rooting for you in your future endeavors!" 
+            {isEliminated
+              ? "You didn't make the cut for the next stage this time, but we're rooting for you in your future endeavors!"
               : "You'll be notified if anything changes"}
           </p>
         </div>
@@ -184,39 +201,74 @@ const PrimaryAction: React.FC<PrimaryActionProps> = ({ exam, isRankingAvailable 
               </div>
             </div>
           ) : (
-             <div className={`p-4 rounded-xl border bg-emerald-50 border-emerald-200`}>
-              <p className={`text-xs font-bold uppercase text-emerald-600`}>Status</p>
-              <p className={`text-lg font-bold mt-1 text-emerald-800`}>
-                {isFinals ? 'Exam Session Active at Venue' : 'Exam is Open!'}
+             <div className={`p-4 rounded-xl border ${exam.access_status === 'started' ? 'bg-amber-50 border-amber-200' : 'bg-emerald-50 border-emerald-200'}`}>
+              <p className={`text-xs font-bold uppercase ${exam.access_status === 'started' ? 'text-amber-600' : 'text-emerald-600'}`}>
+                {exam.access_status === 'started' ? 'Time Remaining' : 'Status'}
               </p>
+              {exam.access_status === 'started' && timeLeft ? (
+                <div className="flex items-center justify-center gap-3 mt-1">
+                  {timeLeft.days > 0 && (
+                    <>
+                      <TimeUnit value={timeLeft.days} unit="Days" />
+                      <div className="text-[#3E4095] font-bold self-start mt-[-2px]">:</div>
+                    </>
+                  )}
+                  <TimeUnit value={timeLeft.hours} unit="Hrs" />
+                  <div className="text-[#3E4095] font-bold self-start mt-[-2px]">:</div>
+                  <TimeUnit value={timeLeft.minutes} unit="Mins" />
+                  <div className="text-[#3E4095] font-bold self-start mt-[-2px]">:</div>
+                  <TimeUnit value={timeLeft.seconds} unit="Secs" />
+                </div>
+              ) : (
+                <p className={`text-lg font-bold mt-1 ${exam.access_status === 'started' ? 'text-amber-800' : 'text-emerald-800'}`}>
+                  {isFinals ? 'Exam Session Active at Venue' : 'Exam is Ongoing!'}
+                </p>
+              )}
             </div>
           )}
 
-                    <button
-                      disabled={!canEnter || isFinals}
-                      onClick={handleStartExam}
-                      className={`w-full py-4 rounded-xl font-bold transition-all uppercase tracking-wider ${
-                        canEnter && !isFinals
-                          ? 'bg-[#3E4095] text-white hover:bg-[#4A4DA8] shadow-lg transform hover:scale-[1.02] cursor-pointer'
-                          : 'bg-[#F0F2F5] text-[#98A2B3] cursor-not-allowed'
-                      }`}
-                    >
-                      {isFinals
-                         ? 'View Venue Logistics'
-                         : hasSubmitted
-                           ? 'SUBMITTED'
-                             : exam.access_status === 'started'
-                               ? 'RESUME EXAM'
-                               : 'START EXAM'}
-                    </button>
-          {!canStart && !hasSubmitted && !isAwaitingResults && (
-             <p className="text-xs text-[#98A2B3] italic font-medium">
-                {isFinals ? 'Venue details will be fully accessible when the window opens.' : 'The start button enables when it\'s exam time.'}
-             </p>
+          {exam.access_status !== 'expired' && (
+            <button
+              disabled={!canEnter || isFinals}
+              onClick={handleStartExam}
+              className={`w-full py-4 rounded-xl font-bold transition-all uppercase tracking-wider ${
+                canEnter && !isFinals
+                  ? 'bg-[#3E4095] text-white hover:bg-[#4A4DA8] shadow-lg transform hover:scale-[1.02] cursor-pointer'
+                  : 'bg-[#F0F2F5] text-[#98A2B3] cursor-not-allowed'
+              }`}
+            >
+              {isFinals
+                ? 'View Venue Logistics'
+                : hasSubmitted
+                  ? 'SUBMITTED'
+                  : exam.access_status === 'started'
+                    ? 'RESUME EXAM'
+                    : 'START EXAM'}
+            </button>
+          )}
+          {!hasSubmitted && !isAwaitingResults && (
+            <p className="text-xs text-[#98A2B3] italic font-medium">
+              {isFinals
+                ? 'Venue details wilFl be fully accessible when the window opens.'
+                : !canStart
+                  ? "The start button enables when it's exam time."
+                  : exam.access_status === 'pending'
+                    ? "Click 'START EXAM' to begin your session. Your timer will start immediately."
+                    : exam.access_status === 'started'
+                      ? "Resume your exam before your time runs out. Good luck!"
+                      : ""}
+            </p>
           )}
           {hasSubmitted && (
             <p className="text-xs text-[#3E4095] italic font-medium">
-                {isAwaitingResults ? 'Ranking will be published shortly.' : 'You have successfully completed this examination.'}
+              {isAwaitingResults
+                ? 'Ranking will be published shortly.'
+                : 'You have successfully completed this examination. Well done!'}
+            </p>
+          )}
+          {exam.access_status === 'expired' && !hasSubmitted && (
+            <p className="text-xs text-red-500 italic font-medium">
+              You&apos;re no longer eligible and the exam window is now closed
             </p>
           )}
         </div>
