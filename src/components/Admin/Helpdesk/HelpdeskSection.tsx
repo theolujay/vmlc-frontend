@@ -222,7 +222,7 @@ function HelpdeskThreadListCard({
                                             <option value="">All Statuses</option>
                                             <option value="open">Open</option>
                                             <option value="in_progress">In Progress</option>
-                                            {/* <option value="closed">Closed</option> */}
+                                            <option value="closed">Closed</option>
                                             <option value="snoozed">Snoozed</option>
                                         </select>
                                     </div>
@@ -387,7 +387,7 @@ function HelpdeskThreadListCard({
                                     <div className="flex justify-center gap-2" onClick={(e) => e.stopPropagation()}>
                                         <DropdownMenu.Root>
                                             <DropdownMenu.Trigger asChild>
-                                                <button className="w-8 h-8 rounded-full border border-gray-200 flex items-center justify-center text-gray-500 hover:bg-gray-50 transition-all outline-none">
+                                                <button className="w-8 h-8 rounded-full border border-gray-200 flex items-center justify-center text-gray-500 hover:bg-[#2d2f6e] hover:text-white hover:cursor-pointer transition-all outline-none">
                                                     <i className="fas fa-arrow-down text-[10px]"></i>
                                                 </button>
                                             </DropdownMenu.Trigger>
