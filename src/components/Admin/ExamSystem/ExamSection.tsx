@@ -10,7 +10,7 @@ import { usePathname, useRouter, useSearchParams } from 'next/navigation'
 import CreateExamSessionModal from '../../Modals/CreateExamSessionModal'
 import EmptySession from '../EmptySession'
 import useListExams from '@/hooks/useListExams'
-import { formatDate } from '@/utils/formatFileSize'
+import { formatDate, formatDateTime } from '@/utils/formatFileSize'
 import { useSortedExams } from '@/hooks/useGetValidDate'
 import useGetStatOverview from '@/hooks/useGetStatOverview'
 import { ExamSessionType } from '@/types/Examtype'
@@ -356,10 +356,12 @@ function RankingSnapshotCard({ ranking, canViewDetails, userRole }: { ranking: R
             <h4 className='text-sm font-bold text-gray-800 uppercase line-clamp-1 group-hover:text-[#3E4095] transition-colors'>
               {formatExamTitle(ranking.exam.title)}
             </h4>
-            <p className='text-[8px] text-gray-400 font-medium flex items-center gap-1.5'>
-              <i className="fas fa-history text-[8px]"></i>
-              Snapshot #{ranking.id}
-            </p>
+            {ranking.scheduled_publish_at && (
+              <p className='text-[8px] text-gray-400 font-medium flex items-center gap-1.5'>
+                <i className="fas fa-history text-[8px]"></i>
+                Scheduled at {formatDateTime(ranking.scheduled_publish_at)}
+              </p>
+            )}
           </div>
 
           <div className="flex items-end justify-between mt-2">
@@ -397,11 +399,11 @@ function RankingSnapshotCard({ ranking, canViewDetails, userRole }: { ranking: R
           ranking.is_published ? "bg-emerald-50 group-hover:bg-emerald-100" : "bg-orange-50 group-hover:bg-orange-100"
         )}></div>
       </div>
-      <PublishRankingModal 
-        examId={ranking.exam.id} 
-        examTitle={ranking.exam.title} 
-        open={openPublishModal} 
-        close={setOpenPublishModal} 
+      <PublishRankingModal
+        examId={ranking.exam.id}
+        examTitle={ranking.exam.title}
+        open={openPublishModal}
+        close={setOpenPublishModal}
       />
     </>
   );

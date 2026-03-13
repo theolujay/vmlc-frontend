@@ -283,6 +283,7 @@ export type RankingSnapshotType = {
     delivery_mode: string;
   };
   entries_count: number;
+  scheduled_publish_at?: string;
   is_published: boolean;
   published_at: string | null;
   created_at: string;
