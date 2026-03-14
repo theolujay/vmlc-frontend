@@ -114,9 +114,27 @@ export default function useListHelpdeskThreads(
   const handleHelpdeskList = useCallback((event: SocketMessage) => {
     const typedEvent = event as unknown as HelpdeskSocketEvent;
     if (typedEvent.type === "helpdesk.list" && typedEvent.data) {
-      setResults(typedEvent.data.results ?? []);
-      if (typedEvent.data.helpdesk_summary_data) {
-        setSummary(typedEvent.data.helpdesk_summary_data);
+      const responseData = typedEvent.data;
+
+      // Validate filters match our current request to ignore stale responses
+      const responseFilters = responseData.filters;
+      if (responseFilters) {
+        const currentFilters = filtersRef.current || {};
+        const isMatchingStatus =
+          (responseFilters.status || "default") ===
+          (currentFilters.status || "default");
+        const isMatchingSearch =
+          (responseFilters.search || "") === (currentFilters.search || "");
+
+        if (!isMatchingStatus || !isMatchingSearch) {
+          // Stale response - ignore it
+          return;
+        }
+      }
+
+      setResults(responseData.results ?? []);
+      if (responseData.helpdesk_summary_data) {
+        setSummary(responseData.helpdesk_summary_data);
       }
       setLoading(false);
       hasFetchedWsRef.current = true;
