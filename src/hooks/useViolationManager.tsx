@@ -1,9 +1,15 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
-import { ViolationType, ViolationEvent, ViolationSummary, HeartbeatMeta } from '@/types/ViolationType';
-import { ExamPortal } from '@/services/examPortal.service';
-import { dataURLtoFile } from '@/utils/formatFileSize';
+import { useState, useEffect, useCallback, useRef } from "react";
+import {
+  ViolationType,
+  ViolationEvent,
+  ViolationSummary,
+  HeartbeatMeta,
+} from "@/types/ViolationType";
+import { ExamPortal } from "@/services/examPortal.service";
+import { dataURLtoFile } from "@/utils/formatFileSize";
+import { isDev } from "@/utils/isDev";
 
-const HEARTBEAT_INTERVAL = 5 * 60 * 1000; // 5 minutes
+const HEARTBEAT_INTERVAL = isDev() ? 60 * 1000 : 5 * 60 * 1000; // 1 minute in dev, 5 minutes in prod
 
 interface BatteryManager {
   level: number;
@@ -23,49 +29,78 @@ export const useViolationManager = (examId: string, startedAt?: string) => {
     NO_FACE: 0,
     ATTENTION_LAPSE: 0,
   });
-  
+
   const eventsRef = useRef<ViolationEvent[]>([]);
-  
+
+  const getPersistedStartedAt = useCallback(() => {
+    if (startedAt) return startedAt;
+    if (typeof window !== "undefined") {
+      return (
+        localStorage.getItem(`vmlc_proctor_started_at_${examId}`) || undefined
+      );
+    }
+    return undefined;
+  }, [examId, startedAt]);
+
   // Calculate current expected sequence based on elapsed time since startedAt
   const getCurrentSequence = useCallback(() => {
-    if (!startedAt) return Number(localStorage.getItem(`vmlc_proctor_seq_${examId}`) || 1);
-    
-    const startTime = new Date(startedAt).getTime();
+    const persistedStartedAt = getPersistedStartedAt();
+    if (!persistedStartedAt)
+      return typeof window !== "undefined"
+        ? Number(localStorage.getItem(`vmlc_proctor_seq_${examId}`) || 1)
+        : 1;
+
+    const startTime = new Date(persistedStartedAt).getTime();
     const now = Date.now();
     const elapsedMs = now - startTime;
-    
+
     // sequence 1 is [0-5min], sequence 2 is [5-10min], etc.
     return Math.floor(elapsedMs / HEARTBEAT_INTERVAL) + 1;
-  }, [examId, startedAt]);
+  }, [examId, getPersistedStartedAt]);
 
   const sequenceNumberRef = useRef<number>(getCurrentSequence());
   const clientUuidRef = useRef<string>(
-    (typeof window !== 'undefined' 
-      ? (localStorage.getItem('vmlc_proctor_uuid') || crypto.randomUUID()) 
-      : '') as string
+    (typeof window !== "undefined"
+      ? localStorage.getItem(`vmlc_proctor_uuid_${examId}`) ||
+        crypto.randomUUID()
+      : "") as string,
   );
   const lastHeartbeatTimeRef = useRef<string>(
-    (typeof window !== 'undefined'
+    (typeof window !== "undefined"
       ? localStorage.getItem(`vmlc_proctor_last_time_${examId}`)
-      : null) || new Date().toISOString()
+      : null) || new Date().toISOString(),
   );
   const getLatestScreenshotRef = useRef<(() => string | null) | null>(null);
+  const heartbeatInProgressRef = useRef(false);
 
   // Store persistent state for session consistency
   useEffect(() => {
-    if (clientUuidRef.current && typeof window !== 'undefined') {
-      localStorage.setItem('vmlc_proctor_uuid', clientUuidRef.current);
-      localStorage.setItem(`vmlc_proctor_seq_${examId}`, sequenceNumberRef.current.toString());
-      localStorage.setItem(`vmlc_proctor_last_time_${examId}`, lastHeartbeatTimeRef.current);
+    if (clientUuidRef.current && typeof window !== "undefined") {
+      localStorage.setItem(
+        `vmlc_proctor_uuid_${examId}`,
+        clientUuidRef.current,
+      );
+      localStorage.setItem(
+        `vmlc_proctor_seq_${examId}`,
+        sequenceNumberRef.current.toString(),
+      );
+      localStorage.setItem(
+        `vmlc_proctor_last_time_${examId}`,
+        lastHeartbeatTimeRef.current,
+      );
+      if (startedAt) {
+        localStorage.setItem(`vmlc_proctor_started_at_${examId}`, startedAt);
+      }
     }
-  }, [examId]);
+  }, [examId, startedAt]);
 
   const getMetadata = useCallback(async (): Promise<HeartbeatMeta> => {
     const ua = navigator.userAgent;
     let browser = "Unknown";
     if (ua.includes("Chrome")) browser = "Chrome";
     else if (ua.includes("Firefox")) browser = "Firefox";
-    else if (ua.includes("Safari")) browser = "Safari";
+    else if (ua.includes("Safari") && !ua.includes("Chrome"))
+      browser = "Safari";
 
     let os = "Unknown";
     if (ua.includes("Win")) os = "Windows";
@@ -82,7 +117,9 @@ export const useViolationManager = (examId: string, startedAt?: string) => {
 
     // Add current question ID from localStorage
     try {
-      const currentIndex = localStorage.getItem(`exam_current_question_${examId}`);
+      const currentIndex = localStorage.getItem(
+        `exam_current_question_${examId}`,
+      );
       const savedShuffled = localStorage.getItem(`shuffled_exam_${examId}`);
       if (currentIndex !== null && savedShuffled) {
         const questions = JSON.parse(savedShuffled);
@@ -98,7 +135,7 @@ export const useViolationManager = (examId: string, startedAt?: string) => {
     // Simple latency check
     try {
       const start = Date.now();
-      await fetch('/favicon.ico', { method: 'HEAD', cache: 'no-store' });
+      await fetch("/favicon.ico", { method: "HEAD", cache: "no-store" });
       meta.network_latency_ms = Date.now() - start;
     } catch (e) {}
 
@@ -115,116 +152,240 @@ export const useViolationManager = (examId: string, startedAt?: string) => {
     return meta;
   }, []);
 
-  const reportViolation = useCallback((type: ViolationType, metadata?: Record<string, unknown>) => {
-    setSummary(prev => ({
-      ...prev,
-      [type]: prev[type] + 1
-    }));
+  const reportViolation = useCallback(
+    (type: ViolationType, metadata?: Record<string, unknown>) => {
+      setSummary((prev) => ({
+        ...prev,
+        [type]: prev[type] + 1,
+      }));
 
-    const highFrequencyTypes: ViolationType[] = ['NO_FACE', 'MULTI_FACE', 'ATTENTION_LAPSE'];
-    const shouldLogDetail = !highFrequencyTypes.includes(type) || 
-      !eventsRef.current.some(e => e.type === type && 
-        (Date.now() - new Date(e.timestamp).getTime()) < 30000
-      );
+      const highFrequencyTypes: ViolationType[] = [
+        "NO_FACE",
+        "MULTI_FACE",
+        "ATTENTION_LAPSE",
+      ];
+      const shouldLogDetail =
+        !highFrequencyTypes.includes(type) ||
+        !eventsRef.current.some(
+          (e) =>
+            e.type === type &&
+            Date.now() - new Date(e.timestamp).getTime() < 30000,
+        );
 
-    if (shouldLogDetail) {
-      // Enrich metadata with current question id
-      const enrichedMetadata = { ...metadata };
+      if (shouldLogDetail) {
+        // Enrich metadata with current question id
+        const enrichedMetadata = { ...metadata };
+        try {
+          const currentIndex = localStorage.getItem(
+            `exam_current_question_${examId}`,
+          );
+          const savedShuffled = localStorage.getItem(`shuffled_exam_${examId}`);
+          if (currentIndex !== null && savedShuffled) {
+            const questions = JSON.parse(savedShuffled);
+            const currentQuestion = questions[Number(currentIndex)];
+            if (currentQuestion) {
+              enrichedMetadata.question_id = currentQuestion.id;
+            }
+          }
+        } catch (e) {}
+
+        eventsRef.current.push({
+          type,
+          timestamp: new Date().toISOString(),
+          metadata: enrichedMetadata,
+        });
+      }
+    },
+    [examId],
+  );
+
+  const sendHeartbeat = useCallback(
+    async (isFinal = false) => {
+      if (!examId) return;
+      if (heartbeatInProgressRef.current && !isFinal) return;
+
+      heartbeatInProgressRef.current = true;
+
+      // Refresh sequence number based on current time
+      sequenceNumberRef.current = getCurrentSequence();
+
+      const periodEnd = new Date().toISOString();
+      const meta = await getMetadata();
+
+      const payload = {
+        sequence_number: sequenceNumberRef.current,
+        client_uuid: clientUuidRef.current as string,
+        timestamp: periodEnd,
+        period_start: lastHeartbeatTimeRef.current,
+        period_end: periodEnd,
+        meta,
+        summary: summary,
+        events: eventsRef.current,
+      };
+
+      let faceCaptureFile: File | undefined;
       try {
-        const currentIndex = localStorage.getItem(`exam_current_question_${examId}`);
-        const savedShuffled = localStorage.getItem(`shuffled_exam_${examId}`);
-        if (currentIndex !== null && savedShuffled) {
-          const questions = JSON.parse(savedShuffled);
-          const currentQuestion = questions[Number(currentIndex)];
-          if (currentQuestion) {
-            enrichedMetadata.question_id = currentQuestion.id;
+        if (getLatestScreenshotRef.current) {
+          const screenshot = getLatestScreenshotRef.current();
+          if (screenshot) {
+            faceCaptureFile = dataURLtoFile(
+              screenshot,
+              `heartbeat_${sequenceNumberRef.current}_${Date.now()}.jpg`,
+            );
           }
         }
-      } catch (e) {}
+      } catch (screenshotError) {
+        console.error(
+          "Failed to capture screenshot for heartbeat",
+          screenshotError,
+        );
+        // Proceed without screenshot
+      }
 
-      eventsRef.current.push({
-        type,
-        timestamp: new Date().toISOString(),
-        metadata: enrichedMetadata
-      });
-    }
-  }, [examId]);
+      try {
+        await ExamPortal.sendHeartbeat(
+          examId,
+          JSON.stringify(payload),
+          faceCaptureFile,
+        );
 
-  const sendHeartbeat = useCallback(async (isFinal = false) => {
-    if (!examId) return;
+        // Reset buffers and increment sequence on success
+        setSummary({
+          TAB_SWITCH: 0,
+          SCREENSHOT: 0,
+          FULLSCREEN_EXIT: 0,
+          MULTI_FACE: 0,
+          NO_FACE: 0,
+          ATTENTION_LAPSE: 0,
+        });
+        eventsRef.current = [];
+        lastHeartbeatTimeRef.current = periodEnd;
 
-    // Refresh sequence number based on current time
-    sequenceNumberRef.current = getCurrentSequence();
+        // Update persistent state
+        localStorage.setItem(
+          `vmlc_proctor_seq_${examId}`,
+          sequenceNumberRef.current.toString(),
+        );
+        localStorage.setItem(
+          `vmlc_proctor_last_time_${examId}`,
+          lastHeartbeatTimeRef.current,
+        );
 
-    const periodEnd = new Date().toISOString();
-    const meta = await getMetadata();
-    
-    const payload = {
-      sequence_number: sequenceNumberRef.current,
-      client_uuid: clientUuidRef.current as string,
-      timestamp: periodEnd,
-      period_start: lastHeartbeatTimeRef.current,
-      period_end: periodEnd,
-      meta,
-      summary: summary,
-      events: eventsRef.current
-    };
+        // Clear any cached failed heartbeats if we had them
+        localStorage.removeItem(`failed_heartbeat_${examId}`);
 
-    let faceCaptureFile: File | undefined;
-    try {
-      if (getLatestScreenshotRef.current) {
-        const screenshot = getLatestScreenshotRef.current();
-        if (screenshot) {
-          faceCaptureFile = dataURLtoFile(screenshot, `heartbeat_${sequenceNumberRef.current}_${Date.now()}.jpg`);
+        heartbeatInProgressRef.current = false;
+      } catch (error) {
+        console.error("Failed to send heartbeat telemetry:", error);
+
+        const isHttpError =
+          error && typeof error === "object" && "response" in error;
+        const status = isHttpError
+          ? (error as { response: { status: number } }).response?.status
+          : 0;
+
+        if (status === 400) {
+          console.warn(
+            "Validation error (400) - incrementing sequence anyway as server likely processed it",
+          );
+          sequenceNumberRef.current += 1;
+          setSummary({
+            TAB_SWITCH: 0,
+            SCREENSHOT: 0,
+            FULLSCREEN_EXIT: 0,
+            MULTI_FACE: 0,
+            NO_FACE: 0,
+            ATTENTION_LAPSE: 0,
+          });
+          eventsRef.current = [];
+          lastHeartbeatTimeRef.current = periodEnd;
+          localStorage.setItem(
+            `vmlc_proctor_seq_${examId}`,
+            sequenceNumberRef.current.toString(),
+          );
+          localStorage.removeItem(`failed_heartbeat_${examId}`);
+          heartbeatInProgressRef.current = false;
+        } else {
+          localStorage.setItem(
+            `failed_heartbeat_${examId}`,
+            JSON.stringify({
+              payload,
+              timestamp: Date.now(),
+            }),
+          );
         }
       }
-    } catch (screenshotError) {
-      console.error("Failed to capture screenshot for heartbeat", screenshotError);
-      // Proceed without screenshot
-    }
+    },
+    [examId, getCurrentSequence, getMetadata, summary],
+  );
 
-    try {
-      await ExamPortal.sendHeartbeat(examId, JSON.stringify(payload), faceCaptureFile);
-      
-      // Reset buffers and increment sequence on success
-      setSummary({
-        TAB_SWITCH: 0,
-        SCREENSHOT: 0,
-        FULLSCREEN_EXIT: 0,
-        MULTI_FACE: 0,
-        NO_FACE: 0,
-        ATTENTION_LAPSE: 0,
-      });
-      eventsRef.current = [];
-      lastHeartbeatTimeRef.current = periodEnd;
-      
-      // Update persistent state
-      localStorage.setItem(`vmlc_proctor_seq_${examId}`, sequenceNumberRef.current.toString());
-      localStorage.setItem(`vmlc_proctor_last_time_${examId}`, lastHeartbeatTimeRef.current);
-      
-      // Clear any cached failed heartbeats if we had them
-      localStorage.removeItem(`failed_heartbeat_${examId}`);
-    } catch (error) {
-      console.error("Failed to send heartbeat telemetry:", error);
-      // Persistent storage for retry
-      localStorage.setItem(`failed_heartbeat_${examId}`, JSON.stringify({
-        payload,
-        timestamp: Date.now()
-      }));
-    }
-  }, [examId, summary, getMetadata]);
+  const sendHeartbeatRef = useRef(sendHeartbeat);
+  sendHeartbeatRef.current = sendHeartbeat;
 
   useEffect(() => {
     if (!examId) return;
-    const interval = setInterval(() => sendHeartbeat(false), HEARTBEAT_INTERVAL);
-    return () => clearInterval(interval);
-  }, [examId, sendHeartbeat]);
+
+    const interval = setInterval(
+      () => sendHeartbeatRef.current(false),
+      HEARTBEAT_INTERVAL,
+    );
+
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === "visible") {
+        sendHeartbeatRef.current(false);
+      }
+    };
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+
+    return () => {
+      clearInterval(interval);
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+    };
+  }, [examId]);
+
+  // Retry failed heartbeats on page load
+  useEffect(() => {
+    if (!examId || typeof window === "undefined") return;
+
+    const retryFailedHeartbeat = async () => {
+      const failedData = localStorage.getItem(`failed_heartbeat_${examId}`);
+      if (!failedData) return;
+
+      try {
+        const { payload } = JSON.parse(failedData);
+        const payloadObj = JSON.parse(payload);
+        await ExamPortal.sendHeartbeat(
+          examId,
+          JSON.stringify(payloadObj),
+          undefined,
+        );
+        localStorage.removeItem(`failed_heartbeat_${examId}`);
+      } catch (error) {
+        const isHttpError =
+          error && typeof error === "object" && "response" in error;
+        const status = isHttpError
+          ? (error as { response: { status: number } }).response?.status
+          : 0;
+
+        if (status === 400) {
+          console.warn(
+            "Retry validation error (400) - skipping failed heartbeat",
+          );
+          localStorage.removeItem(`failed_heartbeat_${examId}`);
+        } else {
+          console.error("Failed to retry heartbeat:", error);
+        }
+      }
+    };
+
+    retryFailedHeartbeat();
+  }, [examId]);
 
   return {
     reportViolation,
     sendFinalHeartbeat: () => sendHeartbeat(true),
     registerScreenshotProvider: (fn: () => string | null) => {
       getLatestScreenshotRef.current = fn;
-    }
+    },
   };
 };

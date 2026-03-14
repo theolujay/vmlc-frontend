@@ -10,7 +10,11 @@ This document specifies the endpoints and data structures for the proctoring hea
 **Authentication:** Required (Candidate)
 **Content-Type:** `multipart/form-data`
 
-Used by the exam client to periodically (e.g., every 5 minutes) sync violation telemetry and environment snapshots.
+Used by the exam client to periodically (every 5 minutes) sync violation telemetry and environment snapshots.
+
+### Validation Rules
+
+The server validates that each heartbeat covers approximately a 5-minute interval (±30 seconds tolerance). If the interval deviates significantly, the request is rejected with a validation error.
 
 ### Request Fields
 
@@ -97,15 +101,23 @@ Provides a comprehensive, chronological timeline of a candidate's exam attempt f
       "type": "heartbeat",
       "sequence_number": 1,
       "timestamp": "2026-03-14T10:05:00Z",
+      "period_start": "2026-03-14T10:00:00Z",
+      "period_end": "2026-03-14T10:05:00Z",
       "face_capture_url": "https://vmlc-private.s3.amazonaws.com/...",
       "suspicion_score": 0.05,
       "summary": { "TAB_SWITCH": 0 },
       "events": []
     },
     {
-      "type": "telemetry_gap",
+      "type": "sequence_gap",
       "expected_sequence": 2,
       "message": "Missing heartbeat(s) between Seq 1 and Seq 3"
+    },
+    {
+      "type": "time_gap",
+      "expected_duration_seconds": 300,
+      "actual_duration_seconds": 480,
+      "message": "Time gap of 8.0 min (expected ~5 min)"
     },
     {
       "type": "heartbeat",
@@ -123,6 +135,24 @@ Provides a comprehensive, chronological timeline of a candidate's exam attempt f
   ]
 }
 ```
+
+### Timeline Entry Types
+
+The timeline can contain the following entry types:
+
+| Type | Description |
+| :--- | :--- |
+| `heartbeat` | A valid telemetry submission from the candidate. |
+| `sequence_gap` | Missing sequence numbers detected (e.g., sequences 1, 2, 5 → gap at 3, 4). Indicates either network issues or candidate left the portal. |
+| `time_gap` | Excessive time between heartbeats beyond the expected 5-minute interval + tolerance. Indicates network disruption or candidate inactivity. |
+
+### Gap Detection Rationale
+
+Sequences map to time intervals (Sequence 1: 0-5 min, Sequence 2: 5-10 min, etc.). This design efficiently uncovers gaps which reveal either:
+- Candidate's network was poor/unstable
+- Deliberate interruption (e.g., leaving the portal)
+
+Both sequence gaps and time gaps are reported to help administrators assess exam integrity.
 
 ---
 

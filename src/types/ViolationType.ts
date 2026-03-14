@@ -1,12 +1,12 @@
-export type ViolationType = 
-  | 'TAB_SWITCH' 
-  | 'SCREENSHOT' 
-  | 'FULLSCREEN_EXIT' 
-  | 'MULTI_FACE' 
-  | 'NO_FACE' 
-  | 'ATTENTION_LAPSE';
+export type ViolationType =
+  | "TAB_SWITCH"
+  | "SCREENSHOT"
+  | "FULLSCREEN_EXIT"
+  | "MULTI_FACE"
+  | "NO_FACE"
+  | "ATTENTION_LAPSE";
 
-export type ProctoringStatus = 'clear' | 'suspicious' | 'flagged' | null;
+export type ProctoringStatus = "clear" | "suspicious" | "flagged" | null;
 
 export interface ViolationEvent {
   type: ViolationType;
@@ -56,7 +56,7 @@ export interface ProctoringSummary {
 }
 
 export interface TimelineHeartbeat {
-  type: 'heartbeat';
+  type: "heartbeat";
   sequence_number: number;
   timestamp: string;
   face_capture_url: string;
@@ -66,13 +66,20 @@ export interface TimelineHeartbeat {
   events: ViolationEvent[];
 }
 
-export interface TimelineGap {
-  type: 'telemetry_gap';
+export interface TimelineSequenceGap {
+  type: "sequence_gap";
   expected_sequence: number;
-  detected_at?: string;
-  duration_seconds?: number;
   message: string;
 }
+
+export interface TimelineTimeGap {
+  type: "time_gap";
+  expected_duration_seconds: number;
+  actual_duration_seconds: number;
+  message: string;
+}
+
+export type TimelineGap = TimelineSequenceGap | TimelineTimeGap;
 
 export type TimelineEntry = TimelineHeartbeat | TimelineGap;
 
