@@ -28,6 +28,7 @@ export const useViolationManager = (examId: string, startedAt?: string) => {
     MULTI_FACE: 0,
     NO_FACE: 0,
     ATTENTION_LAPSE: 0,
+    DEVTOOLS_OPEN: 0,
   });
 
   const eventsRef = useRef<ViolationEvent[]>([]);
@@ -113,7 +114,23 @@ export const useViolationManager = (examId: string, startedAt?: string) => {
       os,
       browser,
       screen_resolution: `${window.screen.width}x${window.screen.height}`,
+      viewport_width: window.innerWidth,
+      viewport_height: window.innerHeight,
+      timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+      language: navigator.language,
+      is_online: navigator.onLine,
+      touch_support: "ontouchstart" in window || navigator.maxTouchPoints > 0,
+      device_memory: (navigator as unknown as { deviceMemory?: number })
+        .deviceMemory,
     };
+
+    // Connection type (Network Information API)
+    const nav = navigator as unknown as {
+      connection?: { effectiveType?: string };
+    };
+    if (nav.connection?.effectiveType) {
+      meta.connection_type = nav.connection.effectiveType;
+    }
 
     // Add current question ID from localStorage
     try {
@@ -150,7 +167,7 @@ export const useViolationManager = (examId: string, startedAt?: string) => {
     } catch (e) {}
 
     return meta;
-  }, []);
+  }, [examId]);
 
   const reportViolation = useCallback(
     (type: ViolationType, metadata?: Record<string, unknown>) => {
@@ -210,13 +227,19 @@ export const useViolationManager = (examId: string, startedAt?: string) => {
       sequenceNumberRef.current = getCurrentSequence();
 
       const periodEnd = new Date().toISOString();
+      // For first heartbeat (sequence 1), simulate a full period by backdating period_start
+      // This aligns with backend expectation of ~5 min intervals
+      const periodStart =
+        sequenceNumberRef.current === 1
+          ? new Date(Date.now() - HEARTBEAT_INTERVAL).toISOString()
+          : lastHeartbeatTimeRef.current;
       const meta = await getMetadata();
 
       const payload = {
         sequence_number: sequenceNumberRef.current,
         client_uuid: clientUuidRef.current as string,
         timestamp: periodEnd,
-        period_start: lastHeartbeatTimeRef.current,
+        period_start: periodStart,
         period_end: periodEnd,
         meta,
         summary: summary,
@@ -257,6 +280,7 @@ export const useViolationManager = (examId: string, startedAt?: string) => {
           MULTI_FACE: 0,
           NO_FACE: 0,
           ATTENTION_LAPSE: 0,
+          DEVTOOLS_OPEN: 0,
         });
         eventsRef.current = [];
         lastHeartbeatTimeRef.current = periodEnd;
@@ -296,6 +320,7 @@ export const useViolationManager = (examId: string, startedAt?: string) => {
             MULTI_FACE: 0,
             NO_FACE: 0,
             ATTENTION_LAPSE: 0,
+            DEVTOOLS_OPEN: 0,
           });
           eventsRef.current = [];
           lastHeartbeatTimeRef.current = periodEnd;
@@ -384,6 +409,9 @@ export const useViolationManager = (examId: string, startedAt?: string) => {
   return {
     reportViolation,
     sendFinalHeartbeat: () => sendHeartbeat(true),
+    startHeartbeats: () => {
+      sendHeartbeatRef.current(false);
+    },
     registerScreenshotProvider: (fn: () => string | null) => {
       getLatestScreenshotRef.current = fn;
     },
