@@ -25,6 +25,7 @@ export default function HeaderTimer({
   const [isSyncing, setIsSyncing] = useState(false);
   const serverDeadlineRef = useRef<string | null>(deadline || null);
   const hasSubmitted = useRef(false);
+  const isInitialized = useRef(false);
 
   const syncWithServer = useCallback(async () => {
     if (!examId) return null;
@@ -46,6 +47,7 @@ export default function HeaderTimer({
     }
   }, [examId]);
 
+  // Fetch initial time and set up local countdown
   useEffect(() => {
     if (!examId) return;
 
@@ -54,36 +56,57 @@ export default function HeaderTimer({
 
       if (serverRemaining !== null) {
         setTimeLeft(serverRemaining);
+        isInitialized.current = true;
+        // Start local countdown now that we have deadline
+        startLocalCountdown();
       } else if (deadline) {
         const remaining = Math.floor(
           (new Date(deadline).getTime() - Date.now()) / 1000,
         );
         setTimeLeft(Math.max(0, remaining));
+        isInitialized.current = true;
+        startLocalCountdown();
       } else {
         setTimeLeft(timer * 60);
+        isInitialized.current = true;
       }
     };
 
+    let countdownInterval: NodeJS.Timeout;
+
+    const startLocalCountdown = () => {
+      countdownInterval = setInterval(() => {
+        if (serverDeadlineRef.current) {
+          const deadline = new Date(serverDeadlineRef.current).getTime();
+          const now = Date.now();
+          const remaining = Math.floor((deadline - now) / 1000);
+          setTimeLeft(Math.max(0, remaining));
+        }
+      }, 1000);
+    };
+
     initTime();
+
+    return () => {
+      if (countdownInterval) clearInterval(countdownInterval);
+    };
   }, [examId, deadline, timer, syncWithServer, setTimeLeft]);
 
+  // Server sync every 30 seconds to update deadline reference
   useEffect(() => {
     if (!examId) return;
 
-    const interval = setInterval(async () => {
-      const serverRemaining = await syncWithServer();
-
-      if (serverRemaining !== null) {
-        setTimeLeft(serverRemaining);
-      } else {
-        setTimeLeft((prev) => Math.max(0, prev - 1));
-      }
+    const syncInterval = setInterval(async () => {
+      await syncWithServer();
     }, 30000);
 
-    return () => clearInterval(interval);
-  }, [examId, syncWithServer, setTimeLeft]);
+    return () => clearInterval(syncInterval);
+  }, [examId, syncWithServer]);
 
   useEffect(() => {
+    // Don't submit until we've initialized with server time
+    if (!isInitialized.current) return;
+
     if (timeLeft <= 0) {
       if (!hasSubmitted.current) {
         hasSubmitted.current = true;
