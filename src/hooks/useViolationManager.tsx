@@ -14,7 +14,7 @@ interface NavigatorWithBattery extends Navigator {
   getBattery?: () => Promise<BatteryManager>;
 }
 
-export const useViolationManager = (examId: string) => {
+export const useViolationManager = (examId: string, startedAt?: string) => {
   const [summary, setSummary] = useState<ViolationSummary>({
     TAB_SWITCH: 0,
     SCREENSHOT: 0,
@@ -25,21 +25,40 @@ export const useViolationManager = (examId: string) => {
   });
   
   const eventsRef = useRef<ViolationEvent[]>([]);
-  const sequenceNumberRef = useRef<number>(1);
+  
+  // Calculate current expected sequence based on elapsed time since startedAt
+  const getCurrentSequence = useCallback(() => {
+    if (!startedAt) return Number(localStorage.getItem(`vmlc_proctor_seq_${examId}`) || 1);
+    
+    const startTime = new Date(startedAt).getTime();
+    const now = Date.now();
+    const elapsedMs = now - startTime;
+    
+    // sequence 1 is [0-5min], sequence 2 is [5-10min], etc.
+    return Math.floor(elapsedMs / HEARTBEAT_INTERVAL) + 1;
+  }, [examId, startedAt]);
+
+  const sequenceNumberRef = useRef<number>(getCurrentSequence());
   const clientUuidRef = useRef<string>(
     (typeof window !== 'undefined' 
       ? (localStorage.getItem('vmlc_proctor_uuid') || crypto.randomUUID()) 
       : '') as string
   );
-  const lastHeartbeatTimeRef = useRef<string>(new Date().toISOString());
+  const lastHeartbeatTimeRef = useRef<string>(
+    (typeof window !== 'undefined'
+      ? localStorage.getItem(`vmlc_proctor_last_time_${examId}`)
+      : null) || new Date().toISOString()
+  );
   const getLatestScreenshotRef = useRef<(() => string | null) | null>(null);
 
-  // Store UUID for session consistency
+  // Store persistent state for session consistency
   useEffect(() => {
-    if (clientUuidRef.current) {
+    if (clientUuidRef.current && typeof window !== 'undefined') {
       localStorage.setItem('vmlc_proctor_uuid', clientUuidRef.current);
+      localStorage.setItem(`vmlc_proctor_seq_${examId}`, sequenceNumberRef.current.toString());
+      localStorage.setItem(`vmlc_proctor_last_time_${examId}`, lastHeartbeatTimeRef.current);
     }
-  }, []);
+  }, [examId]);
 
   const getMetadata = useCallback(async (): Promise<HeartbeatMeta> => {
     const ua = navigator.userAgent;
@@ -60,6 +79,21 @@ export const useViolationManager = (examId: string) => {
       browser,
       screen_resolution: `${window.screen.width}x${window.screen.height}`,
     };
+
+    // Add current question ID from localStorage
+    try {
+      const currentIndex = localStorage.getItem(`exam_current_question_${examId}`);
+      const savedShuffled = localStorage.getItem(`shuffled_exam_${examId}`);
+      if (currentIndex !== null && savedShuffled) {
+        const questions = JSON.parse(savedShuffled);
+        const currentQuestion = questions[Number(currentIndex)];
+        if (currentQuestion) {
+          meta.current_question_id = currentQuestion.id;
+        }
+      }
+    } catch (e) {
+      console.error("Failed to parse current question for heartbeat", e);
+    }
 
     // Simple latency check
     try {
@@ -94,16 +128,33 @@ export const useViolationManager = (examId: string) => {
       );
 
     if (shouldLogDetail) {
+      // Enrich metadata with current question id
+      const enrichedMetadata = { ...metadata };
+      try {
+        const currentIndex = localStorage.getItem(`exam_current_question_${examId}`);
+        const savedShuffled = localStorage.getItem(`shuffled_exam_${examId}`);
+        if (currentIndex !== null && savedShuffled) {
+          const questions = JSON.parse(savedShuffled);
+          const currentQuestion = questions[Number(currentIndex)];
+          if (currentQuestion) {
+            enrichedMetadata.question_id = currentQuestion.id;
+          }
+        }
+      } catch (e) {}
+
       eventsRef.current.push({
         type,
         timestamp: new Date().toISOString(),
-        metadata
+        metadata: enrichedMetadata
       });
     }
-  }, []);
+  }, [examId]);
 
   const sendHeartbeat = useCallback(async (isFinal = false) => {
     if (!examId) return;
+
+    // Refresh sequence number based on current time
+    sequenceNumberRef.current = getCurrentSequence();
 
     const periodEnd = new Date().toISOString();
     const meta = await getMetadata();
@@ -146,7 +197,10 @@ export const useViolationManager = (examId: string) => {
       });
       eventsRef.current = [];
       lastHeartbeatTimeRef.current = periodEnd;
-      sequenceNumberRef.current += 1;
+      
+      // Update persistent state
+      localStorage.setItem(`vmlc_proctor_seq_${examId}`, sequenceNumberRef.current.toString());
+      localStorage.setItem(`vmlc_proctor_last_time_${examId}`, lastHeartbeatTimeRef.current);
       
       // Clear any cached failed heartbeats if we had them
       localStorage.removeItem(`failed_heartbeat_${examId}`);

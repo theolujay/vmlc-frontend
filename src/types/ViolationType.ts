@@ -30,6 +30,7 @@ export interface HeartbeatMeta {
   battery_level?: number;
   is_charging?: boolean;
   network_latency_ms?: number;
+  current_question_id?: number | null;
 }
 
 export interface HeartbeatPayload {
@@ -60,6 +61,7 @@ export interface TimelineHeartbeat {
   timestamp: string;
   face_capture_url: string;
   suspicion_score: number;
+  meta?: HeartbeatMeta;
   summary: Partial<ViolationSummary>;
   events: ViolationEvent[];
 }

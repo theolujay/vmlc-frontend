@@ -1,5 +1,6 @@
 import { RequestUserType } from "./auth";
 import { PaginationType } from "./Examtype";
+import { ProctoringSummary } from "./ViolationType";
 
 export type LeaderType = {
   rank: number;
@@ -109,6 +110,7 @@ export type ViewCandidateDetailType = {
     auto_score?: boolean;
     started_at?: string | null;
     submitted_at?: string | null;
+    proctoring_summary?: ProctoringSummary;
     submissions: SubmissionItem[];
   };
 };

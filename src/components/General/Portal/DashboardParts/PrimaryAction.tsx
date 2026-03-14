@@ -71,9 +71,11 @@ const PrimaryAction: React.FC<PrimaryActionProps> = ({ exam, isRankingAvailable 
       if (diff <= 0) {
         setCanStart(true);
         setTimeLeft(null);
-        if (onCountdownEnd && hasRefetchedFor.current !== exam.id) {
+        if (hasRefetchedFor.current !== exam.id) {
           hasRefetchedFor.current = exam.id;
-          setTimeout(onCountdownEnd, 500);
+          if (onCountdownEnd) onCountdownEnd();
+          // Force a hard refresh to update the exam status and transition the UI
+          window.location.reload();
         }
         return true;
       }
@@ -249,8 +251,8 @@ const PrimaryAction: React.FC<PrimaryActionProps> = ({ exam, isRankingAvailable 
           {!hasSubmitted && !isAwaitingResults && (
             <p className="text-xs text-[#98A2B3] italic font-medium">
               {isFinals
-                ? 'Venue details wilFl be fully accessible when the window opens.'
-                : !canStart
+                ? 'Venue details will be fully accessible when the window opens.'
+                : !canStart && exam.access_status !== 'started'
                   ? "The start button enables when it's exam time."
                   : exam.access_status === 'pending'
                     ? "Click 'START EXAM' to begin your session. Your timer will start immediately."

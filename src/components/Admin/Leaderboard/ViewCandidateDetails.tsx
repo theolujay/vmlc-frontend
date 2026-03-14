@@ -63,7 +63,7 @@ export default function ViewCandidateDetails({ candidate_id, exam_id, isLeagueCu
         isLeagueCumulative
     });
 
-    const { data: auditData, isLoading: auditLoading } = useGetIntegrityAudit(exam_id, candidate_id, auditOpen);
+    const { data: auditData, isLoading: auditLoading } = useGetIntegrityAudit(exam_id, candidate_id, true);
     const { mutate: updateStatus, isPending: updatingStatus } = useUpdateProctoringStatus(exam_id, candidate_id);
 
     const isRanking = !!exam_id && !isLeagueCumulative;
@@ -129,7 +129,7 @@ export default function ViewCandidateDetails({ candidate_id, exam_id, isLeagueCu
                     percentile={performanceData?.percentile}
                     currentClass={candidateInfo?.current_class}
                     timeUsed={performanceData?.time_used}
-                    proctoringSummary={auditData?.proctoring_summary}
+                    proctoringSummary={performanceData?.proctoring_summary || auditData?.proctoring_summary}
                     auditLoading={auditLoading && auditOpen}
                     auditOpen={auditOpen}
                     onAuditToggle={() => setAuditOpen(!auditOpen)}
@@ -392,7 +392,7 @@ function CandidateInfoCard({
         {!isLeague && (
             <div className="mt-2 pt-6 border-t border-gray-100 flex flex-col md:flex-row items-center justify-between gap-6">
                 <div className="flex flex-wrap items-center gap-x-8 gap-y-4">
-                    <div className="flex flex-col gap-1">
+                    <div className="flex flex-col gap-1 items-center">
                         <span className="text-[10px] font-bold text-grey-500 uppercase tracking-wider">Proctoring Status</span>
                         <div className="flex items-center gap-3">
                             <ProctoringStatusBadge status={proctoringSummary?.status || null} />
@@ -406,7 +406,7 @@ function CandidateInfoCard({
 
                     <div className="w-px h-8 bg-gray-100 hidden md:block"></div>
 
-                    <div className="flex flex-col gap-1">
+                    <div className="flex flex-col gap-1 items-center">
                         <span className="text-[10px] font-bold text-grey-500 uppercase tracking-wider">Integrity Score</span>
                         <p className="font-black text-[#101828] text-sm">
                             {proctoringSummary ? `${(proctoringSummary.integrity_score * 100).toFixed(0)}%` : 'N/A'}
@@ -415,7 +415,7 @@ function CandidateInfoCard({
 
                     <div className="w-px h-8 bg-gray-100 hidden md:block"></div>
 
-                    <div className="flex flex-col gap-1">
+                    <div className="flex flex-col gap-1 items-center">
                         <span className="text-[10px] font-bold text-grey-500 uppercase tracking-wider">Violations</span>
                         <p className="font-black text-[#101828] text-sm">
                             {proctoringSummary ? `${proctoringSummary.total_violations} Total / ${proctoringSummary.critical_violations} Critical` : 'N/A'}
@@ -424,13 +424,11 @@ function CandidateInfoCard({
                 </div>
 
                 <button
-                    disabled={!proctoringSummary}
                     onClick={onAuditToggle}
                     className={clsx(
                         "w-full md:w-auto px-6 py-3 rounded-xl font-black text-[10px] tracking-widest uppercase transition-all flex items-center justify-center gap-2",
-                        !proctoringSummary ? "bg-gray-50 text-gray-300 cursor-not-allowed" :
-                        auditOpen 
-                            ? "bg-gray-100 text-gray-600 hover:bg-gray-200" 
+                        auditOpen
+                            ? "bg-gray-100 text-gray-600 hover:bg-gray-200"
                             : "bg-[#3E4095] text-white shadow-lg shadow-[#3E4095]/20 hover:-translate-y-0.5 active:scale-95"
                     )}
                 >
@@ -439,7 +437,7 @@ function CandidateInfoCard({
                     ) : (
                         <i className={clsx("fas", auditOpen ? "fa-times" : "fa-shield-alt")}></i>
                     )}
-                    <span>{auditOpen ? 'Close Audit' : 'Audit Deep-Dive'}</span>
+                    <span>{auditOpen ? 'Close Review' : 'Review Session'}</span>
                 </button>
             </div>
         )}
@@ -585,25 +583,25 @@ function ProctoringStatusBadge({ status }: { status: ProctoringStatus }) {
     switch (status) {
         case 'clear':
             return (
-                <span className="text-[10px] font-black px-3 py-1.5 rounded-full border border-emerald-500/30 bg-emerald-50 text-emerald-600 tracking-widest uppercase">
+                <span className="text-[10px] font-black px-2 py-1 rounded-full border border-emerald-500/30 bg-emerald-50 text-emerald-600 tracking-widest uppercase">
                     Clear
                 </span>
             );
         case 'suspicious':
             return (
-                <span className="text-[10px] font-black px-3 py-1.5 rounded-full border border-amber-500/30 bg-amber-50 text-amber-600 tracking-widest uppercase">
+                <span className="text-[10px] font-black px-2 py-1 rounded-full border border-amber-500/30 bg-amber-50 text-amber-600 tracking-widest uppercase">
                     Suspicious
                 </span>
             );
         case 'flagged':
             return (
-                <span className="text-[10px] font-black px-3 py-1.5 rounded-full border border-rose-500/30 bg-rose-50 text-rose-600 tracking-widest uppercase animate-pulse">
+                <span className="text-[10px] font-black px-2 py-1 rounded-full border border-rose-500/30 bg-rose-50 text-rose-600 tracking-widest uppercase animate-pulse">
                     Flagged
                 </span>
             );
         default:
             return (
-                <span className="text-[10px] font-black px-3 py-1.5 rounded-full border border-gray-200 bg-gray-50 text-gray-400 tracking-widest uppercase">
+                <span className="text-[10px] font-black px-2 py-1 rounded-full border border-gray-200 bg-gray-50 text-gray-400 tracking-widest uppercase">
                     N/A
                 </span>
             );
@@ -629,8 +627,8 @@ function IntegrityAuditTimeline({
                         <i className="fas fa-history text-lg"></i>
                     </div>
                     <div>
-                        <h3 className="text-lg font-bold text-[#101828] uppercase tracking-tight">Audit Timeline</h3>
-                        <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Chronological Heartbeat Sequence</p>
+                        <h3 className="text-lg font-bold text-[#101828] uppercase tracking-tight">Review Timeline</h3>
+                        <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Exam Activity in Chronological Order</p>
                     </div>
                 </div>
 
@@ -668,14 +666,14 @@ function IntegrityAuditTimeline({
 
             <div className="mt-4 p-6 bg-gray-50 rounded-3xl border border-gray-100">
                 <div className="flex items-start gap-4">
-                    <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center text-blue-600 shrink-0">
+                    <div className="w-8 h-8 bg-[#3E4095]/10 rounded-lg flex items-center justify-center text-[#3E4095] border border-[#3E4095]/25 shrink-0">
                         <i className="fas fa-info-circle text-sm"></i>
                     </div>
                     <div>
-                        <h4 className="text-xs font-bold text-gray-800 uppercase tracking-wider mb-1">How to audit</h4>
+                        <h4 className="text-xs font-bold text-[#3E4095] uppercase tracking-wider mb-1">How to review this exam session</h4>
                         <p className="text-[11px] text-gray-500 leading-relaxed">
-                            Review the snapshots and suspicious events. If a &quot;Gap&quot; is detected, it means the candidate&apos;s browser was offline or heartbeats were intentionally blocked.
-                            Use the override buttons above to finalize your proctoring decision.
+                            Look through the snapshots and any flagged events below. If you see a &quot;Gap,&quot; it means we lost connection to the candidate&apos;s browser during the exam &mdash; this could be due to internet issues or deliberate interference such as leaving the portal.
+                            Once you&apos;ve reviewed everything, use the buttons above to record your final decision.
                         </p>
                     </div>
                 </div>
@@ -704,20 +702,31 @@ function TimelineNode({ entry, submissions }: { entry: TimelineEntry; submission
 
     const hasViolations = entry.events.length > 0;
     const isCritical = entry.suspicion_score > 0.7;
+    
+    // Extract current question from metadata if available
+    const currentQuestionId = entry.meta?.current_question_id;
+    const activeQuestion = currentQuestionId ? submissions.find(s => s.question.id === currentQuestionId)?.question : null;
 
     return (
         <div className="relative">
             <div className={clsx(
                 "absolute -left-10.25 top-0 w-4 h-4 rounded-full border-4 border-white shadow-sm ring-4",
-                isCritical ? "bg-rose-500 ring-rose-50" :
+                isCritical ? "bg-rose-500 ring-rose-50" : 
                 hasViolations ? "bg-amber-500 ring-amber-50" : "bg-emerald-500 ring-emerald-50"
             )}></div>
-
+            
             <div className="flex flex-col gap-4">
                 <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
                         <span className="text-[10px] font-black text-gray-400 uppercase tracking-tighter bg-gray-50 px-2 py-1 rounded">Seq #{entry.sequence_number}</span>
                         <span className="text-xs font-bold text-gray-800 tracking-tight">{formatDateTime(entry.timestamp)}</span>
+                        
+                        {activeQuestion && (
+                            <div className="flex items-center gap-1.5 px-2 py-1 bg-blue-50 text-[#3E4095] rounded-lg border border-blue-100/50 ml-2" title={activeQuestion.text}>
+                                <i className="fas fa-question-circle text-[8px]"></i>
+                                <span className="text-[9px] font-black uppercase tracking-tighter">Viewing Q#{activeQuestion.id}</span>
+                            </div>
+                        )}
                     </div>
                     <div className="flex items-center gap-2">
                         <span className="text-[9px] font-bold text-gray-400 uppercase tracking-widest">Suspicion:</span>

@@ -13,6 +13,7 @@ import { shuffleArray } from '@/utils/generalUtils';
 import { TakeExamType, TakeExamQuestionType } from '@/types/Examtype';
 import HelpdeskButton from '../General/Portal/DashboardParts/HelpdeskButton';
 import useGetCurrentUser from '@/hooks/useGetCurrentUser';
+import clsx from 'clsx';
 import { AxiosError } from 'axios';
 
 // Local types for shuffling logic
@@ -30,13 +31,14 @@ export default function Exam() {
   const examId = params?.examId as string;
 
   const [examStarted, setExamStarted] = useState(false);
+  const [isAgreed, setIsAgreed] = useState(false);
   const { isPending, data, isError, error } = useCandidateTakeExam(examId, examStarted);
   const { data: dashboardData, isPending: dashboardPending } = useGetExamPortal();
   const [answers, setAnswers] = useState<Record<number, string>>({});
   const { onSubmit, isPending: submitPending } = useSubmitAnswers(examId)
   const [isLoaded, setIsLoaded] = useState(false);
 
-  const { reportViolation, registerScreenshotProvider, sendFinalHeartbeat } = useViolationManager(examId);
+  const { reportViolation, registerScreenshotProvider, sendFinalHeartbeat } = useViolationManager(examId, data?.attempt?.started_at);
 
   const handleReturnToExam = useCallback(() => {
     // Refresh page as requested to reset environment and sync state
@@ -200,6 +202,8 @@ export default function Exam() {
       localStorage.removeItem(`exam_current_question_${examId}`);
       localStorage.removeItem(`shuffled_exam_${examId}`);
       localStorage.removeItem(`vmlc_proctor_uuid`);
+      localStorage.removeItem(`vmlc_proctor_seq_${examId}`);
+      localStorage.removeItem(`vmlc_proctor_last_time_${examId}`);
     } catch (error) {
       console.error("Submission failed", error);
     }
@@ -219,7 +223,7 @@ export default function Exam() {
       return (
         <div
           onClick={() => router.push('/exam-portal')}
-          className="flex flex-col items-center justify-center min-h-screen bg-black/40 p-6 text-center backdrop-blur-sm fixed inset-0 z-[9999] cursor-pointer"
+          className="flex flex-col items-center justify-center min-h-screen bg-black/40 p-6 text-center backdrop-blur-sm fixed inset-0 z-9999 cursor-pointer"
         >
           <div
             onClick={(e) => e.stopPropagation()}
@@ -260,14 +264,44 @@ export default function Exam() {
             <i className="fas fa-expand-arrows-alt text-3xl"></i>
           </div>
           <h1 className="text-3xl font-black text-gray-800 mb-4">Secure Exam Environment</h1>
-          <p className="text-gray-600 mb-8 leading-relaxed">
-            This examination requires a secure, full-screen environment.
-            Once you start, switching tabs, taking screenshots, or exiting full-screen mode
-            will be flagged as suspicious activity.
-          </p>
+          <div className="text-left bg-gray-50 p-6 rounded-2xl border border-gray-100 mb-8">
+            <p className="text-xs font-black text-[#3E4095] uppercase tracking-widest mb-4">Instructions & Rules:</p>
+            <ul className="space-y-3">
+              {[
+                  "This examination requires a secure, full-screen environment.",
+                  "Switching tabs or minimizing the browser is not allowed.",
+                  "Exiting full-screen mode will be recorded as a suspicious activity.",
+                  "Taking screenshots or screen captures will be flagged.",
+                  "Do not exit the portal once your exam has started. Contact Helpdesk if you encounter an issue.",
+                  "Ensure you are in a quiet environment and remain visible to the camera at all times.",
+              ].map((text, i) => (
+                <li key={i} className="flex gap-3 text-sm text-gray-600 leading-relaxed font-medium">
+                  <span className="shrink-0 w-5 h-5 rounded-full bg-[#3E4095]/10 text-[#3E4095] flex items-center justify-center text-[10px] font-bold">{i+1}</span>
+                  {text}
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          <div className="flex items-center justify-center gap-3 mb-8 cursor-pointer group" onClick={() => setIsAgreed(!isAgreed)}>
+            <div className={clsx(
+              "w-6 h-6 rounded-lg border-2 flex items-center justify-center transition-all",
+              isAgreed ? "bg-[#3E4095] border-[#3E4095]" : "border-gray-300 group-hover:border-[#3E4095]"
+            )}>
+              {isAgreed && <i className="fas fa-check text-white text-xs"></i>}
+            </div>
+            <span className="text-sm font-bold text-gray-700 select-none">I understand and agree to the exam rules.</span>
+          </div>
+
           <button
+            disabled={!isAgreed}
             onClick={handleStartExam}
-            className="px-10 py-5 bg-[#3E4095] text-white rounded-2xl font-black text-sm uppercase tracking-widest shadow-xl shadow-[#3E4095]/20 hover:scale-105 transition-all active:scale-95"
+            className={clsx(
+              "w-full py-5 rounded-2xl font-black text-sm uppercase tracking-widest transition-all",
+              isAgreed
+                ? "bg-[#3E4095] text-white shadow-xl shadow-[#3E4095]/20 hover:scale-[1.02] active:scale-95 cursor-pointer"
+                : "bg-gray-200 text-gray-400 cursor-not-allowed"
+            )}
           >
             Enter Fullscreen & Start Exam
           </button>
