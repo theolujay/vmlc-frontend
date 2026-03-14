@@ -14,7 +14,10 @@ import MathRenderer from '@/components/Exam/MathRenderer'
 import RankMedal from '../Competition/RankMedal'
 import ProfileModal from '@/components/Modals/ProfileModal'
 import useGetAccountMgt from '@/hooks/useGetAccountMgt'
-import { SubmissionItem } from '@/types/LeaderBoardType'
+import useGetIntegrityAudit from '@/hooks/useGetIntegrityAudit'
+import useUpdateProctoringStatus from '@/hooks/useUpdateProctoringStatus'
+import { SubmissionItem } from '@/types/ScoreboardType'
+import { IntegrityAuditResponse, TimelineEntry, ProctoringStatus, ViolationEvent, ProctoringSummary } from '@/types/ViolationType'
 
 interface ViewCandidateDetailsProps {
     candidate_id: string;
@@ -52,12 +55,16 @@ function ViewProfileButton({ role, onOpen }: { role: string; onOpen: () => void 
 export default function ViewCandidateDetails({ candidate_id, exam_id, isLeagueCumulative, onBack }: ViewCandidateDetailsProps) {
     const { data: accountMgt } = useGetAccountMgt();
     const [profileOpen, setProfileOpen] = useState(false);
+    const [auditOpen, setAuditOpen] = useState(false);
 
     const { data, isLoading } = useGetCompetitionCandidateDetail({
         candidate_id,
         exam_id,
         isLeagueCumulative
     });
+
+    const { data: auditData, isLoading: auditLoading } = useGetIntegrityAudit(exam_id, candidate_id, auditOpen);
+    const { mutate: updateStatus, isPending: updatingStatus } = useUpdateProctoringStatus(exam_id, candidate_id);
 
     const isRanking = !!exam_id && !isLeagueCumulative;
 
@@ -122,7 +129,20 @@ export default function ViewCandidateDetails({ candidate_id, exam_id, isLeagueCu
                     percentile={performanceData?.percentile}
                     currentClass={candidateInfo?.current_class}
                     timeUsed={performanceData?.time_used}
+                    proctoringSummary={auditData?.proctoring_summary}
+                    auditLoading={auditLoading && auditOpen}
+                    auditOpen={auditOpen}
+                    onAuditToggle={() => setAuditOpen(!auditOpen)}
                 />
+
+                {isRanking && auditOpen && auditData && (
+                    <IntegrityAuditTimeline
+                        auditData={auditData}
+                        submissions={performanceData?.submissions || []}
+                        onUpdateStatus={(status) => status && updateStatus(status)}
+                        isUpdating={updatingStatus}
+                    />
+                )}
 
                 {isRanking && performanceData?.submissions && (
                     <QuestionsTable questions={performanceData.submissions} />
@@ -135,7 +155,7 @@ export default function ViewCandidateDetails({ candidate_id, exam_id, isLeagueCu
                         </div>
                         <div className="max-w-md">
                             <h3 className="text-lg font-bold text-[#101828]">Cumulative League View</h3>
-                            <p className="text-sm text-[#667185] mt-1">
+                            <p className="text-sm text-grey-500 mt-1">
                                 You are viewing the cumulative performance of {performanceData?.candidate_name} across all published league rounds.
                                 Detailed answer breakdowns are available in the specific round ranking.
                             </p>
@@ -169,7 +189,11 @@ function CandidateInfoCard({
     state,
     percentile,
     currentClass,
-    timeUsed
+    timeUsed,
+    proctoringSummary,
+    auditLoading,
+    auditOpen,
+    onAuditToggle
 }: {
     userName: string,
     position: number,
@@ -185,8 +209,13 @@ function CandidateInfoCard({
     state?: string,
     percentile?: number | null,
     currentClass?: string,
-    timeUsed?: number | null
-}) {    const userInitials = getUserInitials(userName);
+    timeUsed?: number | null,
+    proctoringSummary?: ProctoringSummary,
+    auditLoading?: boolean,
+    auditOpen?: boolean,
+    onAuditToggle?: () => void
+}) {
+    const userInitials = getUserInitials(userName);
     const isAbsent = typeof score === 'string' && score.toLowerCase() === 'absent';
     const numericScore = isAbsent ? null : (typeof score === 'string' ? parseFloat(score) : score);
     const hasScore = numericScore !== undefined && numericScore !== null && !isNaN(numericScore as number);
@@ -194,7 +223,7 @@ function CandidateInfoCard({
     return <ResponsiveContainer className='flex gap-6 flex-col p-6'>
         <div className="flex justify-between items-start">
             <div className="flex flex-col gap-1">
-                <h2 className='font-bold text-sm text-[#475367] uppercase tracking-widest'>
+                <h2 className='font-bold text-sm text-grey-600 uppercase tracking-widest'>
                     {isLeague ? 'League Statistics' : 'Candidate Attempt Details'}
                 </h2>
             </div>
@@ -215,14 +244,14 @@ function CandidateInfoCard({
                                 className="object-cover"
                             />
                         ) : (
-                            <span className="font-bold text-lg text-[#667185]">{userInitials}</span>
+                            <span className="font-bold text-lg text-grey-500">{userInitials}</span>
                         )}
                     </div>
                     <RankMedal rank={position} className="absolute -bottom-1 -right-1 drop-shadow-md w-5 h-5 scale-125 z-20" />
                 </div>
                 <div className="flex flex-col overflow-hidden">
                     <div>
-                        <span className='text-[10px] font-bold text-[#667185] uppercase'>Profile</span>
+                        <span className='text-[10px] font-bold text-grey-500 uppercase'>Profile</span>
                         <div className='flex items-center gap-2'>
                             <p className="font-bold text-[#101828] truncate">{userName}</p>
                             <span className="text-[7px] bg-gray-100 px-1 py-0.2 rounded border font-bold text-gray-600 uppercase tracking-widest">{state || 'N/A'}</span>
@@ -241,7 +270,7 @@ function CandidateInfoCard({
                 <div className="flex items-center gap-4">
                     {faceCapture && !isLeague && (
                         <div className="flex flex-col items-center gap-1">
-                            <span className="text-[10px] font-bold text-[#667185] uppercase tracking-wider">Face Capture</span>
+                            <span className="text-[10px] font-bold text-grey-500 uppercase tracking-wider">Face Capture</span>
                             <a href={faceCapture} target="_blank" rel="noopener noreferrer" className="block cursor-zoom-in transition-transform hover:scale-105">
                                 <div className="w-16 h-16 rounded-full relative overflow-hidden bg-[#F2F4F7] border-2 border-white shadow-sm ring-1 ring-black/5">
                                     <Image
@@ -270,7 +299,7 @@ function CandidateInfoCard({
                     )}
                 </div>
                 <div className="flex flex-col">
-                    <span className='text-[10px] font-bold text-[#667185] uppercase'>
+                    <span className='text-[10px] font-bold text-grey-500 uppercase'>
                         {isLeague ? 'Overall Rank' : 'Rank Position'}
                     </span>
                     <p className="font-bold text-[#101828] text-[14px]">
@@ -285,13 +314,13 @@ function CandidateInfoCard({
             <div className="flex gap-3 items-center">
                 <ExamScoreIcon className="w-10 h-10"/>
                 <div className="flex flex-col">
-                    <span className="text-[10px] font-bold text-[#667185] mb-1">
+                    <span className="text-[10px] font-bold text-grey-500 mb-1">
                         {isLeague ? 'CUMULATIVE SCORE' : 'EXAM SCORE'}
                     </span>
                     <span className={clsx(
                         "text-[12px] font-bold",
                         isAbsent
-                            ? "text-[#667185]"
+                            ? "text-grey-500"
                             : "tracking-wide"
                     )}>
                         {isAbsent ? 'Absent' : (numericScore as number).toFixed(2)}
@@ -307,7 +336,7 @@ function CandidateInfoCard({
                             <SortIcon className="w-5 h-5 text-[#3E4095]" />
                         </div>
                         <div className="flex flex-col">
-                            <span className='text-[10px] font-bold text-[#667185] uppercase'>Trend</span>
+                            <span className='text-[10px] font-bold text-grey-500 uppercase'>Trend</span>
                             <p className={clsx(
                                 "font-bold",
                                 !rankChange || rankChange === 0 ? "text-[#101828]" : rankChange > 0 ? "text-green-600" : "text-red-600"
@@ -321,7 +350,7 @@ function CandidateInfoCard({
                             <StartTimeIcon className="w-5 h-5 text-[#3E4095]" />
                         </div>
                         <div className="flex flex-col">
-                            <span className='text-[10px] font-bold text-[#667185] uppercase'>Status</span>
+                            <span className='text-[10px] font-bold text-grey-500 uppercase'>Status</span>
                             <p className="font-bold text-[#101828]">Active in League</p>
                         </div>
                     </div>
@@ -333,7 +362,7 @@ function CandidateInfoCard({
                             <SortIcon className="w-5 h-5 text-[#3E4095]" />
                         </div>
                         <div className="flex flex-col">
-                            <span className='text-[10px] font-bold text-[#667185] uppercase'>Time Used</span>
+                            <span className='text-[10px] font-bold text-grey-500 uppercase'>Time Used</span>
                             <p className="font-bold text-[#101828] text-xs">
                                 {timeUsed ? formatTime(Number(timeUsed)) : '--:--'}
                             </p>
@@ -343,7 +372,7 @@ function CandidateInfoCard({
                     <div className="flex gap-3 items-center">
                         <StartTimeIcon className="w-10 h-10" />
                         <div className="flex flex-col">
-                            <span className='text-[10px] font-bold text-[#667185] uppercase'>Started At</span>
+                            <span className='text-[10px] font-bold text-grey-500 uppercase'>Started At</span>
                             <p className="font-bold text-[#101828] text-xs">{startTime ? formatDateTime(new Date(startTime)) : '--:--'}</p>
                         </div>
                     </div>
@@ -351,13 +380,70 @@ function CandidateInfoCard({
                     <div className="flex gap-3 items-center">
                         <EndTimeIcon className="w-10 h-10" />
                         <div className="flex flex-col">
-                            <span className='text-[10px] font-bold text-[#667185] uppercase'>Submitted At</span>
+                            <span className='text-[10px] font-bold text-grey-500 uppercase'>Submitted At</span>
                             <p className="font-bold text-[#101828] text-xs">{endTime ? formatDateTime(new Date(endTime)) : '--:--'}</p>
                         </div>
                     </div>
                 </>
             )}
         </div>
+
+        {/* INTEGRITY SECTION - Merged cleanly at the bottom of the card */}
+        {!isLeague && (
+            <div className="mt-2 pt-6 border-t border-gray-100 flex flex-col md:flex-row items-center justify-between gap-6">
+                <div className="flex flex-wrap items-center gap-x-8 gap-y-4">
+                    <div className="flex flex-col gap-1">
+                        <span className="text-[10px] font-bold text-grey-500 uppercase tracking-wider">Proctoring Status</span>
+                        <div className="flex items-center gap-3">
+                            <ProctoringStatusBadge status={proctoringSummary?.status || null} />
+                            {proctoringSummary?.is_manually_reviewed && (
+                                <span className="text-[8px] font-black uppercase tracking-tighter bg-blue-50 text-blue-600 px-2 py-0.5 rounded border border-blue-100">
+                                    Manually Reviewed
+                                </span>
+                            )}
+                        </div>
+                    </div>
+
+                    <div className="w-px h-8 bg-gray-100 hidden md:block"></div>
+
+                    <div className="flex flex-col gap-1">
+                        <span className="text-[10px] font-bold text-grey-500 uppercase tracking-wider">Integrity Score</span>
+                        <p className="font-black text-[#101828] text-sm">
+                            {proctoringSummary ? `${(proctoringSummary.integrity_score * 100).toFixed(0)}%` : 'N/A'}
+                        </p>
+                    </div>
+
+                    <div className="w-px h-8 bg-gray-100 hidden md:block"></div>
+
+                    <div className="flex flex-col gap-1">
+                        <span className="text-[10px] font-bold text-grey-500 uppercase tracking-wider">Violations</span>
+                        <p className="font-black text-[#101828] text-sm">
+                            {proctoringSummary ? `${proctoringSummary.total_violations} Total / ${proctoringSummary.critical_violations} Critical` : 'N/A'}
+                        </p>
+                    </div>
+                </div>
+
+                <button
+                    disabled={!proctoringSummary}
+                    onClick={onAuditToggle}
+                    className={clsx(
+                        "w-full md:w-auto px-6 py-3 rounded-xl font-black text-[10px] tracking-widest uppercase transition-all flex items-center justify-center gap-2",
+                        !proctoringSummary ? "bg-gray-50 text-gray-300 cursor-not-allowed" :
+                        auditOpen 
+                            ? "bg-gray-100 text-gray-600 hover:bg-gray-200" 
+                            : "bg-[#3E4095] text-white shadow-lg shadow-[#3E4095]/20 hover:-translate-y-0.5 active:scale-95"
+                    )}
+                >
+                    {auditLoading ? (
+                        <div className="w-3 h-3 border-2 border-current border-t-transparent rounded-full animate-spin"></div>
+                    ) : (
+                        <i className={clsx("fas", auditOpen ? "fa-times" : "fa-shield-alt")}></i>
+                    )}
+                    <span>{auditOpen ? 'Close Audit' : 'Audit Deep-Dive'}</span>
+                </button>
+            </div>
+        )}
+
     </ResponsiveContainer>
 }
 
@@ -369,7 +455,7 @@ function QuestionsTable({ questions }: { questions: SubmissionItem[] }) {
         (q.selected_option?.toLowerCase() || '').includes(searchTerm.toLowerCase())
     );
 
-    return <ResponsiveContainer className='flex gap-4 py-8 px-0 flex-col w-full font-sans bg-white border border-gray-100 rounded-[2rem] shadow-sm overflow-hidden'>
+    return <ResponsiveContainer className='flex gap-4 py-8 px-0 flex-col w-full font-sans bg-white border border-gray-100 rounded-4xl shadow-sm overflow-hidden'>
         <div className="flex md:flex-row md:items-center justify-between px-8 gap-4 mb-2">
             <div className="relative group">
                 <i className="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-[#3E4095] transition-colors text-xs"></i>
@@ -493,4 +579,229 @@ function questionPassedStatus(status: boolean) {
                 </span>
             );
     }
+}
+
+function ProctoringStatusBadge({ status }: { status: ProctoringStatus }) {
+    switch (status) {
+        case 'clear':
+            return (
+                <span className="text-[10px] font-black px-3 py-1.5 rounded-full border border-emerald-500/30 bg-emerald-50 text-emerald-600 tracking-widest uppercase">
+                    Clear
+                </span>
+            );
+        case 'suspicious':
+            return (
+                <span className="text-[10px] font-black px-3 py-1.5 rounded-full border border-amber-500/30 bg-amber-50 text-amber-600 tracking-widest uppercase">
+                    Suspicious
+                </span>
+            );
+        case 'flagged':
+            return (
+                <span className="text-[10px] font-black px-3 py-1.5 rounded-full border border-rose-500/30 bg-rose-50 text-rose-600 tracking-widest uppercase animate-pulse">
+                    Flagged
+                </span>
+            );
+        default:
+            return (
+                <span className="text-[10px] font-black px-3 py-1.5 rounded-full border border-gray-200 bg-gray-50 text-gray-400 tracking-widest uppercase">
+                    N/A
+                </span>
+            );
+    }
+}
+
+function IntegrityAuditTimeline({
+    auditData,
+    submissions,
+    onUpdateStatus,
+    isUpdating
+}: {
+    auditData: IntegrityAuditResponse;
+    submissions: SubmissionItem[];
+    onUpdateStatus: (status: ProctoringStatus) => void;
+    isUpdating: boolean;
+}) {
+    return (
+        <ResponsiveContainer className="p-8 flex flex-col gap-8 bg-white border border-gray-100 rounded-4xl shadow-sm animate-in fade-in zoom-in-95 duration-300">
+            <div className="flex items-center justify-between border-b border-gray-50 pb-6">
+                <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 bg-[#3E4095]/5 rounded-xl flex items-center justify-center text-[#3E4095]">
+                        <i className="fas fa-history text-lg"></i>
+                    </div>
+                    <div>
+                        <h3 className="text-lg font-bold text-[#101828] uppercase tracking-tight">Audit Timeline</h3>
+                        <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Chronological Heartbeat Sequence</p>
+                    </div>
+                </div>
+
+                <div className="flex items-center gap-2">
+                    <span className="text-[10px] font-bold text-gray-400 uppercase mr-2">Override Status:</span>
+                    <button
+                        disabled={isUpdating}
+                        onClick={() => onUpdateStatus('clear')}
+                        className="p-2 rounded-lg hover:bg-emerald-50 text-emerald-600 transition-colors border border-transparent hover:border-emerald-200" title="Mark as Clear"
+                    >
+                        <i className="fas fa-check-circle"></i>
+                    </button>
+                    <button
+                        disabled={isUpdating}
+                        onClick={() => onUpdateStatus('suspicious')}
+                        className="p-2 rounded-lg hover:bg-amber-50 text-amber-600 transition-colors border border-transparent hover:border-amber-200" title="Mark as Suspicious"
+                    >
+                        <i className="fas fa-exclamation-circle"></i>
+                    </button>
+                    <button
+                        disabled={isUpdating}
+                        onClick={() => onUpdateStatus('flagged')}
+                        className="p-2 rounded-lg hover:bg-rose-50 text-rose-600 transition-colors border border-transparent hover:border-rose-200" title="Flag Attempt"
+                    >
+                        <i className="fas fa-flag"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div className="relative pl-8 border-l-2 border-dashed border-gray-100 ml-4 flex flex-col gap-10">
+                {auditData.timeline.map((entry, idx) => (
+                    <TimelineNode key={idx} entry={entry} submissions={submissions} />
+                ))}
+            </div>
+
+            <div className="mt-4 p-6 bg-gray-50 rounded-3xl border border-gray-100">
+                <div className="flex items-start gap-4">
+                    <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center text-blue-600 shrink-0">
+                        <i className="fas fa-info-circle text-sm"></i>
+                    </div>
+                    <div>
+                        <h4 className="text-xs font-bold text-gray-800 uppercase tracking-wider mb-1">How to audit</h4>
+                        <p className="text-[11px] text-gray-500 leading-relaxed">
+                            Review the snapshots and suspicious events. If a &quot;Gap&quot; is detected, it means the candidate&apos;s browser was offline or heartbeats were intentionally blocked.
+                            Use the override buttons above to finalize your proctoring decision.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </ResponsiveContainer>
+    );
+}
+
+function TimelineNode({ entry, submissions }: { entry: TimelineEntry; submissions: SubmissionItem[] }) {
+    if (entry.type === 'telemetry_gap') {
+        return (
+            <div className="relative">
+                <div className="absolute -left-10.25 top-0 w-4 h-4 rounded-full bg-rose-500 border-4 border-white shadow-sm ring-4 ring-rose-50 animate-pulse"></div>
+                <div className="p-4 bg-rose-50 border border-rose-100 rounded-2xl flex items-center gap-4">
+                    <div className="w-8 h-8 bg-rose-500 rounded-lg flex items-center justify-center text-white shrink-0">
+                        <i className="fas fa-ghost"></i>
+                    </div>
+                    <div>
+                        <p className="text-xs font-black text-rose-700 uppercase tracking-widest">{entry.message}</p>
+                        <p className="text-[10px] text-rose-600 font-medium">Expected Heartbeat #{entry.expected_sequence} was never received.</p>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+
+    const hasViolations = entry.events.length > 0;
+    const isCritical = entry.suspicion_score > 0.7;
+
+    return (
+        <div className="relative">
+            <div className={clsx(
+                "absolute -left-10.25 top-0 w-4 h-4 rounded-full border-4 border-white shadow-sm ring-4",
+                isCritical ? "bg-rose-500 ring-rose-50" :
+                hasViolations ? "bg-amber-500 ring-amber-50" : "bg-emerald-500 ring-emerald-50"
+            )}></div>
+
+            <div className="flex flex-col gap-4">
+                <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                        <span className="text-[10px] font-black text-gray-400 uppercase tracking-tighter bg-gray-50 px-2 py-1 rounded">Seq #{entry.sequence_number}</span>
+                        <span className="text-xs font-bold text-gray-800 tracking-tight">{formatDateTime(entry.timestamp)}</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                        <span className="text-[9px] font-bold text-gray-400 uppercase tracking-widest">Suspicion:</span>
+                        <div className="w-20 h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                            <div
+                                className={clsx(
+                                    "h-full transition-all duration-1000",
+                                    entry.suspicion_score > 0.7 ? "bg-rose-500" :
+                                    entry.suspicion_score > 0.3 ? "bg-amber-500" : "bg-emerald-500"
+                                )}
+                                style={{ width: `${entry.suspicion_score * 100}%` }}
+                            />
+                        </div>
+                    </div>
+                </div>
+
+                <div className="flex gap-6 items-start">
+                    <div className="relative group shrink-0">
+                        <div className="absolute -inset-1 bg-linear-to-tr from-[#3E4095] to-[#01ACEA] rounded-2xl blur opacity-0 group-hover:opacity-20 transition duration-500"></div>
+                        <a href={entry.face_capture_url} target="_blank" rel="noopener noreferrer" className="block relative w-32 h-32 rounded-2xl overflow-hidden border-2 border-white shadow-md cursor-zoom-in">
+                            <Image
+                                src={entry.face_capture_url}
+                                alt={`Snapshot ${entry.sequence_number}`}
+                                fill
+                                className="object-cover transition-transform duration-700 group-hover:scale-110"
+                            />
+                        </a>
+                    </div>
+
+                    <div className="flex-1 flex flex-col gap-3">
+                        {entry.events.length === 0 ? (
+                            <div className="flex items-center gap-2 text-emerald-500">
+                                <i className="fas fa-check-circle text-[10px]"></i>
+                                <span className="text-[10px] font-black uppercase tracking-widest">No violations detected</span>
+                            </div>
+                        ) : (
+                            <div className="flex flex-col gap-2">
+                                {entry.events.map((event, eIdx) => (
+                                    <ViolationEventCard key={eIdx} event={event} submissions={submissions} />
+                                ))}
+                            </div>
+                        )}
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+}
+
+function ViolationEventCard({ event, submissions }: { event: ViolationEvent; submissions: SubmissionItem[] }) {
+    const questionId = event.metadata?.question_id as number | undefined;
+    const question = questionId ? submissions.find(s => s.question.id === questionId)?.question : null;
+
+    return (
+        <div className="bg-gray-50/50 border border-gray-100 p-3 rounded-xl flex flex-col gap-2">
+            <div className="flex items-center gap-2">
+                <i className={clsx(
+                    "fas text-[10px]",
+                    event.type === 'TAB_SWITCH' ? "fa-window-restore text-amber-500" :
+                    event.type === 'SCREENSHOT' ? "fa-camera text-rose-500" :
+                    event.type === 'FULLSCREEN_EXIT' ? "fa-compress-arrows-alt text-rose-500" :
+                    "fa-user-secret text-amber-500"
+                )}></i>
+                <span className="text-[10px] font-black text-gray-700 uppercase tracking-widest">{event.type.replace('_', ' ')}</span>
+                <span className="text-[8px] text-gray-400 font-bold">{formatDateTime(event.timestamp)}</span>
+            </div>
+
+            {question && (
+                <div className="mt-1 p-3 bg-white rounded-lg border border-gray-100 shadow-sm animate-in fade-in slide-in-from-top-1">
+                    <p className="text-[8px] font-bold text-[#3E4095] uppercase tracking-widest mb-1.5 flex items-center gap-1.5">
+                        <i className="fas fa-question-circle"></i>
+                        Active Question during violation
+                    </p>
+                    <div className="text-[11px] font-bold text-gray-800 line-clamp-2 leading-relaxed">
+                        <MathRenderer content={question.text} inline />
+                    </div>
+                </div>
+            )}
+
+            {event.metadata && Object.keys(event.metadata).length > 0 && !question && (
+                <p className="text-[9px] text-gray-500 italic">
+                    {JSON.stringify(event.metadata)}
+                </p>
+            )}
+        </div>
+    );
 }

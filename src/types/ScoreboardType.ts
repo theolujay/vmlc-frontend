@@ -137,6 +137,8 @@ export interface RankingEntry {
   percentile: number;
   profile_picture?: string | null;
   time_used?: number | null;
+  violation_score?: number;
+  proctoring_status?: string | null;
 }
 
 export interface RankingResponse {

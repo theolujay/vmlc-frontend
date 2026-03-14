@@ -5,7 +5,7 @@ import { AngleIcon, FilterIcon, SortIcon } from '../AdminIcons';
 import Image from "next/image";
 import RankMedal from './RankMedal';
 import useGetRanking from '@/hooks/useGetRanking';
-import { RankingEntry } from '@/types/LeaderBoardType';
+import { RankingEntry } from '@/types/ScoreboardType';
 import * as DropdownMenu from '@radix-ui/react-dropdown-menu';
 import Spinner from "@/components/ui/spinner/spinner";
 import clsx from 'clsx';
@@ -21,7 +21,7 @@ interface FullRankingProps {
   containerClassName?: string;
 }
 
-type SortKey = 'rank' | 'name' | 'school' | 'class' | 'state' | 'score' | 'percentile' | 'time_used';
+type SortKey = 'rank' | 'name' | 'school' | 'class' | 'state' | 'score' | 'percentile' | 'time_used' | 'violation_score';
 type SortDirection = 'asc' | 'desc';
 
 interface SortConfig {
@@ -120,6 +120,10 @@ const FullRanking: React.FC<FullRankingProps> = ({ onBack, examId, examTitle, on
         case 'time_used':
           valA = a.time_used || 0;
           valB = b.time_used || 0;
+          break;
+        case 'violation_score':
+          valA = a.violation_score || 0;
+          valB = b.violation_score || 0;
           break;
         default:
           return 0;
@@ -264,7 +268,10 @@ const FullRanking: React.FC<FullRankingProps> = ({ onBack, examId, examTitle, on
                      { label: 'Rank', key: 'rank' as SortKey },
                      { label: 'Score', key: 'score' as SortKey },
                      { label: 'Percentile', key: 'percentile' as SortKey },
-                     ...(!isPublicView ? [{ label: 'Time Used', key: 'time_used' as SortKey }] : []),
+                     ...(!isPublicView ? [
+                        { label: 'Time Used', key: 'time_used' as SortKey },
+                        { label: 'Violation Score', key: 'violation_score' as SortKey }
+                     ] : []),
                      { label: 'Name', key: 'name' as SortKey },
                      { label: 'School', key: 'school' as SortKey },
                      { label: 'Class', key: 'class' as SortKey},
@@ -447,6 +454,50 @@ const FullRanking: React.FC<FullRankingProps> = ({ onBack, examId, examTitle, on
                 ),
                 align: 'center'
               },
+              ...(!isPublicView ? [
+                {
+                  key: 'proctoring_status',
+                  header: 'Proctoring',
+                  render: (val: any, row: RankingEntry) => {
+                    const score = (row.violation_score || 0) * 100;
+                    const isAbsent = typeof row.exam_score === 'string' && row.exam_score.toLowerCase() === 'absent';
+
+                    if (isAbsent || val === null) {
+                      return (
+                        <div className="flex flex-col items-center gap-1 opacity-50">
+                          <span className="text-[9px] font-black px-2 py-0.5 rounded-full border border-gray-100 bg-gray-50 text-gray-400 uppercase tracking-tighter">
+                            N/A
+                          </span>
+                          <div className="w-12 h-1 bg-gray-100 rounded-full" />
+                        </div>
+                      );
+                    }
+
+                    return (
+                      <div className="flex flex-col items-center gap-1">
+                        <span className={clsx(
+                          "text-[9px] font-black px-2 py-0.5 rounded-full border uppercase tracking-tighter",
+                          val === 'clear' ? "text-emerald-600 bg-emerald-50 border-emerald-100" :
+                          val === 'suspicious' ? "text-amber-600 bg-amber-50 border-amber-100" :
+                          "text-rose-600 bg-rose-50 border-rose-100 animate-pulse"
+                        )}>
+                          {val || 'clear'}
+                        </span>
+                        <div className="w-12 h-1 bg-gray-100 rounded-full overflow-hidden">
+                          <div
+                            className={clsx(
+                              "h-full transition-all duration-1000",
+                              score > 70 ? "bg-rose-500" : score > 30 ? "bg-amber-500" : "bg-emerald-500"
+                            )}
+                            style={{ width: `${score}%` }}
+                          />
+                        </div>
+                      </div>
+                    );
+                  },
+                  align: 'center' as const
+                }
+              ] : []),
               {
                 key: 'candidate_info',
                 header: 'School',

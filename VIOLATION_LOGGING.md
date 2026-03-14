@@ -46,7 +46,7 @@ To optimize performance and minimize individual server pings, we propose a unifi
     {
       "type": "FULLSCREEN_EXIT",
       "timestamp": "2026-03-14T10:04:10Z",
-      "metadata": { "current_question_index": 5 }
+      "metadata": { "current_question_id": 5 }
     }
   ]
 }

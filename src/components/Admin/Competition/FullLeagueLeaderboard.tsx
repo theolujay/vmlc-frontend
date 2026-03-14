@@ -6,7 +6,7 @@ import { AngleIcon, FilterIcon, SortIcon } from '../AdminIcons';
 import Image from "next/image";
 import RankMedal from './RankMedal';
 import useGetLeagueLeaderboard from '@/hooks/useGetLeagueLeaderboard';
-import { LeagueLeaderboardEntry, LeagueLeaderboardResponse } from '@/types/LeaderBoardType';
+import { LeagueLeaderboardEntry, LeagueLeaderboardResponse } from '@/types/ScoreboardType';
 
 const RankChangeIndicator = ({ change }: { change: number }) => {
   if (change === 0) return <span className="text-gray-400 font-medium">-</span>;
@@ -26,7 +26,7 @@ const FullLeagueLeaderboard: React.FC<FullLeagueLeaderboardProps> = ({ onBack, o
 
   const leaderboardData = (data as unknown as LeagueLeaderboardResponse)?.entries || [];
 
-  const filteredData = leaderboardData.filter(item => 
+  const filteredData = leaderboardData.filter(item =>
     (item.candidate_info?.full_name?.toLowerCase() || '').includes(searchTerm.toLowerCase()) ||
     (item.candidate_info?.school_name?.toLowerCase() || '').includes(searchTerm.toLowerCase())
   );
@@ -48,7 +48,7 @@ const FullLeagueLeaderboard: React.FC<FullLeagueLeaderboardProps> = ({ onBack, o
         </div>
         <h2 className="text-lg font-bold text-[#101828]">Failed to load leaderboard</h2>
         <p className="text-sm text-[#667185] mt-1 max-w-xs mx-auto">There was an error retrieving the ranking data. Please try again.</p>
-        <button 
+        <button
           onClick={() => refetch()}
           className="mt-6 px-6 py-2 bg-[#3E4095] text-white rounded-full font-bold text-sm hover:bg-[#2d2f6e] transition-colors"
         >
@@ -61,7 +61,7 @@ const FullLeagueLeaderboard: React.FC<FullLeagueLeaderboardProps> = ({ onBack, o
   return (
     <div className="flex flex-col gap-4 w-full animate-in fade-in slide-in-from-bottom-2 duration-500">
       <div className="flex items-center gap-2 mb-2">
-        <button 
+        <button
           onClick={onBack}
           className="p-2 rounded-full hover:bg-gray-100 transition-colors border border-transparent hover:border-gray-200"
         >
@@ -160,8 +160,8 @@ const FullLeagueLeaderboard: React.FC<FullLeagueLeaderboardProps> = ({ onBack, o
                 const isAbsent = typeof val === 'string' && val.toLowerCase() === 'absent';
                 return (
                   <span className={`text-xs font-black px-2 py-1 rounded-full border transition-colors ${
-                    isAbsent 
-                      ? "text-[#667185] bg-[#F2F4F7] border-[#E4E7EC]" 
+                    isAbsent
+                      ? "text-[#667185] bg-[#F2F4F7] border-[#E4E7EC]"
                       : "text-[#3E4095] bg-white border-[#3E4095]/50"
                   }`}>
                     {isAbsent ? "Absent" : val}
@@ -174,7 +174,7 @@ const FullLeagueLeaderboard: React.FC<FullLeagueLeaderboardProps> = ({ onBack, o
               key: 'action',
               header: 'Action',
               render: (_: any, row: LeagueLeaderboardEntry) => (
-                <button 
+                <button
                   onClick={() => onViewDetails?.(row.candidate)}
                   className="text-[#3E4095] font-bold hover:bg-[#3E4095] hover:text-white text-xs bg-[#F9F9FB] px-3 py-1.5 rounded-full border border-[#E4E7EC] transition-colors"
                 >

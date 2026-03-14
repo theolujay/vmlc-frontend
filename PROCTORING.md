@@ -88,7 +88,9 @@ Provides a comprehensive, chronological timeline of a candidate's exam attempt f
     "critical_violations": 1,
     "integrity_score": 1.0,
     "average_suspicion": 0.15,
-    "status": "clear"
+    "auto_status": "clear",
+    "status": "clear",
+    "is_manually_reviewed": false
   },
   "timeline": [
     {
@@ -124,11 +126,39 @@ Provides a comprehensive, chronological timeline of a candidate's exam attempt f
 
 ---
 
-## 3. Ranking Integration
+## 3. Update Proctoring Status API (Admin)
+
+**Endpoint:** `POST /v2/exams/{exam_id}/candidates/{candidate_id}/update-status/`
+**Authentication:** Required (Admin/Staff)
+**Content-Type:** `application/json`
+
+Used by admins to manually clear or flag a candidate's attempt after reviewing the audit timeline.
+
+### Request Body
+
+```json
+{
+  "status": "clear"
+}
+```
+*Valid statuses: `clear`, `suspicious`, `flagged`.*
+
+### Success Response (`200 OK`)
+
+```json
+{
+  "message": "Proctoring status updated to clear.",
+  "status": "clear"
+}
+```
+
+---
+
+## 4. Ranking Integration
 
 The `RankingSnapshotEntry` includes two new fields to assist with triage:
 
 - **`violation_score`**: (Float) A weighted average of suspicion across all heartbeats.
-- **`proctoring_status`**: (String) One of `clear`, `suspicious`, or `flagged`.
+- **`proctoring_status`**: (String | null) One of `clear`, `suspicious`, or `flagged`. Returns `null` if the candidate was absent (no telemetry).
 
 These are available in the `RetrieveRankingSnapshotView` and `RetrieveCandidateRankingSnapshotEntryView`.

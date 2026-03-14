@@ -3,7 +3,7 @@ import { CandidateListType, CandidateType } from "@/types/CandidateType";
 import {
   LeaderBoardResponse,
   ViewCandidateDetailType,
-} from "@/types/LeaderBoardType";
+} from "@/types/ScoreboardType";
 import client from "@/utils/axios";
 
 export class CandidateMgtService {

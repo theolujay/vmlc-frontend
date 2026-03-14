@@ -311,4 +311,29 @@ export class ExamPortal {
       throw error;
     }
   }
+
+  static async getIntegrityAudit(examId: string, candidateId: string) {
+    try {
+      const response = await client.get(
+        examUrls.INTEGRITY_AUDIT(examId, candidateId)
+      );
+      return response.data;
+    } catch (error) {
+      console.error("Failed to fetch integrity audit:", error);
+      throw error;
+    }
+  }
+
+  static async updateProctoringStatus(examId: string, candidateId: string, status: string) {
+    try {
+      const response = await client.post(
+        examUrls.UPDATE_PROCTORING_STATUS(examId, candidateId),
+        { status }
+      );
+      return response.data;
+    } catch (error) {
+      console.error("Failed to update proctoring status:", error);
+      throw error;
+    }
+  }
 }

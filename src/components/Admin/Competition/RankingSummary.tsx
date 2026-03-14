@@ -2,7 +2,7 @@ import React from 'react';
 import ResponsiveContainer from '@/components/ui/ResponsiveContainer';
 import Image from "next/image"
 import RankMedal from './RankMedal';
-import { RankingEntry } from '@/types/LeaderBoardType';
+import { RankingEntry } from '@/types/ScoreboardType';
 
 interface RankingSummaryProps {
   examTitle: string;
@@ -30,7 +30,7 @@ const RankingSummary: React.FC<RankingSummaryProps> = ({ examTitle, entries, onV
         </div>
         {onViewFull && entries.length > 0 && (
           <div>
-            <button 
+            <button
               onClick={onViewFull}
               className="flex items-center gap-1 px-4 py-1.5 text-xs font-bold text-[#344054] bg-white border border-[#D0D5DD] rounded-full hover:bg-[#3E4095] hover:text-[#FFFFFF] transition-all"
             >
@@ -42,20 +42,20 @@ const RankingSummary: React.FC<RankingSummaryProps> = ({ examTitle, entries, onV
 
       <div className="bg-[#F9FAFB] border border-[#F2F4F7] rounded-xl p-4">
         <h3 className="text-[10px] font-bold text-[#101828] uppercase tracking-wider mb-4">Top Results</h3>
-        
+
         {entries.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {entries.map((entry) => (
-              <button 
-                key={entry.candidate} 
+              <button
+                key={entry.candidate}
                 onClick={() => onViewCandidate?.(entry.candidate)}
                 className={`flex items-center gap-3 bg-white p-3 rounded-lg border border-[#E4E7EC] text-left transition-all duration-300 relative overflow-hidden ${onViewCandidate ? 'hover:border-cyan-600/40 hover:shadow-sm group' : 'cursor-default'}`}
               >
                 {/* Profile Image & Medal Overlay */}
                 <div className="relative shrink-0">
                   {entry.profile_picture ? (
-                    <Image 
-                      src={entry.profile_picture} 
+                    <Image
+                      src={entry.profile_picture}
                       alt={entry.candidate_info?.full_name}
                       width={40}
                       height={40}
@@ -66,10 +66,10 @@ const RankingSummary: React.FC<RankingSummaryProps> = ({ examTitle, entries, onV
                       {entry.candidate_info?.full_name?.charAt(0)}
                     </div>
                   )}
-                  
-                  <RankMedal 
-                    rank={entry.rank} 
-                    className={`absolute -bottom-2 -right-2 drop-shadow-md transition-transform ${onViewCandidate ? 'group-hover:scale-110' : ''}`} 
+
+                  <RankMedal
+                    rank={entry.rank}
+                    className={`absolute -bottom-2 -right-2 drop-shadow-md transition-transform ${onViewCandidate ? 'group-hover:scale-110' : ''}`}
                   />
                 </div>
 
@@ -89,8 +89,8 @@ const RankingSummary: React.FC<RankingSummaryProps> = ({ examTitle, entries, onV
                       const isAbsent = typeof entry.exam_score === 'string' && entry.exam_score.toLowerCase() === 'absent';
                       return (
                         <span className={`text-xs font-black px-1 py-0.5 rounded-md border ${
-                          isAbsent 
-                            ? "text-[#667185] bg-[#F2F4F7] border-[#E4E7EC]" 
+                          isAbsent
+                            ? "text-[#667185] bg-[#F2F4F7] border-[#E4E7EC]"
                             : "text-cyan-600 bg-white border-cyan-600/60"
                         }`}>
                           {isAbsent ? "Absent" : entry.exam_score}

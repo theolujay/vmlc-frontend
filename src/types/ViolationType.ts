@@ -6,6 +6,8 @@ export type ViolationType =
   | 'NO_FACE' 
   | 'ATTENTION_LAPSE';
 
+export type ProctoringStatus = 'clear' | 'suspicious' | 'flagged' | null;
+
 export interface ViolationEvent {
   type: ViolationType;
   timestamp: string;
@@ -39,4 +41,49 @@ export interface HeartbeatPayload {
   meta: HeartbeatMeta;
   summary: ViolationSummary;
   events: ViolationEvent[];
+}
+
+export interface ProctoringSummary {
+  total_heartbeats: number;
+  total_violations: number;
+  critical_violations: number;
+  integrity_score: number;
+  average_suspicion: number;
+  auto_status: ProctoringStatus;
+  status: ProctoringStatus;
+  is_manually_reviewed: boolean;
+}
+
+export interface TimelineHeartbeat {
+  type: 'heartbeat';
+  sequence_number: number;
+  timestamp: string;
+  face_capture_url: string;
+  suspicion_score: number;
+  summary: Partial<ViolationSummary>;
+  events: ViolationEvent[];
+}
+
+export interface TimelineGap {
+  type: 'telemetry_gap';
+  expected_sequence: number;
+  detected_at?: string;
+  duration_seconds?: number;
+  message: string;
+}
+
+export type TimelineEntry = TimelineHeartbeat | TimelineGap;
+
+export interface IntegrityAuditResponse {
+  candidate: {
+    id: string;
+    name: string;
+  };
+  attempt_summary: {
+    started_at: string;
+    submitted_at: string;
+    total_duration: string;
+  };
+  proctoring_summary: ProctoringSummary;
+  timeline: TimelineEntry[];
 }

@@ -4,7 +4,7 @@ import TablePagination from "@/components/ui/Pagination/TablePagination";
 import Spinner from "@/components/ui/spinner/spinner";
 import useGetLeaderBoard from "@/hooks/useGetLeaderboard";
 import usePagination from "@/hooks/usePagination";
-import { CandidateType } from "@/types/LeaderBoardType";
+import { CandidateType } from "@/types/ScoreboardType";
 import { getUserInitials } from "@/utils/capitalizeWords";
 import Link from "next/link";
 import Image from "next/image";
@@ -48,7 +48,7 @@ export default function LeaderBoardSection() {
     setOpenPublishModal(true)
   }
 
-  
+
 
   const leaderBoardTab = leaderBoardItems?.map((val) => ({
     label: <ScreeningLabel label={val.stage_display} />,
@@ -278,7 +278,7 @@ export function Podium({ users, stage, round }: Readonly<{ users: CandidateType[
 
 
 function formatLabel(label: string) :string{
-  
+
   if (label.startsWith('screening')) {
     return 'Screening';
   }
