@@ -24,9 +24,9 @@ const HelpdeskButton: React.FC<HelpdeskButtonProps> = ({
   }, [isHelpdeskOpen, markAllAsRead]);
 
   return (
-    <div className="fixed bottom-4 right-4 z-70 flex flex-col items-end gap-4 pb-safe">
+    <div className="fixed bottom-4 right-4 z-[70] flex flex-col items-end gap-4">
       {isHelpdeskOpen && (
-        <div className="w-87.5 max-h-[calc(100dvh-8rem)] md:h-125 bg-white rounded-3xl shadow-2xl border border-[#E4E7EC] flex flex-col overflow-hidden animate-in slide-in-from-bottom-5 duration-300">
+        <div className="w-[350px] h-[60vh] md:h-[500px] bg-white rounded-3xl shadow-2xl border border-[#E4E7EC] flex flex-col overflow-hidden animate-in slide-in-from-bottom-5 duration-300">
           <HelpdeskThread
             currentStage={currentStage}
             candidateName={candidateName}
