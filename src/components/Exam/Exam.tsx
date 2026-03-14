@@ -42,8 +42,12 @@ export default function Exam() {
   const { onSubmit, isPending: submitPending } = useSubmitAnswers(examId);
   const [isLoaded, setIsLoaded] = useState(false);
 
-  const { reportViolation, registerScreenshotProvider, sendFinalHeartbeat } =
-    useViolationManager(examId, data?.attempt?.started_at);
+  const {
+    reportViolation,
+    registerScreenshotProvider,
+    sendFinalHeartbeat,
+    startHeartbeats,
+  } = useViolationManager(examId, data?.attempt?.started_at);
 
   const handleReturnToExam = useCallback(() => {
     // Refresh page as requested to reset environment and sync state
@@ -240,6 +244,7 @@ export default function Exam() {
   const handleStartExam = async () => {
     await enterFullscreen();
     setExamStarted(true);
+    startHeartbeats();
   };
 
   if (isError) {

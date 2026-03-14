@@ -21,12 +21,21 @@ export interface ViolationSummary {
   MULTI_FACE: number;
   NO_FACE: number;
   ATTENTION_LAPSE: number;
+  DEVTOOLS_OPEN: number;
 }
 
 export interface HeartbeatMeta {
   os: string;
   browser: string;
   screen_resolution: string;
+  viewport_width: number;
+  viewport_height: number;
+  timezone: string;
+  connection_type?: string;
+  language?: string;
+  is_online?: boolean;
+  touch_support?: boolean;
+  device_memory?: number;
   battery_level?: number;
   is_charging?: boolean;
   network_latency_ms?: number;
