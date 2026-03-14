@@ -7,7 +7,8 @@ type ColumnType<T> = {
   header: string;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   render?: (value: any, row: T, index: number) => React.ReactNode;
-  align?: 'left' | 'center' | 'right';
+  align?: "left" | "center" | "right";
+  helpText?: string;
 };
 
 type CustomTableProps<T> = {
@@ -39,22 +40,26 @@ export default function CustomTable<T extends object>({
   onSelectAll,
   onSelectRow,
   selectedIds = [],
-  getRowId = (row: T) => (row as Record<string, unknown>).id ? String((row as Record<string, unknown>).id) : JSON.stringify(row),
+  getRowId = (row: T) =>
+    (row as Record<string, unknown>).id
+      ? String((row as Record<string, unknown>).id)
+      : JSON.stringify(row),
   onRowClick,
 }: Readonly<CustomTableProps<T>>) {
   const allSelected =
     data.length > 0 &&
-    data.every(
-      (row) => {
-        const id = getRowId(row);
-        return selectedIds.includes(id);
-      }
-    );
+    data.every((row) => {
+      const id = getRowId(row);
+      return selectedIds.includes(id);
+    });
 
   return (
     <div className="flex flex-col">
       <div className="overflow-x-auto w-full custom-scrollbar">
-        <table className="min-w-full border-collapse" style={{ minWidth, width: '100%' }}>
+        <table
+          className="min-w-full border-collapse"
+          style={{ minWidth, width: "100%" }}
+        >
           <thead>
             <tr className="border-b border-[#E4E7EC] bg-[#E4E7EC]">
               {isAdminOrAbove && (
@@ -72,11 +77,26 @@ export default function CustomTable<T extends object>({
                   key={i}
                   className={clsx(
                     "sticky top-0 z-10 py-3 px-3 text-[9px] font-black uppercase tracking-widest text-gray-500",
-                    !col.align || col.align === 'left' ? "text-left" : col.align === 'center' ? "text-center" : "text-right"
+                    !col.align || col.align === "left"
+                      ? "text-left"
+                      : col.align === "center"
+                        ? "text-center"
+                        : "text-right",
                   )}
                   style={{ top: stickyTopOffset }}
                 >
-                  {col.header}
+                  <div className="flex items-center gap-1">
+                    <span>{col.header}</span>
+                    {col.helpText && (
+                      <div className="group relative inline-flex">
+                        <i className="fas fa-info-circle text-[10px] text-gray-400 hover:text-[#3E4095] cursor-help transition-colors"></i>
+                        <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-2 py-1 bg-gray-800 text-white text-[10px] font-bold rounded whitespace-nowrap opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50">
+                          {col.helpText}
+                          <div className="absolute top-full left-1/2 -translate-x-1/2 border-4 border-transparent border-t-gray-800"></div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
                 </th>
               ))}
             </tr>
@@ -85,7 +105,10 @@ export default function CustomTable<T extends object>({
           <tbody>
             {data.length === 0 ? (
               <tr>
-                <td colSpan={columns.length + (isAdminOrAbove ? 1 : 0)} className="py-6 text-center">
+                <td
+                  colSpan={columns.length + (isAdminOrAbove ? 1 : 0)}
+                  className="py-6 text-center"
+                >
                   <EmptyRecords label={emptyLabel} desc={emptyDesc} />
                 </td>
               </tr>
@@ -96,18 +119,18 @@ export default function CustomTable<T extends object>({
                   onClick={() => onRowClick?.(row)}
                   className={clsx(
                     "border-b border-[#E4E7EC] last:border-0 hover:bg-gray-50 transition-colors",
-                    onRowClick && "cursor-pointer"
+                    onRowClick && "cursor-pointer",
                   )}
                 >
                   {isAdminOrAbove && (
                     <td className="py-2 px-3">
                       <div className="flex justify-center">
-                                          <Checkbox
-                                            checked={selectedIds.includes(getRowId(row))}
-                                            onChange={(checked) =>
-                                              onSelectRow?.(getRowId(row), checked)
-                                            }
-                                          />
+                        <Checkbox
+                          checked={selectedIds.includes(getRowId(row))}
+                          onChange={(checked) =>
+                            onSelectRow?.(getRowId(row), checked)
+                          }
+                        />
                       </div>
                     </td>
                   )}
@@ -117,7 +140,11 @@ export default function CustomTable<T extends object>({
                       typeof col.key === "string" && col.key.includes(".")
                         ? col.key
                             .split(".")
-                            .reduce((acc: unknown, k) => (acc as Record<string, unknown>)?.[k] ?? "", row)
+                            .reduce(
+                              (acc: unknown, k) =>
+                                (acc as Record<string, unknown>)?.[k] ?? "",
+                              row,
+                            )
                         : (row as Record<string, unknown>)[col.key as string];
 
                     return (
@@ -125,11 +152,17 @@ export default function CustomTable<T extends object>({
                         key={ci}
                         className={clsx(
                           "py-2 px-3",
-                          !col.align || col.align === 'left' ? "text-left" : col.align === 'center' ? "text-center" : "text-right"
+                          !col.align || col.align === "left"
+                            ? "text-left"
+                            : col.align === "center"
+                              ? "text-center"
+                              : "text-right",
                         )}
                       >
                         {/* eslint-disable-next-line @typescript-eslint/no-explicit-any */}
-                        {col.render ? col.render(value, row, index) : (value as any)}
+                        {col.render
+                          ? col.render(value, row, index)
+                          : (value as any)}
                       </td>
                     );
                   })}
