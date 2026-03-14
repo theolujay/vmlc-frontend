@@ -54,8 +54,8 @@ export default function CustomTable<T extends object>({
     });
 
   return (
-    <div className="flex flex-col">
-      <div className="overflow-x-auto w-full custom-scrollbar">
+    <div className="flex flex-col overflow-hidden w-full">
+      <div className="overflow-x-auto w-full custom-scrollbar max-w-full">
         <table
           className="min-w-full border-collapse"
           style={{ minWidth, width: "100%" }}
