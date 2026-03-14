@@ -8,14 +8,9 @@ export default function HelpdeskSectionWrapper() {
   const currentView = searchParams.get("view");
   const id = searchParams.get("id");
 
-  return renderComponent(currentView, id);
-}
-
-function renderComponent(view: string | null, id: string | null) {
-  switch (view) {
-    case "conversation-details":
-      return <HelpdeskThreadDetails id={id!} />;
-    default:
-      return <HelpdeskSection />;
+  if (currentView === "conversation-details" && id) {
+    return <HelpdeskThreadDetails id={id} />;
   }
+
+  return <HelpdeskSection />;
 }

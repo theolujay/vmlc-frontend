@@ -4,7 +4,7 @@ import { HelpdeskThreadType } from "@/types/HelpdeskType";
 import { formatDateTime } from "@/utils/formatFileSize";
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-import { useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import ResponsiveContainer from "../../ui/ResponsiveContainer";
 import AdminHeader from "../AdminHeader";
 import { FilterIcon, SortIcon } from "../AdminIcons";
@@ -45,17 +45,69 @@ export default function HelpdeskSection() {
     return filters;
   };
 
-  const filters = getFiltersFromParams();
+  const filters = useMemo(() => getFiltersFromParams(), [searchParams]);
 
-  const updateFilterInUrl = (key: string, value: string) => {
-    const params = new URLSearchParams(searchParams.toString());
-    if (value) {
-      params.set(key, value);
-    } else {
-      params.delete(key);
+  const emptyState = useMemo(() => {
+    if (filters.search) {
+      return {
+        label: `No results for "${filters.search}"`,
+        desc: "Try adjusting your search or filters",
+      };
     }
-    router.replace(`${pathname}?${params.toString()}`, { scroll: false });
-  };
+    if (filters.status && filters.status !== "default") {
+      if (filters.status === "all") {
+        return {
+          label: "No threads found",
+          desc: "There are no helpdesk threads at the moment",
+        };
+      }
+      const statusLabels: Record<string, string> = {
+        open: "Open",
+        in_progress: "In Progress",
+        closed: "Closed",
+        snoozed: "Snoozed",
+      };
+      return {
+        label: `No ${statusLabels[filters.status] || filters.status} threads`,
+        desc: "No threads match this status filter",
+      };
+    }
+    if (filters.unread === "true") {
+      return {
+        label: "No unread threads",
+        desc: "All threads have been read",
+      };
+    }
+    if (filters.priority) {
+      const priorityLabels: Record<string, string> = {
+        urgent: "Urgent",
+        high: "High",
+        medium: "Medium",
+        low: "Low",
+      };
+      return {
+        label: `No ${priorityLabels[filters.priority]} priority threads`,
+        desc: "No threads match this priority filter",
+      };
+    }
+    return {
+      label: "No threads open or in progress",
+      desc: "New candidate threads will appear here automatically",
+    };
+  }, [filters]);
+
+  const updateFilterInUrl = useCallback(
+    (key: string, value: string) => {
+      const params = new URLSearchParams(searchParams.toString());
+      if (value) {
+        params.set(key, value);
+      } else {
+        params.delete(key);
+      }
+      router.replace(`${pathname}?${params.toString()}`, { scroll: false });
+    },
+    [searchParams, router, pathname],
+  );
 
   const { results, summary, loading, refetch } =
     useListHelpdeskThreads(filters);
@@ -80,6 +132,7 @@ export default function HelpdeskSection() {
             filters={filters}
             updateFilter={updateFilterInUrl}
             refetch={refetch}
+            emptyState={emptyState}
           />
         )}
       </div>
@@ -180,13 +233,16 @@ function HelpdeskThreadListCard({
   filters,
   updateFilter,
   refetch,
+  emptyState,
 }: Readonly<{
   data: HelpdeskThreadType[];
   filters: Record<string, string>;
   updateFilter: (key: string, value: string) => void;
   refetch: () => void;
+  emptyState: { label: string; desc: string };
 }>) {
   const [searchInput, setSearchInput] = useState(filters.search || "");
+  const searchTimeoutRef = useRef<NodeJS.Timeout | null>(null);
   const pathName = usePathname();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -199,21 +255,36 @@ function HelpdeskThreadListCard({
     threadId: null,
   });
 
-  const handleSearchChange = (value: string) => {
-    setSearchInput(value);
-    const timeoutId = setTimeout(() => {
-      updateFilter("search", value);
-    }, 300);
-    return () => clearTimeout(timeoutId);
-  };
+  useEffect(() => {
+    setSearchInput(filters.search || "");
+  }, [filters.search]);
 
-  const handleSort = (sortKey: string) => {
-    updateFilter("sort", sortKey);
-  };
+  const handleSearchChange = useCallback(
+    (value: string) => {
+      setSearchInput(value);
+      if (searchTimeoutRef.current) {
+        clearTimeout(searchTimeoutRef.current);
+      }
+      searchTimeoutRef.current = setTimeout(() => {
+        updateFilter("search", value);
+      }, 300);
+    },
+    [updateFilter],
+  );
 
-  const handleFilterChange = (key: string, value: string) => {
-    updateFilter(key, value);
-  };
+  const handleSort = useCallback(
+    (sortKey: string) => {
+      updateFilter("sort", sortKey);
+    },
+    [updateFilter],
+  );
+
+  const handleFilterChange = useCallback(
+    (key: string, value: string) => {
+      updateFilter(key, value);
+    },
+    [updateFilter],
+  );
 
   const onAction = async (
     id: string,
@@ -423,8 +494,8 @@ function HelpdeskThreadListCard({
         <CustomTable
           data={data}
           getRowId={(row) => row.id}
-          emptyLabel="No thread open or in progress"
-          emptyDesc="Use the filter to load closed or snoozed threads"
+          emptyLabel={emptyState.label}
+          emptyDesc={emptyState.desc}
           onRowClick={(row) => {
             const query = new URLSearchParams(searchParams.toString());
             query.set("view", "conversation-details");
@@ -473,6 +544,8 @@ function HelpdeskThreadListCard({
               key: "status",
               header: "Status",
               align: "center",
+              helpText:
+                "Current state of the thread: Open (new), In Progress (being handled), Closed (resolved), Snoozed (temporarily paused)",
               render: (_, row) => {
                 const statusConfig: Record<
                   string,
@@ -539,6 +612,8 @@ function HelpdeskThreadListCard({
               key: "unread_by_staff_count",
               header: "Unread",
               align: "center",
+              helpText:
+                "Number of unread messages from candidates waiting for your response",
               render: (_, row) => {
                 // Count only unread messages sent by the candidate
                 const unreadCandidateCount = row.unread_by_staff_count ?? 0;
@@ -562,6 +637,7 @@ function HelpdeskThreadListCard({
               key: "last_message_at",
               header: "Since",
               align: "center",
+              helpText: "Time since the most recent message in this thread",
               render: (_, row) => (
                 <div className="flex justify-center">
                   <span className="text-gray-400 text-[10px] font-black uppercase tracking-tighter">
