@@ -82,6 +82,8 @@ export type HelpdeskSocketEvent =
       data: {
         results: HelpdeskThreadType[];
         helpdesk_summary_data?: HelpdeskStatData;
+        filters?: Record<string, string>;
+        request_id?: number;
       };
     }
   | {
