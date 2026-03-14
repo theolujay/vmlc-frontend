@@ -293,4 +293,22 @@ export class ExamPortal {
       throw error;
     }
   }
+
+  static async sendHeartbeat(exam_id: string, payload: string, faceCapture?: File) {
+    try {
+      const formData = new FormData();
+      formData.append("payload", payload);
+      if (faceCapture) {
+        formData.append("face_capture", faceCapture);
+      }
+      const response = await client.post(
+        examUrls.HEARTBEAT(exam_id),
+        formData
+      );
+      return response.data;
+    } catch (error) {
+      console.error("Heartbeat failed", error);
+      throw error;
+    }
+  }
 }

@@ -8,6 +8,7 @@ import useSubmitAnswers from '@/hooks/useSubmitAnswers';
 import useGetExamPortal from '@/hooks/useGetExamPortal';
 import { toast } from 'react-toastify';
 import { useAntiCheating } from '@/hooks/useAntiCheating';
+import { useViolationManager } from '@/hooks/useViolationManager';
 import { shuffleArray } from '@/utils/generalUtils';
 import { TakeExamType, TakeExamQuestionType } from '@/types/Examtype';
 import HelpdeskButton from '../General/Portal/DashboardParts/HelpdeskButton';
@@ -35,12 +36,14 @@ export default function Exam() {
   const { onSubmit, isPending: submitPending } = useSubmitAnswers(examId)
   const [isLoaded, setIsLoaded] = useState(false);
 
+  const { reportViolation, registerScreenshotProvider, sendFinalHeartbeat } = useViolationManager(examId);
+
   const handleReturnToExam = useCallback(() => {
     // Refresh page as requested to reset environment and sync state
     window.location.reload();
   }, []);
 
-  const { isFullscreen, enterFullscreen } = useAntiCheating(handleReturnToExam);
+  const { isFullscreen, enterFullscreen } = useAntiCheating(handleReturnToExam, reportViolation);
   const { user } = useGetCurrentUser();
 
   useEffect(() => {
@@ -185,10 +188,18 @@ export default function Exam() {
 
   async function handleSubmit() {
     try {
+      // Send final heartbeat before submitting - wrapped in try/catch to ensure submission proceeds even if proctoring fails
+      try {
+        await sendFinalHeartbeat();
+      } catch (proctorError) {
+        console.error("Final proctoring heartbeat failed, proceeding with submission anyway", proctorError);
+      }
+
       await onSubmit(formattedAnswers);
       localStorage.removeItem(`exam_answers_${examId}`);
       localStorage.removeItem(`exam_current_question_${examId}`);
       localStorage.removeItem(`shuffled_exam_${examId}`);
+      localStorage.removeItem(`vmlc_proctor_uuid`);
     } catch (error) {
       console.error("Submission failed", error);
     }
@@ -271,6 +282,8 @@ export default function Exam() {
       timer={data?.countdown_minutes ?? 0}
       deadline={data?.attempt?.deadline}
       title={data?.title}
+      reportViolation={reportViolation}
+      registerScreenshotProvider={registerScreenshotProvider}
     >
       <div className="relative">
         <Questions

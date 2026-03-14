@@ -6,13 +6,31 @@ import Webcam from 'react-webcam';
 import * as faceapi from 'face-api.js';
 import { toast } from 'react-toastify';
 import clsx from 'clsx';
+import { ViolationType } from '@/types/ViolationType';
 
-const FaceProctor = () => {
+interface FaceProctorProps {
+  reportViolation?: (type: ViolationType, metadata?: Record<string, unknown>) => void;
+  registerScreenshotProvider?: (fn: () => string | null) => void;
+}
+
+const FaceProctor = ({ reportViolation, registerScreenshotProvider }: FaceProctorProps) => {
   const webcamRef = useRef<Webcam>(null);
   const [modelsLoaded, setModelsLoaded] = useState(false);
   const [violationCount, setViolationCount] = useState({ noFace: 0, multiFace: 0, lookingAway: 0 });
   const [status, setStatus] = useState<'normal' | 'warning' | 'error'>('normal');
   const [statusMessage, setStatusMessage] = useState('Monitoring Active');
+
+  // Register screenshot provider for the heartbeat manager
+  useEffect(() => {
+    if (registerScreenshotProvider) {
+      registerScreenshotProvider(() => {
+        if (webcamRef.current) {
+          return webcamRef.current.getScreenshot();
+        }
+        return null;
+      });
+    }
+  }, [registerScreenshotProvider]);
 
   // Load models on mount
   useEffect(() => {
@@ -49,6 +67,9 @@ const FaceProctor = () => {
           setStatus('error');
           setStatusMessage('NO FACE DETECTED');
           setViolationCount(prev => ({ ...prev, noFace: prev.noFace + 1 }));
+          if (reportViolation) {
+            reportViolation('NO_FACE');
+          }
           if (violationCount.noFace % 10 === 0) {
              toast.error("FACE NOT DETECTED: Please stay in front of the camera.");
           }
@@ -56,6 +77,9 @@ const FaceProctor = () => {
           setStatus('error');
           setStatusMessage('MULTIPLE FACES DETECTED');
           setViolationCount(prev => ({ ...prev, multiFace: prev.multiFace + 1 }));
+          if (reportViolation) {
+            reportViolation('MULTI_FACE', { count: detections.length });
+          }
           if (violationCount.multiFace % 5 === 0) {
              toast.error("MULTIPLE FACES DETECTED: This is a strictly proctored exam.");
           }
@@ -75,6 +99,9 @@ const FaceProctor = () => {
             setStatus('warning');
             setStatusMessage('ATTENTION LAPSE');
             setViolationCount(prev => ({ ...prev, lookingAway: prev.lookingAway + 1 }));
+            if (reportViolation) {
+              reportViolation('ATTENTION_LAPSE', { offset });
+            }
             if (violationCount.lookingAway % 15 === 0) {
               toast.warn("Please keep your eyes on the screen.");
             }

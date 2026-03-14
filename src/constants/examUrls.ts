@@ -20,4 +20,5 @@ export const examUrls = {
   EXAM_RESULTS: (exam_id: string) => `/v2/exams/${exam_id}/results/`,
   CANDIDATE_EXAM_HISTORY: (candidate_id: string) =>
     `/v2/candidates/${candidate_id}/exam-history/`,
+  HEARTBEAT: (exam_id: string) => `/v2/exams/${exam_id}/heartbeat/`,
 };

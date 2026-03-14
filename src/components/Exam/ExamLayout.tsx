@@ -3,19 +3,24 @@ import React from 'react'
 import Header from '../General/Layout/Header'
 import HeaderTimer from './HeaderTimer'
 import FaceProctor from './FaceProctor'
+import { ViolationType } from '@/types/ViolationType';
 
 export default function ExamLayout({ 
     children, 
     timer, 
     deadline,
     onTimeUp, 
-    title 
+    title,
+    reportViolation,
+    registerScreenshotProvider
 }: Readonly<{ 
     children: React.ReactNode, 
     timer: number, 
     deadline?: string,
     onTimeUp: () => void, 
-    title?: string 
+    title?: string,
+    reportViolation?: (type: ViolationType, metadata?: Record<string, unknown>) => void;
+    registerScreenshotProvider?: (fn: () => string | null) => void;
 }>) {
 
     return (
@@ -29,7 +34,10 @@ export default function ExamLayout({
                     <div className="max-w-[1400px] w-[95%] mx-auto">
                         {children}
                     </div>
-                    <FaceProctor />
+                    <FaceProctor 
+                        reportViolation={reportViolation}
+                        registerScreenshotProvider={registerScreenshotProvider}
+                    />
                 </main>
             </ExamNavigationProvider>
         </div>
