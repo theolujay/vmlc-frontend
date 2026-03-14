@@ -33,31 +33,19 @@ export const useViolationManager = (examId: string, startedAt?: string) => {
 
   const eventsRef = useRef<ViolationEvent[]>([]);
 
-  const getPersistedStartedAt = useCallback(() => {
-    if (startedAt) return startedAt;
-    if (typeof window !== "undefined") {
-      return (
-        localStorage.getItem(`vmlc_proctor_started_at_${examId}`) || undefined
-      );
-    }
-    return undefined;
-  }, [examId, startedAt]);
 
-  // Calculate current expected sequence based on elapsed time since startedAt
+  // Get sequence - prefer persisted value, fall back to time-based calculation
   const getCurrentSequence = useCallback(() => {
-    const persistedStartedAt = getPersistedStartedAt();
-    if (!persistedStartedAt)
-      return typeof window !== "undefined"
-        ? Number(localStorage.getItem(`vmlc_proctor_seq_${examId}`) || 1)
-        : 1;
+    if (typeof window === "undefined") return 1;
 
-    const startTime = new Date(persistedStartedAt).getTime();
-    const now = Date.now();
-    const elapsedMs = now - startTime;
+    const storedSeq = localStorage.getItem(`vmlc_proctor_seq_${examId}`);
+    if (storedSeq) {
+      return Number(storedSeq);
+    }
 
-    // sequence 1 is [0-5min], sequence 2 is [5-10min], etc.
-    return Math.floor(elapsedMs / HEARTBEAT_INTERVAL) + 1;
-  }, [examId, getPersistedStartedAt]);
+    // First heartbeat - return 1
+    return 1;
+  }, [examId]);
 
   const sequenceNumberRef = useRef<number>(getCurrentSequence());
   const clientUuidRef = useRef<string>(
@@ -285,7 +273,8 @@ export const useViolationManager = (examId: string, startedAt?: string) => {
         eventsRef.current = [];
         lastHeartbeatTimeRef.current = periodEnd;
 
-        // Update persistent state
+        // Increment sequence for next heartbeat and update persistent state
+        sequenceNumberRef.current += 1;
         localStorage.setItem(
           `vmlc_proctor_seq_${examId}`,
           sequenceNumberRef.current.toString(),
