@@ -13,44 +13,40 @@ export type User = {
   avatar: string;
 };
 
-
 export type VerificationDocumentType = {
   face_id?: File;
   id_card?: File;
-  verification_document?: File
-}
+  verification_document?: File;
+};
 
+export type SelectItem = {
+  id: number | string;
+  label: string;
+};
 
-export type SelectItem={
-    id:number | string,
-    label:string
-}
+export type BulkPayloadType = {
+  question_ids: (number | string)[];
+  exam_ids: (number | string)[];
+};
 
-
-export type BulkPayloadType= {
-    question_ids: (number | string)[],
-    exam_ids: (number | string)[]
-}
-
-
-export type BulkArchiveType={
-  question_ids:(number | string)[]
-}
+export type BulkArchiveType = {
+  question_ids: (number | string)[];
+};
 
 export type BulkActionType = {
-action: 'archive' | 'assign' | 'unassign';
+  action: "archive" | "assign" | "unassign";
   question_ids: (number | string)[];
   exam_ids?: (number | string)[];
-}
+};
 export type VerificationUploadPayloadType = FormData;
 
-export type AnswerItem={
-  question:number;
-  selected_option:string;
-}
-export type CandidateSubmitAnswerType={
-  answers: AnswerItem[]
-}
+export type AnswerItem = {
+  question: number;
+  selected_option: string;
+};
+export type CandidateSubmitAnswerType = {
+  answers: AnswerItem[];
+};
 
 export type ApiError = {
   response?: {

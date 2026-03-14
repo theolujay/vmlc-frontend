@@ -1,12 +1,13 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useState, useCallback } from 'react';
 import { toast, ToastOptions } from 'react-toastify';
+import { ViolationType } from '@/types/ViolationType';
 
 interface AntiCheatingWindow extends Window {
   lastBlurTime?: number;
 }
 
-export const useAntiCheating = (onReturn?: () => void) => {
+export const useAntiCheating = (onReturn?: () => void, reportViolation?: (type: ViolationType, metadata?: Record<string, unknown>) => void) => {
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [isFullscreenSupported, setIsFullscreenSupported] = useState(true);
 
@@ -90,6 +91,9 @@ export const useAntiCheating = (onReturn?: () => void) => {
           position: "top-center",
           autoClose: 10000,
         });
+        if (reportViolation) {
+          reportViolation('FULLSCREEN_EXIT');
+        }
       } else {
         document.body.style.filter = "none";
       }
@@ -110,12 +114,18 @@ export const useAntiCheating = (onReturn?: () => void) => {
           console.error("Failed to clear clipboard", err);
         }
         toast.warn("Screenshots are not allowed during the exam.");
+        if (reportViolation) {
+          reportViolation('SCREENSHOT', { key: 'PrintScreen' });
+        }
         e.preventDefault();
       }
 
       // Prevent common screenshot shortcuts (OS level, might not always work)
       if ((e.ctrlKey || e.metaKey) && e.shiftKey && (e.key === 's' || e.key === 'S' || e.key === '4' || e.key === '3')) {
         toast.warn("Screenshots are not allowed during the exam.");
+        if (reportViolation) {
+          reportViolation('SCREENSHOT', { shortcut: 'OS_SHORTCUT' });
+        }
         e.preventDefault();
       }
 
@@ -174,11 +184,17 @@ export const useAntiCheating = (onReturn?: () => void) => {
             autoClose: 15000,
             // theme: "dark" as any,
           } as ToastOptions);
+          if (reportViolation) {
+            reportViolation('SCREENSHOT', { method: 'Blur_Sequence', duration_ms: timeInactive });
+          }
         } else {
           toast.error("WARNING: You switched tabs/windows. This suspicious activity has been recorded.", {
             position: "top-center",
             autoClose: 10000,
           });
+          if (reportViolation) {
+            reportViolation('TAB_SWITCH', { duration_ms: timeInactive });
+          }
         }
 
         try {

@@ -1,41 +1,75 @@
-# Proposal: Automated Violation Logging API
+# Proposal: Efficient Periodic Proctoring Heartbeat (v2)
 
-To ensure accountability and provide proctors with actionable data, we propose implementing a background "Ping" service that logs suspicious activity to the server in real-time.
+To optimize performance and minimize individual server pings, we propose a unified **Heartbeat** mechanism. This replaces high-frequency individual pings with a single, consolidated request every 5 minutes that combines violation telemetry with mandatory visual evidence.
 
 ## 📡 API Specification
 
-### Endpoint: `POST /api/exams/{exam_id}/violations/`
+### Endpoint: `POST /v2/exams/{exam_id}/heartbeat/`
+**Frequency:** Every 300 seconds (5 minutes)
+**Method:** `POST`
+**Content-Type:** `multipart/form-data`
+
+#### Fields:
+1. **`payload`** (JSON string): Consolidated summary, event log, and client metadata.
+2. **`face_capture`** (File/JPEG): A representative frame captured during the current interval.
 
 #### Payload Structure:
 ```json
 {
-  "violation_type": "TAB_SWITCH" | "SCREENSHOT" | "FULLSCREEN_EXIT" | "MULTI_FACE" | "NO_FACE" | "ATTENTION_LAPSE",
-  "severity": "LOW" | "MEDIUM" | "HIGH",
-  "timestamp": "ISO-8601 String",
-  "metadata": {
-    "duration_seconds": 15,
-    "question_id": 102,
-    "current_question_index": 5,
-    "additional_info": "Detected 3 distinct faces in frame"
-  }
+  "sequence_number": 1,
+  "client_uuid": "f47ac10b-58cc-4372-a567-0e02b2c3d479",
+  "timestamp": "2026-03-14T10:05:00Z",
+  "period_start": "2026-03-14T10:00:00Z",
+  "period_end": "2026-03-14T10:05:00Z",
+  "meta": {
+    "os": "MacOS",
+    "browser": "Chrome 122",
+    "screen_resolution": "1920x1080",
+    "battery_level": 0.85,
+    "is_charging": true,
+    "network_latency_ms": 120
+  },
+  "summary": {
+    "TAB_SWITCH": 2,
+    "SCREENSHOT": 0,
+    "FULLSCREEN_EXIT": 1,
+    "MULTI_FACE": 12,
+    "NO_FACE": 45,
+    "ATTENTION_LAPSE": 30
+  },
+  "events": [
+    {
+      "type": "TAB_SWITCH",
+      "timestamp": "2026-03-14T10:02:15Z",
+      "metadata": { "duration_seconds": 15, "question_id": 102 }
+    },
+    {
+      "type": "FULLSCREEN_EXIT",
+      "timestamp": "2026-03-14T10:04:10Z",
+      "metadata": { "current_question_id": 5 }
+    }
+  ]
 }
 ```
 
-#### Violation Type Definitions:
-- **`TAB_SWITCH`**: Candidate blurred the window or switched tabs.
-- **`SCREENSHOT`**: Rapid focus/blur sequence detected (likely screen capture).
-- **`FULLSCREEN_EXIT`**: Candidate manually exited the mandatory fullscreen mode.
-- **`MULTI_FACE`**: AI detected more than one person in the camera frame.
-- **`NO_FACE`**: Candidate left the camera's field of view.
-- **`ATTENTION_LAPSE`**: Candidate looked away from the screen for a prolonged period.
-
 ## 🛠️ Proposed Client Implementation
 
-1. **Throttling**: To avoid flooding the server, high-frequency violations (like "No Face") should be bundled or throttled (e.g., log once every 30 seconds of continuous absence).
-2. **Silent Failure**: The logging service should use `navigator.sendBeacon` or a background fetch to ensure the user experience is never interrupted by network errors.
-3. **Suspicion Scoring**: The backend should aggregate these logs into a "Suspicion Score" (0-100) shown on the admin dashboard for each candidate.
+### 1. `sequence_number` & `client_uuid`
+- The client MUST track the number of heartbeats sent (starting from 1).
+- Each heartbeat MUST have a unique `client_uuid`. This ensures that if a network retry occurs, the backend can safely ignore the duplicate without counting it twice.
 
-## 📊 Admin Dashboard Benefits
-- **Heatmaps**: Admins can see *when* most violations occur (e.g., at the end of the exam).
-- **Auto-Flagging**: Candidates with a Suspicion Score above 80 can be automatically flagged for manual review or immediate disqualification.
-- **Evidence Trail**: Provides a timestamped list of events to justify any disciplinary action taken against a candidate.
+### 2. Environmental Metadata (`meta`)
+- To provide context for "No Face" detections (e.g., lag or system stress), the client will include battery status and network latency in the `meta` object.
+
+### 3. Submission Sync
+- A "Final Heartbeat" MUST be sent immediately upon exam submission, even if the 5-minute timer hasn't expired. This ensures all final events are captured.
+
+### 4. Resiliency (Offline Mode)
+- If a heartbeat fails, the payload (including the `face_capture` Blob/Base64) is saved to `IndexedDB` or `localStorage`.
+- The next heartbeat will attempt to send both the current data and the failed bucket.
+
+## 📊 Benefits
+
+- **Audit Integrity**: `sequence_number` allows proctors to see if the candidate intentionally went "offline" to hide activity.
+- **Fairness Context**: High latency or low battery metadata helps distinguish between intentional cheating and technical difficulties.
+- **Efficiency**: Reduces network traffic while maintaining a high-fidelity "Black Box" recorder of the candidate's environment.

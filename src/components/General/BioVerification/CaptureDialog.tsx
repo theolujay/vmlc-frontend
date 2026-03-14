@@ -1,16 +1,13 @@
-
-
-
 "use client";
 
-import AppDialog from '@/components/ui/Modals/AppDialog'
-import React, { useEffect, useRef, useState } from 'react'
-import Webcam from 'react-webcam';
+import AppDialog from "@/components/ui/Modals/AppDialog";
+import React, { useEffect, useRef, useState } from "react";
+import Webcam from "react-webcam";
 import * as faceapi from "face-api.js";
-import clsx from 'clsx';
-import Image from 'next/image';
-import { dataURLtoFile } from '@/utils/formatFileSize';
-import Spinner from '@/components/ui/spinner/spinner';
+import clsx from "clsx";
+import Image from "next/image";
+import { dataURLtoFile } from "@/utils/formatFileSize";
+import Spinner from "@/components/ui/spinner/spinner";
 
 const CIRCLE_SIZE = 250;
 const FRAME_WIDTH = 250;
@@ -20,7 +17,7 @@ export default function CaptureDialog({
   open,
   close,
   onCaptureFile,
-  isPending
+  isPending,
 }: {
   open: boolean;
   close: (close: boolean) => void;
@@ -66,6 +63,16 @@ export default function CaptureDialog({
 
         if (detections) {
           const box = detections.detection.box;
+          if (
+            !box ||
+            box.x === null ||
+            box.y === null ||
+            box.width === null ||
+            box.height === null
+          ) {
+            setIsAligned(false);
+            return;
+          }
           const centerX = box.x + box.width / 2;
           const centerY = box.y + box.height / 2;
 
@@ -103,7 +110,7 @@ export default function CaptureDialog({
 
       // Stop webcam stream after capture
       const stream = webcamRef.current.video?.srcObject as MediaStream;
-      if (stream) stream.getTracks().forEach(track => track.stop());
+      if (stream) stream.getTracks().forEach((track) => track.stop());
     }
   };
 
@@ -124,12 +131,17 @@ export default function CaptureDialog({
               <i className="fas fa-camera text-xl"></i>
             </div>
             <div>
-              <p className='text-[9px] text-gray-400 font-black uppercase tracking-widest'>Identity Verification</p>
-              <h2 className='text-xl font-bold text-gray-800 tracking-tight uppercase'>Face Capture</h2>
+              <p className="text-[9px] text-gray-400 font-black uppercase tracking-widest">
+                Identity Verification
+              </p>
+              <h2 className="text-xl font-bold text-gray-800 tracking-tight uppercase">
+                Face Capture
+              </h2>
             </div>
           </div>
           <p className="text-[11px] text-gray-500 font-medium leading-relaxed">
-            Position your face within the circle. Ensure your environment is well-lit for accurate verification.
+            Position your face within the circle. Ensure your environment is
+            well-lit for accurate verification.
           </p>
         </div>
 
@@ -149,7 +161,7 @@ export default function CaptureDialog({
                   <div
                     className="absolute inset-0 border-[6px] rounded-full pointer-events-none"
                     style={{
-                      borderColor: 'limegreen',
+                      borderColor: "limegreen",
                       margin: "2px",
                     }}
                   />
@@ -169,10 +181,13 @@ export default function CaptureDialog({
                   disabled={isPending}
                   className={clsx(
                     "flex-[1.5] px-6 py-4 rounded-xl font-black text-[10px] tracking-widest uppercase text-white bg-[#3E4095] shadow-lg shadow-[#3E4095]/20 hover:-translate-y-0.5 transition-all cursor-pointer flex items-center justify-center gap-2",
-                    isPending && "opacity-70 cursor-not-allowed translate-y-0 shadow-none"
+                    isPending &&
+                      "opacity-70 cursor-not-allowed translate-y-0 shadow-none",
                   )}
                 >
-                  {isPending ? <Spinner /> : (
+                  {isPending ? (
+                    <Spinner />
+                  ) : (
                     <>
                       <span>Upload & Proceed</span>
                       <i className="fas fa-check text-[8px]"></i>
@@ -184,48 +199,70 @@ export default function CaptureDialog({
           ) : (
             <div className="flex flex-col items-center w-full">
               <div className="relative">
-                 {!modelsLoaded && (
-                    <div className="absolute inset-0 z-20 flex flex-col items-center justify-center bg-gray-50/80 backdrop-blur-sm rounded-full">
-                        <Spinner size={32} color="#3E4095" />
-                        <p className="mt-4 text-[9px] font-black text-[#3E4095] uppercase tracking-widest animate-pulse">Initializing AI...</p>
-                    </div>
-                 )}
-                 <div className={clsx(
+                {!modelsLoaded && (
+                  <div className="absolute inset-0 z-20 flex flex-col items-center justify-center bg-gray-50/80 backdrop-blur-sm rounded-full">
+                    <Spinner size={32} color="#3E4095" />
+                    <p className="mt-4 text-[9px] font-black text-[#3E4095] uppercase tracking-widest animate-pulse">
+                      Initializing AI...
+                    </p>
+                  </div>
+                )}
+                <div
+                  className={clsx(
                     "relative w-[260px] h-[260px] rounded-full overflow-hidden border-4 bg-gray-100 shadow-inner transition-colors duration-500",
-                    isAligned ? "border-emerald-400 shadow-emerald-100" : "border-white"
-                 )}>
-                    <Webcam
-                      ref={webcamRef}
-                      screenshotFormat="image/jpeg"
-                      videoConstraints={{
-                        facingMode: "user",
-                        width: FRAME_WIDTH,
-                        height: FRAME_HEIGHT,
-                      }}
-                      className="w-full h-full object-cover scale-x-[-1]"
+                    isAligned
+                      ? "border-emerald-400 shadow-emerald-100"
+                      : "border-white",
+                  )}
+                >
+                  <Webcam
+                    ref={webcamRef}
+                    screenshotFormat="image/jpeg"
+                    videoConstraints={{
+                      facingMode: "user",
+                      width: FRAME_WIDTH,
+                      height: FRAME_HEIGHT,
+                    }}
+                    className="w-full h-full object-cover scale-x-[-1]"
+                  />
+
+                  {/* Alignment Overlay */}
+                  <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                    <div
+                      className={clsx(
+                        "w-[200px] h-[200px] border-2 border-dashed rounded-full transition-all duration-300",
+                        isAligned
+                          ? "border-emerald-400 scale-105"
+                          : "border-white/40 scale-100",
+                      )}
                     />
 
-                    {/* Alignment Overlay */}
-                    <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-                        <div className={clsx(
-                            "w-[200px] h-[200px] border-2 border-dashed rounded-full transition-all duration-300",
-                            isAligned ? "border-emerald-400 scale-105" : "border-white/40 scale-100"
-                        )} />
+                    {/* Corner markers for visual interest */}
+                    <div
+                      className={clsx(
+                        "absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[240px] h-[240px] border-t-2 border-l-2 rounded-tl-[60px] transition-all",
+                        isAligned
+                          ? "border-emerald-400 opacity-100"
+                          : "border-white/20 opacity-0",
+                      )}
+                      style={{
+                        transform: "translate(-50%, -50%) rotate(0deg)",
+                      }}
+                    />
+                  </div>
+                </div>
 
-                        {/* Corner markers for visual interest */}
-                        <div className={clsx(
-                            "absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[240px] h-[240px] border-t-2 border-l-2 rounded-tl-[60px] transition-all",
-                            isAligned ? "border-emerald-400 opacity-100" : "border-white/20 opacity-0"
-                        )} style={{ transform: 'translate(-50%, -50%) rotate(0deg)' }} />
-                    </div>
-                 </div>
-
-                 <div className="absolute -bottom-4 left-1/2 -translate-x-1/2 px-4 py-1.5 rounded-full bg-white shadow-lg border border-gray-50 flex items-center gap-2 whitespace-nowrap z-10">
-                    <div className={clsx("w-2 h-2 rounded-full", isAligned ? "bg-emerald-500 animate-pulse" : "bg-red-400")}></div>
-                    <span className="text-[9px] font-black uppercase tracking-widest text-gray-700">
-                        {isAligned ? 'Ready to Capture' : 'Position your face'}
-                    </span>
-                 </div>
+                <div className="absolute -bottom-4 left-1/2 -translate-x-1/2 px-4 py-1.5 rounded-full bg-white shadow-lg border border-gray-50 flex items-center gap-2 whitespace-nowrap z-10">
+                  <div
+                    className={clsx(
+                      "w-2 h-2 rounded-full",
+                      isAligned ? "bg-emerald-500 animate-pulse" : "bg-red-400",
+                    )}
+                  ></div>
+                  <span className="text-[9px] font-black uppercase tracking-widest text-gray-700">
+                    {isAligned ? "Ready to Capture" : "Position your face"}
+                  </span>
+                </div>
               </div>
 
               <div className="flex gap-4 mt-12 w-full">
@@ -242,7 +279,7 @@ export default function CaptureDialog({
                     "flex-[1.5] px-6 py-4 rounded-xl font-black text-[10px] tracking-widest uppercase text-white transition-all cursor-pointer flex items-center justify-center gap-2",
                     isAligned
                       ? "bg-[#3E4095] shadow-lg shadow-[#3E4095]/20 hover:-translate-y-0.5"
-                      : "bg-[#98A2B3] cursor-not-allowed shadow-none"
+                      : "bg-[#98A2B3] cursor-not-allowed shadow-none",
                   )}
                 >
                   <i className="fas fa-camera text-[10px]"></i>

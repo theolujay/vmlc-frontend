@@ -9,7 +9,7 @@ export interface MathCategory {
   [key: string]: MathSymbol[];
 }
 
-export type MathMode = 'inline' | 'block';
+export type MathMode = "inline" | "block";
 
 export interface MathFieldProps {
   value: string;

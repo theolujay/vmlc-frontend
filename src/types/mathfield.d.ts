@@ -1,5 +1,5 @@
-import * as React from 'react';
-import type { MathfieldElement } from 'mathlive';
+import * as React from "react";
+import type { MathfieldElement } from "mathlive";
 
 declare global {
   interface Window {
@@ -9,13 +9,16 @@ declare global {
   }
   namespace JSX {
     interface IntrinsicElements {
-      'math-field': React.DetailedHTMLProps<React.HTMLAttributes<MathfieldElement>, MathfieldElement>;
+      "math-field": React.DetailedHTMLProps<
+        React.HTMLAttributes<MathfieldElement>,
+        MathfieldElement
+      >;
     }
   }
 }
 
-declare module 'katex/dist/contrib/auto-render' {
-  import { KatexOptions } from 'katex';
+declare module "katex/dist/contrib/auto-render" {
+  import { KatexOptions } from "katex";
   export default function renderMathInElement(
     element: HTMLElement,
     options?: KatexOptions & {
@@ -24,7 +27,7 @@ declare module 'katex/dist/contrib/auto-render' {
         right: string;
         display: boolean;
       }[];
-    }
+    },
   ): void;
 }
 

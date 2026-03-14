@@ -3,36 +3,29 @@ import { RequestUserType } from "./auth";
 // import { PaginatedType } from "./LeaderBoardType";
 import { PaginationType } from "./Examtype";
 
-
 // export type UserMgtType = PaginatedType<MgtTypeItem>;
 
-
 export type MgtTypeItem = {
-  user: RequestUserType
-  role: string,
-  occupation: string
-}
-
-
+  user: RequestUserType;
+  role: string;
+  occupation: string;
+};
 
 export type InviteStaffMemberPayloadType = {
-  email: string,
-  first_name: string,
-  last_name: string,
-  phone: string,
+  email: string;
+  first_name: string;
+  last_name: string;
+  phone: string;
   // password: string,
   // password2:string,
-  role?: string,
-  occupation?: string
-}
-
-
+  role?: string;
+  occupation?: string;
+};
 
 export type AddStaffMemberFormProps<T extends FieldValues> = {
   form: UseFormReturn<T>;
   onSubmit: (data: T) => void;
 };
-
 
 export type CompetitionStage = {
   id: number;
@@ -115,7 +108,6 @@ export type OverviewType = {
   pre_registered_change?: string;
 };
 
-
 export type RegistrationStatusType = {
   candidate_registration: {
     is_open: boolean;
@@ -128,7 +120,6 @@ export type RegistrationStatusType = {
   helpdesk_email: string;
 };
 
-
 export type UserMgtType = {
   pagination: PaginationType;
   stats_overview: StatOverviewType;
@@ -136,66 +127,60 @@ export type UserMgtType = {
 };
 
 export type MgtItem = {
-  user: RequestUserType & { is_email_verified: boolean, },
-  school_name: string | null,
-  current_class: string | null,
-  role: string,
-  status: string,
-  profile_type: string,
-  occupation: string | null
-}
+  user: RequestUserType & { is_email_verified: boolean };
+  school_name: string | null;
+  current_class: string | null;
+  role: string;
+  status: string;
+  profile_type: string;
+  occupation: string | null;
+};
 
 export type MgtItemType = {
-  id: string,
-  email: string,
-  is_email_verified: boolean,
-  first_name: string,
-  last_name: string,
-  profile_picture: string | null,
-  phone: string | null,
-  date_joined: Date
-}
+  id: string;
+  email: string;
+  is_email_verified: boolean;
+  first_name: string;
+  last_name: string;
+  profile_picture: string | null;
+  phone: string | null;
+  date_joined: Date;
+};
 
 export type StaffUserType = RequestUserType & {
-  is_email_verified: boolean,
-  profile_picture: string | null,
-}
+  is_email_verified: boolean;
+  profile_picture: string | null;
+};
 
 export type CowrywiseKidProfileType = {
-  username: string,
-}
+  username: string;
+};
 
 export type UserProfileType = {
-  user: StaffUserType
-  occupation: string | null,
-  school_name?: string | null,
-  school_type?: string | null,
-  current_class?: string | null,
-  role: string,
-  profile_type: string,
-  is_active: boolean,
-  status: string,
-  verification_document: string | null,
-  verification_document_type: string | null,
-  created_at: Date,
-  updated_at: Date,
-  is_setup_complete: boolean,
-  has_cowrywise_kid_profile: boolean,
-  cowrywise_kid_profile?: CowrywiseKidProfileType | null,
-  current_stage?: string | null,
-}
+  user: StaffUserType;
+  occupation: string | null;
+  school_name?: string | null;
+  school_type?: string | null;
+  current_class?: string | null;
+  role: string;
+  profile_type: string;
+  is_active: boolean;
+  status: string;
+  verification_document: string | null;
+  verification_document_type: string | null;
+  created_at: Date;
+  updated_at: Date;
+  is_setup_complete: boolean;
+  has_cowrywise_kid_profile: boolean;
+  cowrywise_kid_profile?: CowrywiseKidProfileType | null;
+  current_stage?: string | null;
+};
 
 export type StaffDetailsType = {
-  profile: UserProfileType
-
-}
-
-
-
-
+  profile: UserProfileType;
+};
 
 export type PreRegisteredCandidate = {
-
   full_name: string;
 
   email: string;
@@ -203,20 +188,15 @@ export type PreRegisteredCandidate = {
   phone: string;
 
   created_at: string;
-
-}
-
-
+};
 
 export type PreRegisteredCandidateType = {
-
   pagination: PaginationType;
 
   stats_overview: null;
 
   results: PreRegisteredCandidate[];
-
-}
+};
 
 export type RegistrationTrendData = {
   date?: string;

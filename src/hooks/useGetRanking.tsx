@@ -1,5 +1,5 @@
 import { CompetitionService } from '@/services/Competition.service';
-import { RankingResponse } from '@/types/LeaderBoardType';
+import { RankingResponse } from '@/types/ScoreboardType';
 import { useQuery } from '@tanstack/react-query';
 
 export default function useGetRanking(exam_id: string) {
