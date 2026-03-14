@@ -457,7 +457,7 @@ const FullRanking: React.FC<FullRankingProps> = ({ onBack, examId, examTitle, on
               ...(!isPublicView ? [
                 {
                   key: 'proctoring_status',
-                  header: 'Proctoring',
+                  header: 'Proctoring (beta)',
                   render: (val: any, row: RankingEntry) => {
                     const score = (row.violation_score || 0) * 100;
                     const isAbsent = typeof row.exam_score === 'string' && row.exam_score.toLowerCase() === 'absent';
