@@ -294,17 +294,18 @@ export class ExamPortal {
     }
   }
 
-  static async sendHeartbeat(exam_id: string, payload: string, faceCapture?: File) {
+  static async sendHeartbeat(
+    exam_id: string,
+    payload: string,
+    faceCapture?: File,
+  ) {
     try {
       const formData = new FormData();
       formData.append("payload", payload);
       if (faceCapture) {
         formData.append("face_capture", faceCapture);
       }
-      const response = await client.post(
-        examUrls.HEARTBEAT(exam_id),
-        formData
-      );
+      const response = await client.post(examUrls.HEARTBEAT(exam_id), formData);
       return response.data;
     } catch (error) {
       console.error("Heartbeat failed", error);
@@ -315,7 +316,7 @@ export class ExamPortal {
   static async getIntegrityAudit(examId: string, candidateId: string) {
     try {
       const response = await client.get(
-        examUrls.INTEGRITY_AUDIT(examId, candidateId)
+        examUrls.INTEGRITY_AUDIT(examId, candidateId),
       );
       return response.data;
     } catch (error) {
@@ -324,15 +325,29 @@ export class ExamPortal {
     }
   }
 
-  static async updateProctoringStatus(examId: string, candidateId: string, status: string) {
+  static async updateProctoringStatus(
+    examId: string,
+    candidateId: string,
+    status: string,
+  ) {
     try {
       const response = await client.post(
         examUrls.UPDATE_PROCTORING_STATUS(examId, candidateId),
-        { status }
+        { status },
       );
       return response.data;
     } catch (error) {
       console.error("Failed to update proctoring status:", error);
+      throw error;
+    }
+  }
+
+  static async getExamTime(examId: string) {
+    try {
+      const response = await client.get(examUrls.EXAM_TIME(examId));
+      return response.data;
+    } catch (error) {
+      console.error("Failed to fetch exam time:", error);
       throw error;
     }
   }

@@ -21,8 +21,9 @@ export const examUrls = {
   CANDIDATE_EXAM_HISTORY: (candidate_id: string) =>
     `/v2/candidates/${candidate_id}/exam-history/`,
   HEARTBEAT: (exam_id: string) => `/v2/exams/${exam_id}/heartbeat/`,
-  INTEGRITY_AUDIT: (exam_id: string, candidate_id: string) => 
+  INTEGRITY_AUDIT: (exam_id: string, candidate_id: string) =>
     `/v2/exams/${exam_id}/candidates/${candidate_id}/integrity-audit/`,
-  UPDATE_PROCTORING_STATUS: (exam_id: string, candidate_id: string) => 
+  UPDATE_PROCTORING_STATUS: (exam_id: string, candidate_id: string) =>
     `/v2/exams/${exam_id}/candidates/${candidate_id}/update-status/`,
+  EXAM_TIME: (exam_id: string) => `/v2/exams/${exam_id}/time/`,
 };
