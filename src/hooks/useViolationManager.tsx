@@ -33,7 +33,6 @@ export const useViolationManager = (examId: string, startedAt?: string) => {
 
   const eventsRef = useRef<ViolationEvent[]>([]);
 
-
   // Get sequence - prefer persisted value, fall back to time-based calculation
   const getCurrentSequence = useCallback(() => {
     if (typeof window === "undefined") return 1;
@@ -48,12 +47,6 @@ export const useViolationManager = (examId: string, startedAt?: string) => {
   }, [examId]);
 
   const sequenceNumberRef = useRef<number>(getCurrentSequence());
-  const clientUuidRef = useRef<string>(
-    (typeof window !== "undefined"
-      ? localStorage.getItem(`vmlc_proctor_uuid_${examId}`) ||
-        crypto.randomUUID()
-      : "") as string,
-  );
   const lastHeartbeatTimeRef = useRef<string>(
     (typeof window !== "undefined"
       ? localStorage.getItem(`vmlc_proctor_last_time_${examId}`)
@@ -64,11 +57,7 @@ export const useViolationManager = (examId: string, startedAt?: string) => {
 
   // Store persistent state for session consistency
   useEffect(() => {
-    if (clientUuidRef.current && typeof window !== "undefined") {
-      localStorage.setItem(
-        `vmlc_proctor_uuid_${examId}`,
-        clientUuidRef.current,
-      );
+    if (typeof window !== "undefined") {
       localStorage.setItem(
         `vmlc_proctor_seq_${examId}`,
         sequenceNumberRef.current.toString(),
@@ -225,7 +214,7 @@ export const useViolationManager = (examId: string, startedAt?: string) => {
 
       const payload = {
         sequence_number: sequenceNumberRef.current,
-        client_uuid: clientUuidRef.current as string,
+        client_uuid: crypto.randomUUID(),
         timestamp: periodEnd,
         period_start: periodStart,
         period_end: periodEnd,
