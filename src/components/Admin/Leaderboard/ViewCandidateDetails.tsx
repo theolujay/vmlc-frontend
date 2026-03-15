@@ -527,11 +527,35 @@ function CandidateInfoCard({
               <span className="text-[10px] font-bold text-grey-500 uppercase tracking-wider">
                 Integrity Score
               </span>
-              <p className="font-black text-[#101828] text-sm">
-                {proctoringSummary
-                  ? `${(proctoringSummary.integrity_score * 100).toFixed(0)}%`
-                  : "N/A"}
-              </p>
+              <div className="flex items-center gap-2">
+                <p className="font-black text-[#101828] text-sm">
+                  {proctoringSummary
+                    ? `${(proctoringSummary.integrity_score * 100).toFixed(0)}%`
+                    : "N/A"}
+                </p>
+                {proctoringSummary?.integrity_flags && proctoringSummary.integrity_flags.length > 0 && (
+                  <div className="relative group">
+                    <i className={clsx(
+                      "fas text-[8px]",
+                      proctoringSummary.integrity_flags.some(f => f.severity === "high")
+                        ? "fa-exclamation-circle text-red-500"
+                        : "fa-exclamation-triangle text-amber-500"
+                    )}></i>
+                    <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 w-48 p-2 bg-gray-900 text-white text-[8px] rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-50">
+                      {proctoringSummary.integrity_flags.map((flag, idx) => (
+                        <div key={idx} className="mb-1">
+                          <span className={clsx(
+                            "font-bold",
+                            flag.severity === "high" ? "text-red-400" : "text-amber-400"
+                          )}>
+                            {flag.type === "sequence_gaps" ? "Missing heartbeats" : "Time gaps"}
+                          </span>: {flag.count}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
 
             <div className="w-px h-8 bg-gray-100 hidden md:block"></div>
@@ -920,6 +944,13 @@ function TimelineNode({
   const activeQuestionSn =
     activeQuestionIndex !== -1 ? activeQuestionIndex + 1 : null;
 
+  // Get the period duration for this heartbeat
+  const periodStart = entry.period_start;
+  const periodEnd = entry.period_end;
+  const periodDuration = periodStart && periodEnd
+    ? Math.round((new Date(periodEnd).getTime() - new Date(periodStart).getTime()) / 1000 / 60)
+    : null;
+
   return (
     <div className="relative">
       <div
@@ -934,25 +965,36 @@ function TimelineNode({
       ></div>
 
       <div className="flex flex-col gap-4">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
+        <div className="flex items-center justify-between flex-wrap gap-2">
+          <div className="flex items-center gap-3 flex-wrap">
             <span className="text-[10px] font-black text-gray-400 uppercase tracking-tighter bg-gray-50 px-2 py-1 rounded">
               Seq #{entry.sequence_number}
             </span>
             <span className="text-xs font-bold text-gray-800 tracking-tight">
               {formatDateTime(entry.timestamp)}
             </span>
+            {periodDuration !== null && (
+              <span className="text-[8px] font-bold text-gray-400 px-2 py-0.5 bg-gray-50 rounded">
+                {periodDuration}min period
+              </span>
+            )}
 
-            {activeQuestion && (
-              <div
-                className="flex items-center gap-1.5 px-2 py-1 bg-blue-50 text-[#3E4095] rounded-lg border border-blue-100/50 ml-2"
-                title={activeQuestion.text}
-              >
-                <i className="fas fa-question-circle text-[8px]"></i>
-                <span className="text-[9px] font-black uppercase tracking-tighter">
-                  Viewing Q#{activeQuestionSn}
-                </span>
+            {activeQuestion ? (
+              <div className="flex flex-col gap-1 px-2 py-1.5 bg-blue-50 text-[#3E4095] rounded-lg border border-blue-100/50 ml-1 max-w-xs">
+                <div className="flex items-center gap-1.5">
+                  <i className="fas fa-question-circle text-[8px]"></i>
+                  <span className="text-[9px] font-black uppercase tracking-tighter">
+                    Q#{activeQuestionSn}
+                  </span>
+                </div>
+                <div className="text-[9px] font-medium text-gray-600 line-clamp-2 leading-tight">
+                  <MathRenderer content={activeQuestion.text} inline />
+                </div>
               </div>
+            ) : (
+              <span className="text-[8px] text-gray-400 italic ml-1">
+                No question data
+              </span>
             )}
           </div>
           <div className="flex items-center gap-2">
@@ -976,22 +1018,31 @@ function TimelineNode({
         </div>
 
         <div className="flex gap-6 items-start">
-          <div className="relative group shrink-0">
-            <div className="absolute -inset-1 bg-linear-to-tr from-[#3E4095] to-[#01ACEA] rounded-2xl blur opacity-0 group-hover:opacity-20 transition duration-500"></div>
-            <a
-              href={entry.face_capture_url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="block relative w-32 h-32 rounded-2xl overflow-hidden border-2 border-white shadow-md cursor-zoom-in"
-            >
-              <Image
-                src={entry.face_capture_url}
-                alt={`Snapshot ${entry.sequence_number}`}
-                fill
-                className="object-cover transition-transform duration-700 group-hover:scale-110"
-              />
-            </a>
-          </div>
+          {entry.face_capture_url ? (
+            <div className="relative group shrink-0">
+              <div className="absolute -inset-1 bg-linear-to-tr from-[#3E4095] to-[#01ACEA] rounded-2xl blur opacity-0 group-hover:opacity-20 transition duration-500"></div>
+              <a
+                href={entry.face_capture_url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="block relative w-32 h-32 rounded-2xl overflow-hidden border-2 border-white shadow-md cursor-zoom-in"
+              >
+                <Image
+                  src={entry.face_capture_url}
+                  alt={`Snapshot ${entry.sequence_number}`}
+                  fill
+                  className="object-cover transition-transform duration-700 group-hover:scale-110"
+                />
+              </a>
+            </div>
+          ) : (
+            <div className="w-32 h-32 rounded-2xl border-2 border-gray-100 bg-gray-50 flex flex-col items-center justify-center shrink-0">
+              <i className="fas fa-camera-slash text-gray-300 text-xl mb-2"></i>
+              <span className="text-[8px] font-bold text-gray-400 uppercase tracking-wider text-center px-2">
+                No Capture
+              </span>
+            </div>
+          )}
 
           <div className="flex-1 flex flex-col gap-3">
             {entry.events.length === 0 ? (
