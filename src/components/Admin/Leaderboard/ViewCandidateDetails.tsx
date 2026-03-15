@@ -976,22 +976,31 @@ function TimelineNode({
         </div>
 
         <div className="flex gap-6 items-start">
-          <div className="relative group shrink-0">
-            <div className="absolute -inset-1 bg-linear-to-tr from-[#3E4095] to-[#01ACEA] rounded-2xl blur opacity-0 group-hover:opacity-20 transition duration-500"></div>
-            <a
-              href={entry.face_capture_url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="block relative w-32 h-32 rounded-2xl overflow-hidden border-2 border-white shadow-md cursor-zoom-in"
-            >
-              <Image
-                src={entry.face_capture_url}
-                alt={`Snapshot ${entry.sequence_number}`}
-                fill
-                className="object-cover transition-transform duration-700 group-hover:scale-110"
-              />
-            </a>
-          </div>
+          {entry.face_capture_url ? (
+            <div className="relative group shrink-0">
+              <div className="absolute -inset-1 bg-linear-to-tr from-[#3E4095] to-[#01ACEA] rounded-2xl blur opacity-0 group-hover:opacity-20 transition duration-500"></div>
+              <a
+                href={entry.face_capture_url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="block relative w-32 h-32 rounded-2xl overflow-hidden border-2 border-white shadow-md cursor-zoom-in"
+              >
+                <Image
+                  src={entry.face_capture_url}
+                  alt={`Snapshot ${entry.sequence_number}`}
+                  fill
+                  className="object-cover transition-transform duration-700 group-hover:scale-110"
+                />
+              </a>
+            </div>
+          ) : (
+            <div className="w-32 h-32 rounded-2xl border-2 border-gray-100 bg-gray-50 flex flex-col items-center justify-center shrink-0">
+              <i className="fas fa-camera-slash text-gray-300 text-xl mb-2"></i>
+              <span className="text-[8px] font-bold text-gray-400 uppercase tracking-wider text-center px-2">
+                No Capture
+              </span>
+            </div>
+          )}
 
           <div className="flex-1 flex flex-col gap-3">
             {entry.events.length === 0 ? (

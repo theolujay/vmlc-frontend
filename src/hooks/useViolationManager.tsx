@@ -368,10 +368,22 @@ export const useViolationManager = (examId: string, startedAt?: string) => {
       try {
         const { payload } = JSON.parse(failedData);
         const payloadObj = JSON.parse(payload);
+
+        let faceCaptureFile: File | undefined;
+        if (getLatestScreenshotRef.current) {
+          const screenshot = getLatestScreenshotRef.current();
+          if (screenshot) {
+            faceCaptureFile = dataURLtoFile(
+              screenshot,
+              `heartbeat_retry_${Date.now()}.jpg`,
+            );
+          }
+        }
+
         await ExamPortal.sendHeartbeat(
           examId,
           JSON.stringify(payloadObj),
-          undefined,
+          faceCaptureFile,
         );
         localStorage.removeItem(`failed_heartbeat_${examId}`);
       } catch (error) {
