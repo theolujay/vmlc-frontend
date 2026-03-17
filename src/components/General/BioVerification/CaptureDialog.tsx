@@ -57,9 +57,15 @@ export default function CaptureDialog({
       if (video.readyState !== 4 || video.videoWidth === 0) return;
 
       try {
-        const detections = await faceapi
-          .detectSingleFace(video, options)
-          .withFaceLandmarks();
+        let detections;
+        try {
+          detections = await faceapi
+            .detectSingleFace(video, options)
+            .withFaceLandmarks();
+        } catch {
+          setIsAligned(false);
+          return;
+        }
 
         if (detections) {
           const box = detections.detection.box;
@@ -68,7 +74,11 @@ export default function CaptureDialog({
             box.x === null ||
             box.y === null ||
             box.width === null ||
-            box.height === null
+            box.height === null ||
+            typeof box.x !== "number" ||
+            typeof box.y !== "number" ||
+            typeof box.width !== "number" ||
+            typeof box.height !== "number"
           ) {
             setIsAligned(false);
             return;
@@ -124,7 +134,7 @@ export default function CaptureDialog({
 
   return (
     <AppDialog open={open} onOpenChange={close}>
-      <div className="flex bg-[#F7F9FC] rounded-[2rem] z-50 flex-col overflow-hidden border border-gray-100 shadow-2xl max-w-lg w-full mx-auto font-sans">
+      <div className="flex bg-[#F7F9FC] rounded-4xl z-50 flex-col overflow-hidden border border-gray-100 shadow-2xl max-w-lg w-full mx-auto font-sans">
         <div className="header bg-white p-8 border-b border-gray-50">
           <div className="flex items-center space-x-3 mb-2">
             <div className="w-10 h-10 bg-[#3E4095]/5 rounded-xl flex items-center justify-center text-[#3E4095]">
@@ -149,8 +159,8 @@ export default function CaptureDialog({
           {capturedImage ? (
             <div className="flex flex-col items-center w-full">
               <div className="relative group">
-                <div className="absolute -inset-1 bg-gradient-to-tr from-[#3E4095] to-[#01ACEA] rounded-full blur opacity-25 group-hover:opacity-50 transition duration-1000 group-hover:duration-200"></div>
-                <div className="relative w-[260px] h-[260px] rounded-full overflow-hidden border-4 border-white shadow-xl">
+                <div className="absolute -inset-1 bg-linear-to-tr from-[#3E4095] to-[#01ACEA] rounded-full blur opacity-25 group-hover:opacity-50 transition duration-1000 group-hover:duration-200"></div>
+                <div className="relative w-65 h-65 rounded-full overflow-hidden border-4 border-white shadow-xl">
                   <Image
                     alt="Captured face"
                     height={260}
@@ -209,7 +219,7 @@ export default function CaptureDialog({
                 )}
                 <div
                   className={clsx(
-                    "relative w-[260px] h-[260px] rounded-full overflow-hidden border-4 bg-gray-100 shadow-inner transition-colors duration-500",
+                    "relative w-65 h-65 rounded-full overflow-hidden border-4 bg-gray-100 shadow-inner transition-colors duration-500",
                     isAligned
                       ? "border-emerald-400 shadow-emerald-100"
                       : "border-white",
@@ -230,7 +240,7 @@ export default function CaptureDialog({
                   <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
                     <div
                       className={clsx(
-                        "w-[200px] h-[200px] border-2 border-dashed rounded-full transition-all duration-300",
+                        "w-50 h-50 border-2 border-dashed rounded-full transition-all duration-300",
                         isAligned
                           ? "border-emerald-400 scale-105"
                           : "border-white/40 scale-100",
@@ -240,7 +250,7 @@ export default function CaptureDialog({
                     {/* Corner markers for visual interest */}
                     <div
                       className={clsx(
-                        "absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[240px] h-[240px] border-t-2 border-l-2 rounded-tl-[60px] transition-all",
+                        "absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-60 h-60 border-t-2 border-l-2 rounded-tl-[60px] transition-all",
                         isAligned
                           ? "border-emerald-400 opacity-100"
                           : "border-white/20 opacity-0",

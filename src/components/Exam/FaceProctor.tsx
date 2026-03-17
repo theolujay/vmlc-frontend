@@ -22,7 +22,7 @@ const FaceProctor = ({
 }: FaceProctorProps) => {
   const webcamRef = useRef<Webcam>(null);
   const [modelsLoaded, setModelsLoaded] = useState(false);
-  const [violationCount, setViolationCount] = useState({
+  const violationCountRef = useRef({
     noFace: 0,
     multiFace: 0,
     lookingAway: 0,
@@ -71,21 +71,28 @@ const FaceProctor = ({
     ) {
       try {
         const video = webcamRef.current.video;
-        const detections = await faceapi
-          .detectAllFaces(
-            video,
-            new faceapi.TinyFaceDetectorOptions({ inputSize: 160 }),
-          )
-          .withFaceLandmarks();
+        let detections;
+        try {
+          detections = await faceapi
+            .detectAllFaces(
+              video,
+              new faceapi.TinyFaceDetectorOptions({ inputSize: 160 }),
+            )
+            .withFaceLandmarks();
+        } catch {
+          setStatus("error");
+          setStatusMessage("FACE DETECTION ERROR");
+          return;
+        }
 
-        if (detections.length === 0) {
+        if (!detections || detections.length === 0) {
           setStatus("error");
           setStatusMessage("NO FACE DETECTED");
-          setViolationCount((prev) => ({ ...prev, noFace: prev.noFace + 1 }));
+          violationCountRef.current.noFace += 1;
           if (reportViolation) {
             reportViolation("NO_FACE");
           }
-          if (violationCount.noFace % 10 === 0) {
+          if (violationCountRef.current.noFace % 10 === 0) {
             toast.error(
               "FACE NOT DETECTED: Please stay in front of the camera.",
             );
@@ -93,54 +100,51 @@ const FaceProctor = ({
         } else if (detections.length > 1) {
           setStatus("error");
           setStatusMessage("MULTIPLE FACES DETECTED");
-          setViolationCount((prev) => ({
-            ...prev,
-            multiFace: prev.multiFace + 1,
-          }));
+          violationCountRef.current.multiFace += 1;
           if (reportViolation) {
             reportViolation("MULTI_FACE", { count: detections.length });
           }
-          if (violationCount.multiFace % 5 === 0) {
+          if (violationCountRef.current.multiFace % 5 === 0) {
             toast.error(
               "MULTIPLE FACES DETECTED: This is a strictly proctored exam.",
             );
           }
         } else {
           const detection = detections[0];
-          // Guard against invalid detection data
+          const box = detection.detection.box;
           if (
-            !detection?.detection?.box ||
-            detection.detection.box.x === null ||
-            detection.detection.box.y === null
+            !box ||
+            box.x === null ||
+            box.y === null ||
+            box.width === null ||
+            box.height === null ||
+            typeof box.x !== "number" ||
+            typeof box.y !== "number" ||
+            typeof box.width !== "number" ||
+            typeof box.height !== "number"
           ) {
             setStatus("error");
             setStatusMessage("FACE DETECTION ERROR");
             return;
           }
 
-          // Single face detected - check landmarks for "Looking Away"
-          const landmarks = detections[0].landmarks;
+          const landmarks = detection.landmarks;
           const nose = landmarks.getNose();
           const leftEye = landmarks.getLeftEye();
           const rightEye = landmarks.getRightEye();
 
-          // Very simple heuristic for looking away (check if nose is relatively centered between eyes horizontally)
           const eyeCenter = (leftEye[0].x + rightEye[3].x) / 2;
           const noseX = nose[0].x;
           const offset = Math.abs(noseX - eyeCenter);
 
           if (offset > 25) {
-            // Heuristic threshold
             setStatus("warning");
             setStatusMessage("ATTENTION LAPSE");
-            setViolationCount((prev) => ({
-              ...prev,
-              lookingAway: prev.lookingAway + 1,
-            }));
+            violationCountRef.current.lookingAway += 1;
             if (reportViolation) {
               reportViolation("ATTENTION_LAPSE", { offset });
             }
-            if (violationCount.lookingAway % 15 === 0) {
+            if (violationCountRef.current.lookingAway % 15 === 0) {
               toast.warn("Please keep your eyes on the screen.");
             }
           } else {
@@ -153,7 +157,7 @@ const FaceProctor = ({
         // Don't toast here to avoid spamming the user if it's a transient error
       }
     }
-  }, [modelsLoaded, violationCount]);
+  }, [modelsLoaded, reportViolation]);
 
   useEffect(() => {
     let interval: NodeJS.Timeout;
@@ -164,7 +168,7 @@ const FaceProctor = ({
   }, [modelsLoaded, handleDetection]);
 
   return (
-    <div className="fixed bottom-6 left-6 z-[60] group">
+    <div className="fixed bottom-6 left-6 z-60 group">
       <div
         className={clsx(
           "relative rounded-2xl overflow-hidden border-2 transition-all duration-300 shadow-2xl w-40 h-40 md:w-48 md:h-48",
