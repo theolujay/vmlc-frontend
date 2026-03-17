@@ -32,6 +32,15 @@ export const useViolationManager = (examId: string, startedAt?: string) => {
   });
 
   const eventsRef = useRef<ViolationEvent[]>([]);
+  const summaryRef = useRef<ViolationSummary>({
+    TAB_SWITCH: 0,
+    SCREENSHOT: 0,
+    FULLSCREEN_EXIT: 0,
+    MULTI_FACE: 0,
+    NO_FACE: 0,
+    ATTENTION_LAPSE: 0,
+    DEVTOOLS_OPEN: 0,
+  });
 
   // Get sequence - prefer persisted value, fall back to time-based calculation
   const getCurrentSequence = useCallback(() => {
@@ -148,10 +157,12 @@ export const useViolationManager = (examId: string, startedAt?: string) => {
 
   const reportViolation = useCallback(
     (type: ViolationType, metadata?: Record<string, unknown>) => {
-      setSummary((prev) => ({
-        ...prev,
-        [type]: prev[type] + 1,
-      }));
+      summaryRef.current = {
+        ...summaryRef.current,
+        [type]: summaryRef.current[type] + 1,
+      };
+
+      setSummary(summaryRef.current);
 
       const highFrequencyTypes: ViolationType[] = [
         "NO_FACE",
@@ -219,7 +230,7 @@ export const useViolationManager = (examId: string, startedAt?: string) => {
         period_start: periodStart,
         period_end: periodEnd,
         meta,
-        summary: summary,
+        summary: summaryRef.current,
         events: eventsRef.current,
       };
 
@@ -250,7 +261,7 @@ export const useViolationManager = (examId: string, startedAt?: string) => {
         );
 
         // Reset buffers and increment sequence on success
-        setSummary({
+        const resetSummary = {
           TAB_SWITCH: 0,
           SCREENSHOT: 0,
           FULLSCREEN_EXIT: 0,
@@ -258,7 +269,9 @@ export const useViolationManager = (examId: string, startedAt?: string) => {
           NO_FACE: 0,
           ATTENTION_LAPSE: 0,
           DEVTOOLS_OPEN: 0,
-        });
+        };
+        setSummary(resetSummary);
+        summaryRef.current = resetSummary;
         eventsRef.current = [];
         lastHeartbeatTimeRef.current = periodEnd;
 
@@ -291,7 +304,7 @@ export const useViolationManager = (examId: string, startedAt?: string) => {
             "Validation error (400) - incrementing sequence anyway as server likely processed it",
           );
           sequenceNumberRef.current += 1;
-          setSummary({
+          const resetSummary = {
             TAB_SWITCH: 0,
             SCREENSHOT: 0,
             FULLSCREEN_EXIT: 0,
@@ -299,7 +312,9 @@ export const useViolationManager = (examId: string, startedAt?: string) => {
             NO_FACE: 0,
             ATTENTION_LAPSE: 0,
             DEVTOOLS_OPEN: 0,
-          });
+          };
+          setSummary(resetSummary);
+          summaryRef.current = resetSummary;
           eventsRef.current = [];
           lastHeartbeatTimeRef.current = periodEnd;
           localStorage.setItem(
@@ -319,7 +334,7 @@ export const useViolationManager = (examId: string, startedAt?: string) => {
         }
       }
     },
-    [examId, getCurrentSequence, getMetadata, summary],
+    [examId, getCurrentSequence, getMetadata],
   );
 
   const sendHeartbeatRef = useRef(sendHeartbeat);
