@@ -525,12 +525,12 @@ function CandidateInfoCard({
 
             <div className="flex flex-col gap-1 items-center">
               <span className="text-[10px] font-bold text-grey-500 uppercase tracking-wider">
-                Integrity Score
+                Proctoring Integrity
               </span>
               <div className="flex items-center gap-2">
                 <p className="font-black text-[#101828] text-sm">
                   {proctoringSummary
-                    ? `${(proctoringSummary.integrity_score * 100).toFixed(0)}%`
+                    ? `${(proctoringSummary.proctoring_integrity * 100).toFixed(0)}%`
                     : "N/A"}
                 </p>
                 {proctoringSummary?.integrity_flags && proctoringSummary.integrity_flags.length > 0 && (

@@ -71,14 +71,21 @@ const FaceProctor = ({
     ) {
       try {
         const video = webcamRef.current.video;
-        const detections = await faceapi
-          .detectAllFaces(
-            video,
-            new faceapi.TinyFaceDetectorOptions({ inputSize: 160 }),
-          )
-          .withFaceLandmarks();
+        let detections;
+        try {
+          detections = await faceapi
+            .detectAllFaces(
+              video,
+              new faceapi.TinyFaceDetectorOptions({ inputSize: 160 }),
+            )
+            .withFaceLandmarks();
+        } catch {
+          setStatus("error");
+          setStatusMessage("FACE DETECTION ERROR");
+          return;
+        }
 
-        if (detections.length === 0) {
+        if (!detections || detections.length === 0) {
           setStatus("error");
           setStatusMessage("NO FACE DETECTED");
           violationCountRef.current.noFace += 1;
@@ -104,30 +111,33 @@ const FaceProctor = ({
           }
         } else {
           const detection = detections[0];
-          // Guard against invalid detection data
+          const box = detection.detection.box;
           if (
-            !detection?.detection?.box ||
-            detection.detection.box.x === null ||
-            detection.detection.box.y === null
+            !box ||
+            box.x === null ||
+            box.y === null ||
+            box.width === null ||
+            box.height === null ||
+            typeof box.x !== "number" ||
+            typeof box.y !== "number" ||
+            typeof box.width !== "number" ||
+            typeof box.height !== "number"
           ) {
             setStatus("error");
             setStatusMessage("FACE DETECTION ERROR");
             return;
           }
 
-          // Single face detected - check landmarks for "Looking Away"
-          const landmarks = detections[0].landmarks;
+          const landmarks = detection.landmarks;
           const nose = landmarks.getNose();
           const leftEye = landmarks.getLeftEye();
           const rightEye = landmarks.getRightEye();
 
-          // Very simple heuristic for looking away (check if nose is relatively centered between eyes horizontally)
           const eyeCenter = (leftEye[0].x + rightEye[3].x) / 2;
           const noseX = nose[0].x;
           const offset = Math.abs(noseX - eyeCenter);
 
           if (offset > 25) {
-            // Heuristic threshold
             setStatus("warning");
             setStatusMessage("ATTENTION LAPSE");
             violationCountRef.current.lookingAway += 1;

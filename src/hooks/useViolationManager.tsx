@@ -370,8 +370,12 @@ export const useViolationManager = (examId: string, startedAt?: string) => {
       if (!failedData) return;
 
       try {
-        const { payload } = JSON.parse(failedData);
-        const payloadObj = JSON.parse(payload);
+        const parsed = JSON.parse(failedData);
+        if (!parsed || typeof parsed !== "object" || !parsed.payload) {
+          localStorage.removeItem(`failed_heartbeat_${examId}`);
+          return;
+        }
+        const payloadObj = JSON.parse(parsed.payload);
 
         let faceCaptureFile: File | undefined;
         if (getLatestScreenshotRef.current) {

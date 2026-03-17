@@ -69,7 +69,7 @@ export interface ProctoringSummary {
   total_heartbeats: number;
   total_violations: number;
   critical_violations: number;
-  integrity_score: number;
+  proctoring_integrity: number;
   integrity_flags?: IntegrityFlag[];
   average_suspicion: number;
   auto_status: ProctoringStatus;
