@@ -53,11 +53,24 @@ export interface HeartbeatPayload {
   events: ViolationEvent[];
 }
 
+export interface IntegrityFlag {
+  type: "sequence_gaps" | "time_gaps";
+  count: number;
+  severity: "high" | "medium" | "low";
+  missing?: number[];
+  details?: Array<{
+    from_seq: number;
+    to_seq: number;
+    gap_seconds: number;
+  }>;
+}
+
 export interface ProctoringSummary {
   total_heartbeats: number;
   total_violations: number;
   critical_violations: number;
-  integrity_score: number;
+  proctoring_integrity: number;
+  integrity_flags?: IntegrityFlag[];
   average_suspicion: number;
   auto_status: ProctoringStatus;
   status: ProctoringStatus;
@@ -68,6 +81,8 @@ export interface TimelineHeartbeat {
   type: "heartbeat";
   sequence_number: number;
   timestamp: string;
+  period_start?: string;
+  period_end?: string;
   face_capture_url: string;
   suspicion_score: number;
   meta?: HeartbeatMeta;
