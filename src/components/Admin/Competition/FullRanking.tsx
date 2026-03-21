@@ -669,9 +669,9 @@ const FullRanking: React.FC<FullRankingProps> = ({
                               <div
                                 className={clsx(
                                   "h-full transition-all duration-1000",
-                                  score > 70
+                                  score >= 70
                                     ? "bg-rose-500"
-                                    : score > 30
+                                    : score >= 30
                                       ? "bg-amber-500"
                                       : "bg-emerald-500",
                                 )}
