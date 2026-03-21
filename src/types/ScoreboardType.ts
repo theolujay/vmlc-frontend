@@ -134,13 +134,15 @@ export interface RankingEntry {
     school_type: string;
     current_class: string;
   };
-  exam_score: string | number;
+  exam_score: number;
   rank: number;
   percentile: number;
   profile_picture?: string | null;
   time_used?: number | null;
+  tie_break_reason?: string | null;
   violation_score?: number;
-  proctoring_status?: string | null;
+  proctoring_status?: "clear" | "suspicious" | "flagged" | null;
+  attempt_status?: "present" | "absent" | "disqualified";
 }
 
 export interface RankingResponse {
