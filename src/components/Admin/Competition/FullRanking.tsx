@@ -10,6 +10,7 @@ import { formatTime } from "@/utils/formatTime";
 import { CompetitionControls } from "./CompetitionControls";
 import { BadgeCell, CandidateCell, RankCell, SchoolCell, SNCell, ViewDetailsButton } from "./CompetitionTableCells";
 import { LoadingView, ErrorView } from "./CompetitionStatusViews";
+import useGetCurrentUser from "@/hooks/useGetCurrentUser";
 
 interface FullRankingProps {
   onBack: () => void;
@@ -39,6 +40,9 @@ const FullRanking: React.FC<FullRankingProps> = ({
   isPublicView = false,
   containerClassName,
 }) => {
+  const authState = useGetCurrentUser();
+  const currentUserId = authState?.user?.id;
+
   const [searchTerm, setSearchInput] = useState("");
   const [sortConfig, setSortConfig] = useState<{ key: SortKey; direction: "asc" | "desc" }>({
     key: "rank",
@@ -351,6 +355,7 @@ const FullRanking: React.FC<FullRankingProps> = ({
                     profile_picture={row.profile_picture} 
                     rank={row.rank} 
                     isPublicView={isPublicView} 
+                    isCurrentUser={row.candidate === currentUserId}
                   />
                 ),
                 align: "left",
