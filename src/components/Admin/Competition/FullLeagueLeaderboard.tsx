@@ -8,6 +8,7 @@ import { LeagueLeaderboardEntry, LeagueLeaderboardResponse } from '@/types/Score
 import { CompetitionControls } from './CompetitionControls';
 import { BadgeCell, CandidateCell, RankCell, SchoolCell, SNCell, ViewDetailsButton } from './CompetitionTableCells';
 import { LoadingView, ErrorView } from './CompetitionStatusViews';
+import useGetCurrentUser from '@/hooks/useGetCurrentUser';
 
 const RankChangeIndicator = ({ change }: { change: number }) => {
   if (change === 0) return <span className="text-gray-400 font-medium">-</span>;
@@ -24,6 +25,9 @@ interface FullLeagueLeaderboardProps {
 type SortKey = "rank" | "name" | "school" | "class" | "state" | "score" | "trend";
 
 const FullLeagueLeaderboard: React.FC<FullLeagueLeaderboardProps> = ({ onBack, onViewDetails, isPublicView = false }) => {
+  const authState = useGetCurrentUser();
+  const currentUserId = authState?.user?.id;
+
   const [searchTerm, setSearchInput] = useState('');
   const [sortConfig, setSortConfig] = useState<{ key: SortKey; direction: "asc" | "desc" }>({
     key: "rank",
@@ -220,6 +224,7 @@ const FullLeagueLeaderboard: React.FC<FullLeagueLeaderboardProps> = ({ onBack, o
                   profile_picture={row.profile_picture}
                   rank={row.overall_rank}
                   isPublicView={isPublicView}
+                  isCurrentUser={row.candidate === currentUserId}
                 />
               )
             },

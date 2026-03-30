@@ -25,6 +25,7 @@ interface CandidateCellProps {
   profile_picture?: string | null;
   rank: number;
   isPublicView?: boolean;
+  isCurrentUser?: boolean;
 }
 
 export const CandidateCell: React.FC<CandidateCellProps> = ({
@@ -32,6 +33,7 @@ export const CandidateCell: React.FC<CandidateCellProps> = ({
   profile_picture,
   rank,
   isPublicView = false,
+  isCurrentUser = false,
 }) => (
   <div className="flex items-center gap-3">
     <div className="relative flex items-center justify-center w-10 h-10 shrink-0">
@@ -45,7 +47,14 @@ export const CandidateCell: React.FC<CandidateCellProps> = ({
       <RankMedal rank={rank} className="absolute -bottom-1 -right-1 drop-shadow-md" />
     </div>
     <div className="flex flex-col gap-0.5">
-      <span className="font-bold text-gray-800 text-sm">{info?.full_name}</span>
+      <div className="flex items-center gap-2">
+        <span className="font-bold text-gray-800 text-sm">{info?.full_name}</span>
+        {isCurrentUser && (
+          <span className="bg-emerald-500 text-white text-[8px] font-black px-1.5 py-0.5 rounded-full uppercase tracking-widest">
+            You
+          </span>
+        )}
+      </div>
       {!isPublicView && (
         <span className="text-[10px] font-bold text-gray-400 lowercase tracking-tight">
           {info?.email}
@@ -54,6 +63,7 @@ export const CandidateCell: React.FC<CandidateCellProps> = ({
     </div>
   </div>
 );
+
 
 export const SchoolCell = (info: { school_name: string; school_type?: string }, isPublicView = false) => (
   <div className="flex flex-col">
@@ -66,12 +76,12 @@ export const SchoolCell = (info: { school_name: string; school_type?: string }, 
   </div>
 );
 
-export const BadgeCell = ({ 
-  label, 
+export const BadgeCell = ({
+  label,
   variant = 'default',
   className
-}: { 
-  label: string | number; 
+}: {
+  label: string | number;
   variant?: 'default' | 'absent' | 'disqualified';
   className?: string;
 }) => (
@@ -90,11 +100,11 @@ export const BadgeCell = ({
   </div>
 );
 
-export const ViewDetailsButton = ({ 
-  onClick, 
-  label = "View" 
-}: { 
-  onClick: () => void; 
+export const ViewDetailsButton = ({
+  onClick,
+  label = "View"
+}: {
+  onClick: () => void;
   label?: string;
 }) => (
   <div className="flex justify-center">
