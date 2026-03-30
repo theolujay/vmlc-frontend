@@ -9,7 +9,6 @@ import ResponsiveContainer from "../../ui/ResponsiveContainer";
 import AdminHeader from "../AdminHeader";
 import { FilterIcon, SortIcon } from "../AdminIcons";
 import HelpdeskThreadDetails from "./HelpdeskThreadDetails";
-// import clsx from 'clsx';
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import Spinner from "@/components/ui/spinner/spinner";
 import CustomTable from "@/components/ui/CustomTable";
@@ -17,6 +16,7 @@ import React from "react";
 import { HelpdeskStatData } from "@/types/UserMgtType";
 import { useHelpdeskAction } from "@/hooks/useHelpdeskAction";
 import SnoozeModal from "@/components/Modals/SnoozeModal";
+import useGetCompetitionDashboard from "@/hooks/useGetCompetitionDashboard";
 
 export default function HelpdeskSection() {
   const searchParams = useSearchParams();
@@ -25,7 +25,14 @@ export default function HelpdeskSection() {
   const view = searchParams.get("view");
   const threadId = searchParams.get("id");
 
-  const getFiltersFromParams = (): Record<string, string> => {
+  const { data: dashboardData } = useGetCompetitionDashboard();
+  const hasOngoingExam = useMemo(() => {
+    return (
+      dashboardData?.exams?.some((exam) => exam.status === "ongoing") ?? false
+    );
+  }, [dashboardData]);
+
+  const filters = useMemo(() => {
     const filters: Record<string, string> = {};
     const search = searchParams.get("search");
     const status = searchParams.get("status");
@@ -39,13 +46,11 @@ export default function HelpdeskSection() {
     if (unread) filters.unread = unread;
     if (priority) filters.priority = priority;
 
-    if (Object.keys(filters).length === 0) {
-      filters.status = "default";
+    if (!filters.status) {
+      filters.status = hasOngoingExam ? "default" : "all";
     }
     return filters;
-  };
-
-  const filters = useMemo(() => getFiltersFromParams(), [searchParams]);
+  }, [searchParams, hasOngoingExam]);
 
   const emptyState = useMemo(() => {
     if (filters.search) {
@@ -90,11 +95,16 @@ export default function HelpdeskSection() {
         desc: "No threads match this priority filter",
       };
     }
-    return {
-      label: "No threads open or in progress",
-      desc: "New candidate threads will appear here automatically",
-    };
-  }, [filters]);
+    return hasOngoingExam
+      ? {
+          label: "No threads open or in progress",
+          desc: "New candidate threads will appear here automatically",
+        }
+      : {
+          label: "No threads found",
+          desc: "There are no helpdesk threads at the moment",
+        };
+  }, [filters, hasOngoingExam]);
 
   const updateFilterInUrl = useCallback(
     (key: string, value: string) => {
@@ -473,7 +483,7 @@ function HelpdeskThreadListCard({
                   <button
                     onClick={() => {
                       updateFilter("search", "");
-                      updateFilter("status", "default");
+                      updateFilter("status", "");
                       updateFilter("unread", "");
                       updateFilter("priority", "");
                       updateFilter("sort", "");
