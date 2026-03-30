@@ -1,16 +1,15 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useState, useMemo } from "react";
 import CustomTable from "@/components/ui/CustomTable";
-import { AngleIcon, FilterIcon, SortIcon } from "../AdminIcons";
-import Image from "next/image";
-import RankMedal from "./RankMedal";
+import { AngleIcon } from "../AdminIcons";
 import useGetRanking from "@/hooks/useGetRanking";
 import { RankingEntry } from "@/types/ScoreboardType";
-import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
-import Spinner from "@/components/ui/spinner/spinner";
 import clsx from "clsx";
 import { formatDateTime } from "@/utils/formatFileSize";
 import { formatTime } from "@/utils/formatTime";
+import { CompetitionControls } from "./CompetitionControls";
+import { BadgeCell, CandidateCell, RankCell, SchoolCell, SNCell, ViewDetailsButton } from "./CompetitionTableCells";
+import { LoadingView, ErrorView } from "./CompetitionStatusViews";
 
 interface FullRankingProps {
   onBack: () => void;
@@ -31,18 +30,6 @@ type SortKey =
   | "percentile"
   | "time_used"
   | "violation_score";
-type SortDirection = "asc" | "desc";
-
-interface SortConfig {
-  key: SortKey;
-  direction: SortDirection;
-}
-
-interface FilterState {
-  state: string;
-  schoolType: string;
-  currentClass: string;
-}
 
 const FullRanking: React.FC<FullRankingProps> = ({
   onBack,
@@ -53,11 +40,11 @@ const FullRanking: React.FC<FullRankingProps> = ({
   containerClassName,
 }) => {
   const [searchTerm, setSearchInput] = useState("");
-  const [sortConfig, setSortConfig] = useState<SortConfig>({
+  const [sortConfig, setSortConfig] = useState<{ key: SortKey; direction: "asc" | "desc" }>({
     key: "rank",
     direction: "asc",
   });
-  const [filterState, setFilterState] = useState<FilterState>({
+  const [filterState, setFilterState] = useState({
     state: "All States",
     schoolType: "All Types",
     currentClass: "All Classes",
@@ -173,33 +160,16 @@ const FullRanking: React.FC<FullRankingProps> = ({
   }, [rankingData, searchTerm, sortConfig, filterState]);
 
   if (isLoading) {
-    return (
-      <div className="flex-1 flex items-center justify-center p-20 w-full">
-        <Spinner size={40} color="#3E4095" />
-      </div>
-    );
+    return <LoadingView message="Loading Ranking..." />;
   }
 
   if (error) {
     return (
-      <div className="flex flex-col items-center justify-center p-20 w-full text-center">
-        <div className="w-16 h-16 bg-red-50 rounded-full flex items-center justify-center mb-4">
-          <span className="text-red-500 text-2xl font-bold">!</span>
-        </div>
-        <h2 className="text-lg font-bold text-[#101828]">
-          Failed to load ranking
-        </h2>
-        <p className="text-sm text-grey-500 mt-1 max-w-xs mx-auto">
-          There was an error retrieving the result data for this exam. Please
-          try again.
-        </p>
-        <button
-          onClick={() => refetch()}
-          className="mt-6 px-6 py-2 bg-[#3E4095] text-white rounded-full font-bold text-sm hover:bg-[#2d2f6e] transition-colors"
-        >
-          Retry
-        </button>
-      </div>
+      <ErrorView 
+        title="Failed to load ranking" 
+        description="There was an error retrieving the result data for this exam. Please try again." 
+        onRetry={refetch} 
+      />
     );
   }
 
@@ -209,11 +179,6 @@ const FullRanking: React.FC<FullRankingProps> = ({
       direction: prev.key === key && prev.direction === "asc" ? "desc" : "asc",
     }));
   };
-
-  const activeFiltersCount = Object.values(filterState).filter(
-    (val) =>
-      val !== "All States" && val !== "All Types" && val !== "All Classes",
-  ).length;
 
   return (
     <div
@@ -326,184 +291,33 @@ const FullRanking: React.FC<FullRankingProps> = ({
         </div>
 
         {/* Controls Area */}
-        <div className="flex flex-col md:flex-row md:items-center justify-between px-8 py-6 bg-white border border-gray-100 rounded-4xl shadow-sm gap-4">
-          <div className="relative group">
-            <i className="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 group-focus-within:text-[#3E4095] transition-colors text-xs"></i>
-            <input
-              value={searchTerm}
-              onChange={(e) => setSearchInput(e.target.value)}
-              type="text"
-              placeholder="Search candidate, school, or email..."
-              className="bg-gray-50/50 border border-gray-100 h-11 pl-11 pr-4 py-2 rounded-xl outline-none focus:ring-4 focus:ring-[#3E4095]/5 focus:border-[#3E4095] focus:bg-white transition-all text-sm font-semibold w-full md:w-80 shadow-inner"
-            />
-          </div>
-          {!isPublicView && (
-            <div className="flex items-center gap-3">
-              <DropdownMenu.Root>
-                <DropdownMenu.Trigger asChild>
-                  <button className="inline-flex items-center justify-center gap-2 bg-white border border-gray-100 h-11 rounded-xl px-4 text-gray-600 hover:bg-gray-50 transition-all font-bold text-[10px] uppercase tracking-widest shadow-sm outline-none cursor-pointer">
-                    <SortIcon className="w-4 h-4" />
-                    <span>Sort: {sortConfig.key}</span>
-                  </button>
-                </DropdownMenu.Trigger>
-                <DropdownMenu.Portal>
-                  <DropdownMenu.Content
-                    className="z-50 min-w-45 bg-white rounded-2xl p-2 shadow-2xl border border-gray-50 animate-in fade-in zoom-in-95 duration-200"
-                    align="end"
-                    sideOffset={8}
-                  >
-                    <DropdownMenu.Label className="px-3 py-2 text-[9px] font-black text-gray-400 uppercase tracking-[0.2em]">
-                      Sort By
-                    </DropdownMenu.Label>
-                    {[
-                      { label: "Rank", key: "rank" as SortKey },
-                      { label: "Score", key: "score" as SortKey },
-                      { label: "Percentile", key: "percentile" as SortKey },
-                      ...(!isPublicView
-                        ? [
-                            { label: "Time Used", key: "time_used" as SortKey },
-                            {
-                              label: "Violation Score",
-                              key: "violation_score" as SortKey,
-                            },
-                          ]
-                        : []),
-                      { label: "Name", key: "name" as SortKey },
-                      { label: "School", key: "school" as SortKey },
-                      { label: "Class", key: "class" as SortKey },
-                      { label: "State", key: "state" as SortKey },
-                    ].map((option) => (
-                      <DropdownMenu.Item
-                        key={option.key}
-                        onClick={() => handleSort(option.key)}
-                        className={`flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-bold outline-none cursor-pointer transition-colors ${
-                          sortConfig.key === option.key
-                            ? "bg-blue-50 text-[#3E4095]"
-                            : "text-gray-600 hover:bg-gray-50"
-                        }`}
-                      >
-                        {option.label}
-                        {sortConfig.key === option.key && (
-                          <span className="text-[10px]">
-                            {sortConfig.direction === "asc" ? "↑" : "↓"}
-                          </span>
-                        )}
-                      </DropdownMenu.Item>
-                    ))}
-                  </DropdownMenu.Content>
-                </DropdownMenu.Portal>
-              </DropdownMenu.Root>
-
-              <DropdownMenu.Root>
-                <DropdownMenu.Trigger asChild>
-                  <button
-                    className={`inline-flex items-center justify-center gap-2 h-11 rounded-xl px-4 transition-all font-bold text-[10px] uppercase tracking-widest shadow-sm outline-none cursor-pointer border ${
-                      activeFiltersCount > 0
-                        ? "bg-[#3E4095]/5 border-[#3E4095]/40 text-[#3E4095]"
-                        : "bg-white border-gray-100 text-gray-600 hover:bg-gray-50"
-                    }`}
-                  >
-                    <FilterIcon className="w-4 h-4" />
-                    <span>
-                      Filter{" "}
-                      {activeFiltersCount > 0 && `(${activeFiltersCount})`}
-                    </span>
-                  </button>
-                </DropdownMenu.Trigger>
-                <DropdownMenu.Portal>
-                  <DropdownMenu.Content
-                    className="z-50 min-w-55 bg-white rounded-2xl p-3 shadow-2xl border border-gray-50 animate-in fade-in zoom-in-95 duration-200"
-                    align="end"
-                    sideOffset={8}
-                  >
-                    <div className="flex flex-col gap-4">
-                      <div className="flex flex-col gap-1.5">
-                        <label className="px-1 text-[9px] font-black text-gray-400 uppercase tracking-[0.2em]">
-                          State
-                        </label>
-                        <select
-                          value={filterState.state}
-                          onChange={(e) =>
-                            setFilterState((prev) => ({
-                              ...prev,
-                              state: e.target.value,
-                            }))
-                          }
-                          className="w-full bg-gray-50 border-none rounded-xl px-3 py-2 text-xs font-bold text-gray-700 outline-none focus:ring-2 focus:ring-blue-100 transition-all cursor-pointer"
-                        >
-                          {filterOptions.states.map((s) => (
-                            <option key={s} value={s}>
-                              {s}
-                            </option>
-                          ))}
-                        </select>
-                      </div>
-
-                      <div className="flex flex-col gap-1.5">
-                        <label className="px-1 text-[9px] font-black text-gray-400 uppercase tracking-[0.2em]">
-                          School Type
-                        </label>
-                        <select
-                          value={filterState.schoolType}
-                          onChange={(e) =>
-                            setFilterState((prev) => ({
-                              ...prev,
-                              schoolType: e.target.value,
-                            }))
-                          }
-                          className="w-full bg-gray-50 border-none rounded-xl px-3 py-2 text-xs font-bold text-gray-700 outline-none focus:ring-2 focus:ring-blue-100 transition-all cursor-pointer"
-                        >
-                          {filterOptions.schoolTypes.map((t) => (
-                            <option key={t} value={t}>
-                              {t}
-                            </option>
-                          ))}
-                        </select>
-                      </div>
-
-                      {!isPublicView && (
-                        <div className="flex flex-col gap-1.5">
-                          <label className="px-1 text-[9px] font-black text-gray-400 uppercase tracking-[0.2em]">
-                            Class
-                          </label>
-                          <select
-                            value={filterState.currentClass}
-                            onChange={(e) =>
-                              setFilterState((prev) => ({
-                                ...prev,
-                                currentClass: e.target.value,
-                              }))
-                            }
-                            className="w-full bg-gray-50 border-none rounded-xl px-3 py-2 text-xs font-bold text-gray-700 outline-none focus:ring-2 focus:ring-blue-100 transition-all cursor-pointer"
-                          >
-                            {filterOptions.currentClasses.map((c) => (
-                              <option key={c} value={c}>
-                                {c}
-                              </option>
-                            ))}
-                          </select>
-                        </div>
-                      )}
-
-                      <button
-                        onClick={() =>
-                          setFilterState({
-                            state: "All States",
-                            schoolType: "All Types",
-                            currentClass: "All Classes",
-                          })
-                        }
-                        className="w-full mt-1 py-2 text-[9px] font-black text-red-500 uppercase tracking-widest hover:bg-red-50 rounded-lg transition-colors"
-                      >
-                        Reset Filters
-                      </button>
-                    </div>
-                  </DropdownMenu.Content>
-                </DropdownMenu.Portal>
-              </DropdownMenu.Root>
-            </div>
-          )}
-        </div>
+        <CompetitionControls
+          searchTerm={searchTerm}
+          onSearchChange={setSearchInput}
+          sortKey={sortConfig.key}
+          sortDirection={sortConfig.direction}
+          onSort={(key) => handleSort(key as SortKey)}
+          sortOptions={[
+            { label: "Rank", key: "rank" },
+            { label: "Score", key: "score" },
+            { label: "Percentile", key: "percentile" },
+            ...(!isPublicView
+              ? [
+                  { label: "Time Used", key: "time_used" },
+                  { label: "Violation Score", key: "violation_score" },
+                  { label: "Class", key: "class" },
+                  { label: "State", key: "state" },
+                ]
+              : []),
+            { label: "Name", key: "name" },
+            { label: "School", key: "school" },
+          ]}
+          filterState={filterState}
+          onFilterChange={(newFilters) => setFilterState((prev) => ({ ...prev, ...newFilters }))}
+          filterOptions={filterOptions}
+          onResetFilters={() => setFilterState({ state: "All States", schoolType: "All Types", currentClass: "All Classes" })}
+          isPublicView={isPublicView}
+        />
       </div>
 
       {/* Table Card Area */}
@@ -519,61 +333,25 @@ const FullRanking: React.FC<FullRankingProps> = ({
               {
                 key: "sn",
                 header: "S/N",
-                render: (_, __, index) => (
-                  <div className="flex items-center justify-center">
-                    <span className="text-xs font-bold text-gray-400">
-                      {index + 1}
-                    </span>
-                  </div>
-                ),
+                render: (_, __, index) => SNCell(index),
                 align: "center",
               },
               {
                 key: "rank",
                 header: "Rank",
-                render: (val) => (
-                  <div className="flex items-center justify-center">
-                    <span className="text-sm font-black text-[#3E4095] bg-gray-100/50 px-3 py-1 rounded-lg">
-                      # {val}
-                    </span>
-                  </div>
-                ),
+                render: (val) => RankCell(val as number),
                 align: "center",
               },
               {
                 key: "candidate_info",
                 header: "Candidate",
                 render: (val: any, row) => (
-                  <div className="flex items-center gap-3">
-                    <div className="relative flex items-center justify-center w-10 h-10 shrink-0">
-                      <div className="w-10 h-10 rounded-full bg-blue-50 text-[#3E4095] flex items-center justify-center text-xs font-black border border-blue-100/50 overflow-hidden relative">
-                        {row.profile_picture ? (
-                          <Image
-                            src={row.profile_picture}
-                            alt=""
-                            fill
-                            className="object-cover"
-                          />
-                        ) : (
-                          val?.full_name?.charAt(0).toUpperCase()
-                        )}
-                      </div>
-                      <RankMedal
-                        rank={row.rank}
-                        className="absolute -bottom-1 -right-1 drop-shadow-md"
-                      />
-                    </div>
-                    <div className="flex flex-col gap-0.5">
-                      <span className="font-bold text-gray-800 text-sm">
-                        {val?.full_name}
-                      </span>
-                      {!isPublicView && (
-                        <span className="text-[10px] font-bold text-gray-400 uppercase tracking-tight">
-                          {val?.email}
-                        </span>
-                      )}
-                    </div>
-                  </div>
+                  <CandidateCell 
+                    info={val} 
+                    profile_picture={row.profile_picture} 
+                    rank={row.rank} 
+                    isPublicView={isPublicView} 
+                  />
                 ),
                 align: "left",
               },
@@ -584,19 +362,10 @@ const FullRanking: React.FC<FullRankingProps> = ({
                   const isAbsent = row.attempt_status === "absent";
                   const isDisqualified = row.attempt_status === "disqualified";
                   return (
-                    <div className="flex justify-center">
-                      <span
-                        className={`text-[11px] font-black px-2 py-1.5 rounded-full border uppercase transition-all ${
-                          isAbsent
-                            ? "text-gray-400 bg-gray-50 border-gray-200 tracking-tight"
-                            : isDisqualified
-                              ? "text-red-500 bg-red-50 border-red-200 tracking-tight"
-                              : "text-[#3E4095] bg-[#FFFFFF] border-[#3E4095]/40 shadow-sm shadow-emerald-500/5 tracking-widest"
-                        }`}
-                      >
-                        {isAbsent ? "ABSENT" : isDisqualified ? "DQ" : val}
-                      </span>
-                    </div>
+                    <BadgeCell 
+                      label={isAbsent ? "ABSENT" : isDisqualified ? "DQ" : (val as string | number)} 
+                      variant={isAbsent ? 'absent' : isDisqualified ? 'disqualified' : 'default'} 
+                    />
                   );
                 },
                 align: "center",
@@ -688,18 +457,7 @@ const FullRanking: React.FC<FullRankingProps> = ({
               {
                 key: "candidate_info",
                 header: "School",
-                render: (val: any) => (
-                  <div className="flex flex-col">
-                    <span className="text-sm text-gray-700 font-bold">
-                      {val?.school_name}
-                    </span>
-                    {!isPublicView && (
-                      <span className="text-[10px] font-bold text-gray-400 uppercase tracking-tight">
-                        {val?.school_type}
-                      </span>
-                    )}
-                  </div>
-                ),
+                render: (val: any) => SchoolCell(val, isPublicView),
               },
               ...(!isPublicView
                 ? [
@@ -731,14 +489,7 @@ const FullRanking: React.FC<FullRankingProps> = ({
                       key: "details",
                       header: "Details",
                       render: (_: any, row: RankingEntry) => (
-                        <div className="flex justify-center">
-                          <button
-                            onClick={() => onViewDetails?.(row.candidate)}
-                            className="bg-[#3E4095] text-white font-black px-5 py-2 rounded-xl text-[10px] uppercase tracking-widest hover:bg-[#2d2f6e] transition-all shadow-md shadow-[#3E4095]/10 active:scale-95"
-                          >
-                            View
-                          </button>
-                        </div>
+                        <ViewDetailsButton onClick={() => onViewDetails?.(row.candidate)} />
                       ),
                       align: "center" as const,
                     },
