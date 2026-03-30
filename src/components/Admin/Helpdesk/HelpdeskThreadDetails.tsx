@@ -6,7 +6,7 @@ import { useAuth } from '@/contexts/AuthProvider';
 import useGetHelpdeskThreadDetail from '@/hooks/useGetHelpdeskThreadDetail';
 import useSendHelpdeskMessage from '@/hooks/useSendHelpdeskMessage';
 import useHelpdeskSocket from '@/hooks/useHelpdeskSocket';
-import { HelpdeskMessageType, HelpdeskThreadType } from '@/types/HelpdeskType';
+import { HelpdeskMessageType, HelpdeskThreadType, LiveExamStatus } from '@/types/HelpdeskType';
 import { formatDateTime } from '@/utils/formatFileSize';
 import { formatWhatsAppLink } from '@/utils/generalUtils';
 import { useRouter } from 'next/navigation';
@@ -39,10 +39,18 @@ export default function HelpdeskThreadDetails({id}:{id:string}) {
         });
     }, [setThread]);
 
+    const onExamTelemetryReceived = useCallback((telemetry: LiveExamStatus) => {
+        setThread(prev => {
+            if (!prev) return null;
+            return { ...prev, candidate_live_exam_status: telemetry };
+        });
+    }, [setThread]);
+
     const { connected, isTyping, sendTypingStatus } = useHelpdeskSocket(
         id,
         onMessageReceived,
-        onThreadUpdated
+        onThreadUpdated,
+        onExamTelemetryReceived
     );
 
     const isCandidateTyping = Object.values(isTyping).some(typing => typing);
@@ -191,7 +199,7 @@ export default function HelpdeskThreadDetails({id}:{id:string}) {
                                                               : 'bg-white border border-gray-200 text-gray-800 rounded-bl-none'
                                                     }`}
                                                 >
-                                                    <p className="whitespace-pre-wrap">
+                                                    <div className="whitespace-pre-wrap">
                                                         {formatTextWithLinks(msg.text).map((node, i) => {
                                                             if (typeof node === 'string') {
                                                                 return <React.Fragment key={i}>{node}</React.Fragment>;
@@ -209,7 +217,7 @@ export default function HelpdeskThreadDetails({id}:{id:string}) {
                                                                 );
                                                             }
                                                         })}
-                                                    </p>
+                                                    </div>
                                                 </div>
                                             </div>
                                             <span className="text-[9px] font-bold text-gray-400 mt-1 px-10 uppercase tracking-wider">
@@ -272,8 +280,11 @@ export default function HelpdeskThreadDetails({id}:{id:string}) {
                     </div>
                 </ResponsiveContainer>
 
-                <div className="flex-1 hidden lg:flex flex-col gap-4">
+                <div className="flex-1 hidden lg:flex flex-col gap-4 overflow-y-auto">
                     <CandidateDetails thread={thread} />
+                    {thread?.candidate_live_exam_status && (
+                        <LiveExamStatusView status={thread.candidate_live_exam_status} />
+                    )}
                 </div>
             </div>
 
@@ -286,8 +297,13 @@ export default function HelpdeskThreadDetails({id}:{id:string}) {
                         </svg>
                     </button>
                 </div>
-                <div className="-mx-6">
+                <div className="-mx-6 flex flex-col gap-4">
                     <CandidateDetails thread={thread} isDrawer />
+                    {thread?.candidate_live_exam_status && (
+                        <div className="px-6">
+                            <LiveExamStatusView status={thread.candidate_live_exam_status} isDrawer />
+                        </div>
+                    )}
                 </div>
             </Drawer>
         </div>
@@ -364,6 +380,102 @@ function CandidateDetails({ thread, isDrawer = false }: { thread: HelpdeskThread
                     <p className="text-xs font-bold text-gray-900">{thread ? formatDateTime(new Date(thread.created_at)) : 'N/A'}</p>
                 </div>
             </div>
+        </ResponsiveContainer>
+    );
+}
+
+function LiveExamStatusView({ status, isDrawer = false }: { status: LiveExamStatus, isDrawer?: boolean }) {
+    const suspicionScore = (status.proctoring.suspicion_score || 0) * 100;
+    
+    return (
+        <ResponsiveContainer className={clsx(
+            "bg-white flex flex-col gap-4 p-6 overflow-y-auto",
+            !isDrawer && "shadow-lg border border-gray-200 rounded-xl"
+        )}>
+            <div className="flex items-center justify-between mb-4 pb-2 border-b border-gray-100">
+                <h3 className="font-bold text-sm text-gray-900 uppercase tracking-widest">Live Exam Status</h3>
+                <div className="flex items-center gap-1.5">
+                    <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse" />
+                    <span className="text-[10px] font-black text-emerald-600 uppercase tracking-widest">Live</span>
+                </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+                <div className="col-span-2">
+                    <p className="text-[10px] text-gray-400 uppercase font-bold tracking-wider mb-1">Active Exam</p>
+                    <p className="text-xs font-bold text-[#3E4095]">{status.exam.title}</p>
+                </div>
+
+                <div>
+                    <p className="text-[10px] text-gray-400 uppercase font-bold tracking-wider mb-1">Attempt Status</p>
+                    <span className={clsx(
+                        "text-[10px] font-black px-2 py-0.5 rounded-full border uppercase tracking-tighter",
+                        status.attempt.status === 'started' ? "text-emerald-600 bg-emerald-50 border-emerald-100" :
+                        status.attempt.status === 'submitted' ? "text-blue-600 bg-blue-50 border-blue-100" :
+                        "text-amber-600 bg-amber-50 border-amber-100"
+                    )}>
+                        {status.attempt.status}
+                    </span>
+                </div>
+
+                <div>
+                    <p className="text-[10px] text-gray-400 uppercase font-bold tracking-wider mb-1">Completion</p>
+                    <p className="text-xs font-black text-gray-900">{status.progress.percent_complete}%</p>
+                </div>
+
+                <div className="col-span-2 space-y-2">
+                    <div className="flex justify-between items-end">
+                        <p className="text-[10px] text-gray-400 uppercase font-bold tracking-wider">Integrity Status</p>
+                        <span className={clsx(
+                            "text-[10px] font-black uppercase",
+                            status.proctoring.status === 'clear' ? "text-emerald-600" :
+                            status.proctoring.status === 'suspicious' ? "text-amber-600" : "text-rose-600"
+                        )}>
+                            {status.proctoring.status || 'clear'}
+                        </span>
+                    </div>
+                    <div className="w-full h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                        <div 
+                            className={clsx(
+                                "h-full transition-all duration-500",
+                                suspicionScore >= 70 ? "bg-rose-500" :
+                                suspicionScore >= 30 ? "bg-amber-500" : "bg-emerald-500"
+                            )}
+                            style={{ width: `${suspicionScore}%` }}
+                        />
+                    </div>
+                </div>
+
+                <div>
+                    <p className="text-[10px] text-gray-400 uppercase font-bold tracking-wider mb-1">Violations</p>
+                    <p className="text-xs font-black text-gray-900">{status.proctoring.violations.total} total ({status.proctoring.violations.critical} critical)</p>
+                </div>
+
+                <div>
+                    <p className="text-[10px] text-gray-400 uppercase font-bold tracking-wider mb-1">Questions</p>
+                    <p className="text-xs font-black text-gray-900">{status.progress.questions_attempted} / {status.progress.questions_total}</p>
+                </div>
+            </div>
+
+            {status.proctoring.recent_events && status.proctoring.recent_events.length > 0 && (
+                <div className="mt-2">
+                    <p className="text-[10px] text-gray-400 uppercase font-bold tracking-wider mb-2">Recent Events</p>
+                    <div className="flex flex-col gap-2">
+                        {status.proctoring.recent_events.slice(0, 3).map((event, i) => (
+                            <div key={i} className="flex items-start gap-2 p-2 bg-gray-50 rounded-lg border border-gray-100">
+                                <div className={clsx(
+                                    "w-1.5 h-1.5 rounded-full mt-1.5",
+                                    event.is_critical ? "bg-rose-500" : "bg-amber-500"
+                                )} />
+                                <div className="flex flex-col">
+                                    <span className="text-[9px] font-black text-gray-700 uppercase">{event.type.replace('_', ' ')}</span>
+                                    <span className="text-[8px] font-bold text-gray-400">{new Date(event.timestamp).toLocaleTimeString()}</span>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            )}
         </ResponsiveContainer>
     );
 }

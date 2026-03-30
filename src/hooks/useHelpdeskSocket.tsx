@@ -1,18 +1,20 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
-import { HelpdeskMessageType, HelpdeskSocketEvent, HelpdeskThreadType } from '@/types/HelpdeskType';
+import { HelpdeskMessageType, HelpdeskSocketEvent, HelpdeskThreadType, LiveExamStatus } from '@/types/HelpdeskType';
 import { useSocket, SocketMessage } from '@/contexts/SocketProvider';
 
 /**
  * Hook to manage real-time interactions for a specific helpdesk thread using the Unified WebSocket.
  */
 export default function useHelpdeskSocket(
-    threadId: string | null, 
+    threadId: string | null,
     onMessageReceived: (message: HelpdeskMessageType) => void,
-    onThreadUpdated?: (thread: Partial<HelpdeskThreadType>) => void
+    onThreadUpdated?: (thread: Partial<HelpdeskThreadType>) => void,
+    onExamTelemetry?: (telemetry: LiveExamStatus) => void
 ) {
     const { isConnected, addListener, removeListener, sendAction } = useSocket();
     const onMessageReceivedRef = useRef(onMessageReceived);
     const onThreadUpdatedRef = useRef(onThreadUpdated);
+    const onExamTelemetryRef = useRef(onExamTelemetry);
     const [isTyping, setIsTyping] = useState<Record<string, boolean>>({});
     const typingTimeoutsRef = useRef<Record<string, NodeJS.Timeout>>({});
 
@@ -24,6 +26,10 @@ export default function useHelpdeskSocket(
     useEffect(() => {
         onThreadUpdatedRef.current = onThreadUpdated;
     }, [onThreadUpdated]);
+
+    useEffect(() => {
+        onExamTelemetryRef.current = onExamTelemetry;
+    }, [onExamTelemetry]);
 
     const handleThreadEvent = useCallback((event: SocketMessage) => {
         const typedEvent = event as unknown as HelpdeskSocketEvent;
@@ -52,6 +58,15 @@ export default function useHelpdeskSocket(
                 if (onThreadUpdatedRef.current) {
                     onThreadUpdatedRef.current(thread);
                 }
+            }
+        }
+    }, [threadId]);
+
+    const handleTelemetryEvent = useCallback((event: SocketMessage) => {
+        const typedEvent = event as unknown as HelpdeskSocketEvent;
+        if (typedEvent.type === 'helpdesk.thread.exam_telemetry' && typedEvent.data.thread_id === threadId) {
+            if (onExamTelemetryRef.current) {
+                onExamTelemetryRef.current(typedEvent.data);
             }
         }
     }, [threadId]);
@@ -94,6 +109,7 @@ export default function useHelpdeskSocket(
 
         addListener('helpdesk.thread', handleThreadEvent);
         addListener('helpdesk.thread.typing', handleTypingEvent);
+        addListener('helpdesk.thread.exam_telemetry', handleTelemetryEvent);
 
         return () => {
             // Cleanup timeouts
@@ -104,8 +120,18 @@ export default function useHelpdeskSocket(
             sendAction('unsubscribe_thread', { thread_id: threadId });
             removeListener('helpdesk.thread', handleThreadEvent);
             removeListener('helpdesk.thread.typing', handleTypingEvent);
+            removeListener('helpdesk.thread.exam_telemetry', handleTelemetryEvent);
         };
-    }, [threadId, isConnected, addListener, removeListener, sendAction, handleThreadEvent, handleTypingEvent]);
+    }, [
+        threadId,
+        isConnected,
+        addListener,
+        removeListener,
+        sendAction,
+        handleThreadEvent,
+        handleTypingEvent,
+        handleTelemetryEvent
+    ]);
 
     const sendTypingStatus = (typing: boolean) => {
         if (threadId && isConnected) {

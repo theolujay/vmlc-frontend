@@ -1,5 +1,52 @@
 import { HelpdeskStatData } from "./UserMgtType";
 
+export interface LiveExamStatus {
+  exam: {
+    id: string;
+    title: string;
+    status: "ongoing" | "scheduled" | "concluded" | "cancelled" | "draft";
+    duration_minutes: number;
+    starts_at: string;
+    ends_at: string | null;
+  };
+  attempt: {
+    status:
+      | "pending"
+      | "issued"
+      | "started"
+      | "submitted"
+      | "expired"
+      | "failed";
+    started_at: string | null;
+    deadline: string | null;
+    submitted_at: string | null;
+    time_remaining_seconds: number;
+    time_used_seconds: number;
+  };
+  progress: {
+    questions_attempted: number;
+    questions_total: number;
+    percent_complete: number;
+  };
+  proctoring: {
+    status: "clear" | "suspicious" | "flagged" | null;
+    suspicion_score: number;
+    last_heartbeat_at: string | null;
+    heartbeat_sequence: number;
+    violations: {
+      total: number;
+      critical: number;
+      by_type: Record<string, number>;
+    };
+    recent_events: Array<{
+      type: string;
+      timestamp: string;
+      is_critical: boolean;
+      metadata: Record<string, unknown>;
+    }>;
+  };
+}
+
 export interface HelpdeskMessageType {
   id: number | string;
   sender: string | null;
@@ -30,6 +77,7 @@ export interface HelpdeskThreadType {
   candidate_last_msg_preview?: string;
   is_candidate_online?: boolean;
   is_candidate_typing?: boolean;
+  candidate_live_exam_status?: LiveExamStatus | null;
 }
 
 export interface PaginationData {
@@ -72,6 +120,10 @@ export type HelpdeskSocketEvent =
         user_id: string;
         is_typing: boolean;
       };
+    }
+  | {
+      type: "helpdesk.thread.exam_telemetry";
+      data: LiveExamStatus & { thread_id: string };
     }
   | {
       type: "helpdesk.update";
