@@ -1,7 +1,6 @@
 "use client";
 import { useExamContext } from "@/contexts/ExamNavigationProvider";
 import { formatExamTitle } from "@/utils/generalUtils";
-import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import clsx from "clsx";
 import { ExamPortal } from "@/services/examPortal.service";
@@ -19,11 +18,11 @@ export default function HeaderTimer({
   title?: string;
   examId: string;
 }) {
-  const router = useRouter();
   const { showNav, setShowNav, timeLeft, setTimeLeft } = useExamContext();
 
   const [isSyncing, setIsSyncing] = useState(false);
   const serverDeadlineRef = useRef<string | null>(deadline || null);
+  const serverTimeOffsetRef = useRef<number>(0);
   const hasSubmitted = useRef(false);
   const isInitialized = useRef(false);
 
@@ -36,6 +35,13 @@ export default function HeaderTimer({
 
       if (data.deadline) {
         serverDeadlineRef.current = data.deadline;
+      }
+
+      // Calculate offset: ServerTime - LocalTime
+      if (data.server_time) {
+        const serverTime = new Date(data.server_time).getTime();
+        const localTime = Date.now();
+        serverTimeOffsetRef.current = serverTime - localTime;
       }
 
       return data.remaining_seconds;
@@ -51,38 +57,42 @@ export default function HeaderTimer({
   useEffect(() => {
     if (!examId) return;
 
+    let countdownInterval: NodeJS.Timeout;
+
+    const startLocalCountdown = () => {
+      if (countdownInterval) clearInterval(countdownInterval);
+      countdownInterval = setInterval(() => {
+        setTimeLeft((prev) => {
+          if (prev <= 0) return 0;
+          return prev - 1;
+        });
+      }, 1000);
+    };
+
     const initTime = async () => {
       const serverRemaining = await syncWithServer();
 
       if (serverRemaining !== null) {
+        // Direct server truth
         setTimeLeft(serverRemaining);
         isInitialized.current = true;
-        // Start local countdown now that we have deadline
         startLocalCountdown();
       } else if (deadline) {
+        // Fallback using calculated offset if possible, otherwise raw diff
+        const serverNow = Date.now() + serverTimeOffsetRef.current;
         const remaining = Math.floor(
-          (new Date(deadline).getTime() - Date.now()) / 1000,
+          (new Date(deadline).getTime() - serverNow) / 1000,
         );
-        setTimeLeft(Math.max(0, remaining));
+        const finalRemaining = Math.max(0, remaining);
+        setTimeLeft(finalRemaining);
         isInitialized.current = true;
         startLocalCountdown();
       } else {
+        // Last resort fallback
         setTimeLeft(timer * 60);
         isInitialized.current = true;
+        startLocalCountdown();
       }
-    };
-
-    let countdownInterval: NodeJS.Timeout;
-
-    const startLocalCountdown = () => {
-      countdownInterval = setInterval(() => {
-        if (serverDeadlineRef.current) {
-          const deadline = new Date(serverDeadlineRef.current).getTime();
-          const now = Date.now();
-          const remaining = Math.floor((deadline - now) / 1000);
-          setTimeLeft(Math.max(0, remaining));
-        }
-      }, 1000);
     };
 
     initTime();
@@ -92,21 +102,26 @@ export default function HeaderTimer({
     };
   }, [examId, deadline, timer, syncWithServer, setTimeLeft]);
 
-  // Server sync every 30 seconds to update deadline reference
+  // Server sync every 30 seconds to update time and deadline reference
   useEffect(() => {
     if (!examId) return;
 
     const syncInterval = setInterval(async () => {
-      await syncWithServer();
+      const serverRemaining = await syncWithServer();
+      if (serverRemaining !== null) {
+        setTimeLeft(serverRemaining);
+      }
     }, 30000);
 
     return () => clearInterval(syncInterval);
-  }, [examId, syncWithServer]);
+  }, [examId, syncWithServer, setTimeLeft]);
 
   useEffect(() => {
-    // Don't submit until we've initialized with server time
+    // CRITICAL: Don't submit until we've successfully initialized with server time
     if (!isInitialized.current) return;
 
+    // Use a small buffer or check that this isn't the very first render cycle
+    // to avoid race conditions with context initialization
     if (timeLeft <= 0) {
       if (!hasSubmitted.current) {
         hasSubmitted.current = true;
@@ -115,11 +130,13 @@ export default function HeaderTimer({
             await onTimeUp?.();
           } catch (err) {
             console.error("Error submitting exam:", err);
+            // Allow retry if submission fails
+            hasSubmitted.current = false;
           }
         })();
       }
     }
-  }, [timeLeft, onTimeUp, router]);
+  }, [timeLeft, onTimeUp]);
 
   const formatTime = (seconds: number) => {
     const h = Math.floor(seconds / 3600)
