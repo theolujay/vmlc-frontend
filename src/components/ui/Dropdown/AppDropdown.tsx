@@ -15,7 +15,7 @@ const AppDropdown = () => {
 		<DropdownMenu.Root>
 			<DropdownMenu.Trigger asChild>
 				<button
-					className="inline-flex items-center justify-center outline-none cursor-pointer transition-transform active:scale-95"
+					className="inline-flex items-center justify-center p-2 rounded-full hover:bg-gray-50 outline-none cursor-pointer transition-transform active:scale-95"
 					aria-label="Customise options"
 				>
 					<CaretDropdown />
@@ -24,7 +24,7 @@ const AppDropdown = () => {
 
 			<DropdownMenu.Portal>
 				<DropdownMenu.Content
-					className="z-50 min-w-[200px] rounded-[1.5rem] bg-white p-2 shadow-2xl border border-gray-100 will-change-[opacity,transform] data-[side=bottom]:animate-slideUpAndFade data-[side=left]:animate-slideRightAndFade data-[side=right]:animate-slideLeftAndFade data-[side=top]:animate-slideDownAndFade font-sans"
+					className="z-[90] min-w-[200px] rounded-[1.5rem] bg-white p-2 shadow-2xl border border-gray-100 will-change-[opacity,transform] data-[state=bottom]:animate-slideUpAndFade data-[state=left]:animate-slideRightAndFade data-[state=right]:animate-slideLeftAndFade data-[state=top]:animate-slideDownAndFade font-sans"
 					sideOffset={8}
 					align="end"
 				>
