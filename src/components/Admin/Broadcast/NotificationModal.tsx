@@ -103,7 +103,7 @@ const NotificationModal: React.FC<NotificationModalProps> = ({
 
   return (
     <div
-      className="absolute right-0 left-0 mx-auto md:left-auto md:right-8 top-[80px] w-[95vw] md:w-[560px] bg-white rounded-2xl shadow-2xl border border-gray-100 z-50 animate-in fade-in slide-in-from-top-4 duration-300 font-sans"
+      className="absolute right-0 left-0 mx-auto md:left-auto md:right-8 top-[80px] w-[95vw] md:w-[560px] bg-white rounded-2xl shadow-2xl border border-gray-100 z-[110] animate-in fade-in slide-in-from-top-4 duration-300 font-sans"
       onClick={(e) => e.stopPropagation()}
     >
       {/* Header */}
