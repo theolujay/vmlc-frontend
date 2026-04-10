@@ -9,7 +9,7 @@ import { useRouter } from "next/navigation";
 
 
 
-export default function AdminHeader({ actionButton, isExport = false, backUrl }: Readonly<{ label: string, actionButton?: ReactNode | ReactNode[], isExport?: boolean, backUrl?: string }>) {
+export default function AdminHeader({ label, actionButton, isExport = false, backUrl }: { label: string, actionButton?: ReactNode | ReactNode[], isExport?: boolean, backUrl?: string }) {
 
     const router = useRouter();
 

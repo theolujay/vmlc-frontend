@@ -113,7 +113,7 @@ export default function ExamSection() {
               <span>CREATE EXAM</span>
             </button>
           )
-        ].filter(Boolean) as React.ReactNode[]}
+        ].filter(Boolean)}
       />
 
       <div className="flex flex-col gap-6 mt-4 w-full sm:w-[96%] px-2 sm:px-0 sm:mx-auto pb-20">
@@ -333,7 +333,7 @@ function RankingSnapshotCard({ ranking, canViewDetails, userRole }: { ranking: R
       <div
         onClick={handleViewRanking}
         className={clsx(
-          'group flex flex-col bg-white border border-gray-100 rounded-[2rem] shadow-sm transition-all overflow-hidden',
+          'group flex flex-col bg-white border border-gray-100 rounded-4xl shadow-sm transition-all overflow-hidden',
           canViewDetails ? 'hover:shadow-xl hover:-translate-y-1 cursor-pointer' : 'opacity-90 cursor-default'
         )}
         title={canViewDetails ? "View Ranking" : ""}

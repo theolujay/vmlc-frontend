@@ -24,12 +24,12 @@ const AppDropdown = () => {
 
 			<DropdownMenu.Portal>
 				<DropdownMenu.Content
-					className="z-[90] min-w-[200px] rounded-[1.5rem] bg-white p-2 shadow-2xl border border-gray-100 will-change-[opacity,transform] data-[state=bottom]:animate-slideUpAndFade data-[state=left]:animate-slideRightAndFade data-[state=right]:animate-slideLeftAndFade data-[state=top]:animate-slideDownAndFade font-sans"
+					className="z-120 min-w-50 rounded-3xl bg-white p-2 shadow-2xl border border-gray-100 will-change-[opacity,transform] data-[side=bottom]:animate-slideUpAndFade data-[side=left]:animate-slideRightAndFade data-[side=right]:animate-slideLeftAndFade data-[side=top]:animate-slideDownAndFade font-sans"
 					sideOffset={8}
 					align="end"
 				>
-					<DropdownMenu.Item 
-						onClick={() => setProfileOpen(true)} 
+					<DropdownMenu.Item
+						onClick={() => setProfileOpen(true)}
 						className="group relative flex cursor-pointer items-center px-4 py-3 rounded-xl outline-none hover:bg-gray-50 transition-colors"
 					>
 						<div className="mr-3 text-gray-400 group-hover:text-[#3E4095] transition-colors">
@@ -40,8 +40,8 @@ const AppDropdown = () => {
 
 					<DropdownMenu.Separator className="h-px bg-gray-50 my-1 mx-2" />
 
-					<DropdownMenu.Item 
-						onClick={() => setOpen(true)} 
+					<DropdownMenu.Item
+						onClick={() => setOpen(true)}
 						className="group relative flex cursor-pointer items-center px-4 py-3 rounded-xl outline-none hover:bg-red-50 transition-colors"
 					>
 						<div className="mr-3 text-red-400 group-hover:text-red-600 transition-colors">
@@ -51,14 +51,14 @@ const AppDropdown = () => {
 					</DropdownMenu.Item>
 				</DropdownMenu.Content>
 			</DropdownMenu.Portal>
-			
+
 			<LogOutModal open={open} close={setOpen} />
-			
+
 			{currentUser?.profile?.user?.id && (
-				<ProfileModal 
-					id={currentUser.profile.user.id} 
-					open={profileOpen} 
-					close={setProfileOpen} 
+				<ProfileModal
+					id={currentUser.profile.user.id}
+					open={profileOpen}
+					close={setProfileOpen}
 					isOwnProfile={true}
 				/>
 			)}
