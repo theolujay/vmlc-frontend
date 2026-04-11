@@ -45,6 +45,7 @@ export type AnswerItem = {
   selected_option: string;
 };
 export type CandidateSubmitAnswerType = {
+  is_auto_submit: boolean;
   answers: AnswerItem[];
 };
 
