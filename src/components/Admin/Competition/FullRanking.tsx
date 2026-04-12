@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import CustomTable from "@/components/ui/CustomTable";
 import { AngleIcon } from "../AdminIcons";
 import useGetRanking from "@/hooks/useGetRanking";
@@ -11,12 +11,12 @@ import { CompetitionControls } from "./CompetitionControls";
 import { BadgeCell, CandidateCell, RankCell, SchoolCell, SNCell, ViewDetailsButton } from "./CompetitionTableCells";
 import { LoadingView, ErrorView } from "./CompetitionStatusViews";
 import useGetCurrentUser from "@/hooks/useGetCurrentUser";
+import { useSearchParams, useRouter, usePathname } from "next/navigation";
 
 interface FullRankingProps {
   onBack: () => void;
   examId: string;
   examTitle: string;
-  onViewDetails?: (candidateId: string) => void;
   isPublicView?: boolean;
   containerClassName?: string;
 }
@@ -36,23 +36,43 @@ const FullRanking: React.FC<FullRankingProps> = ({
   onBack,
   examId,
   examTitle,
-  onViewDetails,
   isPublicView = false,
   containerClassName,
 }) => {
   const authState = useGetCurrentUser();
   const currentUserId = authState?.user?.id;
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const pathname = usePathname();
 
-  const [searchTerm, setSearchInput] = useState("");
+  const [searchTerm, setSearchInput] = useState(searchParams.get("search") || "");
   const [sortConfig, setSortConfig] = useState<{ key: SortKey; direction: "asc" | "desc" }>({
-    key: "rank",
-    direction: "asc",
+    key: (searchParams.get("sort") as SortKey) || "rank",
+    direction: (searchParams.get("dir") as "asc" | "desc") || "asc",
   });
   const [filterState, setFilterState] = useState({
-    state: "All States",
-    schoolType: "All Types",
-    currentClass: "All Classes",
+    state: searchParams.get("state") || "All States",
+    schoolType: searchParams.get("type") || "All Types",
+    currentClass: searchParams.get("class") || "All Classes",
   });
+
+  // Sync state to URL
+  useEffect(() => {
+    const params = new URLSearchParams(searchParams.toString());
+    if (searchTerm) params.set("search", searchTerm); else params.delete("search");
+    if (sortConfig.key !== "rank") params.set("sort", sortConfig.key); else params.delete("sort");
+    if (sortConfig.direction !== "asc") params.set("dir", sortConfig.direction); else params.delete("dir");
+    if (filterState.state !== "All States") params.set("state", filterState.state); else params.delete("state");
+    if (filterState.schoolType !== "All Types") params.set("type", filterState.schoolType); else params.delete("type");
+    if (filterState.currentClass !== "All Classes") params.set("class", filterState.currentClass); else params.delete("class");
+    
+    const queryString = params.toString();
+    const currentQuery = searchParams.toString();
+    
+    if (queryString !== currentQuery) {
+      router.replace(`${pathname}?${queryString}`, { scroll: false });
+    }
+  }, [searchTerm, sortConfig, filterState, pathname, router, searchParams]);
 
   const { data, isLoading, error, refetch } = useGetRanking(examId);
 
@@ -488,13 +508,16 @@ const FullRanking: React.FC<FullRankingProps> = ({
                     },
                   ]
                 : []),
-              ...(onViewDetails && !isPublicView
+              ...(!isPublicView
                 ? [
                     {
                       key: "details",
                       header: "Details",
                       render: (_: any, row: RankingEntry) => (
-                        <ViewDetailsButton onClick={() => onViewDetails?.(row.candidate)} />
+                        <ViewDetailsButton 
+                          href={`/admin/competition/candidate?id=${row.candidate}&examId=${examId}&title=${encodeURIComponent(examTitle)}`}
+                          target="_blank"
+                        />
                       ),
                       align: "center" as const,
                     },

@@ -3,8 +3,10 @@ import ResponsiveContainer from "@/components/ui/ResponsiveContainer";
 import Image from "next/image";
 import RankMedal from "./RankMedal";
 import { RankingEntry } from "@/types/ScoreboardType";
+import Link from "next/link";
 
 interface RankingSummaryProps {
+  examId?: string;
   examTitle: string;
   entries: RankingEntry[];
   onViewFull?: () => void;
@@ -13,6 +15,7 @@ interface RankingSummaryProps {
 }
 
 const RankingSummary: React.FC<RankingSummaryProps> = ({
+  examId,
   examTitle,
   entries,
   onViewFull,
@@ -40,7 +43,7 @@ const RankingSummary: React.FC<RankingSummaryProps> = ({
           <div>
             <button
               onClick={onViewFull}
-              className="flex items-center gap-1 px-4 py-1.5 text-xs font-bold text-grey-700 bg-white border border-[#D0D5DD] rounded-full hover:bg-[#3E4095] hover:text-[#FFFFFF] transition-all"
+              className="flex items-center gap-1 px-4 py-1.5 text-xs font-bold text-grey-700 bg-white border border-[#D0D5DD] rounded-full hover:bg-[#3E4095] hover:text-[#FFFFFF] transition-all cursor-pointer"
             >
               View Full
             </button>
@@ -55,72 +58,92 @@ const RankingSummary: React.FC<RankingSummaryProps> = ({
 
         {entries.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            {entries.map((entry) => (
-              <button
-                key={entry.candidate}
-                onClick={() => onViewCandidate?.(entry.candidate)}
-                className={`flex items-center gap-3 bg-white p-3 rounded-lg border border-[#E4E7EC] text-left transition-all duration-300 relative overflow-hidden ${onViewCandidate ? "hover:border-cyan-600/40 hover:shadow-sm group" : "cursor-default"}`}
-              >
-                {/* Profile Image & Medal Overlay */}
-                <div className="relative shrink-0">
-                  {entry.profile_picture ? (
-                    <Image
-                      src={entry.profile_picture}
-                      alt={entry.candidate_info?.full_name}
-                      width={40}
-                      height={40}
-                      className={`w-10 h-10 rounded-full object-cover border-2 border-[#F2F4F7] transition-colors ${onViewCandidate ? "group-hover:border-cyan-600/40" : ""}`}
+            {entries.map((entry) => {
+              const content = (
+                <>
+                  {/* Profile Image & Medal Overlay */}
+                  <div className="relative shrink-0">
+                    {entry.profile_picture ? (
+                      <Image
+                        src={entry.profile_picture}
+                        alt={entry.candidate_info?.full_name}
+                        width={40}
+                        height={40}
+                        className={`w-10 h-10 rounded-full object-cover border-2 border-[#F2F4F7] transition-colors ${onViewCandidate ? "group-hover:border-cyan-600/40" : ""}`}
+                      />
+                    ) : (
+                      <div className="w-10 h-10 rounded-full bg-[#F2F4F7] flex items-center justify-center text-grey-500 text-xs font-bold border border-[#E4E7EC]">
+                        {entry.candidate_info?.full_name?.charAt(0)}
+                      </div>
+                    )}
+
+                    <RankMedal
+                      rank={entry.rank}
+                      className={`absolute -bottom-2 -right-2 drop-shadow-md transition-transform ${onViewCandidate ? "group-hover:scale-110" : ""}`}
                     />
-                  ) : (
-                    <div className="w-10 h-10 rounded-full bg-[#F2F4F7] flex items-center justify-center text-grey-500 text-xs font-bold border border-[#E4E7EC]">
-                      {entry.candidate_info?.full_name?.charAt(0)}
+                  </div>
+
+                  {/* Content Wrapper */}
+                  <div className="flex flex-1 justify-between items-center min-w-0 ml-1">
+                    <div className="flex flex-col min-w-0">
+                      <span className="text-sm font-bold text-[#101828] truncate">
+                        {entry.candidate_info?.full_name}
+                      </span>
+                      <span className="text-[8px] text-grey-500 font-semibold uppercase tracking-wider truncate">
+                        {entry.candidate_info?.school_name}
+                      </span>
                     </div>
-                  )}
 
-                  <RankMedal
-                    rank={entry.rank}
-                    className={`absolute -bottom-2 -right-2 drop-shadow-md transition-transform ${onViewCandidate ? "group-hover:scale-110" : ""}`}
-                  />
-                </div>
-
-                {/* Content Wrapper */}
-                <div className="flex flex-1 justify-between items-center min-w-0 ml-1">
-                  <div className="flex flex-col min-w-0">
-                    <span className="text-sm font-bold text-[#101828] truncate">
-                      {entry.candidate_info?.full_name}
-                    </span>
-                    <span className="text-[8px] text-grey-500 font-semibold uppercase tracking-wider truncate">
-                      {entry.candidate_info?.school_name}
-                    </span>
-                  </div>
-
-                  <div className="flex flex-col items-end pl-2">
-                    {(() => {
-                      const isAbsent = entry.attempt_status === "absent";
-                      const isDisqualified =
-                        entry.attempt_status === "disqualified";
-                      return (
-                        <span
-                          className={`text-xs font-black px-1 py-0.5 rounded-md border ${
-                            isAbsent
-                              ? "text-grey-500 bg-[#F2F4F7] border-[#E4E7EC]"
+                    <div className="flex flex-col items-end pl-2">
+                      {(() => {
+                        const isAbsent = entry.attempt_status === "absent";
+                        const isDisqualified =
+                          entry.attempt_status === "disqualified";
+                        return (
+                          <span
+                            className={`text-xs font-black px-1 py-0.5 rounded-md border ${
+                              isAbsent
+                                ? "text-grey-500 bg-[#F2F4F7] border-[#E4E7EC]"
+                                : isDisqualified
+                                  ? "text-red-500 bg-red-50 border-red-200"
+                                  : "text-cyan-600 bg-white border-cyan-600/60"
+                            }`}
+                          >
+                            {isAbsent
+                              ? "Absent"
                               : isDisqualified
-                                ? "text-red-500 bg-red-50 border-red-200"
-                                : "text-cyan-600 bg-white border-cyan-600/60"
-                          }`}
-                        >
-                          {isAbsent
-                            ? "Absent"
-                            : isDisqualified
-                              ? "DQ"
-                              : entry.exam_score}
-                        </span>
-                      );
-                    })()}
+                                ? "DQ"
+                                : entry.exam_score}
+                          </span>
+                        );
+                      })()}
+                    </div>
                   </div>
+                </>
+              );
+
+              if (onViewCandidate) {
+                return (
+                  <Link
+                    key={entry.candidate}
+                    href={`/admin/competition/candidate?id=${entry.candidate}&examId=${examId}&title=${encodeURIComponent(examTitle)}`}
+                    target="_blank"
+                    className="flex items-center gap-3 bg-white p-3 rounded-lg border border-[#E4E7EC] text-left transition-all duration-300 relative overflow-hidden hover:border-cyan-600/40 hover:shadow-sm group cursor-pointer"
+                  >
+                    {content}
+                  </Link>
+                );
+              }
+
+              return (
+                <div
+                  key={entry.candidate}
+                  className="flex items-center gap-3 bg-white p-3 rounded-lg border border-[#E4E7EC] text-left relative overflow-hidden"
+                >
+                  {content}
                 </div>
-              </button>
-            ))}
+              );
+            })}
           </div>
         ) : (
           <div className="p-6 text-center bg-white rounded-lg border border-dashed border-gray-200">

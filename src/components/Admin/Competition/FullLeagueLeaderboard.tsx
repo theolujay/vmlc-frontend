@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import CustomTable from '@/components/ui/CustomTable';
 import ResponsiveContainer from '@/components/ui/ResponsiveContainer';
 import { AngleIcon } from '../AdminIcons';
@@ -9,6 +9,7 @@ import { CompetitionControls } from './CompetitionControls';
 import { BadgeCell, CandidateCell, RankCell, SchoolCell, SNCell, ViewDetailsButton } from './CompetitionTableCells';
 import { LoadingView, ErrorView } from './CompetitionStatusViews';
 import useGetCurrentUser from '@/hooks/useGetCurrentUser';
+import { useSearchParams, useRouter, usePathname } from "next/navigation";
 
 const RankChangeIndicator = ({ change }: { change: number }) => {
   if (change === 0) return <span className="text-gray-400 font-medium">-</span>;
@@ -18,26 +19,46 @@ const RankChangeIndicator = ({ change }: { change: number }) => {
 
 interface FullLeagueLeaderboardProps {
   onBack: () => void;
-  onViewDetails?: (candidateId: string) => void;
   isPublicView?: boolean;
 }
 
 type SortKey = "rank" | "name" | "school" | "class" | "state" | "score" | "trend";
 
-const FullLeagueLeaderboard: React.FC<FullLeagueLeaderboardProps> = ({ onBack, onViewDetails, isPublicView = false }) => {
+const FullLeagueLeaderboard: React.FC<FullLeagueLeaderboardProps> = ({ onBack, isPublicView = false }) => {
   const authState = useGetCurrentUser();
   const currentUserId = authState?.user?.id;
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const pathname = usePathname();
 
-  const [searchTerm, setSearchInput] = useState('');
+  const [searchTerm, setSearchInput] = useState(searchParams.get("search") || "");
   const [sortConfig, setSortConfig] = useState<{ key: SortKey; direction: "asc" | "desc" }>({
-    key: "rank",
-    direction: "asc",
+    key: (searchParams.get("sort") as SortKey) || "rank",
+    direction: (searchParams.get("dir") as "asc" | "desc") || "asc",
   });
   const [filterState, setFilterState] = useState({
-    state: "All States",
-    schoolType: "All Types",
-    currentClass: "All Classes",
+    state: searchParams.get("state") || "All States",
+    schoolType: searchParams.get("type") || "All Types",
+    currentClass: searchParams.get("class") || "All Classes",
   });
+
+  // Sync state to URL
+  useEffect(() => {
+    const params = new URLSearchParams(searchParams.toString());
+    if (searchTerm) params.set("search", searchTerm); else params.delete("search");
+    if (sortConfig.key !== "rank") params.set("sort", sortConfig.key); else params.delete("sort");
+    if (sortConfig.direction !== "asc") params.set("dir", sortConfig.direction); else params.delete("dir");
+    if (filterState.state !== "All States") params.set("state", filterState.state); else params.delete("state");
+    if (filterState.schoolType !== "All Types") params.set("type", filterState.schoolType); else params.delete("type");
+    if (filterState.currentClass !== "All Classes") params.set("class", filterState.currentClass); else params.delete("class");
+    
+    const queryString = params.toString();
+    const currentQuery = searchParams.toString();
+    
+    if (queryString !== currentQuery) {
+      router.replace(`${pathname}?${queryString}`, { scroll: false });
+    }
+  }, [searchTerm, sortConfig, filterState, pathname, router, searchParams]);
 
   const { data, isLoading, error, refetch } = useGetLeagueLeaderboard();
 
@@ -248,12 +269,13 @@ const FullLeagueLeaderboard: React.FC<FullLeagueLeaderboardProps> = ({ onBack, o
               },
               align: 'center'
             },
-            ...(onViewDetails ? [{
+            ...(!isPublicView ? [{
               key: 'action',
               header: 'Action',
               render: (_: any, row: LeagueLeaderboardEntry) => (
                 <ViewDetailsButton 
-                  onClick={() => onViewDetails?.(row.candidate)} 
+                  href={`/admin/competition/candidate?id=${row.candidate}&isLeagueCumulative=true`}
+                  target="_blank"
                   label="View Details" 
                 />
               ),
