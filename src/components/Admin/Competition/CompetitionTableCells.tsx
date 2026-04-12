@@ -2,6 +2,7 @@ import React from "react";
 import Image from "next/image";
 import RankMedal from "./RankMedal";
 import clsx from "clsx";
+import Link from "next/link";
 
 export const SNCell = (index: number) => (
   <div className="flex items-center justify-center">
@@ -102,18 +103,31 @@ export const BadgeCell = ({
 
 export const ViewDetailsButton = ({
   onClick,
-  label = "View"
+  href,
+  label = "View",
+  target
 }: {
-  onClick: () => void;
+  onClick?: () => void;
+  href?: string;
   label?: string;
+  target?: string;
 }) => (
   <div className="flex justify-center">
-    <button
-      onClick={onClick}
-      className="bg-[#3E4095] text-white font-black px-5 py-2 rounded-xl text-[10px] uppercase tracking-widest hover:bg-[#2d2f6e] transition-all shadow-md shadow-[#3E4095]/10 active:scale-95"
-    >
-      {label}
-    </button>
+    {href ? (
+      <Link
+        href={href}
+        target={target}
+        className="bg-[#3E4095] text-white font-black px-5 py-2 rounded-xl text-[10px] uppercase tracking-widest hover:bg-[#2d2f6e] transition-all shadow-md shadow-[#3E4095]/10 active:scale-95 inline-block cursor-pointer"
+      >
+        {label}
+      </Link>
+    ) : (
+      <button
+        onClick={onClick}
+        className="bg-[#3E4095] text-white font-black px-5 py-2 rounded-xl text-[10px] uppercase tracking-widest hover:bg-[#2d2f6e] transition-all shadow-md shadow-[#3E4095]/10 active:scale-95 cursor-pointer outline-none border-none"
+      >
+        {label}
+      </button>
+    )}
   </div>
 );
-
