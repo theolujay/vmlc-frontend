@@ -3,23 +3,8 @@ import ResponsiveContainer from '@/components/ui/ResponsiveContainer';
 import Image from "next/image"
 import RankMedal from './RankMedal';
 import Link from 'next/link';
-
-export interface LeaderboardEntry {
-  candidate: string;
-  candidate_info: {
-    id: string;
-    full_name: string;
-    email: string;
-    state: string;
-    school_name: string;
-    school_type: string;
-    current_class: string;
-  };
-  total_score: string;
-  overall_rank: number;
-  rank_change: number;
-  profile_picture?: string | null;
-}
+import useGetAccountMgt from '@/hooks/useGetAccountMgt';
+import { LeagueLeaderboardEntry as LeaderboardEntry } from '@/types/ScoreboardType';
 
 interface LeaderboardSummaryProps {
   entries: LeaderboardEntry[];
@@ -34,15 +19,18 @@ const RankChangeIndicator = ({ change }: { change: number }) => {
 }
 
 const LeaderboardSummary: React.FC<LeaderboardSummaryProps> = ({ entries, onViewFull, onViewCandidate }) => {
+  const { data: accountMgt } = useGetAccountMgt();
+  const userRole = accountMgt?.role || "";
+  const isAdminOrAbove = ["admin", "manager", "superadmin"].includes(userRole);
   return (
     <ResponsiveContainer className="flex flex-col gap-4 font-sans">
       <div className="flex justify-between items-center mb-1 font-sans">
         <div>
           <h2 className="text-xs font-bold text-[#475367] uppercase tracking-widest mb-1">League Leaderboard</h2>
-          <p className="text-[9px] text-[#667185]">Based on published rankings only</p>
+          <p className="text-[9px] text-[#667185]">Latest {isAdminOrAbove ? "internal" : "published"} ranking </p>
         </div>
         {onViewFull && entries.length > 0 && (
-          <button 
+          <button
             onClick={onViewFull}
             className="flex items-center gap-1 px-4 py-1.5 text-xs font-bold text-[#344054] bg-white border border-[#D0D5DD] rounded-full hover:bg-[#3E4095] hover:text-[#FFFFFF] transition-all cursor-pointer"
           >
@@ -53,7 +41,7 @@ const LeaderboardSummary: React.FC<LeaderboardSummaryProps> = ({ entries, onView
 
       <div className="bg-[#F9FAFB] border border-[#F2F4F7] rounded-xl p-4">
         <h3 className="text-[10px] font-bold text-[#101828] uppercase tracking-wider mb-4">Top Performers</h3>
-        
+
         {entries.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {entries.map((entry) => {
@@ -61,8 +49,8 @@ const LeaderboardSummary: React.FC<LeaderboardSummaryProps> = ({ entries, onView
                 <>
                   <div className="relative shrink-0">
                     {entry.profile_picture ? (
-                      <Image 
-                        src={entry.profile_picture} 
+                      <Image
+                        src={entry.profile_picture}
                         alt={entry.candidate_info?.full_name}
                         width={40}
                         height={40}
@@ -73,10 +61,10 @@ const LeaderboardSummary: React.FC<LeaderboardSummaryProps> = ({ entries, onView
                         {entry.candidate_info?.full_name?.charAt(0)}
                       </div>
                     )}
-                    
-                    <RankMedal 
-                      rank={entry.overall_rank} 
-                      className={`absolute -bottom-2 -right-2 drop-shadow-md transition-transform ${onViewCandidate ? 'group-hover:scale-110' : ''}`} 
+
+                    <RankMedal
+                      rank={entry.overall_rank}
+                      className={`absolute -bottom-2 -right-2 drop-shadow-md transition-transform ${onViewCandidate ? 'group-hover:scale-110' : ''}`}
                     />
                   </div>
 
@@ -95,8 +83,8 @@ const LeaderboardSummary: React.FC<LeaderboardSummaryProps> = ({ entries, onView
                         const isAbsent = typeof entry.total_score === 'string' && entry.total_score.toLowerCase() === 'absent';
                         return (
                           <span className={`text-xs font-black px-1 py-0.5 rounded-md border ${
-                            isAbsent 
-                              ? "text-[#667185] bg-[#F2F4F7] border-[#E4E7EC]" 
+                            isAbsent
+                              ? "text-[#667185] bg-[#F2F4F7] border-[#E4E7EC]"
                               : "text-[#3E4095] bg-white border-[#3E4095]/60"
                           }`}>
                             {isAbsent ? "Absent" : entry.total_score}
