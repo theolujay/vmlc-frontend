@@ -46,11 +46,11 @@ export default function Header() {
 
 
     return (
-        <header className="flex font-sans bg-white px-6 items-center sticky top-0 z-40 border-b border-gray-100">
+        <header className="flex font-sans bg-white px-4 md:px-10 items-center sticky top-0 z-40 border-b border-gray-100">
             <div className="flex mx-auto justify-between w-full py-4">
                 {/* Logo */}
                 <Link href="/">
-                    <div className="md:w-auto">
+                    <div className="w-[120px] md:w-auto">
                         <Logo className="w-full h-auto"/>
                     </div>
                 </Link>
@@ -97,7 +97,7 @@ export default function Header() {
             {/* Notification Modal (Shared) */}
             {showNotifications && (
                 <Fragment key="notifications-wrapper">
-                    <div className="fixed inset-0 z-40" onClick={() => setShowNotifications(false)} />
+                    <div className="fixed inset-0 z-[100]" onClick={() => setShowNotifications(false)} />
                     <NotificationModal
                         notifications={notifications}
                         onClose={() => setShowNotifications(false)}

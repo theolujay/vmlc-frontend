@@ -194,13 +194,6 @@ export default function Exam() {
     return mapped;
   }, [answers, processedData]);
 
-  const formattedAnswers = {
-    answers: Object.entries(answers).map(([questionId, selected_option]) => ({
-      question: Number(questionId),
-      selected_option: selected_option ? selected_option.toLowerCase() : "",
-    })),
-  };
-
   useEffect(() => {
     if (examId) {
       const savedAnswers = localStorage.getItem(`exam_answers_${examId}`);
@@ -217,8 +210,16 @@ export default function Exam() {
     }
   }, [answers, examId, isLoaded]);
 
-  async function handleSubmit() {
+  async function handleSubmit(isAutoSubmit: boolean = false) {
     try {
+      const formattedAnswers = {
+        is_auto_submit: isAutoSubmit,
+        answers: Object.entries(answers).map(([questionId, selected_option]) => ({
+          question: Number(questionId),
+          selected_option: selected_option ? selected_option.toLowerCase() : "",
+        })),
+      };
+
       // Send final heartbeat before submitting - wrapped in try/catch to ensure submission proceeds even if proctoring fails
       try {
         await sendFinalHeartbeat();
@@ -370,7 +371,7 @@ export default function Exam() {
   return (
     <ExamLayout
       examId={examId}
-      onTimeUp={handleSubmit}
+      onTimeUp={() => handleSubmit(true)}
       timer={data?.countdown_minutes ?? 0}
       deadline={data?.attempt?.deadline}
       title={data?.title}
@@ -380,7 +381,7 @@ export default function Exam() {
       <div className="relative">
         <Questions
           submitPending={submitPending}
-          handleSubmit={handleSubmit}
+          handleSubmit={() => handleSubmit(false)}
           answers={uiAnswers}
           onSelect={handleSelectOption}
           isPending={isPending}

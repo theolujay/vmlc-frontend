@@ -44,7 +44,7 @@ export function SocketProvider({ children }: { children: React.ReactNode }) {
             socketRef.current = ws;
 
             ws.onopen = () => {
-                console.log('Unified WebSocket connected');
+                // console.log('Unified WebSocket connected');gemini
                 setIsConnected(true);
                 if (reconnectTimeoutRef.current) {
                     clearTimeout(reconnectTimeoutRef.current);
@@ -65,7 +65,7 @@ export function SocketProvider({ children }: { children: React.ReactNode }) {
             };
 
             ws.onclose = (event) => {
-                console.log('Unified WebSocket disconnected', event.code, event.reason);
+                // console.log('Unified WebSocket disconnected', event.code, event.reason);
                 setIsConnected(false);
                 socketRef.current = null;
 

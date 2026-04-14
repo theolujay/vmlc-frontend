@@ -97,7 +97,7 @@ export default function ExamSection() {
           <button
             key="add-question"
             onClick={() => setOpenAddQuestion(true)}
-            className="inline-flex items-center gap-2.5 bg-white text-[#3E4095] border border-[#3E4095]/20 px-6 py-3 rounded-xl font-black text-[10px] tracking-widest hover:bg-gray-50 transition-all uppercase shadow-sm active:scale-95"
+            className="inline-flex items-center gap-2.5 bg-white text-[#3E4095] border border-[#3E4095]/20 px-3 md:px-6 py-3 rounded-xl font-black text-[10px] tracking-widest hover:bg-gray-50 transition-all uppercase shadow-sm active:scale-95"
           >
             <i className="fas fa-plus text-xs"></i>
             <span>ADD QUESTION</span>
@@ -107,13 +107,13 @@ export default function ExamSection() {
             <button
               key="create-session"
               onClick={() => setOpenCreateSession(true)}
-              className="inline-flex items-center gap-2.5 bg-[#3E4095] text-white px-6 py-3 rounded-xl font-black text-[10px] tracking-widest hover:bg-[#2d2f6e] transition-all uppercase shadow-lg shadow-[#3E4095]/20 active:scale-95"
+              className="inline-flex items-center gap-2.5 bg-[#3E4095] text-white px-3 md:px-6 py-3 rounded-xl font-black text-[10px] tracking-widest hover:bg-[#2d2f6e] transition-all uppercase shadow-lg shadow-[#3E4095]/20 active:scale-95"
             >
               <i className="fas fa-calendar-plus text-xs"></i>
               <span>CREATE EXAM</span>
             </button>
           )
-        ].filter(Boolean) as React.ReactNode[]}
+        ].filter(Boolean)}
       />
 
       <div className="flex flex-col gap-6 mt-4 w-full sm:w-[96%] px-2 sm:px-0 sm:mx-auto pb-20">
@@ -333,7 +333,7 @@ function RankingSnapshotCard({ ranking, canViewDetails, userRole }: { ranking: R
       <div
         onClick={handleViewRanking}
         className={clsx(
-          'group flex flex-col bg-white border border-gray-100 rounded-[2rem] shadow-sm transition-all overflow-hidden',
+          'group flex flex-col bg-white border border-gray-100 rounded-4xl shadow-sm transition-all overflow-hidden',
           canViewDetails ? 'hover:shadow-xl hover:-translate-y-1 cursor-pointer' : 'opacity-90 cursor-default'
         )}
         title={canViewDetails ? "View Ranking" : ""}

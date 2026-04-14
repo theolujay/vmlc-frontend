@@ -16,20 +16,12 @@ interface CompetitionDashboardProps {
   onViewFullLeaderboard?: () => void;
   onViewFullRanking?: (id: string, title: string) => void;
   onViewRanking?: (id: string, title: string) => void;
-  onViewCandidateDetail?: (params: {
-    candidate_id: string,
-    exam_id?: string,
-    isLeagueCumulative?: boolean,
-    stage?: string,
-    round?: string
-  }) => void;
 }
 
 const CompetitionDashboard: React.FC<CompetitionDashboardProps> = ({
   onViewFullLeaderboard,
   onViewFullRanking,
-  onViewRanking,
-  onViewCandidateDetail
+  onViewRanking
 }) => {
   const { data: accountMgt, isPending: isAccountMgtPending } = useGetAccountMgt();
   const userRole = accountMgt?.role;
@@ -187,24 +179,17 @@ const CompetitionDashboard: React.FC<CompetitionDashboardProps> = ({
             <LeaderboardSummary
               entries={data.leaderboard_summary}
               onViewFull={isModeratorOrAbove ? (onViewFullLeaderboard || (() => {})) : undefined}
-              onViewCandidate={isModeratorOrAbove ? ((id) => onViewCandidateDetail?.({
-                candidate_id: id,
-                isLeagueCumulative: true
-              })) : undefined}
+              onViewCandidate={isModeratorOrAbove ? (() => {}) : undefined}
             />
 
             <RankingSummary
+              examId={data.latest_ranking_summary?.exam_id}
               examTitle={data.latest_ranking_summary?.exam_title || "Latest Exam"}
               entries={data.latest_ranking_summary?.entries || []}
               onViewFull={isModeratorOrAbove && onViewFullRanking && data.latest_ranking_summary ?
                 (() => onViewFullRanking(data.latest_ranking_summary!.exam_id, data.latest_ranking_summary!.exam_title))
                 : undefined}
-              onViewCandidate={isModeratorOrAbove ? ((id) => onViewCandidateDetail?.({
-                candidate_id: id,
-                exam_id: data.latest_ranking_summary?.exam_id,
-                stage: data.progress.current_stage,
-                round: String(data.progress.current_round)
-              })) : undefined}
+              onViewCandidate={isModeratorOrAbove ? (() => {}) : undefined}
             />
             
             </div>

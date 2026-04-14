@@ -1,12 +1,15 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React, { useState } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import CustomTable from '@/components/ui/CustomTable';
 import ResponsiveContainer from '@/components/ui/ResponsiveContainer';
-import { AngleIcon, FilterIcon, SortIcon } from '../AdminIcons';
-import Image from "next/image";
-import RankMedal from './RankMedal';
+import { AngleIcon } from '../AdminIcons';
 import useGetLeagueLeaderboard from '@/hooks/useGetLeagueLeaderboard';
 import { LeagueLeaderboardEntry, LeagueLeaderboardResponse } from '@/types/ScoreboardType';
+import { CompetitionControls } from './CompetitionControls';
+import { BadgeCell, CandidateCell, RankCell, SchoolCell, SNCell, ViewDetailsButton } from './CompetitionTableCells';
+import { LoadingView, ErrorView } from './CompetitionStatusViews';
+import useGetCurrentUser from '@/hooks/useGetCurrentUser';
+import { useSearchParams, useRouter, usePathname } from "next/navigation";
 
 const RankChangeIndicator = ({ change }: { change: number }) => {
   if (change === 0) return <span className="text-gray-400 font-medium">-</span>;
@@ -16,86 +19,200 @@ const RankChangeIndicator = ({ change }: { change: number }) => {
 
 interface FullLeagueLeaderboardProps {
   onBack: () => void;
-  onViewDetails?: (candidateId: string) => void;
   isPublicView?: boolean;
 }
 
-const FullLeagueLeaderboard: React.FC<FullLeagueLeaderboardProps> = ({ onBack, onViewDetails, isPublicView = false }) => {
-  const [searchTerm, setSearchInput] = useState('');
+type SortKey = "rank" | "name" | "school" | "class" | "state" | "score" | "trend";
+
+const FullLeagueLeaderboard: React.FC<FullLeagueLeaderboardProps> = ({ onBack, isPublicView = false }) => {
+  const authState = useGetCurrentUser();
+  const currentUserId = authState?.user?.id;
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const pathname = usePathname();
+
+  const [searchTerm, setSearchInput] = useState(searchParams.get("search") || "");
+  const [sortConfig, setSortConfig] = useState<{ key: SortKey; direction: "asc" | "desc" }>({
+    key: (searchParams.get("sort") as SortKey) || "rank",
+    direction: (searchParams.get("dir") as "asc" | "desc") || "asc",
+  });
+  const [filterState, setFilterState] = useState({
+    state: searchParams.get("state") || "All States",
+    schoolType: searchParams.get("type") || "All Types",
+    currentClass: searchParams.get("class") || "All Classes",
+  });
+
+  // Sync state to URL
+  useEffect(() => {
+    const params = new URLSearchParams(searchParams.toString());
+    if (searchTerm) params.set("search", searchTerm); else params.delete("search");
+    if (sortConfig.key !== "rank") params.set("sort", sortConfig.key); else params.delete("sort");
+    if (sortConfig.direction !== "asc") params.set("dir", sortConfig.direction); else params.delete("dir");
+    if (filterState.state !== "All States") params.set("state", filterState.state); else params.delete("state");
+    if (filterState.schoolType !== "All Types") params.set("type", filterState.schoolType); else params.delete("type");
+    if (filterState.currentClass !== "All Classes") params.set("class", filterState.currentClass); else params.delete("class");
+    
+    const queryString = params.toString();
+    const currentQuery = searchParams.toString();
+    
+    if (queryString !== currentQuery) {
+      router.replace(`${pathname}?${queryString}`, { scroll: false });
+    }
+  }, [searchTerm, sortConfig, filterState, pathname, router, searchParams]);
+
   const { data, isLoading, error, refetch } = useGetLeagueLeaderboard();
 
-  const leaderboardData = (data as unknown as LeagueLeaderboardResponse)?.entries || [];
+  const leaderboardData = useMemo(() => (data as unknown as LeagueLeaderboardResponse)?.entries || [], [data]);
 
-  const filteredData = leaderboardData.filter(item =>
-    (item.candidate_info?.full_name?.toLowerCase() || '').includes(searchTerm.toLowerCase()) ||
-    (item.candidate_info?.school_name?.toLowerCase() || '').includes(searchTerm.toLowerCase())
-  );
+  const filterOptions = useMemo(() => {
+    const states = new Set<string>();
+    const types = new Set<string>();
+    const classes = new Set<string>();
+
+    leaderboardData.forEach((item) => {
+      if (item.candidate_info?.state) states.add(item.candidate_info.state);
+      if (item.candidate_info?.school_type) types.add(item.candidate_info.school_type);
+      if (item.candidate_info?.current_class) classes.add(item.candidate_info.current_class);
+    });
+
+    return {
+      states: ["All States", ...Array.from(states).sort()],
+      schoolTypes: ["All Types", ...Array.from(types).sort()],
+      currentClasses: ["All Classes", ...Array.from(classes).sort()],
+    };
+  }, [leaderboardData]);
+
+  const processedData = useMemo(() => {
+    const result = [...leaderboardData].filter((item) => {
+      const searchStr = searchTerm.toLowerCase();
+      const matchesSearch =
+        (item.candidate_info?.full_name?.toLowerCase() || "").includes(searchStr) ||
+        (item.candidate_info?.school_name?.toLowerCase() || "").includes(searchStr) ||
+        (item.candidate_info?.email?.toLowerCase() || "").includes(searchStr);
+
+      const matchesState =
+        filterState.state === "All States" ||
+        item.candidate_info?.state === filterState.state;
+      const matchesSchoolType =
+        filterState.schoolType === "All Types" ||
+        item.candidate_info?.school_type === filterState.schoolType;
+      const matchesClass =
+        filterState.currentClass === "All Classes" ||
+        item.candidate_info?.current_class === filterState.currentClass;
+
+      return matchesSearch && matchesState && matchesSchoolType && matchesClass;
+    });
+
+    result.sort((a, b) => {
+      let valA: any;
+      let valB: any;
+
+      switch (sortConfig.key) {
+        case "rank":
+          valA = a.overall_rank;
+          valB = b.overall_rank;
+          break;
+        case "score":
+          valA = parseFloat(a.total_score) || 0;
+          valB = parseFloat(b.total_score) || 0;
+          break;
+        case "trend":
+          valA = a.rank_change || 0;
+          valB = b.rank_change || 0;
+          break;
+        case "name":
+          valA = a.candidate_info?.full_name?.toLowerCase() || "";
+          valB = b.candidate_info?.full_name?.toLowerCase() || "";
+          break;
+        case "school":
+          valA = a.candidate_info?.school_name?.toLowerCase() || "";
+          valB = b.candidate_info?.school_name?.toLowerCase() || "";
+          break;
+        case "class":
+          valA = a.candidate_info?.current_class?.toLowerCase() || "";
+          valB = b.candidate_info?.current_class?.toLowerCase() || "";
+          break;
+        case "state":
+          valA = a.candidate_info?.state?.toLowerCase() || "";
+          valB = b.candidate_info?.state?.toLowerCase() || "";
+          break;
+        default:
+          return 0;
+      }
+
+      if (valA < valB) return sortConfig.direction === "asc" ? -1 : 1;
+      if (valA > valB) return sortConfig.direction === "asc" ? 1 : -1;
+      return 0;
+    });
+
+    return result;
+  }, [leaderboardData, searchTerm, sortConfig, filterState]);
 
   if (isLoading) {
-    return (
-      <div className="flex flex-col items-center justify-center p-20 w-full">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#3E4095]"></div>
-        <p className="mt-4 text-sm text-[#667185] font-medium animate-pulse">Loading Leaderboard...</p>
-      </div>
-    );
+    return <LoadingView message="Loading Leaderboard..." />;
   }
 
   if (error) {
     return (
-      <div className="flex flex-col items-center justify-center p-20 w-full text-center">
-        <div className="w-16 h-16 bg-red-50 rounded-full flex items-center justify-center mb-4">
-           <span className="text-red-500 text-2xl font-bold">!</span>
-        </div>
-        <h2 className="text-lg font-bold text-[#101828]">Failed to load leaderboard</h2>
-        <p className="text-sm text-[#667185] mt-1 max-w-xs mx-auto">There was an error retrieving the ranking data. Please try again.</p>
-        <button
-          onClick={() => refetch()}
-          className="mt-6 px-6 py-2 bg-[#3E4095] text-white rounded-full font-bold text-sm hover:bg-[#2d2f6e] transition-colors"
-        >
-          Retry
-        </button>
-      </div>
+      <ErrorView 
+        title="Failed to load leaderboard" 
+        description="There was an error retrieving the ranking data. Please try again." 
+        onRetry={refetch} 
+      />
     );
   }
 
+  const handleSort = (key: SortKey) => {
+    setSortConfig((prev) => ({
+      key,
+      direction: prev.key === key && prev.direction === "asc" ? "desc" : "asc",
+    }));
+  };
+
   return (
-    <div className="flex flex-col gap-4 w-full animate-in fade-in slide-in-from-bottom-2 duration-500">
+    <div className="flex flex-col gap-4 w-full animate-in fade-in slide-in-from-bottom-2 duration-500 max-w-7xl mx-auto">
       <div className="flex items-center gap-2 mb-2">
         <button
           onClick={onBack}
-          className="p-2 rounded-full hover:bg-gray-100 transition-colors border border-transparent hover:border-gray-200"
+          className="p-2.5 bg-white border border-gray-100 rounded-xl shadow-sm hover:bg-gray-50 transition-all active:scale-95 group"
         >
-          <div className="rotate-180"><AngleIcon width={8} height={14} /></div>
+          <div className="rotate-180 group-hover:-translate-x-0.5 transition-transform"><AngleIcon width={8} height={14} /></div>
         </button>
         <div className="flex flex-col">
           <h1 className="text-xl font-bold text-[#101828]">League Leaderboard</h1>
-          <p className="text-xs text-[#667185]">Cumulative scores across all published rankings</p>
+          <p className="text-xs text-gray-500">Cumulative scores across all published rankings</p>
         </div>
       </div>
 
       <ResponsiveContainer className="flex flex-col gap-4">
-        <div className="flex flex-col sm:flex-row justify-between gap-3 p-1">
-          <input
-            value={searchTerm}
-            onChange={(e) => setSearchInput(e.target.value)}
-            type="text"
-            placeholder="Search candidate or school..."
-            className="border h-10 px-3 py-1 rounded-md border-[#E4E7EC] outline-none w-full sm:w-80 text-sm focus:border-[#3E4095] transition-colors"
-          />
-          <div className="flex gap-2">
-             <button className="inline-flex items-center justify-center gap-2 border h-10 rounded-md px-3 py-1 border-[#E4E7EC] cursor-pointer bg-white hover:bg-gray-50 transition-colors">
-                <SortIcon className="w-4 h-4" />
-                <span className="text-[#344054] text-sm font-medium">Sort</span>
-             </button>
-             <button className="inline-flex items-center justify-center gap-2 border h-10 rounded-md px-3 py-1 border-[#E4E7EC] cursor-pointer bg-white hover:bg-gray-50 transition-colors">
-                <FilterIcon className="w-4 h-4" />
-                <span className="text-[#344054] text-sm font-medium">Filter</span>
-             </button>
-          </div>
-        </div>
+        <CompetitionControls
+          searchTerm={searchTerm}
+          onSearchChange={setSearchInput}
+          sortKey={sortConfig.key}
+          sortDirection={sortConfig.direction}
+          onSort={(key) => handleSort(key as SortKey)}
+          sortOptions={[
+            { label: "Rank", key: "rank" },
+            { label: "Score", key: "score" },
+            { label: "Trend", key: "trend" },
+            ...(!isPublicView
+              ? [
+                  { label: "Class", key: "class" },
+                  { label: "State", key: "state" },
+                ]
+              : []),
+            { label: "Name", key: "name" },
+            { label: "School", key: "school" },
+          ]}
+          filterState={filterState}
+          onFilterChange={(newFilters) => setFilterState((prev) => ({ ...prev, ...newFilters }))}
+          filterOptions={filterOptions}
+          onResetFilters={() => setFilterState({ state: "All States", schoolType: "All Types", currentClass: "All Classes" })}
+          isPublicView={isPublicView}
+        />
 
         <CustomTable<LeagueLeaderboardEntry>
-          data={filteredData}
+          data={processedData}
           getRowId={(row) => row.candidate}
           minWidth="900px"
           emptyLabel="Leaderboard Empty"
@@ -104,54 +221,39 @@ const FullLeagueLeaderboard: React.FC<FullLeagueLeaderboardProps> = ({ onBack, o
             {
               key: 'sn',
               header: 'S/N',
-              render: (_, __, index) => (
-                <div className="flex items-center justify-center">
-                  <span className="text-xs font-bold text-gray-400">{index + 1}</span>
-                </div>
-              ),
+              render: (_, __, index) => SNCell(index),
               align: 'center'
             },
             {
               key: 'overall_rank',
               header: 'Rank',
-              render: (val) => (
-                <div className="flex items-center justify-center">
-                  <span className="text-sm font-bold text-gray-500"># {val}</span>
-                </div>
-              ),
+              render: (val) => RankCell(val as number),
               align: 'center'
             },
             {
               key: 'rank_change',
               header: 'Trend',
-              render: (val) => <RankChangeIndicator change={val} />,
+              render: (val) => <RankChangeIndicator change={val as number} />,
               align: 'center'
             },
             {
               key: 'candidate_info',
               header: 'Candidate',
               render: (val: any, row) => (
-                <div className="flex items-center gap-3">
-                  <div className="relative flex items-center justify-center w-10 h-10 shrink-0">
-                    <div className="w-10 h-10 rounded-full bg-[#F2F4F7] flex items-center justify-center text-[#667185] text-xs font-bold border border-[#E4E7EC] overflow-hidden relative">
-                        {row.profile_picture ? (
-                          <Image src={row.profile_picture} alt="" fill className="object-cover" />
-                        ) : val?.full_name?.charAt(0)}
-                    </div>
-                    <RankMedal rank={row.overall_rank} className="absolute -bottom-1 -right-1 drop-shadow-md" />
-                  </div>
-                  <div className="flex flex-col">
-                    <span className="font-bold text-[#101828] text-sm">{val?.full_name}</span>
-                    {!isPublicView && <span className="text-[10px] text-[#667185]">{val?.email}</span>}
-                  </div>
-                </div>
+                <CandidateCell
+                  info={val}
+                  profile_picture={row.profile_picture}
+                  rank={row.overall_rank}
+                  isPublicView={isPublicView}
+                  isCurrentUser={row.candidate === currentUserId}
+                />
               )
             },
             {
               key: 'candidate_info',
               header: 'School',
               align: 'left',
-              render: (val: any) => <span className="text-sm text-[#475467] font-medium">{val?.school_name}</span>
+              render: (val: any) => SchoolCell(val, isPublicView)
             },
             {
               key: 'total_score',
@@ -159,27 +261,23 @@ const FullLeagueLeaderboard: React.FC<FullLeagueLeaderboardProps> = ({ onBack, o
               render: (val) => {
                 const isAbsent = typeof val === 'string' && val.toLowerCase() === 'absent';
                 return (
-                  <span className={`text-xs font-black px-2 py-1 rounded-full border transition-colors ${
-                    isAbsent
-                      ? "text-[#667185] bg-[#F2F4F7] border-[#E4E7EC]"
-                      : "text-[#3E4095] bg-white border-[#3E4095]/50"
-                  }`}>
-                    {isAbsent ? "Absent" : val}
-                  </span>
+                  <BadgeCell
+                    label={isAbsent ? "Absent" : (val as string | number)}
+                    variant={isAbsent ? 'absent' : 'default'}
+                  />
                 );
               },
               align: 'center'
             },
-            ...(onViewDetails ? [{
+            ...(!isPublicView ? [{
               key: 'action',
               header: 'Action',
               render: (_: any, row: LeagueLeaderboardEntry) => (
-                <button
-                  onClick={() => onViewDetails?.(row.candidate)}
-                  className="text-[#3E4095] font-bold hover:bg-[#3E4095] hover:text-white text-xs bg-[#F9F9FB] px-3 py-1.5 rounded-full border border-[#E4E7EC] transition-colors"
-                >
-                  View Details
-                </button>
+                <ViewDetailsButton 
+                  href={`/admin/competition/candidate?id=${row.candidate}&isLeagueCumulative=true`}
+                  target="_blank"
+                  label="View Details" 
+                />
               ),
               align: 'center' as const
             }] : [])
