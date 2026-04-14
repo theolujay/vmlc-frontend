@@ -27,7 +27,7 @@ const LeaderboardSummary: React.FC<LeaderboardSummaryProps> = ({ entries, onView
       <div className="flex justify-between items-center mb-1 font-sans">
         <div>
           <h2 className="text-xs font-bold text-[#475367] uppercase tracking-widest mb-1">League Leaderboard</h2>
-          <p className="text-[9px] text-[#667185]">Latest {isAdminOrAbove ? "internal" : "published"} ranking </p>
+          <p className="text-[9px] text-[#667185]">Based on latest {isAdminOrAbove ? "internal" : "published"} ranking </p>
         </div>
         {onViewFull && entries.length > 0 && (
           <button

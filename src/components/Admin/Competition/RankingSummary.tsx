@@ -4,7 +4,7 @@ import Image from "next/image";
 import RankMedal from "./RankMedal";
 import { RankingEntry } from "@/types/ScoreboardType";
 import Link from "next/link";
-
+import useGetAccountMgt from '@/hooks/useGetAccountMgt';
 interface RankingSummaryProps {
   examId?: string;
   examTitle: string;
@@ -22,6 +22,9 @@ const RankingSummary: React.FC<RankingSummaryProps> = ({
   onViewCandidate,
   isLoading,
 }) => {
+  const { data: accountMgt } = useGetAccountMgt();
+  const userRole = accountMgt?.role || "";
+  const isAdminOrAbove = ["admin", "manager", "superadmin"].includes(userRole);
   if (isLoading) {
     return (
       <ResponsiveContainer className="flex flex-col gap-4 font-sans min-h-50 justify-center items-center">
@@ -37,7 +40,7 @@ const RankingSummary: React.FC<RankingSummaryProps> = ({
           <h2 className="text-xs font-bold text-grey-600 uppercase tracking-widest mb-1">
             Ranking: {examTitle}
           </h2>
-          <p className="text-[9px] text-grey-500">Latest published</p>
+          <p className="text-[9px] text-grey-500">Latest {isAdminOrAbove ? "internal" : "published"} ranking</p>
         </div>
         {onViewFull && entries.length > 0 && (
           <div>
