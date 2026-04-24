@@ -10,7 +10,18 @@ const CandidateDetailsContent = () => {
   const searchParams = useSearchParams();
   const candidate_id = searchParams.get('id') || '';
   const exam_id = searchParams.get('examId') || undefined;
+  const examTitle = searchParams.get('title') || '';
   const isLeagueCumulative = searchParams.get('isLeagueCumulative') === 'true';
+
+  const handleBack = () => {
+    if (isLeagueCumulative) {
+      router.push('/admin/competition/leaderboard');
+    } else if (exam_id) {
+      router.push(`/admin/competition/ranking?id=${exam_id}&title=${encodeURIComponent(examTitle)}`);
+    } else {
+      router.push('/admin/competition');
+    }
+  };
 
   if (!candidate_id) {
     return (
@@ -18,8 +29,8 @@ const CandidateDetailsContent = () => {
         <h2 className="text-xl font-bold text-gray-800 mb-2">No Candidate Selected</h2>
         <p className="text-gray-600 mb-6">Please go back and select a candidate to view details.</p>
         <button
-          onClick={() => router.back()}
-          className="px-6 py-2 bg-[#3E4095] text-white rounded-full font-bold hover:bg-[#2d2f6e] transition-colors"
+          onClick={handleBack}
+          className="px-6 py-2 bg-[#3E4095] text-white rounded-full font-bold hover:bg-[#2d2f6e] transition-colors cursor-pointer"
         >
           Go Back
         </button>
@@ -32,7 +43,7 @@ const CandidateDetailsContent = () => {
       candidate_id={candidate_id}
       exam_id={exam_id}
       isLeagueCumulative={isLeagueCumulative}
-      onBack={() => router.back()}
+      onBack={handleBack}
     />
   );
 };
