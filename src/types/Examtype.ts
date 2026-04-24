@@ -253,6 +253,8 @@ export type ExamSessionType = {
   scheduled_date: string;
   concluded_at: string | null;
   created_at: string;
+  delivery_mode: "virtual" | "in_person";
+  stage: string;
   ranking?: {
     exists: boolean;
     is_published: boolean;
