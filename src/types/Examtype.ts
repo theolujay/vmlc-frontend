@@ -61,6 +61,7 @@ export type AttemptType = {
   started_at: string;
   deadline: string;
   submitted_at: string | null;
+  is_unlocked: boolean;
 };
 
 export type ActiveExamType = {
@@ -429,9 +430,20 @@ type QuestionType = {
   pagination: PaginationType;
   question_pool_data: QuestionPoolDataType;
 };
-type QuestionPoolDataType = {
+
+export type QuestionPoolDataType = {
   total_questions: number;
   hard_questions_count: number;
   moderate_questions_count: number;
   easy_questions_count: number;
 };
+
+export type ExamSocketEvent =
+  | {
+      type: 'exam.unlocked';
+      data: {
+        exam_id: string;
+        unlocked_by_name: string;
+      };
+    };
+
