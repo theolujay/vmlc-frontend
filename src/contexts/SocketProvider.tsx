@@ -18,6 +18,7 @@ type Listener = (data: SocketMessage) => void;
 
 interface SocketContextType {
     isConnected: boolean;
+    socketId: string | null;
     sendAction: (action: string, data?: unknown) => void;
     addListener: (type: string, listener: Listener) => void;
     removeListener: (type: string, listener: Listener) => void;
@@ -28,6 +29,7 @@ const SocketContext = createContext<SocketContextType | undefined>(undefined);
 export function SocketProvider({ children }: { children: React.ReactNode }) {
     const { authState } = useAuth();
     const [isConnected, setIsConnected] = useState(false);
+    const [socketId, setSocketId] = useState<string | null>(null);
     const socketRef = useRef<WebSocket | null>(null);
     const listenersRef = useRef<Record<string, Set<Listener>>>({});
     const reconnectTimeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -45,7 +47,7 @@ export function SocketProvider({ children }: { children: React.ReactNode }) {
 
             ws.onopen = () => {
                 // console.log('Unified WebSocket connected');gemini
-                setIsConnected(true);
+                // Connection state will be set after receiving connection.established
                 if (reconnectTimeoutRef.current) {
                     clearTimeout(reconnectTimeoutRef.current);
                     reconnectTimeoutRef.current = null;
@@ -55,6 +57,13 @@ export function SocketProvider({ children }: { children: React.ReactNode }) {
             ws.onmessage = (event) => {
                 try {
                     const message: SocketMessage = JSON.parse(event.data);
+                    
+                    if (message.type === 'connection.established') {
+                        setSocketId(message.data.socket_id as string);
+                        setIsConnected(true);
+                        return;
+                    }
+                    
                     const type = message.type;
                     if (type && listenersRef.current[type]) {
                         listenersRef.current[type].forEach(listener => listener(message));
@@ -125,7 +134,7 @@ export function SocketProvider({ children }: { children: React.ReactNode }) {
     }, []);
 
     return (
-        <SocketContext.Provider value={{ isConnected, sendAction, addListener, removeListener }}>
+        <SocketContext.Provider value={{ isConnected, socketId, sendAction, addListener, removeListener }}>
             {children}
         </SocketContext.Provider>
     );
