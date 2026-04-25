@@ -42,7 +42,7 @@ const PrimaryAction: React.FC<PrimaryActionProps> = ({ exam, isRankingAvailable 
     if (typedEvent.type === 'exam.unlocked' && typedEvent.data.exam_id === exam?.id) {
         setIsQRModalOpen(false);
         toast.success(`Exam session unlocked by ${typedEvent.data.unlocked_by_name}! You may now proceed.`);
-        
+
         // Determine where to go
         if (exam.access_status === 'started') {
             router.push(`/exam-portal/${exam.id}/exam`);
@@ -170,15 +170,15 @@ const PrimaryAction: React.FC<PrimaryActionProps> = ({ exam, isRankingAvailable 
 
   if (!exam) {
      return (
-        <section className="font-sans bg-white p-8 rounded-[24px] border border-[#E4E7EC] shadow-sm text-center">
+        <section className="font-sans bg-white p-8 rounded-3xl border border-[#E4E7EC] shadow-sm text-center">
         <div className="max-w-md mx-auto">
-          <span className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide ${isEliminated ? 'bg-red-50 text-red-600' : 'bg-[#F0F2F5] text-[#475367]'}`}>
+          <span className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide ${isEliminated ? 'bg-red-50 text-red-600' : 'bg-[#F0F2F5] text-grey-600'}`}>
             {isEliminated ? 'Competition Status' : 'Exam Status'}
           </span>
           <h2 className="text-2xl font-bold text-slate-800 mt-3">
             {isEliminated ? 'Better luck next time!' : 'Awaiting challenge...'}
           </h2>
-          <p className="text-[#667185] mt-2 text-sm leading-relaxed">
+          <p className="text-grey-500 mt-2 text-sm leading-relaxed">
             {isEliminated
               ? "You didn't make the cut for the next stage this time, but we're rooting for you in your future endeavors!"
               : "You'll be notified if anything changes"}
@@ -189,7 +189,7 @@ const PrimaryAction: React.FC<PrimaryActionProps> = ({ exam, isRankingAvailable 
   }
 
   return (
-    <section className="bg-white p-8 rounded-[24px] border border-[#E4E7EC] shadow-sm text-center font-sans">
+    <section className="bg-white p-8 rounded-3xl border border-[#E4E7EC] shadow-sm text-center font-sans">
       <div className="max-w-md mx-auto">
         <span className="bg-[#EBEBF5] text-[#3E4095] px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wide">
           {isFinals ? 'On-site Finals' : 'Next Exam'}
@@ -197,7 +197,7 @@ const PrimaryAction: React.FC<PrimaryActionProps> = ({ exam, isRankingAvailable 
         <h2 className="text-2xl font-bold text-slate-800 mt-3">
           {formatExamTitle(exam.title)}
         </h2>
-        <p className="text-[#667185] mt-2 text-[11px] italic leading-relaxed">
+        <p className="text-grey-500 mt-2 text-[11px] italic leading-relaxed">
           {isFinals
             ? "This is an in-person examination. Please ensure you have reviewed the venue logistics and have your identification ready."
             : isAwaitingResults
@@ -220,11 +220,11 @@ const PrimaryAction: React.FC<PrimaryActionProps> = ({ exam, isRankingAvailable 
                 {timeLeft ? (
                   <>
                     <TimeUnit value={timeLeft.days} unit="Days" />
-                    <div className="text-[#3E4095] font-bold self-start mt-[-2px]">:</div>
+                    <div className="text-[#3E4095] font-bold self-start -mt-0.5">:</div>
                     <TimeUnit value={timeLeft.hours} unit="Hrs" />
-                    <div className="text-[#3E4095] font-bold self-start mt-[-2px]">:</div>
+                    <div className="text-[#3E4095] font-bold self-start -mt-0.5">:</div>
                     <TimeUnit value={timeLeft.minutes} unit="Mins" />
-                    <div className="text-[#3E4095] font-bold self-start mt-[-2px]">:</div>
+                    <div className="text-[#3E4095] font-bold self-start -mt-0.5">:</div>
                     <TimeUnit value={timeLeft.seconds} unit="Secs" />
                   </>
                 ) : (
@@ -244,13 +244,13 @@ const PrimaryAction: React.FC<PrimaryActionProps> = ({ exam, isRankingAvailable 
                   {timeLeft.days > 0 && (
                     <>
                       <TimeUnit value={timeLeft.days} unit="Days" />
-                      <div className="text-[#3E4095] font-bold self-start mt-[-2px]">:</div>
+                      <div className="text-[#3E4095] font-bold self-start -mt-0.5">:</div>
                     </>
                   )}
                   <TimeUnit value={timeLeft.hours} unit="Hrs" />
-                  <div className="text-[#3E4095] font-bold self-start mt-[-2px]">:</div>
+                  <div className="text-[#3E4095] font-bold self-start -mt-0.5">:</div>
                   <TimeUnit value={timeLeft.minutes} unit="Mins" />
-                  <div className="text-[#3E4095] font-bold self-start mt-[-2px]">:</div>
+                  <div className="text-[#3E4095] font-bold self-start -mt-0.5">:</div>
                   <TimeUnit value={timeLeft.seconds} unit="Secs" />
                 </div>
               ) : (
@@ -274,7 +274,7 @@ const PrimaryAction: React.FC<PrimaryActionProps> = ({ exam, isRankingAvailable 
               {hasSubmitted
                   ? 'SUBMITTED'
                   : isFinals && !exam.attempt?.is_unlocked
-                    ? 'VERIFY TO START'
+                    ? exam.access_status === 'started' ? 'VERIFY TO RESUME' : 'VERIFY TO START'
                     : exam.access_status === 'started'
                       ? 'RESUME EXAM'
                       : 'START EXAM'}
