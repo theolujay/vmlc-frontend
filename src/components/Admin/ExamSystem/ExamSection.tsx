@@ -27,6 +27,7 @@ import QuestionPoolTable from './QuestionPoolTable'
 import QuestionPoolStats from './QuestionPoolStats'
 import useGetAccountMgt from '@/hooks/useGetAccountMgt'
 import PublishRankingModal from '@/components/Modals/PublishRankingModal'
+import AdminQRScannerModal from '@/components/Modals/AdminQRScannerModal'
 
 const AddQuestionModal = dynamic(() => import('../../Modals/AddQuestionModal'), {
   ssr: false,
@@ -49,6 +50,7 @@ export default function ExamSection() {
   // Modals
   const [openCreateSession, setOpenCreateSession] = useState(false);
   const [openAddQuestion, setOpenAddQuestion] = useState(false);
+  const [openScanner, setOpenScanner] = useState(false);
 
   // Data Fetching
   const { data: examData, isPending: isExamsPending } = useListExams(currentPage)
@@ -72,6 +74,12 @@ export default function ExamSection() {
   }, [questionFilters]);
 
   const { data: questionData } = useListQuestions(questionPage, memoizedQuestionFilters)
+
+  const hasOngoingFinal = useMemo(() => {
+    return examData?.results?.some(exam =>
+        exam.status === 'ongoing' && (exam.delivery_mode === 'in_person' || exam.stage?.toLowerCase() === 'final')
+    );
+  }, [examData]);
 
   useEffect(() => {
     const params = new URLSearchParams(searchParams.toString());
@@ -112,7 +120,17 @@ export default function ExamSection() {
               <i className="fas fa-calendar-plus text-xs"></i>
               <span>CREATE EXAM</span>
             </button>
-          )
+          ),
+          isAdminOrAbove && hasOngoingFinal && (
+            <button
+                key="scan-qr"
+                onClick={() => setOpenScanner(true)}
+                className="inline-flex items-center gap-2.5 bg-emerald-50 text-emerald-600 border border-emerald-200 px-3 md:px-6 py-3 rounded-xl font-black text-[10px] tracking-widest hover:bg-emerald-100 transition-all uppercase shadow-sm active:scale-95"
+            >
+                <i className="fas fa-qrcode text-xs"></i>
+                <span>SCAN QR</span>
+            </button>
+          ),
         ].filter(Boolean)}
       />
 
@@ -173,6 +191,7 @@ export default function ExamSection() {
 
       <CreateExamSessionModal open={openCreateSession} close={setOpenCreateSession} />
       <AddQuestionModal open={openAddQuestion} close={setOpenAddQuestion} />
+      <AdminQRScannerModal open={openScanner} onClose={() => setOpenScanner(false)} />
     </div>
   )
 }

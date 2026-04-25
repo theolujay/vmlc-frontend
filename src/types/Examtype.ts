@@ -61,6 +61,7 @@ export type AttemptType = {
   started_at: string;
   deadline: string;
   submitted_at: string | null;
+  is_unlocked: boolean;
 };
 
 export type ActiveExamType = {
@@ -253,6 +254,8 @@ export type ExamSessionType = {
   scheduled_date: string;
   concluded_at: string | null;
   created_at: string;
+  delivery_mode: "virtual" | "in_person";
+  stage: string;
   ranking?: {
     exists: boolean;
     is_published: boolean;
@@ -427,9 +430,20 @@ type QuestionType = {
   pagination: PaginationType;
   question_pool_data: QuestionPoolDataType;
 };
-type QuestionPoolDataType = {
+
+export type QuestionPoolDataType = {
   total_questions: number;
   hard_questions_count: number;
   moderate_questions_count: number;
   easy_questions_count: number;
 };
+
+export type ExamSocketEvent =
+  | {
+      type: 'exam.unlocked';
+      data: {
+        exam_id: string;
+        unlocked_by_name: string;
+      };
+    };
+
