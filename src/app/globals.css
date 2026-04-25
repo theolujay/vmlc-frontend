@@ -281,3 +281,51 @@ body {
 .Toastify__progress-bar--warning {
   background: #f3a218 !important;
 }
+
+/* html5-qrcode overrides */
+#qr-reader {
+    border: none !important;
+    background: transparent !important;
+}
+
+#qr-reader__dashboard_section_csr button {
+    background-color: #3E4095 !important;
+    color: white !important;
+    border-radius: 12px !important;
+    padding: 12px 24px !important;
+    font-weight: 700 !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.05em !important;
+    font-size: 12px !important;
+    border: none !important;
+    cursor: pointer !important;
+    transition: all 0.2s !important;
+}
+
+#qr-reader__dashboard_section_csr button:hover {
+    background-color: #2d2f6e !important;
+    transform: scale(1.02) !important;
+}
+
+#qr-reader__status_span {
+    color: white !important;
+    font-size: 14px !important;
+    font-weight: 500 !important;
+}
+
+#qr-reader__header_message {
+    color: #98A2B3 !important;
+    font-size: 13px !important;
+}
+
+#qr-reader__dashboard_section_csr {
+    padding: 20px !important;
+    color: white !important;
+}
+
+#qr-reader__camera_selection {
+    padding: 8px !important;
+    border-radius: 8px !important;
+    border: 1px solid #d0d5dd !important;
+    margin-bottom: 10px !important;
+}
