@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { AvailableExamType } from '@/types/Examtype';
+import { AvailableExamType, ExamSocketEvent } from '@/types/Examtype';
 import { useRouter } from 'next/navigation';
 import { formatExamTitle } from '@/utils/generalUtils';
 import CaptureDialog from '@/components/General/BioVerification/CaptureDialog';
@@ -38,9 +38,10 @@ const PrimaryAction: React.FC<PrimaryActionProps> = ({ exam, isRankingAvailable 
   const hasRefetchedFor = useRef<string | null>(null);
 
   const handleExamUnlocked = useCallback((event: SocketMessage) => {
-    if (event.type === 'exam.unlocked' && event.data.exam_id === exam?.id) {
+    const typedEvent = event as unknown as ExamSocketEvent;
+    if (typedEvent.type === 'exam.unlocked' && typedEvent.data.exam_id === exam?.id) {
         setIsQRModalOpen(false);
-        toast.success(`Exam session unlocked by ${event.data.unlocked_by_name}! You may now proceed.`);
+        toast.success(`Exam session unlocked by ${typedEvent.data.unlocked_by_name}! You may now proceed.`);
         
         // Determine where to go
         if (exam.access_status === 'started') {
@@ -52,8 +53,8 @@ const PrimaryAction: React.FC<PrimaryActionProps> = ({ exam, isRankingAvailable 
   }, [exam, router]);
 
   useEffect(() => {
-    addListener(handleExamUnlocked);
-    return () => removeListener(handleExamUnlocked);
+    addListener('exam.unlocked', handleExamUnlocked);
+    return () => removeListener('exam.unlocked', handleExamUnlocked);
   }, [addListener, removeListener, handleExamUnlocked]);
 
   useEffect(() => {

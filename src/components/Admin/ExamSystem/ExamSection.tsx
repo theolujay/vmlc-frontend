@@ -76,7 +76,7 @@ export default function ExamSection() {
   const { data: questionData } = useListQuestions(questionPage, memoizedQuestionFilters)
 
   const hasOngoingFinal = useMemo(() => {
-    return examData?.results?.some(exam => 
+    return examData?.results?.some(exam =>
         exam.status === 'ongoing' && (exam.delivery_mode === 'in_person' || exam.stage?.toLowerCase() === 'final')
     );
   }, [examData]);
@@ -111,6 +111,16 @@ export default function ExamSection() {
             <span>ADD QUESTION</span>
           </button>
           ),
+          isAdminOrAbove && (
+            <button
+              key="create-session"
+              onClick={() => setOpenCreateSession(true)}
+              className="inline-flex items-center gap-2.5 bg-[#3E4095] text-white px-3 md:px-6 py-3 rounded-xl font-black text-[10px] tracking-widest hover:bg-[#2d2f6e] transition-all uppercase shadow-lg shadow-[#3E4095]/20 active:scale-95"
+            >
+              <i className="fas fa-calendar-plus text-xs"></i>
+              <span>CREATE EXAM</span>
+            </button>
+          ),
           isAdminOrAbove && hasOngoingFinal && (
             <button
                 key="scan-qr"
@@ -121,16 +131,6 @@ export default function ExamSection() {
                 <span>SCAN QR</span>
             </button>
           ),
-          isAdminOrAbove && (
-            <button
-              key="create-session"
-              onClick={() => setOpenCreateSession(true)}
-              className="inline-flex items-center gap-2.5 bg-[#3E4095] text-white px-3 md:px-6 py-3 rounded-xl font-black text-[10px] tracking-widest hover:bg-[#2d2f6e] transition-all uppercase shadow-lg shadow-[#3E4095]/20 active:scale-95"
-            >
-              <i className="fas fa-calendar-plus text-xs"></i>
-              <span>CREATE EXAM</span>
-            </button>
-          )
         ].filter(Boolean)}
       />
 

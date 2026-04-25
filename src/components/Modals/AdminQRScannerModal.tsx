@@ -16,44 +16,49 @@ const AdminQRScannerModal: React.FC<AdminQRScannerModalProps> = ({ open, onClose
     const scannerRef = useRef<Html5QrcodeScanner | null>(null);
 
     useEffect(() => {
+        let scanner: Html5QrcodeScanner | null = null;
+
         if (open && isScanning) {
-            const scanner = new Html5QrcodeScanner(
-                'qr-reader',
-                { fps: 10, qrbox: { width: 250, height: 250 } },
-                false
-            );
+            // Delay initialization to ensure the DOM node is rendered within the Radix Portal
+            const timer = setTimeout(() => {
+                scanner = new Html5QrcodeScanner(
+                    'qr-reader',
+                    { fps: 10, qrbox: { width: 250, height: 250 } },
+                    false
+                );
 
-            scanner.render(
-                (decodedText) => {
-                    // Expected format: candidateId:examId:socketId:timestamp
-                    const [candidateId, examId, socketId] = decodedText.split(':');
+                scanner.render(
+                    (decodedText) => {
+                        // Expected format: candidateId:examId:socketId:timestamp
+                        const [candidateId, examId, socketId] = decodedText.split(':');
 
-                    if (candidateId && examId && socketId) {
-                        scanner.clear();
-                        setIsScanning(false);
+                        if (candidateId && examId && socketId) {
+                            scanner?.clear().catch(console.error);
+                            setIsScanning(false);
 
-                        sendAction('exam.unlock_request', {
-                            candidate_id: candidateId,
-                            exam_id: examId,
-                            socket_id: socketId
-                        });
+                            sendAction('exam.unlock_request', {
+                                candidate_id: candidateId,
+                                exam_id: examId,
+                                socket_id: socketId
+                            });
 
-                        toast.success('Unlock signal sent to candidate dashboard!');
-                        onClose();
-                    } else {
-                        toast.error('Invalid QR code format detected.');
+                            toast.success('Unlock signal sent to candidate dashboard!');
+                            onClose();
+                        } else {
+                            toast.error('Invalid QR code format detected.');
+                        }
+                    },
+                    (error) => {
+                        // Only log high-priority errors if needed
                     }
-                },
-                (error) => {
-                    // Only log high-priority errors if needed
-                }
-            );
-
-            scannerRef.current = scanner;
+                );
+                scannerRef.current = scanner;
+            }, 100);
 
             return () => {
-                if (scannerRef.current) {
-                    scannerRef.current.clear().catch(console.error);
+                clearTimeout(timer);
+                if (scanner) {
+                    scanner.clear().catch(console.error);
                 }
             };
         }

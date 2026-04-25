@@ -59,7 +59,7 @@ export function SocketProvider({ children }: { children: React.ReactNode }) {
                     const message: SocketMessage = JSON.parse(event.data);
                     
                     if (message.type === 'connection.established') {
-                        setSocketId(message.data.socket_id as string);
+                        setSocketId((message.data as { socket_id: string }).socket_id);
                         setIsConnected(true);
                         return;
                     }
