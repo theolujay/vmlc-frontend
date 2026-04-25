@@ -23,7 +23,12 @@ const AdminQRScannerModal: React.FC<AdminQRScannerModalProps> = ({ open, onClose
             const timer = setTimeout(() => {
                 scanner = new Html5QrcodeScanner(
                     'qr-reader',
-                    { fps: 10, qrbox: { width: 250, height: 250 } },
+                    { 
+                        fps: 10, 
+                        qrbox: { width: 250, height: 250 },
+                        rememberLastUsedCamera: true,
+                        supportedScanTypes: [0] // 0 = Html5QrcodeScanType.SCAN_TYPE_CAMERA
+                    },
                     false
                 );
 
