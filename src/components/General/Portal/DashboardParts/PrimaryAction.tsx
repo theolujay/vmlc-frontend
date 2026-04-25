@@ -41,7 +41,7 @@ const PrimaryAction: React.FC<PrimaryActionProps> = ({ exam, isRankingAvailable 
     const typedEvent = event as unknown as ExamSocketEvent;
     if (typedEvent.type === 'exam.unlocked' && typedEvent.data.exam_id === exam?.id) {
         setIsQRModalOpen(false);
-        toast.success(`Exam session unlocked by ${typedEvent.data.unlocked_by_name}! You may now proceed.`);
+        toast.success(`Exam unlocked by admin. You may now proceed.`);
 
         // Determine where to go
         if (exam.access_status === 'started') {
