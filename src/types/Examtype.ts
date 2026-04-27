@@ -438,12 +438,10 @@ export type QuestionPoolDataType = {
   easy_questions_count: number;
 };
 
-export type ExamSocketEvent =
-  | {
-      type: 'exam.unlocked';
-      data: {
-        exam_id: string;
-        unlocked_by_name: string;
-      };
-    };
-
+export type ExamSocketEvent = {
+  type: "exam.unlocked";
+  data: {
+    exam_id: string;
+    unlocked_by_name: string;
+  };
+};
