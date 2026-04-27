@@ -42,7 +42,7 @@ export default function Login() {
       </AuthLayout>
     )
   }
-  
+
   return (
     <AuthLayout>
       <div className="flex-1 flex flex-col items-center justify-center p-4 font-sans">
@@ -72,12 +72,12 @@ export default function Login() {
                     <i className="fas fa-envelope text-[#3E4095]"></i>
                     Email Address
                   </label>
-                  <NeutralInput 
+                  <NeutralInput
                     name='email'
                     label=''
-                    icon={<MailIcon />} 
-                    placeholder='' 
-                    className='!rounded-2xl !py-3 !px-5 border-gray-200 focus:border-[#3E4095] transition-all' 
+                    icon={<MailIcon />}
+                    placeholder='me@mail.com'
+                    className='!rounded-2xl !py-3 !px-5 border-gray-200 focus:border-[#3E4095] transition-all'
                   />
                 </div>
 
@@ -89,21 +89,22 @@ export default function Login() {
                     </label>
                     <Link href='/auth/forgot-password' title="Forgot Password" icon-name="forgot-password" className='text-[9px] font-black text-[#3E4095] uppercase tracking-widest hover:underline'>Forgot?</Link>
                   </div>
-                  <OrdinaryPasswordInput 
-                    name='password' 
+                  <OrdinaryPasswordInput
+                    name='password'
                     label=''
-                    icon={<PasswordIcon />} 
-                    className='!rounded-2xl !py-3 !px-5 border-gray-200 focus:border-[#3E4095] transition-all' 
+                    placeholder='********'
+                    icon={<PasswordIcon />}
+                    className='!rounded-2xl !py-3 !px-5 border-gray-200 focus:border-[#3E4095] transition-all'
                   />
                 </div>
 
                 <div className="flex items-center justify-between px-1 mt-1">
                   <div className="flex gap-2 items-center group cursor-pointer">
-                    <input 
-                      type="checkbox" 
-                      id="remember" 
+                    <input
+                      type="checkbox"
+                      id="remember"
                       {...form.register('remember')}
-                      className="w-3.5 h-3.4 rounded-lg border-gray-300 text-[#3E4095] focus:ring-[#3E4095]/20 cursor-pointer" 
+                      className="w-3.5 h-3.4 rounded-lg border-gray-300 text-[#3E4095] focus:ring-[#3E4095]/20 cursor-pointer"
                     />
                     <label htmlFor="remember" className="text-[10px] font-bold text-gray-500 cursor-pointer group-hover:text-gray-700 transition-colors uppercase tracking-tight">Remember me</label>
                   </div>
