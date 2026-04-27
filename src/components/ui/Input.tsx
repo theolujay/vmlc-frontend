@@ -4,7 +4,6 @@ import { E164Number } from 'libphonenumber-js/core'
 import React, { memo, useEffect, useRef, useState } from 'react'
 import { Controller, useFormContext } from 'react-hook-form'
 import PhoneInput from 'react-phone-number-input'
-import 'react-phone-number-input/style.css'
 import { EyeClosedIcon, EyeOpenIcon } from './SvgAsset/GeneralAsset'
 
 
@@ -333,7 +332,7 @@ export function OTP({ className, label }: { className?: string; label: string })
   const otp = watch("otp") || "";
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>, index: number) => {
-    const value = e.target.value.replace(/\D/, ""); 
+    const value = e.target.value.replace(/\D/, "");
     const otpArray = otp.split("");
     otpArray[index] = value;
     const newOtp = otpArray.join("");
@@ -355,11 +354,11 @@ export function OTP({ className, label }: { className?: string; label: string })
     e.preventDefault();
     const pastedData = e.clipboardData.getData("text").slice(0, 6).split("");
     const numericData = pastedData.filter(char => /^\d$/.test(char));
-    
+
     if (numericData.length > 0) {
       const newOtp = numericData.join("").slice(0, 6);
       setValue("otp", newOtp, { shouldValidate: true });
-      
+
       // Focus the appropriate input after paste
       const nextIndex = Math.min(newOtp.length, 5);
       inputs.current[nextIndex]?.focus();
@@ -373,13 +372,13 @@ export function OTP({ className, label }: { className?: string; label: string })
   return (
     <div className="flex flex-col gap-1 w-full">
       <span className="text-[14px] ml-1">{label}</span>
-      <div className="flex gap-3 w-full">
+      <div className="flex gap-2 w-full justify-between">
 
         {Array.from({ length: 6 }).map((_, index) => (
           <div
             key={index}
             className={clsx(
-              "flex border-2 w-1/6 bg-white focus-within:border-[#01ACEA] items-center px-2 rounded-[8px]",
+              "flex border-2 w-[calc(16.66%-8px)] sm:w-1/6 bg-white focus-within:border-[#01ACEA] items-center px-1 rounded-[8px]",
               className
             )}
           >
@@ -393,7 +392,7 @@ export function OTP({ className, label }: { className?: string; label: string })
               onKeyDown={(e) => handleKeyDown(e, index)}
               onPaste={handlePaste}
               ref={(el) => { inputs.current[index] = el }}
-              className="border-0 w-full p-2 bg-white outline-0 text-center"
+              className="border-0 w-full py-2 px-0 bg-white outline-0 text-center text-lg md:text-xl"
             />
           </div>
         ))}
@@ -406,4 +405,3 @@ export function OTP({ className, label }: { className?: string; label: string })
     </div>
   );
 }
-
