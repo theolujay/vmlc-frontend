@@ -28,7 +28,7 @@ export default function EmailVerificationModal({ open, close, currentUserEmail}:
     return (
         <AppDialog open={open} onOpenChange={close}>
             <div className="flex bg-[#F7F9FC] rounded-[2rem] z-50 flex-col overflow-hidden border border-gray-100 shadow-2xl max-w-lg w-full mx-auto font-sans">
-                <div className="header bg-white p-8 border-b border-gray-50 text-center">
+                <div className="header bg-white p-6 sm:p-8 border-b border-gray-50 text-center">
                     <div className="flex flex-col items-center mb-4">
                         <div className="w-16 h-16 bg-[#3E4095]/5 rounded-2xl flex items-center justify-center text-[#3E4095] mb-4">
                             <i className="fas fa-envelope-open-text text-3xl"></i>
@@ -41,7 +41,7 @@ export default function EmailVerificationModal({ open, close, currentUserEmail}:
                     </p>
                 </div>
 
-                <div className="p-8">
+                <div className="p-6 sm:p-8">
                     <FormProvider {...form}>
                         <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-8">
                             <div className="flex justify-center py-4">

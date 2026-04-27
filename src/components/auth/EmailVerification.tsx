@@ -34,7 +34,7 @@ export default function EmailVerification() {
         <AuthLayout>
             <div className="flex-1 flex flex-col items-center justify-center p-4 font-sans">
                 <div className="flex bg-[#F7F9FC] rounded-[2.5rem] flex-col overflow-hidden border border-white/20 shadow-2xl max-w-md w-full mx-auto">
-                    <div className="header bg-white p-8 border-b border-gray-50 text-center">
+                    <div className="header bg-white p-6 sm:p-8 border-b border-gray-50 text-center">
                         <div className="flex flex-col items-center mb-4">
                             <div className="w-16 h-16 bg-[#3E4095]/5 rounded-[1.5rem] flex items-center justify-center text-[#3E4095] mb-2 shadow-inner">
                                 <i className="fas fa-envelope-open-text text-3xl"></i>
@@ -46,7 +46,7 @@ export default function EmailVerification() {
                         </p>
                     </div>
 
-                    <div className="p-8">
+                    <div className="p-6 sm:p-8">
                         <FormProvider {...form}>
                             <form onSubmit={form.handleSubmit(onSubmit)} className="flex flex-col gap-6">
                                 <div className="flex justify-center py-2">

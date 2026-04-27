@@ -48,7 +48,7 @@ export default function ForgotPassword() {
             <div className="flex-1 flex flex-col items-center justify-center p-4 font-sans">
                 <div className="flex bg-[#F7F9FC] rounded-[2.5rem] flex-col overflow-hidden border border-white/20 shadow-2xl max-w-md w-full mx-auto">
                     
-                    <div className="bg-white px-8 pt-8 pb-4 border-b border-gray-50 relative">
+                    <div className="bg-white px-6 sm:px-8 pt-8 pb-4 border-b border-gray-50 relative">
                         <div className="flex gap-2 mb-6">
                             {(['forgot', 'reset', 'newPassword', 'done'] as TabType[]).map((t, i) => (
                                 <div 
@@ -107,7 +107,7 @@ export default function ForgotPassword() {
                         </Tabs.Root>
                     </div>
 
-                    <div className="p-8">
+                    <div className="p-6 sm:p-8">
                         <Tabs.Root value={tab} className="w-full">
                             <Tabs.Content value='forgot' className="outline-none">
                                 <FormProvider {...sendEmailForm}>
