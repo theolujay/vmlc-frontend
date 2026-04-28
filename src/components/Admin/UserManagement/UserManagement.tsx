@@ -16,6 +16,7 @@ import AdminHeader from '../AdminHeader'
 import { FilterIcon, SortIcon, UserManagementIcon, CandidateIcon } from '../AdminIcons'
 import { DoughnutChart } from '../Charts/ProgressRing'
 import ProfileModal from '@/components/Modals/ProfileModal'
+import ExportModal from '@/components/Modals/ExportModal'
 import { useState, Dispatch, SetStateAction, useMemo } from 'react'
 import usePagination from '@/hooks/usePagination'
 import TablePagination from '@/components/ui/Pagination/TablePagination'
@@ -32,6 +33,7 @@ export default function UserManagement() {
     const { data: accountMgt, isPending: isAccountMgtPending } = useGetAccountMgt();
     const userRole = accountMgt?.role;
     const isVolunteer = userRole === 'volunteer';
+    const canExport = userRole === 'manager' || userRole === 'superadmin';
 
     const pathName = usePathname();
     const searchParams = useSearchParams()
@@ -44,6 +46,7 @@ export default function UserManagement() {
     const { data } = useListUserMgt(page, filters, !isVolunteer)
     const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
     const [profileOpen, setProfileOpen] = useState(false);
+    const [exportOpen, setExportOpen] = useState(false);
 
     const profile = filters.profile || 'candidate';
 
@@ -105,7 +108,7 @@ export default function UserManagement() {
 
     return (
         <div className='flex flex-col gap-4 font-sans pb-10'>
-            <AdminHeader isExport label='User Mgt.' actionButton={<Button onClick={addStaffMember} className="inline-flex gap-2 bg-[#3E4095] text-white hover:bg-[#3E4095]/90 px-4 py-2 rounded-xl items-center text-xs font-black tracking-widest uppercase shadow-lg shadow-[#3E4095]/20 transition-all active:scale-95"><span><AddIcon /></span><span>ADD STAFF</span></Button>} />
+            <AdminHeader isExport={canExport} label='User Mgt.' onExport={() => canExport && setExportOpen(true)} actionButton={<Button onClick={addStaffMember} className="inline-flex gap-2 bg-[#3E4095] text-white hover:bg-[#3E4095]/90 px-4 py-2 rounded-xl items-center text-xs font-black tracking-widest uppercase shadow-lg shadow-[#3E4095]/20 transition-all active:scale-95"><span><AddIcon /></span><span>ADD STAFF</span></Button>} />
 
             <div className="flex flex-col gap-6 mt-4 px-4 md:px-10">
                 {activeNotifications.length > 0 && (
@@ -144,6 +147,13 @@ export default function UserManagement() {
                     isOwnProfile={false}
                 />
             )}
+
+            <ExportModal
+                open={exportOpen}
+                close={setExportOpen}
+                filters={filters}
+                currentProfile={profile}
+            />
         </div>
     )
 }
@@ -247,14 +257,31 @@ function UserHistoryTable({
 }) {
   const { searchInput, setSearchInput } = useDebouncedSearch(handleSearch);
 
-  const handleSort = (sortKey: string) => {
-    setFilters(prev => ({ ...prev, ordering: sortKey }));
-  };
+  const currentSort = filters.ordering || '';
+  const sortDirection = currentSort.startsWith('-') ? 'desc' : 'asc';
+  const sortKey = currentSort.replace('-', '');
+
+  const hasActiveFilters = !!(filters.role || filters.current_class || filters.state || filters.school_name);
+  const activeFiltersCount = [filters.role, filters.current_class, filters.state, filters.school_name].filter(Boolean).length;
 
   const handleFilterChange = (key: string, value: string) => {
     setFilters(prev => ({ ...prev, [key]: value }));
     onPageChange(1);
   };
+
+  const handleResetFilters = () => {
+    setFilters({ profile });
+    onPageChange(1);
+  };
+
+  const sortOptions = [
+    { label: 'First Name (A-Z)', key: 'first_name' },
+    { label: 'First Name (Z-A)', key: '-first_name' },
+    { label: 'Date Joined (Oldest)', key: 'date_joined' },
+    { label: 'Date Joined (Recent)', key: '-date_joined' },
+  ];
+
+  const currentSortKey = filters.ordering || '';
 
   const columns = useMemo(() => {
     const baseColumns = [
@@ -319,6 +346,18 @@ function UserHistoryTable({
             );
           },
           align: 'center' as const,
+        },
+        {
+          key: 'phone',
+          header: 'Phone',
+          render: (_: any, row: any) => {
+            const user = 'user' in row && row.user ? row.user : row;
+            return (
+              <div className="text-xs font-medium text-gray-600">
+                {user.phone || 'N/A'}
+              </div>
+            );
+          },
         },
         {
           key: 'joined',
@@ -401,6 +440,14 @@ function UserHistoryTable({
           },
         },
         {
+          key: 'phone',
+          header: 'Phone',
+          render: (_: any, row: any) => {
+            const user = 'user' in row && row.user ? row.user : row;
+            return <div className="text-sm font-medium text-gray-600">{user.phone || 'N/A'}</div>;
+          },
+        },
+        {
           key: 'occupation',
           header: 'Occupation',
           render: (_: any, row: any) => (
@@ -457,7 +504,7 @@ function UserHistoryTable({
       <div className="flex flex-col p-6 bg-white border-b border-gray-50">
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="flex flex-col">
-            <h2 className="text-xl font-black text-gray-800 tracking-tight uppercase">User</h2>
+            <h2 className="text-xl font-black text-gray-800 tracking-tight uppercase">Users</h2>
             <p className="text-[10px] text-gray-500 font-medium mt-0.5 tracking-wide uppercase">Manage profiles</p>
           </div>
 
@@ -496,46 +543,58 @@ function UserHistoryTable({
           <div className="flex gap-2 w-full sm:w-auto">
             <DropdownMenu.Root>
               <DropdownMenu.Trigger asChild>
-                <button className="flex-1 sm:flex-none inline-flex items-center justify-center gap-2 bg-white border border-gray-200 h-11 px-5 rounded-xl text-[10px] font-black uppercase tracking-widest text-gray-600 hover:bg-gray-50 transition-all active:scale-95">
+                <button className={clsx(
+                  "flex-1 sm:flex-none inline-flex items-center justify-center gap-2 bg-white border border-gray-200 h-11 px-5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all active:scale-95",
+                  currentSortKey ? "text-[#3E4095] border-[#3E4095]/40 bg-[#3E4095]/5" : "text-gray-600 hover:bg-gray-50"
+                )}>
                   <SortIcon />
                   <span>Sort</span>
                 </button>
               </DropdownMenu.Trigger>
               <DropdownMenu.Portal>
-                <DropdownMenu.Content className="z-50 min-w-50 bg-white rounded-xl p-2 shadow-2xl border border-gray-100 animate-in fade-in zoom-in-95 duration-200" sideOffset={8} align="end">
-                  <DropdownMenu.Label className="px-3 py-2 text-[9px] font-black text-gray-400 uppercase tracking-[0.2em] border-b border-gray-50 mb-1">Ordering Options</DropdownMenu.Label>
-                  <DropdownMenu.Item onClick={() => handleSort('first_name')} className="px-3 py-2.5 text-xs font-bold text-gray-700 outline-none cursor-pointer hover:bg-gray-50 rounded-lg flex items-center justify-between group">
-                    <span>First Name (A-Z)</span>
-                    <i className="fas fa-sort-alpha-down opacity-0 group-hover:opacity-100 transition-opacity"></i>
-                  </DropdownMenu.Item>
-                  <DropdownMenu.Item onClick={() => handleSort('-first_name')} className="px-3 py-2.5 text-xs font-bold text-gray-700 outline-none cursor-pointer hover:bg-gray-50 rounded-lg flex items-center justify-between group">
-                    <span>First Name (Z-A)</span>
-                    <i className="fas fa-sort-alpha-up opacity-0 group-hover:opacity-100 transition-opacity"></i>
-                  </DropdownMenu.Item>
-                  <DropdownMenu.Item onClick={() => handleSort('-date_joined')} className="px-3 py-2.5 text-xs font-bold text-gray-700 outline-none cursor-pointer hover:bg-gray-50 rounded-lg flex items-center justify-between group">
-                    <span>Recently Joined</span>
-                    <i className="fas fa-calendar-alt opacity-0 group-hover:opacity-100 transition-opacity"></i>
-                  </DropdownMenu.Item>
+                <DropdownMenu.Content className="z-50 min-w-44 bg-white rounded-2xl p-2 shadow-2xl border border-gray-50 animate-in fade-in zoom-in-95 duration-200" sideOffset={8} align="end">
+                  <DropdownMenu.Label className="px-3 py-2 text-[9px] font-black text-gray-400 uppercase tracking-[0.2em] border-b border-gray-50 mb-1">Sort By</DropdownMenu.Label>
+                  {sortOptions.map((option) => (
+                    <DropdownMenu.Item
+                      key={option.key}
+                      onClick={() => setFilters(prev => ({ ...prev, ordering: option.key }))}
+                      className={clsx(
+                        "px-3 py-2.5 rounded-xl text-xs font-bold outline-none cursor-pointer transition-colors flex items-center justify-between",
+                        currentSortKey === option.key ? "bg-blue-50 text-[#3E4095]" : "text-gray-600 hover:bg-gray-50"
+                      )}
+                    >
+                      <span>{option.label}</span>
+                      {currentSortKey === option.key && (
+                        <i className="fas fa-check text-[10px]"></i>
+                      )}
+                    </DropdownMenu.Item>
+                  ))}
                 </DropdownMenu.Content>
               </DropdownMenu.Portal>
             </DropdownMenu.Root>
 
             <DropdownMenu.Root>
               <DropdownMenu.Trigger asChild>
-                <button className="flex-1 sm:flex-none inline-flex items-center justify-center gap-2 bg-white border border-gray-200 h-11 px-5 rounded-xl text-[10px] font-black uppercase tracking-widest text-gray-600 hover:bg-gray-50 transition-all active:scale-95">
+                <button className={clsx(
+                  "flex-1 sm:flex-none inline-flex items-center justify-center gap-2 bg-white border h-11 px-5 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all active:scale-95",
+                  hasActiveFilters
+                    ? "border-[#3E4095]/40 text-[#3E4095] bg-[#3E4095]/5"
+                    : "border-gray-200 text-gray-600 hover:bg-gray-50"
+                )}>
                   <FilterIcon />
                   <span>Filter</span>
+                  {activeFiltersCount > 0 && <span className="ml-1">({activeFiltersCount})</span>}
                 </button>
               </DropdownMenu.Trigger>
               <DropdownMenu.Portal>
-                <DropdownMenu.Content className="z-50 min-w-60 bg-white rounded-xl p-4 shadow-2xl border border-gray-100 animate-in fade-in zoom-in-95 duration-200" sideOffset={8} align="end">
+                <DropdownMenu.Content className="z-50 min-w-55 bg-white rounded-2xl p-3 shadow-2xl border border-gray-50 animate-in fade-in zoom-in-95 duration-200" sideOffset={8} align="end">
                   <div className="flex flex-col gap-4">
                     <div className="flex flex-col gap-1.5">
-                      <label className="text-[9px] font-black text-gray-400 uppercase tracking-widest">Role</label>
+                      <label className="px-1 text-[9px] font-black text-gray-400 uppercase tracking-[0.2em]">Role</label>
                       <select
                         value={filters.role || ''}
                         onChange={(e) => handleFilterChange('role', e.target.value)}
-                        className="bg-gray-50 border border-gray-100 rounded-lg px-3 py-2.5 text-xs font-bold outline-none focus:border-[#3E4095] transition-all cursor-pointer"
+                        className="w-full bg-gray-50 border-none rounded-xl px-3 py-2 text-xs font-bold text-gray-700 outline-none focus:ring-2 focus:ring-blue-100 transition-all cursor-pointer"
                       >
                         <option value="">All</option>
                         {profile === 'staff' ? (
@@ -558,29 +617,54 @@ function UserHistoryTable({
                     </div>
 
                     {profile === 'candidate' && (
-                      <div className="flex flex-col gap-1.5">
-                        <label className="text-[9px] font-black text-gray-400 uppercase tracking-widest">Class</label>
-                        <select
-                          value={filters.current_class || ''}
-                          onChange={(e) => handleFilterChange('current_class', e.target.value)}
-                          className="bg-gray-50 border border-gray-100 rounded-lg px-3 py-2.5 text-xs font-bold outline-none focus:border-[#3E4095] transition-all cursor-pointer"
-                        >
-                          <option value="">All</option>
-                          <option value="SS1">SS1</option>
-                          <option value="SS2">SS2</option>
-                          <option value="SS3">SS3</option>
-                        </select>
-                      </div>
+                      <>
+                        <div className="flex flex-col gap-1.5">
+                          <label className="px-1 text-[9px] font-black text-gray-400 uppercase tracking-[0.2em]">Class</label>
+                          <select
+                            value={filters.current_class || ''}
+                            onChange={(e) => handleFilterChange('current_class', e.target.value)}
+                            className="w-full bg-gray-50 border-none rounded-xl px-3 py-2 text-xs font-bold text-gray-700 outline-none focus:ring-2 focus:ring-blue-100 transition-all cursor-pointer"
+                          >
+                            <option value="">All</option>
+                            <option value="SS1">SS1</option>
+                            <option value="SS2">SS2</option>
+                            <option value="SS3">SS3</option>
+                          </select>
+                        </div>
+
+                        <div className="flex flex-col gap-1.5">
+                          <label className="px-1 text-[9px] font-black text-gray-400 uppercase tracking-[0.2em]">State</label>
+                          <select
+                            value={filters.state || ''}
+                            onChange={(e) => handleFilterChange('state', e.target.value)}
+                            className="w-full bg-gray-50 border-none rounded-xl px-3 py-2 text-xs font-bold text-gray-700 outline-none focus:ring-2 focus:ring-blue-100 transition-all cursor-pointer"
+                          >
+                            <option value="">All</option>
+                            <option value="Abuja">Abuja</option>
+                            <option value="Lagos">Lagos</option>
+                            <option value="Ogun">Ogun</option>
+                            <option value="Rivers">Rivers</option>
+                          </select>
+                        </div>
+
+                        <div className="flex flex-col gap-1.5">
+                          <label className="px-1 text-[9px] font-black text-gray-400 uppercase tracking-[0.2em]">School</label>
+                          <input
+                            type="text"
+                            placeholder="Search school..."
+                            value={filters.school_name || ''}
+                            onChange={(e) => handleFilterChange('school_name', e.target.value)}
+                            className="w-full bg-gray-50 border-none rounded-xl px-3 py-2 text-xs font-bold text-gray-700 outline-none focus:ring-2 focus:ring-blue-100 transition-all"
+                          />
+                        </div>
+                      </>
                     )}
 
                     <button
-                      onClick={() => {
-                        setFilters({ profile });
-                        onPageChange(1);
-                      }}
-                      className="mt-2 py-2 px-3 rounded-lg bg-red-50 text-[10px] font-black text-red-600 uppercase tracking-widest hover:bg-red-100 transition-colors w-full"
+                      onClick={handleResetFilters}
+                      className="w-full mt-1 py-2 text-[9px] font-black text-red-500 uppercase tracking-widest hover:bg-red-50 rounded-lg transition-colors"
                     >
-                      Reset All Filters
+                      Reset Filters
                     </button>
                   </div>
                 </DropdownMenu.Content>

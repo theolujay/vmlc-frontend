@@ -5,11 +5,7 @@ import { DownloadIcon } from "./AdminIcons";
 import { ReactNode } from "react";
 import { useRouter } from "next/navigation";
 
-
-
-
-
-export default function AdminHeader({ label, actionButton, isExport = false, backUrl }: { label: string, actionButton?: ReactNode | ReactNode[], isExport?: boolean, backUrl?: string }) {
+export default function AdminHeader({ label, actionButton, isExport = false, backUrl, onExport }: { label: string, actionButton?: ReactNode | ReactNode[], isExport?: boolean, backUrl?: string, onExport?: () => void }) {
 
     const router = useRouter();
 
@@ -18,6 +14,12 @@ export default function AdminHeader({ label, actionButton, isExport = false, bac
             router.push(backUrl);
         } else {
             router.back();
+        }
+    };
+
+    const handleExportClick = () => {
+        if (onExport) {
+            onExport();
         }
     };
 
@@ -35,11 +37,9 @@ export default function AdminHeader({ label, actionButton, isExport = false, bac
         <div className="flex gap-2 items-center flex-wrap justify-end">
             {
                 isExport &&
-                <ExportButton className="inline-flex gap-2 border px-2 items-center"><span><DownloadIcon /></span><span>EXPORT</span></ExportButton>
+                <ExportButton onClick={handleExportClick} className="inline-flex gap-2 border px-2 items-center"><span><DownloadIcon /></span><span>EXPORT</span></ExportButton>
             }
             {Array.isArray(actionButton) ? actionButton.map((button, index) => <span key={index}>{button}</span>) : actionButton}
-            {/* {actionButton} */}
-            {/* <Button className='px-2 text-sm'>CREATE EXAM SESSION</Button> */}
         </div>
 
     </div>
