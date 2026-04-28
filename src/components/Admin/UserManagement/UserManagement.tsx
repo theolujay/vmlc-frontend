@@ -17,6 +17,8 @@ import { FilterIcon, SortIcon, UserManagementIcon, CandidateIcon } from '../Admi
 import { DoughnutChart } from '../Charts/ProgressRing'
 import ProfileModal from '@/components/Modals/ProfileModal'
 import ExportModal from '@/components/Modals/ExportModal'
+import ImportModal from '@/components/Modals/ImportModal'
+import BulkNotificationModal from '@/components/Modals/BulkNotificationModal'
 import { useState, Dispatch, SetStateAction, useMemo } from 'react'
 import usePagination from '@/hooks/usePagination'
 import TablePagination from '@/components/ui/Pagination/TablePagination'
@@ -47,12 +49,33 @@ export default function UserManagement() {
     const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
     const [profileOpen, setProfileOpen] = useState(false);
     const [exportOpen, setExportOpen] = useState(false);
+    const [importOpen, setImportOpen] = useState(false);
+    const [bulkNotificationOpen, setBulkNotificationOpen] = useState(false);
+    const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
 
     const profile = filters.profile || 'candidate';
 
     const setProfile = (newProfile: string) => {
         setFilters({ profile: newProfile });
         setPage(1);
+        setSelectedUsers([]);
+    };
+
+    const toggleUserSelection = (userId: string) => {
+        setSelectedUsers(prev =>
+            prev.includes(userId)
+                ? prev.filter(id => id !== userId)
+                : [...prev, userId]
+        );
+    };
+
+    const selectAllUsers = () => {
+        const allIds = data?.results?.map((u: any) => u.user?.id || u.id) || [];
+        setSelectedUsers(allIds);
+    };
+
+    const clearSelection = () => {
+        setSelectedUsers([]);
     };
 
     const overview = data?.stats_overview;
@@ -108,7 +131,14 @@ export default function UserManagement() {
 
     return (
         <div className='flex flex-col gap-4 font-sans pb-10'>
-            <AdminHeader isExport={canExport} label='User Mgt.' onExport={() => canExport && setExportOpen(true)} actionButton={<Button onClick={addStaffMember} className="inline-flex gap-2 bg-[#3E4095] text-white hover:bg-[#3E4095]/90 px-4 py-2 rounded-xl items-center text-xs font-black tracking-widest uppercase shadow-lg shadow-[#3E4095]/20 transition-all active:scale-95"><span><AddIcon /></span><span>ADD STAFF</span></Button>} />
+            <AdminHeader
+                isExport={canExport}
+                onExport={() => canExport && setExportOpen(true)}
+                isImport
+                onImport={() => setImportOpen(true)}
+                label='User Mgt.'
+                otherButtons={<Button onClick={addStaffMember} pendingState="bg-white border border-gray-200 text-gray-700 hover:bg-gray-50" className="inline-flex gap-2 px-4 py-2 rounded-xl items-center text-[10px] font-black uppercase tracking-[0.15em] transition-all duration-200 shadow-sm active:scale-95"><span className="w-4 h-4 flex items-center text-gray-700 justify-center"><AddIcon /></span><span className="hidden text-gray-700 sm:inline">ADD STAFF</span></Button>}
+            />
 
             <div className="flex flex-col gap-6 mt-4 px-4 md:px-10">
                 {activeNotifications.length > 0 && (
@@ -135,6 +165,11 @@ export default function UserManagement() {
                         setFilters={setFilters}
                         hasNext={data?.pagination.has_next}
                         hasPrevious={data?.pagination.has_previous}
+                        selectedUsers={selectedUsers}
+                        toggleUserSelection={toggleUserSelection}
+                        selectAllUsers={selectAllUsers}
+                        clearSelection={clearSelection}
+                        onBulkNotify={() => setBulkNotificationOpen(true)}
                     />
                 </div>
             </div>
@@ -153,6 +188,18 @@ export default function UserManagement() {
                 close={setExportOpen}
                 filters={filters}
                 currentProfile={profile}
+            />
+
+            <BulkNotificationModal
+                open={bulkNotificationOpen}
+                close={setBulkNotificationOpen}
+                selectedUserIds={selectedUsers}
+            />
+
+            <ImportModal
+                open={importOpen}
+                close={setImportOpen}
+                defaultType="candidate"
             />
         </div>
     )
@@ -240,6 +287,11 @@ function UserHistoryTable({
   hasNext,
   hasPrevious,
   pageSize = 20,
+  selectedUsers = [],
+  toggleUserSelection,
+  selectAllUsers,
+  clearSelection,
+  onBulkNotify,
 }: {
   candidates: (MgtItem | MgtItemType)[];
   onViewProfile: (id: string) => void;
@@ -254,6 +306,11 @@ function UserHistoryTable({
   hasNext?: boolean;
   hasPrevious?: boolean;
   pageSize?: number;
+  selectedUsers?: string[];
+  toggleUserSelection?: (id: string) => void;
+  selectAllUsers?: () => void;
+  clearSelection?: () => void;
+  onBulkNotify?: () => void;
 }) {
   const { searchInput, setSearchInput } = useDebouncedSearch(handleSearch);
 
@@ -284,7 +341,27 @@ function UserHistoryTable({
   const currentSortKey = filters.ordering || '';
 
   const columns = useMemo(() => {
+    const allIds = candidates?.map((u: any) => u.user?.id || u.id) || [];
+    const isAllSelected = allIds.length > 0 && allIds.every((id: string) => selectedUsers.includes(id));
+    const isPartialSelected = selectedUsers.length > 0 && !isAllSelected;
+
     const baseColumns = [
+      {
+        key: "select",
+        header: "✓",
+        render: (_: any, row: any) => {
+          const userId = row.user?.id || row.id;
+          return (
+            <input
+              type="checkbox"
+              checked={selectedUsers.includes(userId)}
+              onChange={() => toggleUserSelection?.(userId)}
+              className="w-4 h-4 rounded border-gray-300 text-[#3E4095] focus:ring-[#3E4095]"
+            />
+          );
+        },
+        align: "center" as const,
+      },
       {
         key: "sn",
         header: "S/N",
@@ -497,7 +574,7 @@ function UserHistoryTable({
         },
       ];
     }
-  }, [profile, currentPage, pageSize, onViewProfile]);
+  }, [candidates, selectedUsers, profile, toggleUserSelection, currentPage, pageSize, onViewProfile]);
 
   return (
     <div className="flex flex-col">
@@ -539,6 +616,28 @@ function UserHistoryTable({
               className="w-full bg-gray-50 border border-gray-200 h-11 pl-10 pr-4 rounded-xl text-sm outline-none focus:ring-2 focus:ring-[#3E4095]/10 focus:border-[#3E4095] transition-all"
             />
           </div>
+
+          {selectedUsers && selectedUsers.length > 0 && (
+            <div className="flex gap-2 w-full sm:w-auto">
+              <span className="inline-flex items-center justify-center px-3 py-2 bg-[#3E4095]/10 border border-[#3E4095]/20 rounded-xl text-[10px] font-bold text-[#3E4095]">
+                {selectedUsers.length} selected
+              </span>
+              <button
+                onClick={() => onBulkNotify?.()}
+                className="inline-flex items-center justify-center gap-2 bg-[#3E4095] text-white h-11 px-4 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-[#3E4095]/90 transition-all"
+              >
+                <i className="fas fa-bullhorn text-xs"></i>
+                <span>Notify</span>
+              </button>
+              <button
+                onClick={() => clearSelection?.()}
+                className="inline-flex items-center justify-center gap-2 bg-white border border-gray-200 text-gray-600 h-11 px-3 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-gray-50 transition-all"
+              >
+                <i className="fas fa-times text-xs"></i>
+                <span>Clear</span>
+              </button>
+            </div>
+          )}
 
           <div className="flex gap-2 w-full sm:w-auto">
             <DropdownMenu.Root>
@@ -640,10 +739,10 @@ function UserHistoryTable({
                             className="w-full bg-gray-50 border-none rounded-xl px-3 py-2 text-xs font-bold text-gray-700 outline-none focus:ring-2 focus:ring-blue-100 transition-all cursor-pointer"
                           >
                             <option value="">All</option>
-                            <option value="Abuja">Abuja</option>
                             <option value="Lagos">Lagos</option>
                             <option value="Ogun">Ogun</option>
                             <option value="Rivers">Rivers</option>
+                            <option value="Abuja">Abuja</option>
                           </select>
                         </div>
 
