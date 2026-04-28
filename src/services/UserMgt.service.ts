@@ -200,4 +200,25 @@ export class UserMgtService {
       throw error;
     }
   }
+
+  static async exportUsers(filters?: Record<string, string>): Promise<Blob> {
+    try {
+      const params: Record<string, string> = {};
+      if (filters) {
+        Object.entries(filters).forEach(([key, value]) => {
+          if (value !== undefined && value !== "") {
+            params[key] = value;
+          }
+        });
+      }
+      const queryParams = new URLSearchParams(params).toString();
+      const response = await client.get(UserMgtUrls.exportUsers(queryParams), {
+        responseType: "blob",
+      });
+      return response.data;
+    } catch (error) {
+      console.error(error, "Error exporting users");
+      throw error;
+    }
+  }
 }
