@@ -221,4 +221,42 @@ export class UserMgtService {
       throw error;
     }
   }
+
+  static async sendBulkNotification(payload: {
+    user_ids: string[];
+    subject: string;
+    message: string;
+    medium?: string;
+  }): Promise<{ message: string; broadcast_id: number }> {
+    try {
+      const response = await client.post(UserMgtUrls.bulkNotification, payload);
+      return response.data;
+    } catch (error) {
+      console.error(error, "Error sending bulk notification");
+      throw error;
+    }
+  }
+
+  static async resetUserPassword(userId: string): Promise<{ message: string }> {
+    try {
+      const response = await client.post(UserMgtUrls.resetPassword, { user_id: userId });
+      return response.data;
+    } catch (error) {
+      console.error(error, "Error resetting password");
+      throw error;
+    }
+  }
+
+  static async getUserActivity(userId: string): Promise<{
+    user: { id: string; email: string; first_name: string; last_name: string };
+    activities: { event_name: string; timestamp: string; metadata: Record<string, unknown> }[];
+  }> {
+    try {
+      const response = await client.get(UserMgtUrls.userActivity(userId));
+      return response.data;
+    } catch (error) {
+      console.error(error, "Error fetching user activity");
+      throw error;
+    }
+  }
 }
