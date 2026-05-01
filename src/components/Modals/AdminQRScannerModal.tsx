@@ -37,7 +37,7 @@ const AdminQRScannerModal: React.FC<AdminQRScannerModalProps> = ({ open, onClose
 
                 scanner.render(
                     (decodedText) => {
-                        // Expected format: candidateId:examId:socketId:timestamp
+                        // Expected format: candidateId:examId:socketId
                         const [candidateId, examId, socketId] = decodedText.split(':');
 
                         if (candidateId && examId && socketId) {
@@ -47,7 +47,7 @@ const AdminQRScannerModal: React.FC<AdminQRScannerModalProps> = ({ open, onClose
                             sendAction('exam.unlock_request', {
                                 candidate_id: candidateId,
                                 exam_id: examId,
-                                socket_id: socketId
+                                socket_id: socketId,
                             });
 
                             toast.success('Unlock signal sent to candidate dashboard!');

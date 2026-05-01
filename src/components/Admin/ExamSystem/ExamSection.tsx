@@ -121,7 +121,7 @@ export default function ExamSection() {
               <span>CREATE EXAM</span>
             </button>
           ),
-          isAdminOrAbove && hasOngoingFinal && (
+          isModeratorOrAbove && hasOngoingFinal && (
             <button
                 key="scan-qr"
                 onClick={() => setOpenScanner(true)}

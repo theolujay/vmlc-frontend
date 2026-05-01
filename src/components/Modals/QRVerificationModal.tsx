@@ -13,7 +13,7 @@ interface QRVerificationModalProps {
 
 const QRVerificationModal: React.FC<QRVerificationModalProps> = ({ open, onClose, candidateId, examId }) => {
     const { socketId } = useSocket();
-    const qrValue = `${candidateId}:${examId}:${socketId}:${Date.now()}`;
+    const qrValue = `${candidateId}:${examId}:${socketId}`;
 
     return (
         <Dialog.Root open={open} onOpenChange={onClose}>
