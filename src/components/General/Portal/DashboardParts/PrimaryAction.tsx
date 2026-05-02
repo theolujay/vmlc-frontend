@@ -198,9 +198,7 @@ const PrimaryAction: React.FC<PrimaryActionProps> = ({ exam, isRankingAvailable 
           {formatExamTitle(exam.title)}
         </h2>
         <p className="text-grey-500 mt-2 text-[11px] italic leading-relaxed">
-          {isFinals
-            ? "This is an in-person examination. Please ensure you have reviewed the venue logistics and have your identification ready."
-            : isAwaitingResults
+          {isAwaitingResults
               ? "Currently processing the results... Please check back soon."
               : (exam.description || "")}
         </p>

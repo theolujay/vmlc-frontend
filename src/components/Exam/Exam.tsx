@@ -15,6 +15,8 @@ import HelpdeskButton from "../General/Portal/DashboardParts/HelpdeskButton";
 import useGetCurrentUser from "@/hooks/useGetCurrentUser";
 import clsx from "clsx";
 import { AxiosError } from "axios";
+import { getSavedAnswers } from "@/services/ExamAutoSave";
+import useAutoSaveAnswers from "@/hooks/useAutoSaveAnswers";
 
 // Local types for shuffling logic
 interface ShuffledTakeExamQuestionType extends TakeExamQuestionType {
@@ -41,6 +43,8 @@ export default function Exam() {
   const [answers, setAnswers] = useState<Record<number, string>>({});
   const { onSubmit, isPending: submitPending } = useSubmitAnswers(examId);
   const [isLoaded, setIsLoaded] = useState(false);
+  const [isFetchingSaved, setIsFetchingSaved] = useState(false);
+  const { autoSave, forceSave } = useAutoSaveAnswers(examId);
 
   const {
     reportViolation,
@@ -74,15 +78,15 @@ export default function Exam() {
         return;
       }
 
-      // Check concluded exams
-      const isConcludedHistory = dashboardData.exam_history?.some(
-        (e) => e.exam_id === examId,
-      );
-      if (isConcludedHistory) {
-        toast.info("This examination has already been concluded.");
-        router.push("/exam-portal");
-        return;
-      }
+      // // Check concluded exams
+      // const isConcludedHistory = dashboardData.exam_history?.some(
+      //   (e) => e.exam_id === examId,
+      // );
+      // if (isConcludedHistory) {
+      //   toast.info("This examination has already been concluded.");
+      //   router.push("/exam-portal");
+      //   return;
+      // }
     }
   }, [dashboardData, dashboardPending, examId, router, isError]);
 
@@ -171,6 +175,9 @@ export default function Exam() {
       ] || displayedOption;
 
     setAnswers((prev) => ({ ...prev, [questionId]: originalOption }));
+
+    // Auto-save to backend
+    autoSave({ question_id: questionId, selected_option: originalOption });
   };
 
   // Map original answers back to displayed answers for the UI
@@ -196,13 +203,54 @@ export default function Exam() {
 
   useEffect(() => {
     if (examId) {
+      setIsFetchingSaved(true);
+
       const savedAnswers = localStorage.getItem(`exam_answers_${examId}`);
+      let localAnswers: Record<number, string> = {};
       if (savedAnswers) {
-        setAnswers(JSON.parse(savedAnswers));
+        try {
+          localAnswers = JSON.parse(savedAnswers);
+        } catch {
+          console.error("Corrupted localStorage answers, using empty state.");
+        }
       }
-      setIsLoaded(true);
+
+      getSavedAnswers(examId)
+        .then((response) => {
+          const serverAnswers = response.answers || [];
+
+          const mergedAnswers = { ...localAnswers };
+          serverAnswers.forEach((sa: { question_id: number; selected_option: string }) => {
+            if (sa.selected_option) {
+              mergedAnswers[sa.question_id] = sa.selected_option;
+            }
+          });
+
+          setAnswers(mergedAnswers);
+          if (Object.keys(mergedAnswers).length > 0) {
+            localStorage.setItem(`exam_answers_${examId}`, JSON.stringify(mergedAnswers));
+          }
+        })
+        .catch((err) => {
+          console.error("Failed to fetch saved answers:", err);
+          if (Object.keys(localAnswers).length > 0) {
+            setAnswers(localAnswers);
+          }
+        })
+        .finally(() => {
+          setIsLoaded(true);
+          setIsFetchingSaved(false);
+        });
     }
   }, [examId]);
+
+  useEffect(() => {
+    const handleBeforeUnload = () => {
+      void forceSave();
+    };
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    return () => window.removeEventListener("beforeunload", handleBeforeUnload);
+  }, [forceSave]);
 
   useEffect(() => {
     if (examId && isLoaded) {
@@ -212,6 +260,9 @@ export default function Exam() {
 
   async function handleSubmit(isAutoSubmit: boolean = false) {
     try {
+      // Force save any pending answers before submitting
+      await forceSave();
+
       const formattedAnswers = {
         is_auto_submit: isAutoSubmit,
         answers: Object.entries(answers).map(([questionId, selected_option]) => ({
@@ -288,7 +339,7 @@ export default function Exam() {
     }
   }
 
-  if (dashboardPending || (examStarted && isPending)) {
+  if (dashboardPending || (examStarted && isPending) || isFetchingSaved) {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#3E4095]"></div>

@@ -17,6 +17,8 @@ import { ExamTakenType, RecordsType } from "@/types/CandidateType"
 import { type UserProfileType } from "@/types/UserMgtType"
 import { useForm, type UseFormRegister } from "react-hook-form"
 import { useAuth } from "@/contexts/AuthProvider"
+import useResetPassword from "@/hooks/useResetPassword"
+import { toast } from "react-toastify"
 
 type TabType = 'Profile' | 'Activities' | 'Scores' | 'Actions'
 
@@ -45,6 +47,8 @@ export default function ProfileModal({
 }: Readonly<{ id: string; open: boolean; close: (open: boolean) => void; isOwnProfile?: boolean }>) {
   const [activeTab, setActiveTab] = useState<TabType>('Profile')
   const [isEditing, setIsEditing] = useState(false)
+  const [showResetConfirm, setShowResetConfirm] = useState(false)
+  const [resetSuccess, setResetSuccess] = useState(false)
 
   const { authState, dispatch } = useAuth()
   const { data: otherAccountData, isPending: otherAccountPending } = useGetAccountDetails(id, !isOwnProfile && !!id)
@@ -62,6 +66,7 @@ export default function ProfileModal({
 
   const { data: candidateData, isPending: candidatePending } = useGetCandidateDetails(id, !isOwnProfile && !!isCandidate && !!id)
   const { mutate: updateProfile, isPending: updatePending } = useUpdateProfile()
+  const { resetPassword, isPending: resetPending } = useResetPassword()
 
   const isPending = accountPending || (!isOwnProfile && isCandidate && candidatePending)
 
@@ -135,13 +140,14 @@ export default function ProfileModal({
     if (isCandidate) {
       tabs.push({ id: 'Activities', label: 'Activities', icon: <ActivitiesIcon /> })
       tabs.push({ id: 'Scores', label: 'Scores', icon: <ScoresIcon /> })
+      tabs.push({ id: 'Actions', label: 'Actions', icon: <ActionsIcon /> })
     } else {
       tabs.push({ id: 'Actions', label: 'Actions', icon: <ActionsIcon /> })
     }
   }
 
   return (
-    <AppDialog open={open} className="!max-w-5xl !w-auto !p-0 bg-transparent shadow-none">
+    <AppDialog open={open} className="max-w-5xl! w-auto! p-0! bg-transparent shadow-none">
       <div className="flex flex-col bg-[#F7F9FC] w-[95vw] md:w-[80vw] lg:w-[70vw] xl:w-[60vw] h-[85vh] rounded-2xl overflow-hidden shadow-2xl relative font-sans">
 
         {/* Header */}
@@ -312,14 +318,14 @@ export default function ProfileModal({
                                     disabled={updatePending}
                                     className="px-8 py-2 rounded-xl bg-[#3E4095] text-white text-[10px] font-black uppercase tracking-widest shadow-lg shadow-[#3E4095]/20 hover:-translate-y-0.5 transition-all cursor-pointer flex items-center gap-2"
                                 >
-                                    {updatePending ? <Spinner className="!w-3 !h-3 !border-2" /> : <i className="fas fa-check"></i>}
+                                    {updatePending ? <Spinner className="w-3! h-3! border-2!" /> : <i className="fas fa-check"></i>}
                                     <span>Save Changes</span>
                                 </button>
                             </div>
                         )}
                     </div>
 
-                    <div className="relative rounded-3xl p-1 bg-gradient-to-tr from-[#3E4095] to-[#01ACEA] shadow-xl shadow-[#3E4095]/20 group">
+                    <div className="relative rounded-3xl p-1 bg-linear-to-tr from-[#3E4095] to-[#01ACEA] shadow-xl shadow-[#3E4095]/20 group">
                         <div className="bg-white rounded-[22px] p-8 h-full flex flex-col items-center justify-center gap-6 relative overflow-hidden">
                             <div className="relative">
                                 <div className="w-32 h-32 rounded-3xl bg-gray-50 border-4 border-white shadow-lg overflow-hidden flex items-center justify-center text-[#3E4095] text-4xl font-black relative">
@@ -369,9 +375,20 @@ export default function ProfileModal({
                 </div>
               )}
 
-              {activeTab === 'Actions' && !isCandidate && !isOwnProfile && (
+              {activeTab === 'Actions' && !isOwnProfile && (
                 <div className="max-w-5xl mx-auto animate-in fade-in slide-in-from-bottom-2 duration-300">
-                   <ActionsComponent />
+                   <ActionsComponent
+                     userId={id}
+                     userEmail={user?.email || ''}
+                     userName={userName}
+currentUserRole={authState?.profile?.role || ''}
+                      resetPassword={resetPassword}
+                      resetPending={resetPending}
+                      showResetConfirm={showResetConfirm}
+                      setShowResetConfirm={setShowResetConfirm}
+                      resetSuccess={resetSuccess}
+                      setResetSuccess={setResetSuccess}
+                    />
                 </div>
               )}
             </form>
@@ -421,7 +438,7 @@ function InfoItem({ label, value, onEdit }: { label: string, value: string, onEd
     <div className="flex items-start justify-between group/info">
       <div className="space-y-1">
         <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">{label}</p>
-        <p className="text-sm font-bold text-gray-800 break-words">{value}</p>
+        <p className="text-sm font-bold text-gray-800 wrap-break-word">{value}</p>
       </div>
       {onEdit && (
         <button
@@ -620,6 +637,129 @@ function StatMiniCard({ label, value, color = "text-gray-800" }: { label: string
     )
 }
 
-function ActionsComponent() {
-    return <EmptySession desc="Any actions or administrative history for this staff member will appear here." label="No Recent Actions" />
+function ActionsComponent({
+  userId,
+  userEmail,
+  userName,
+  currentUserRole,
+  resetPassword,
+  resetPending,
+  showResetConfirm,
+  setShowResetConfirm,
+  resetSuccess,
+  setResetSuccess,
+}: {
+  userId: string
+  userEmail: string
+  userName: string
+  currentUserRole: string
+  resetPassword: (userId: string) => Promise<{ message: string }>
+  resetPending: boolean
+  showResetConfirm: boolean
+  setShowResetConfirm: (show: boolean) => void
+  resetSuccess: boolean
+  setResetSuccess: (success: boolean) => void
+}) {
+  const canResetPassword = currentUserRole === 'manager' || currentUserRole === 'superadmin'
+
+  const handleResetPassword = async () => {
+    try {
+      await resetPassword(userId)
+      setResetSuccess(true)
+      setShowResetConfirm(false)
+      toast.success(`Password reset successfully for ${userEmail}`)
+    } catch {
+      toast.error('Failed to reset password. Please try again.')
+    }
+  }
+
+  if (resetSuccess) {
+    return (
+      <div className="bg-green-50 border border-green-100 rounded-2xl p-8 text-center">
+        <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+          <i className="fas fa-check text-green-500 text-2xl"></i>
+        </div>
+        <h3 className="text-lg font-bold text-green-700 mb-2">Password Reset Successful</h3>
+        <p className="text-sm text-green-600 mb-4">
+          A temporary password has been sent to {userEmail}
+        </p>
+        <button
+          onClick={() => setResetSuccess(false)}
+          className="px-6 py-2 bg-green-500 text-white rounded-xl font-bold text-xs uppercase tracking-widest hover:bg-green-600 transition-all"
+        >
+          Done
+        </button>
+      </div>
+    )
+  }
+
+  return (
+    <div className="space-y-6">
+      {canResetPassword && (
+        <div className="bg-white border border-gray-100 rounded-2xl p-6">
+          <h3 className="text-sm font-black text-gray-800 uppercase tracking-widest mb-4">Security Actions</h3>
+
+          <div className="flex items-center justify-between p-4 bg-gray-50 rounded-xl">
+            <div className="flex items-center gap-4">
+              <div className="w-10 h-10 bg-red-50 rounded-xl flex items-center justify-center text-red-500">
+                <i className="fas fa-key"></i>
+              </div>
+              <div>
+                <p className="text-sm font-bold text-gray-800">Reset Password</p>
+                <p className="text-xs text-gray-500">Send a temporary password via email</p>
+              </div>
+            </div>
+            <button
+              onClick={() => setShowResetConfirm(true)}
+              className="px-4 py-2 bg-red-50 text-red-600 rounded-xl font-bold text-xs uppercase tracking-widest hover:bg-red-100 transition-all"
+            >
+              Reset
+            </button>
+          </div>
+        </div>
+      )}
+
+      {showResetConfirm && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-gray-900/60 backdrop-blur-md animate-in fade-in duration-200">
+          <div className="bg-white p-8 rounded-3xl shadow-2xl max-w-sm w-full mx-4 animate-in zoom-in-95 duration-200">
+            <div className="w-16 h-16 bg-red-50 text-red-500 rounded-2xl flex items-center justify-center mx-auto mb-6">
+              <i className="fas fa-key text-2xl"></i>
+            </div>
+            <h3 className="text-xl font-bold text-gray-800 mb-2 text-center">Reset Password?</h3>
+            <p className="text-sm text-gray-500 mb-6 text-center">
+              This will send a temporary password to <br/>
+              <span className="font-bold text-gray-700">{userEmail}</span>
+            </p>
+            <div className="flex flex-col space-y-3">
+              <button
+                onClick={handleResetPassword}
+                disabled={resetPending}
+                className="w-full py-4 bg-red-500 text-white rounded-xl font-bold text-xs uppercase tracking-widest hover:bg-red-600 transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+              >
+                {resetPending ? (
+                  <>
+                    <i className="fas fa-circle-notch animate-spin text-sm"></i>
+                    Resetting...
+                  </>
+                ) : (
+                  'Confirm Reset'
+                )}
+              </button>
+              <button
+                onClick={() => setShowResetConfirm(false)}
+                className="w-full py-4 bg-gray-50 text-gray-400 rounded-xl font-bold text-xs uppercase tracking-widest hover:bg-gray-100 transition-all"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      <div className="bg-gray-50 border border-gray-100 rounded-2xl p-6">
+        <h3 className="text-sm font-black text-gray-400 uppercase tracking-widest mb-4">Recent Activity</h3>
+        <p className="text-xs text-gray-400 text-center py-8">No recent actions</p>
+      </div>
+    </div>
+  )
 }

@@ -5,11 +5,25 @@ import { DownloadIcon } from "./AdminIcons";
 import { ReactNode } from "react";
 import { useRouter } from "next/navigation";
 
-
-
-
-
-export default function AdminHeader({ label, actionButton, isExport = false, backUrl }: { label: string, actionButton?: ReactNode | ReactNode[], isExport?: boolean, backUrl?: string }) {
+export default function AdminHeader({ 
+    label, 
+    actionButton, 
+    isExport = false, 
+    backUrl, 
+    onExport,
+    isImport = false,
+    onImport,
+    otherButtons,
+}: { 
+    label: string, 
+    actionButton?: ReactNode | ReactNode[], 
+    isExport?: boolean, 
+    backUrl?: string, 
+    onExport?: () => void,
+    isImport?: boolean,
+    onImport?: () => void,
+    otherButtons?: ReactNode | ReactNode[],
+}) {
 
     const router = useRouter();
 
@@ -33,13 +47,20 @@ export default function AdminHeader({ label, actionButton, isExport = false, bac
 
         </div>
         <div className="flex gap-2 items-center flex-wrap justify-end">
-            {
-                isExport &&
-                <ExportButton className="inline-flex gap-2 border px-2 items-center"><span><DownloadIcon /></span><span>EXPORT</span></ExportButton>
-            }
+            {isImport && onImport && (
+                <ExportButton onClick={onImport}>
+                    <span className="w-4 h-4 flex items-center justify-center"><i className="fas fa-file-import"></i></span>
+                    <span>IMPORT</span>
+                </ExportButton>
+            )}
+            {isExport && onExport && (
+                <ExportButton onClick={onExport}>
+                    <span className="w-4 h-4 flex items-center justify-center"><DownloadIcon /></span>
+                    <span>EXPORT</span>
+                </ExportButton>
+            )}
             {Array.isArray(actionButton) ? actionButton.map((button, index) => <span key={index}>{button}</span>) : actionButton}
-            {/* {actionButton} */}
-            {/* <Button className='px-2 text-sm'>CREATE EXAM SESSION</Button> */}
+            {Array.isArray(otherButtons) ? otherButtons.map((button, index) => <span key={`other-${index}`}>{button}</span>) : otherButtons}
         </div>
 
     </div>

@@ -1,6 +1,6 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef } from 'react';
 import * as Dialog from '@radix-ui/react-dialog';
-import { Html5QrcodeScanner } from 'html5-qrcode';
+import { Html5Qrcode } from 'html5-qrcode';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useSocket } from '@/contexts/SocketProvider';
 import { toast } from 'react-toastify';
@@ -12,65 +12,80 @@ interface AdminQRScannerModalProps {
 
 const AdminQRScannerModal: React.FC<AdminQRScannerModalProps> = ({ open, onClose }) => {
     const { sendAction } = useSocket();
-    const [isScanning, setIsScanning] = useState(true);
-    const scannerRef = useRef<Html5QrcodeScanner | null>(null);
+    const html5QrCodeRef = useRef<Html5Qrcode | null>(null);
+    const hasProcessedRef = useRef(false);
 
     useEffect(() => {
-        let scanner: Html5QrcodeScanner | null = null;
+        if (!open) return;
 
-        if (open && isScanning) {
-            // Delay initialization to ensure the DOM node is rendered within the Radix Portal
-            const timer = setTimeout(() => {
-                scanner = new Html5QrcodeScanner(
-                    'qr-reader',
-                    { 
-                        fps: 10, 
-                        qrbox: { width: 250, height: 250 },
-                        rememberLastUsedCamera: true,
-                        supportedScanTypes: [0], // 0 = Html5QrcodeScanType.SCAN_TYPE_CAMERA
-                        videoConstraints: {
-                            facingMode: "environment"
-                        }
-                    },
-                    false
-                );
+        let html5QrCode: Html5Qrcode | null = null;
+        let isRunning = false;
+        let mounted = true;
 
-                scanner.render(
+        const stopScanner = async () => {
+            if (html5QrCode && isRunning) {
+                isRunning = false;
+                try {
+                    await html5QrCode.stop();
+                } catch (err) {
+                    if (!(err instanceof Error && err.message.includes('not running or paused'))) {
+                        console.warn('Scanner stop warning:', err);
+                    }
+                }
+            }
+        };
+
+        const startScanner = async () => {
+            const element = document.getElementById('qr-reader');
+            if (!element || !mounted) return;
+
+            hasProcessedRef.current = false;
+            html5QrCode = new Html5Qrcode('qr-reader');
+            html5QrCodeRef.current = html5QrCode;
+
+            try {
+                await html5QrCode.start(
+                    { facingMode: 'environment' },
+                    { fps: 10, qrbox: { width: 250, height: 250 } },
                     (decodedText) => {
-                        // Expected format: candidateId:examId:socketId:timestamp
+                        if (hasProcessedRef.current) return;
+                        hasProcessedRef.current = true;
+
                         const [candidateId, examId, socketId] = decodedText.split(':');
 
                         if (candidateId && examId && socketId) {
-                            scanner?.clear().catch(console.error);
-                            setIsScanning(false);
-
                             sendAction('exam.unlock_request', {
                                 candidate_id: candidateId,
                                 exam_id: examId,
-                                socket_id: socketId
+                                socket_id: socketId,
                             });
 
                             toast.success('Unlock signal sent to candidate dashboard!');
-                            onClose();
+                            stopScanner().finally(() => onClose());
                         } else {
+                            hasProcessedRef.current = false;
                             toast.error('Invalid QR code format detected.');
                         }
                     },
-                    (error) => {
-                        // Only log high-priority errors if needed
-                    }
+                    () => {}
                 );
-                scannerRef.current = scanner;
-            }, 100);
+                isRunning = true;
+            } catch (err) {
+                console.error('Failed to start QR scanner:', err);
+                toast.error('Unable to access camera. Please check permissions and try again.');
+            }
+        };
 
-            return () => {
-                clearTimeout(timer);
-                if (scanner) {
-                    scanner.clear().catch(console.error);
-                }
-            };
-        }
-    }, [open, isScanning, sendAction, onClose]);
+        const timer = setTimeout(startScanner, 200);
+
+        return () => {
+            mounted = false;
+            clearTimeout(timer);
+            stopScanner().then(() => {
+                html5QrCodeRef.current = null;
+            });
+        };
+    }, [open, sendAction, onClose]);
 
     return (
         <Dialog.Root open={open} onOpenChange={onClose}>
@@ -98,12 +113,12 @@ const AdminQRScannerModal: React.FC<AdminQRScannerModalProps> = ({ open, onClose
                                             <div className="w-10 h-10 bg-[#3E4095]/10 rounded-xl flex items-center justify-center">
                                                 <i className="fas fa-camera text-[#3E4095]"></i>
                                             </div>
-                                            <div>
-                                                <Dialog.Title className="text-xl font-bold text-gray-900">
-                                                    Scan Candidate QR
-                                                </Dialog.Title>
-                                                <p className="text-xs text-grey-500 font-medium">Position the QR code within the frame</p>
-                                            </div>
+                                        <div>
+                                            <Dialog.Title className="text-xl font-bold text-gray-900">
+                                                Scan Candidate QR
+                                            </Dialog.Title>
+                                            <Dialog.Description className="text-xs text-grey-500 font-medium">Position the QR code within the frame</Dialog.Description>
+                                        </div>
                                         </div>
                                         <button onClick={onClose} className="w-8 h-8 rounded-full bg-gray-50 flex items-center justify-center text-gray-400 hover:text-gray-600 transition-colors">
                                             <i className="fas fa-times"></i>
@@ -117,7 +132,7 @@ const AdminQRScannerModal: React.FC<AdminQRScannerModalProps> = ({ open, onClose
                                     <div className="mt-8 flex items-center gap-4 p-4 bg-amber-50 rounded-2xl border border-amber-100">
                                         <i className="fas fa-shield-alt text-amber-600"></i>
                                         <p className="text-xs text-amber-800 font-medium leading-relaxed">
-                                            Scanning will automatically verify the candidate and unlock their final exam session in real-time.
+                                            Scanning to unlock final for candidate.
                                         </p>
                                     </div>
                                 </div>
