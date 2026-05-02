@@ -224,9 +224,9 @@ export class UserMgtService {
 
   static async sendBulkNotification(payload: {
     user_ids: string[];
-    subject: string;
     message: string;
     medium?: string;
+    subject?: string;
   }): Promise<{ message: string; broadcast_id: number }> {
     try {
       const response = await client.post(UserMgtUrls.bulkNotification, payload);
