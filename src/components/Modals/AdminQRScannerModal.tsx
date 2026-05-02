@@ -1,6 +1,6 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef } from 'react';
 import * as Dialog from '@radix-ui/react-dialog';
-import { Html5QrcodeScanner } from 'html5-qrcode';
+import { Html5Qrcode } from 'html5-qrcode';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useSocket } from '@/contexts/SocketProvider';
 import { toast } from 'react-toastify';
@@ -12,65 +12,60 @@ interface AdminQRScannerModalProps {
 
 const AdminQRScannerModal: React.FC<AdminQRScannerModalProps> = ({ open, onClose }) => {
     const { sendAction } = useSocket();
-    const [isScanning, setIsScanning] = useState(true);
-    const scannerRef = useRef<Html5QrcodeScanner | null>(null);
+    const html5QrCodeRef = useRef<Html5Qrcode | null>(null);
+    const hasProcessedRef = useRef(false);
 
     useEffect(() => {
-        let scanner: Html5QrcodeScanner | null = null;
+        if (!open) return;
 
-        if (open && isScanning) {
-            // Delay initialization to ensure the DOM node is rendered within the Radix Portal
-            const timer = setTimeout(() => {
-                scanner = new Html5QrcodeScanner(
-                    'qr-reader',
-                    { 
-                        fps: 10, 
-                        qrbox: { width: 250, height: 250 },
-                        rememberLastUsedCamera: true,
-                        supportedScanTypes: [0], // 0 = Html5QrcodeScanType.SCAN_TYPE_CAMERA
-                        videoConstraints: {
-                            facingMode: "environment"
-                        }
-                    },
-                    false
-                );
+        const element = document.getElementById('qr-reader');
+        if (!element) return;
 
-                scanner.render(
-                    (decodedText) => {
-                        // Expected format: candidateId:examId:socketId
-                        const [candidateId, examId, socketId] = decodedText.split(':');
+        hasProcessedRef.current = false;
+        const html5QrCode = new Html5Qrcode('qr-reader');
+        html5QrCodeRef.current = html5QrCode;
 
-                        if (candidateId && examId && socketId) {
-                            scanner?.clear().catch(console.error);
-                            setIsScanning(false);
+        const config = {
+            fps: 10,
+            qrbox: { width: 250, height: 250 },
+            aspectRatio: 1.0,
+        };
 
-                            sendAction('exam.unlock_request', {
-                                candidate_id: candidateId,
-                                exam_id: examId,
-                                socket_id: socketId,
-                            });
+        html5QrCode.start(
+            { facingMode: 'environment' },
+            config,
+            (decodedText) => {
+                if (hasProcessedRef.current) return;
+                hasProcessedRef.current = true;
 
-                            toast.success('Unlock signal sent to candidate dashboard!');
-                            onClose();
-                        } else {
-                            toast.error('Invalid QR code format detected.');
-                        }
-                    },
-                    (error) => {
-                        // Only log high-priority errors if needed
-                    }
-                );
-                scannerRef.current = scanner;
-            }, 100);
+                const [candidateId, examId, socketId] = decodedText.split(':');
 
-            return () => {
-                clearTimeout(timer);
-                if (scanner) {
-                    scanner.clear().catch(console.error);
+                if (candidateId && examId && socketId) {
+                    html5QrCode.stop().catch(() => {});
+
+                    sendAction('exam.unlock_request', {
+                        candidate_id: candidateId,
+                        exam_id: examId,
+                        socket_id: socketId,
+                    });
+
+                    toast.success('Unlock signal sent to candidate dashboard!');
+                    onClose();
+                } else {
+                    toast.error('Invalid QR code format detected.');
                 }
-            };
-        }
-    }, [open, isScanning, sendAction, onClose]);
+            },
+            () => {}
+        ).catch((err) => {
+            console.error('Failed to start QR scanner:', err);
+            toast.error('Unable to access camera. Please check permissions and try again.');
+        });
+
+        return () => {
+            html5QrCodeRef.current = null;
+            html5QrCode.stop().catch(() => {});
+        };
+    }, [open, sendAction, onClose]);
 
     return (
         <Dialog.Root open={open} onOpenChange={onClose}>
