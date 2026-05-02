@@ -46,22 +46,27 @@ export default function BulkNotificationModal({
   }, [close, hasData]);
 
   const handleSend = async () => {
-    if (!subject.trim() || !message.trim()) return;
+    if (!message.trim() || (medium === "email" && !subject.trim())) return;
 
     try {
-      await sendBulkNotification({
+      const basePayload = {
         user_ids: selectedUserIds,
-        subject,
         message,
         medium,
-      });
+      };
+
+      const payload = medium === "email" && subject.trim()
+        ? { ...basePayload, subject }
+        : basePayload;
+
+      await sendBulkNotification(payload);
       handleClose(true);
     } catch {
       // Error toast is handled by the mutation's onError
     }
   };
 
-  const isValid = subject.trim() && message.trim() && selectedUserIds.length > 0;
+  const isValid = message.trim() && selectedUserIds.length > 0 && (medium === "sms" ? message.length <= 160 : (medium === "email" && subject.trim()));
 
   return (
     <AppDialog
@@ -122,18 +127,20 @@ export default function BulkNotificationModal({
         </div>
 
         <div className="p-8 space-y-6">
-          <div className="flex flex-col">
-            <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">
-              Subject <span className="text-red-500">*</span>
-            </label>
-            <input
-              type="text"
-              value={subject}
-              onChange={(e) => setSubject(e.target.value)}
-              className="w-full bg-gray-50 border border-gray-100 h-12 px-5 rounded-xl outline-none focus:ring-4 focus:ring-[#3E4095]/5 focus:border-[#3E4095] focus:bg-white transition-all text-sm font-bold shadow-inner"
-              placeholder="Enter email subject..."
-            />
-          </div>
+          {medium === "email" && (
+            <div className="flex flex-col">
+              <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">
+                Subject <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="text"
+                value={subject}
+                onChange={(e) => setSubject(e.target.value)}
+                className="w-full bg-gray-50 border border-gray-100 h-12 px-5 rounded-xl outline-none focus:ring-4 focus:ring-[#3E4095]/5 focus:border-[#3E4095] focus:bg-white transition-all text-sm font-bold shadow-inner"
+                placeholder="Enter email subject..."
+              />
+            </div>
+          )}
 
           <div className="flex flex-col">
             <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">
@@ -144,8 +151,15 @@ export default function BulkNotificationModal({
               onChange={(e) => setMessage(e.target.value)}
               rows={5}
               className="w-full bg-gray-50 border border-gray-100 p-5 rounded-2xl outline-none focus:ring-4 focus:ring-[#3E4095]/5 focus:border-[#3E4095] focus:bg-white transition-all text-sm font-medium shadow-inner resize-none"
-              placeholder="Type your message..."
+              placeholder={medium === "sms" ? "Type your SMS message (160 chars max)..." : "Type your email message..."}
             />
+            {medium === "sms" && (
+              <div className="flex justify-end mt-1">
+                <span className={`text-[9px] font-bold ${message.length > 160 ? "text-red-500" : "text-gray-400"}`}>
+                  {message.length}/160
+                </span>
+              </div>
+            )}
           </div>
 
           <div className="flex flex-col">
@@ -158,7 +172,11 @@ export default function BulkNotificationModal({
                 return (
                   <div
                     key={m.value}
-                    onClick={() => setMedium(m.value)}
+                    onClick={() => {
+                      setMedium(m.value);
+                      // Clear subject when switching to SMS
+                      if (m.value === "sms") setSubject("");
+                    }}
                     className={clsx(
                       "group p-4 rounded-2xl border-2 transition-all cursor-pointer flex items-center gap-3",
                       {
