@@ -18,52 +18,60 @@ const AdminQRScannerModal: React.FC<AdminQRScannerModalProps> = ({ open, onClose
     useEffect(() => {
         if (!open) return;
 
-        const element = document.getElementById('qr-reader');
-        if (!element) return;
+        let html5QrCode: Html5Qrcode | null = null;
+        let mounted = true;
 
-        hasProcessedRef.current = false;
-        const html5QrCode = new Html5Qrcode('qr-reader');
-        html5QrCodeRef.current = html5QrCode;
+        const startScanner = async () => {
+            const element = document.getElementById('qr-reader');
+            if (!element || !mounted) return;
 
-        const config = {
-            fps: 10,
-            qrbox: { width: 250, height: 250 },
-            aspectRatio: 1.0,
+            hasProcessedRef.current = false;
+            html5QrCode = new Html5Qrcode('qr-reader');
+            html5QrCodeRef.current = html5QrCode;
+
+            try {
+                await html5QrCode.start(
+                    { facingMode: 'environment' },
+                    { fps: 10, qrbox: { width: 250, height: 250 } },
+                    (decodedText) => {
+                        if (hasProcessedRef.current) return;
+                        hasProcessedRef.current = true;
+
+                        const [candidateId, examId, socketId] = decodedText.split(':');
+
+                        if (candidateId && examId && socketId) {
+                            html5QrCode?.stop().catch(() => {});
+
+                            sendAction('exam.unlock_request', {
+                                candidate_id: candidateId,
+                                exam_id: examId,
+                                socket_id: socketId,
+                            });
+
+                            toast.success('Unlock signal sent to candidate dashboard!');
+                            onClose();
+                        } else {
+                            hasProcessedRef.current = false;
+                            toast.error('Invalid QR code format detected.');
+                        }
+                    },
+                    () => {}
+                );
+            } catch (err) {
+                console.error('Failed to start QR scanner:', err);
+                toast.error('Unable to access camera. Please check permissions and try again.');
+            }
         };
 
-        html5QrCode.start(
-            { facingMode: 'environment' },
-            config,
-            (decodedText) => {
-                if (hasProcessedRef.current) return;
-                hasProcessedRef.current = true;
-
-                const [candidateId, examId, socketId] = decodedText.split(':');
-
-                if (candidateId && examId && socketId) {
-                    html5QrCode.stop().catch(() => {});
-
-                    sendAction('exam.unlock_request', {
-                        candidate_id: candidateId,
-                        exam_id: examId,
-                        socket_id: socketId,
-                    });
-
-                    toast.success('Unlock signal sent to candidate dashboard!');
-                    onClose();
-                } else {
-                    toast.error('Invalid QR code format detected.');
-                }
-            },
-            () => {}
-        ).catch((err) => {
-            console.error('Failed to start QR scanner:', err);
-            toast.error('Unable to access camera. Please check permissions and try again.');
-        });
+        const timer = setTimeout(startScanner, 200);
 
         return () => {
-            html5QrCodeRef.current = null;
-            html5QrCode.stop().catch(() => {});
+            mounted = false;
+            clearTimeout(timer);
+            if (html5QrCode) {
+                html5QrCode.stop().catch(() => {});
+                html5QrCodeRef.current = null;
+            }
         };
     }, [open, sendAction, onClose]);
 
