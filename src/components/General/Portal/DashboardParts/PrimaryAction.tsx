@@ -44,7 +44,7 @@ const PrimaryAction: React.FC<PrimaryActionProps> = ({ exam, isRankingAvailable 
         toast.success(`Exam unlocked by admin. You may now proceed.`);
 
         // Determine where to go
-        if (exam.access_status === 'started') {
+        if (exam.access_status === 'started' || isFinals) {
             router.push(`/exam-portal/${exam.id}/exam`);
         } else {
             setIsCaptureOpen(true);
