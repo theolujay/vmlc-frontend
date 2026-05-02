@@ -145,7 +145,7 @@ const PrimaryAction: React.FC<PrimaryActionProps> = ({ exam, isRankingAvailable 
         return;
       }
 
-      if (exam.access_status === 'started') {
+      if (exam.access_status === 'started' || isFinals) {
         router.push(`/exam-portal/${exam.id}/exam`);
       } else {
         setIsCaptureOpen(true);
