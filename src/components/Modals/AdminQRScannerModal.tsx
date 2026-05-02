@@ -19,7 +19,21 @@ const AdminQRScannerModal: React.FC<AdminQRScannerModalProps> = ({ open, onClose
         if (!open) return;
 
         let html5QrCode: Html5Qrcode | null = null;
+        let isRunning = false;
         let mounted = true;
+
+        const stopScanner = async () => {
+            if (html5QrCode && isRunning) {
+                isRunning = false;
+                try {
+                    await html5QrCode.stop();
+                } catch (err) {
+                    if (!(err instanceof Error && err.message.includes('not running or paused'))) {
+                        console.warn('Scanner stop warning:', err);
+                    }
+                }
+            }
+        };
 
         const startScanner = async () => {
             const element = document.getElementById('qr-reader');
@@ -40,8 +54,6 @@ const AdminQRScannerModal: React.FC<AdminQRScannerModalProps> = ({ open, onClose
                         const [candidateId, examId, socketId] = decodedText.split(':');
 
                         if (candidateId && examId && socketId) {
-                            html5QrCode?.stop().catch(() => {});
-
                             sendAction('exam.unlock_request', {
                                 candidate_id: candidateId,
                                 exam_id: examId,
@@ -49,7 +61,7 @@ const AdminQRScannerModal: React.FC<AdminQRScannerModalProps> = ({ open, onClose
                             });
 
                             toast.success('Unlock signal sent to candidate dashboard!');
-                            onClose();
+                            stopScanner().finally(() => onClose());
                         } else {
                             hasProcessedRef.current = false;
                             toast.error('Invalid QR code format detected.');
@@ -57,6 +69,7 @@ const AdminQRScannerModal: React.FC<AdminQRScannerModalProps> = ({ open, onClose
                     },
                     () => {}
                 );
+                isRunning = true;
             } catch (err) {
                 console.error('Failed to start QR scanner:', err);
                 toast.error('Unable to access camera. Please check permissions and try again.');
@@ -68,10 +81,9 @@ const AdminQRScannerModal: React.FC<AdminQRScannerModalProps> = ({ open, onClose
         return () => {
             mounted = false;
             clearTimeout(timer);
-            if (html5QrCode) {
-                html5QrCode.stop().catch(() => {});
+            stopScanner().then(() => {
                 html5QrCodeRef.current = null;
-            }
+            });
         };
     }, [open, sendAction, onClose]);
 
@@ -101,12 +113,12 @@ const AdminQRScannerModal: React.FC<AdminQRScannerModalProps> = ({ open, onClose
                                             <div className="w-10 h-10 bg-[#3E4095]/10 rounded-xl flex items-center justify-center">
                                                 <i className="fas fa-camera text-[#3E4095]"></i>
                                             </div>
-                                            <div>
-                                                <Dialog.Title className="text-xl font-bold text-gray-900">
-                                                    Scan Candidate QR
-                                                </Dialog.Title>
-                                                <p className="text-xs text-grey-500 font-medium">Position the QR code within the frame</p>
-                                            </div>
+                                        <div>
+                                            <Dialog.Title className="text-xl font-bold text-gray-900">
+                                                Scan Candidate QR
+                                            </Dialog.Title>
+                                            <Dialog.Description className="text-xs text-grey-500 font-medium">Position the QR code within the frame</Dialog.Description>
+                                        </div>
                                         </div>
                                         <button onClick={onClose} className="w-8 h-8 rounded-full bg-gray-50 flex items-center justify-center text-gray-400 hover:text-gray-600 transition-colors">
                                             <i className="fas fa-times"></i>
@@ -120,7 +132,7 @@ const AdminQRScannerModal: React.FC<AdminQRScannerModalProps> = ({ open, onClose
                                     <div className="mt-8 flex items-center gap-4 p-4 bg-amber-50 rounded-2xl border border-amber-100">
                                         <i className="fas fa-shield-alt text-amber-600"></i>
                                         <p className="text-xs text-amber-800 font-medium leading-relaxed">
-                                            Scanning will automatically verify the candidate and unlock their final exam session in real-time.
+                                            Scanning to unlock final for candidate.
                                         </p>
                                     </div>
                                 </div>
