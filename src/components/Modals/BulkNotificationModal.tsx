@@ -48,13 +48,17 @@ export default function BulkNotificationModal({
   const handleSend = async () => {
     if (!subject.trim() || !message.trim()) return;
 
-    await sendBulkNotification({
-      user_ids: selectedUserIds,
-      subject,
-      message,
-      medium,
-    });
-    handleClose(true);
+    try {
+      await sendBulkNotification({
+        user_ids: selectedUserIds,
+        subject,
+        message,
+        medium,
+      });
+      handleClose(true);
+    } catch {
+      // Error toast is handled by the mutation's onError
+    }
   };
 
   const isValid = subject.trim() && message.trim() && selectedUserIds.length > 0;
