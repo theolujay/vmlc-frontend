@@ -23,7 +23,7 @@ function PreRegisteredCandidatesTable({
   setShowPreRegistered,
   hasNext,
   hasPrevious,
-  pageSize = 20,
+   pageSize = 50,
 }: {
   candidates: PreRegisteredCandidate[];
   handleSearch: Dispatch<SetStateAction<Record<string, string>>>;

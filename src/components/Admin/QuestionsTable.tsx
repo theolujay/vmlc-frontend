@@ -28,7 +28,7 @@ export default function QuestionsTable({
   setFilters,
   status,
   exam_id,
-  pageSize = 20,
+   pageSize = 50,
   hasNext,
   hasPrevious
 }: Readonly<{
