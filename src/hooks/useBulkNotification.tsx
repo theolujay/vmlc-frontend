@@ -6,9 +6,9 @@ export default function useBulkNotification() {
   const { mutateAsync: sendBulkNotification, isPending } = useMutation({
     mutationFn: async (payload: {
       user_ids: string[];
-      subject: string;
       message: string;
       medium?: string;
+      subject?: string;
     }) => {
       return UserMgtService.sendBulkNotification(payload);
     },

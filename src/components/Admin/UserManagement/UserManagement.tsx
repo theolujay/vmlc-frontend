@@ -286,7 +286,7 @@ function UserHistoryTable({
   setFilters,
   hasNext,
   hasPrevious,
-  pageSize = 20,
+   pageSize = 50,
   selectedUsers = [],
   toggleUserSelection,
   selectAllUsers,

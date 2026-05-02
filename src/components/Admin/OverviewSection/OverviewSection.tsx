@@ -202,7 +202,7 @@ function RegisteredCandidatesTable({
   setPage,
   hasNext,
   hasPrevious,
-  pageSize = 20,
+   pageSize = 50,
 }: Readonly<{
   data: RegisteredCandidatesType[];
   handleSearch: Dispatch<SetStateAction<Record<string, string>>>;

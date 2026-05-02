@@ -27,7 +27,7 @@ export default function QuestionPoolTable<T extends { search?: string }>({
   currentPage,
   page_count,
   handleSearch,
-  pageSize = 20,
+   pageSize = 50,
   hasNext,
   hasPrevious
 }: Readonly<{
