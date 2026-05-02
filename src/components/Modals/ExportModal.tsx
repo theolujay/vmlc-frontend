@@ -42,6 +42,7 @@ export default function ExportModal({ open, close, filters, currentProfile = "ca
   const [localFilters, setLocalFilters] = useState<Record<string, string>>(filters);
   const [selectedColumns, setSelectedColumns] = useState<string[]>([]);
   const [showColumnSelector, setShowColumnSelector] = useState(false);
+  const [includeExamData, setIncludeExamData] = useState(false);
 
   const columns = profileFilter === "candidate" ? CANDIDATE_COLUMNS : STAFF_COLUMNS;
 
@@ -65,9 +66,12 @@ export default function ExportModal({ open, close, filters, currentProfile = "ca
   }, [profileFilter, columns]);
 
   const handleExport = async () => {
-    const exportFilters = { ...localFilters };
+    const exportFilters: Record<string, string> = { ...localFilters };
     if (selectedColumns.length > 0 && selectedColumns.length !== columns.length) {
       exportFilters.columns = selectedColumns.join(",");
+    }
+    if (includeExamData && profileFilter === "candidate") {
+      exportFilters.include_exam_data = "true";
     }
     await exportUsers(exportFilters);
     close(false);
@@ -90,13 +94,6 @@ export default function ExportModal({ open, close, filters, currentProfile = "ca
   const activeFilters = Object.entries(localFilters).filter(
     ([, value]) => value !== undefined && value !== "" && value !== "candidate" && value !== "staff"
   );
-
-  const getSortLabel = (ordering: string) => {
-    if (!ordering) return "Default";
-    const label = ordering.startsWith("-") ? ordering.slice(1) : ordering;
-    const direction = ordering.startsWith("-") ? " (Z-A)" : " (A-Z)";
-    return label.charAt(0).toUpperCase() + label.slice(1) + direction;
-  };
 
   return (
     <AppDialog open={open} onOpenChange={close}>
@@ -210,6 +207,22 @@ export default function ExportModal({ open, close, filters, currentProfile = "ca
               )}
             </div>
 
+            {profileFilter === "candidate" && (
+              <div className="flex items-center gap-2">
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={includeExamData}
+                    onChange={(e) => setIncludeExamData(e.target.checked)}
+                    className="w-3.5 h-3.5 rounded border-gray-300 text-[#3E4095] focus:ring-[#3E4095]"
+                  />
+                  <span className="text-xs font-bold text-gray-700">
+                    Include exam results & competition stage
+                  </span>
+                </label>
+              </div>
+            )}
+
             <div className="flex flex-col gap-2">
               <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">
                 Filters Applied
@@ -232,19 +245,6 @@ export default function ExportModal({ open, close, filters, currentProfile = "ca
                 )}
               </div>
             </div>
-
-            {localFilters.ordering && (
-              <div className="flex flex-col gap-2">
-                <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest">
-                  Sort Order
-                </label>
-                <div className="bg-gray-50 rounded-xl px-4 py-3 border border-gray-100">
-                  <span className="text-xs font-bold text-gray-600">
-                    {getSortLabel(localFilters.ordering)}
-                  </span>
-                </div>
-              </div>
-            )}
           </div>
 
           <div className="flex flex-col sm:flex-row gap-4 mt-8 w-full">
