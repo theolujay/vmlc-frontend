@@ -227,6 +227,8 @@ export class UserMgtService {
     message: string;
     medium?: string;
     subject?: string;
+    image_base64?: string;
+    image_name?: string;
   }): Promise<{ message: string; broadcast_id: number }> {
     try {
       const response = await client.post(UserMgtUrls.bulkNotification, payload);
