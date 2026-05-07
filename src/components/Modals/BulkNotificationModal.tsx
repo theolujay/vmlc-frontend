@@ -66,7 +66,7 @@ export default function BulkNotificationModal({
     }
   };
 
-  const isValid = message.trim() && selectedUserIds.length > 0 && (medium === "sms" ? message.length <= 160 : (medium === "email" && subject.trim()));
+  const isValid = message.trim() && selectedUserIds.length > 0 && (medium === "sms" || (medium === "email" && subject.trim()));
 
   return (
     <AppDialog
@@ -155,8 +155,8 @@ export default function BulkNotificationModal({
             />
             {medium === "sms" && (
               <div className="flex justify-end mt-1">
-                <span className={`text-[9px] font-bold ${message.length > 160 ? "text-red-500" : "text-gray-400"}`}>
-                  {message.length}/160
+                <span className="text-[9px] font-bold text-gray-400">
+                  {message.length} chars
                 </span>
               </div>
             )}
