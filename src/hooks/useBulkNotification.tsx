@@ -9,6 +9,8 @@ export default function useBulkNotification() {
       message: string;
       medium?: string;
       subject?: string;
+      image_base64?: string;
+      image_name?: string;
     }) => {
       return UserMgtService.sendBulkNotification(payload);
     },
