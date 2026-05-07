@@ -151,7 +151,7 @@ export default function BulkNotificationModal({
               onChange={(e) => setMessage(e.target.value)}
               rows={5}
               className="w-full bg-gray-50 border border-gray-100 p-5 rounded-2xl outline-none focus:ring-4 focus:ring-[#3E4095]/5 focus:border-[#3E4095] focus:bg-white transition-all text-sm font-medium shadow-inner resize-none"
-              placeholder={medium === "sms" ? "Type your SMS message (160 chars max)..." : "Type your email message..."}
+              placeholder={medium === "sms" ? "Type your SMS message" : "Type your email message..."}
             />
             {medium === "sms" && (
               <div className="flex justify-end mt-1">
