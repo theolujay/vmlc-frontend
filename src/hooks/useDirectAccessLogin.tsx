@@ -15,22 +15,20 @@ export default function useDirectAccessLogin() {
     mutationFn: async (passcode: string): Promise<AuthLoginResponse> => {
       // 1. Perform direct access login
       const loginData: DirectAccessLoginResponse = await AuthService.directAccessLogin(passcode);
-      
+
       // 2. Store temporary session to allow authenticated profile fetch
-      // The axios client uses localStorage "session" to get the token
+      // The access token is needed by the axios interceptor; refresh is in HttpOnly cookie
       localStorage.setItem('session', JSON.stringify({
         access: loginData.access,
-        refresh: loginData.refresh
       }));
 
       try {
         // 3. Fetch full profile
         const profileData = await UserMgtService.getOwnAccountDetails();
-        
+
         // 4. Construct complete AuthLoginResponse
         const fullResponse: AuthLoginResponse = {
           access: loginData.access,
-          refresh: loginData.refresh,
           profile: profileData.profile
         };
 
