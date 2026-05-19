@@ -4,7 +4,7 @@ import { authUrls } from "@/constants/authUrls";
 
 const client = axios.create({
   baseURL: config.BASE_URL,
-  // timeout:4000,
+  withCredentials: true,
   headers: {
     Accept: "application/json",
     "X-Api-Key": process.env.NEXT_PUBLIC_API_KEY,
@@ -38,50 +38,39 @@ client.interceptors.response.use(
       !isRefresh &&
       !originalRequest._retry
     ) {
-      const isRememberMe = localStorage.getItem("remember_me") === "true";
+      originalRequest._retry = true;
+      const sessionStr = localStorage.getItem("session");
 
-      if (isRememberMe) {
-        originalRequest._retry = true;
-        const sessionStr = localStorage.getItem("session");
+      if (sessionStr) {
+        try {
+          const session = JSON.parse(sessionStr);
 
-        if (sessionStr) {
-          try {
-            const session = JSON.parse(sessionStr);
-            const refreshToken = session.refresh;
+          // Use a separate axios instance or direct call to avoid interceptors for refresh
+          // The refresh token is sent via HttpOnly cookie automatically
+          const response = await axios.post(
+            `${config.BASE_URL}${authUrls.tokenRefresh}`,
+            {},
+            {
+              withCredentials: true,
+              headers: {
+                "X-Api-Key": process.env.NEXT_PUBLIC_API_KEY,
+              },
+            },
+          );
 
-            if (refreshToken) {
-              // Use a separate axios instance or direct call to avoid interceptors for refresh
-              const response = await axios.post(
-                `${config.BASE_URL}${authUrls.tokenRefresh}`,
-                {
-                  refresh: refreshToken,
-                },
-                {
-                  headers: {
-                    "X-Api-Key": process.env.NEXT_PUBLIC_API_KEY,
-                  },
-                },
-              );
+          if (response.status === 200) {
+            const newAccessToken = response.data.access;
+            // Update session in localStorage
+            const updatedSession = { ...session, access: newAccessToken };
+            localStorage.setItem("session", JSON.stringify(updatedSession));
 
-              if (response.status === 200) {
-                const newAccessToken = response.data.access;
-                // Update session in localStorage
-                const updatedSession = { ...session, access: newAccessToken };
-                // If the refresh endpoint also returns a new refresh token, update it too
-                if (response.data.refresh) {
-                  updatedSession.refresh = response.data.refresh;
-                }
-                localStorage.setItem("session", JSON.stringify(updatedSession));
-
-                // Update authorization header and retry original request
-                originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
-                return client(originalRequest);
-              }
-            }
-          } catch (refreshError) {
-            console.error("Token refresh failed:", refreshError);
-            // If refresh fails, proceed to logout
+            // Update authorization header and retry original request
+            originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
+            return client(originalRequest);
           }
+        } catch (refreshError) {
+          console.error("Token refresh failed:", refreshError);
+          // If refresh fails, proceed to logout
         }
       }
 

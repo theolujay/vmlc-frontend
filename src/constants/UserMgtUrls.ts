@@ -15,7 +15,7 @@ export const UserMgtUrls = {
   STATISTICS_OVERVIEW: `/v1/stats/overview/`,
   REGISTRATION_TRENDS: (days: number) =>
     `/v1/stats/registration-trends/?days=${days}`,
-  REGISTRATION_STATUS: `/v2/registration/`,
+  REGISTRATION_STATUS: `/v1/registration/`,
   ACCOUNT_MGT: `/v1/account-management/`,
   ACCOUNT_DETAILS: (user_id: string) => `/v1/account-management/${user_id}/`,
   HANDLE_VERIFICATION_STATUS: (user_id: string) =>

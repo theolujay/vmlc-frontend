@@ -25,10 +25,11 @@ export const staffRoles = new Set(['volunteer', 'moderator', 'admin', 'manager',
 const reducer = (state: AuthState, action: Actions): AuthState => {
     switch (action.type) {
         case INIT_SESSION: {
-            sessionStorage.removeItem("returnURL"); 
+            sessionStorage.removeItem("returnURL");
             const payload = action.payload
-            localStorage.setItem('session', JSON.stringify(payload));
-            
+            const session = { access: payload.access, profile: payload.profile }
+            localStorage.setItem('session', JSON.stringify(session));
+
             if (!payload || !payload.access) {
                 return {
                     homePath: '',
@@ -40,10 +41,10 @@ const reducer = (state: AuthState, action: Actions): AuthState => {
                     profile: null
                 }
             }
-            
+
             const isStudent = studentRoles.has(payload?.profile?.role ?? '');
             const isStaff = staffRoles.has(payload?.profile?.role ?? '')
-            
+
             const user = payload.profile ? {
                 ...payload.profile.user,
                 role: payload.profile.role,
@@ -51,7 +52,7 @@ const reducer = (state: AuthState, action: Actions): AuthState => {
             } : null;
 
             const returnUrl = sessionStorage.getItem("returnURL");
-            
+
             let homePath = '/login';
             if (returnUrl) {
                 homePath = returnUrl;
@@ -63,7 +64,7 @@ const reducer = (state: AuthState, action: Actions): AuthState => {
 
             return {
                 token: payload.access,
-                refreshToken: payload.refresh,
+                refreshToken: null,
                 userType: isStudent ? 'candidate' : payload.profile ? 'staff' : null,
                 homePath,
                 user,
@@ -91,7 +92,7 @@ const reducer = (state: AuthState, action: Actions): AuthState => {
             if (storedSession) {
                 const session = JSON.parse(storedSession);
                 session.profile = action.payload;
-                localStorage.setItem('session', JSON.stringify(session));
+                localStorage.setItem('session', JSON.stringify({ access: session.access, profile: action.payload }));
             }
             
             const isStudent = studentRoles.has(action.payload.role ?? '');

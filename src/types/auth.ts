@@ -16,9 +16,7 @@ export type LoginRequest = {
   password: string;
 };
 
-export type LogoutRequest = {
-  refresh: string;
-};
+export type LogoutRequest = Record<string, never>;
 
 export type VerifyRequest = {
   email: string;
@@ -37,17 +35,17 @@ export type SetNewPasswordType = {
 };
 
 export type AuthLoginResponse = {
-  refresh: string;
   access: string;
   profile: UserProfileType;
+  refresh?: string;
 };
 
 export type DirectAccessLoginResponse = {
-  refresh: string;
   access: string;
   user_id: string;
   email: string;
   full_name: string;
+  refresh?: string;
 };
 
 type User = RequestUserType & {

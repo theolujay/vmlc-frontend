@@ -15,7 +15,7 @@ export async function autoSaveAnswers(
   examId: string,
   answers: AutoSaveAnswerPayload[]
 ): Promise<{ saved: number }> {
-  const response = await client.post(`/v2/exams/${examId}/auto-save/`, {
+  const response = await client.post(`/v1/exams/${examId}/auto-save/`, {
     answers,
   });
   return response.data;
@@ -24,6 +24,6 @@ export async function autoSaveAnswers(
 export async function getSavedAnswers(
   examId: string
 ): Promise<{ answers: SavedAnswer[]; total: number }> {
-  const response = await client.get(`/v2/exams/${examId}/saved-answers/`);
+  const response = await client.get(`/v1/exams/${examId}/saved-answers/`);
   return response.data;
 }
