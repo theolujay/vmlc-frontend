@@ -39,7 +39,7 @@ export function SocketProvider({ children }: { children: React.ReactNode }) {
         if (socketRef.current && (socketRef.current.readyState === WebSocket.OPEN || socketRef.current.readyState === WebSocket.CONNECTING)) return;
 
         const url = `${socketUrl}?api_key=${config.API_KEY}&token=${authState.token}`;
-        console.log('Connecting to Unified WebSocket:', url);
+        // console.log('Connecting to Unified WebSocket:', url);
 
         try {
             const ws = new WebSocket(url);
@@ -57,13 +57,13 @@ export function SocketProvider({ children }: { children: React.ReactNode }) {
             ws.onmessage = (event) => {
                 try {
                     const message: SocketMessage = JSON.parse(event.data);
-                    
+
                     if (message.type === 'connection.established') {
                         setSocketId((message.data as { socket_id: string }).socket_id);
                         setIsConnected(true);
                         return;
                     }
-                    
+
                     const type = message.type;
                     if (type && listenersRef.current[type]) {
                         listenersRef.current[type].forEach(listener => listener(message));

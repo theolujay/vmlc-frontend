@@ -1,7 +1,7 @@
 "use client";
 import AppDialog from "@/components/ui/Modals/AppDialog";
 import useBulkNotification from "@/hooks/useBulkNotification";
-import { useState, useCallback } from "react";
+import { useState, useCallback, useRef } from "react";
 import clsx from "clsx";
 
 interface BulkNotificationModalProps {
@@ -27,8 +27,26 @@ export default function BulkNotificationModal({
   const [subject, setSubject] = useState("");
   const [message, setMessage] = useState("");
   const [medium, setMedium] = useState<"sms" | "email">("email");
+  const [imageFile, setImageFile] = useState<File | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const hasData = subject.trim() || message.trim();
+  const hasData = subject.trim() || message.trim() || imageFile !== null;
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setImageFile(file);
+      setImagePreview(URL.createObjectURL(file));
+    }
+  };
+
+  const handleRemoveImage = () => {
+    setImageFile(null);
+    if (imagePreview) URL.revokeObjectURL(imagePreview);
+    setImagePreview(null);
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  };
 
   const handleClose = useCallback((force?: boolean) => {
     if (force === true) {
@@ -36,6 +54,7 @@ export default function BulkNotificationModal({
       setShowCloseConfirm(false);
       setSubject("");
       setMessage("");
+      handleRemoveImage();
       return;
     }
     if (hasData) {
@@ -45,21 +64,38 @@ export default function BulkNotificationModal({
     }
   }, [close, hasData]);
 
+  const toBase64 = (file: File): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => {
+        const result = reader.result as string;
+        resolve(result.split(",")[1]);
+      };
+      reader.onerror = reject;
+    });
+  };
+
   const handleSend = async () => {
     if (!message.trim() || (medium === "email" && !subject.trim())) return;
 
     try {
-      const basePayload = {
+      const payload: Record<string, unknown> = {
         user_ids: selectedUserIds,
         message,
         medium,
       };
 
-      const payload = medium === "email" && subject.trim()
-        ? { ...basePayload, subject }
-        : basePayload;
+      if (medium === "email" && subject.trim()) {
+        payload.subject = subject;
+      }
 
-      await sendBulkNotification(payload);
+      if (imageFile) {
+        payload.image_base64 = await toBase64(imageFile);
+        payload.image_name = imageFile.name;
+      }
+
+      await sendBulkNotification(payload as any);
       handleClose(true);
     } catch {
       // Error toast is handled by the mutation's onError
@@ -162,6 +198,66 @@ export default function BulkNotificationModal({
             )}
           </div>
 
+          {medium === "email" && (
+            <div className="flex flex-col">
+              <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-2">
+                Attach Image (optional)
+              </label>
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                onChange={handleImageChange}
+                className="hidden"
+              />
+              {!imageFile ? (
+                <div
+                  onClick={() => fileInputRef.current?.click()}
+                  className="w-full border-2 border-dashed border-gray-200 rounded-2xl p-5 flex flex-col items-center gap-2 cursor-pointer hover:border-[#3E4095]/40 hover:bg-[#3E4095]/5 transition-all"
+                >
+                  <div className="w-10 h-10 bg-gray-50 rounded-xl flex items-center justify-center text-gray-400">
+                    <i className="fas fa-image text-lg"></i>
+                  </div>
+                  <span className="text-xs font-bold text-gray-400">
+                    Click to upload an image
+                  </span>
+                  <span className="text-[9px] text-gray-300">
+                    PNG, JPG, GIF up to 5MB
+                  </span>
+                </div>
+              ) : (
+                <div className="w-full border border-gray-100 rounded-2xl p-3 flex items-center gap-4 bg-gray-50">
+                  <div className="w-16 h-16 rounded-xl overflow-hidden bg-white border border-gray-100 flex-shrink-0">
+                    {imagePreview && (
+                      <img
+                        src={imagePreview}
+                        alt="Preview"
+                        className="w-full h-full object-cover"
+                      />
+                    )}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-xs font-bold text-gray-700 truncate">
+                      {imageFile?.name}
+                    </p>
+                    <p className="text-[9px] text-gray-400 mt-0.5">
+                      {imageFile
+                        ? `${(imageFile.size / 1024).toFixed(1)} KB`
+                        : ""}
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={handleRemoveImage}
+                    className="w-8 h-8 flex items-center justify-center rounded-lg bg-white text-gray-400 hover:text-red-500 hover:bg-red-50 transition-all border border-gray-100"
+                  >
+                    <i className="fas fa-times text-xs"></i>
+                  </button>
+                </div>
+              )}
+            </div>
+          )}
+
           <div className="flex flex-col">
             <label className="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-3">
               Delivery Channel
@@ -174,8 +270,10 @@ export default function BulkNotificationModal({
                     key={m.value}
                     onClick={() => {
                       setMedium(m.value);
-                      // Clear subject when switching to SMS
-                      if (m.value === "sms") setSubject("");
+                      if (m.value === "sms") {
+                        setSubject("");
+                        handleRemoveImage();
+                      }
                     }}
                     className={clsx(
                       "group p-4 rounded-2xl border-2 transition-all cursor-pointer flex items-center gap-3",

@@ -1,86 +1,145 @@
 # VMLC Frontend
 
-This is the frontend for the VMLC platform, built with Next.js.
+> Candidate and staff portal for the **Verboheit Mathematics League Competition**, a free annual mathematics competition for senior secondary school students (SS1–SS3) across Nigeria.
 
-## Getting Started
+This Next.js application provides the user-facing interface for candidates to register, take exams, view results and leaderboards, and for staff to manage questions, exams, candidates, proctoring, and competition stages.
+
+---
+
+## Table of Contents
+
+- [Tech Stack](#tech-stack)
+- [Project Structure](#project-structure)
+- [Quick Start](#quick-start)
+- [Environment Variables](#environment-variables)
+- [Available Scripts](#available-scripts)
+- [Deployment](#deployment)
+- [Contributing](#contributing)
+
+---
+
+## Tech Stack
+
+| Layer | Technology |
+|---|---|
+| Framework | Next.js 15, React 19 |
+| Styling | Tailwind CSS, PostCSS |
+| State / Data | TanStack React Query, React Hook Form |
+| HTTP Client | Axios |
+| UI Components | Radix UI, motion, react-paginate |
+| Charts | Chart.js + react-chartjs-2 |
+| Maths | KaTeX, MathLive |
+| Face Capture | face-api.js, html5-qrcode |
+| Linting | ESLint, Prettier |
+| Analytics | Vercel Analytics, Speed Insights |
+
+---
+
+## Project Structure
+
+```
+src/
+├── app/                 Next.js App Router (pages, layouts, API routes)
+│   ├── auth/            Login, password reset, registration
+│   ├── dashboard/       Candidate and staff dashboards
+│   ├── exams/           Exam-taking, results, history
+│   ├── admin/           Staff management views
+│   ├── proctoring/      Live proctoring feeds
+│   └── helpdesk/        Ticket management
+├── components/          Reusable UI components
+│   ├── ui/              Atomic design system (Button, Card, Modal, etc.)
+│   ├── forms/           Form components and field wrappers
+│   ├── layout/          Shell, navigation, sidebar
+│   └── charts/          Chart.js wrappers
+├── contexts/            React context providers (auth, theme, etc.)
+├── hocs/                Higher-order components (withAuth, withRole)
+├── hooks/               Custom React hooks (useApi, useDebounce, etc.)
+├── services/            API service layer (axios instances, endpoint functions)
+├── constants/           App-wide constants and enums
+├── types/               TypeScript type definitions
+└── utils/               Utility functions (formatting, validation, etc.)
+```
+
+---
+
+## Quick Start
 
 ### Prerequisites
 
+- Node.js 20+
+- npm
+- Docker (recommended)
 
-*   [Node.js](https://nodejs.org/en/) (v20+)
-*   [NPM](https://www.npmjs.com/)
-*   [Docker](https://www.docker.com/) (recommended)
-
-### Environment Variables
-
-This project uses different `.env` files for each environment:
-
-*   **.env**: For local development
-*   **staging.env**: For the staging environment
-*   **prod.env**: For the production environment
-
-Create the necessary files and populate them with the required variables. The `NEXT_PUBLIC_API_URL` is required in all environments.
-
-```env
-NEXT_PUBLIC_BASE_URL=<base_url>
-NEXT_PUBLIC_API_KEY=<api_key>
-```
-
-Contact a project administrator for the correct values for each environment.
-
-### Installation
-
-Install the project dependencies:
+### Using Docker (recommended)
 
 ```bash
-npm install
-```
-
-## Development
-
-You can run the application in different environments using Docker Compose.
-
-### Local Development
-
-This command starts the development server with hot-reloading enabled.
-
-```bash
-docker compose -f compose.dev.yml up -d --build
+cp .env.example .env
+docker compose -f compose.dev.yml up --build
 ```
 
 The application will be available at [http://dev-portal.localhost](http://dev-portal.localhost).
 
-### Staging
-
-This command deploys the application to the staging environment.
+### Local Development
 
 ```bash
-docker compose -f compose.staging.yml up -d
-```
-
-### Production
-
-This command deploys the application to the production environment.
-
-```bash
-docker compose -f compose.prod.yml up -d
-```
-
-### Without Docker
-
-To run the application directly on your host machine for development:
-
-```bash
+npm install
 npm run dev
 ```
 
 The application will be available at [http://localhost:3000](http://localhost:3000).
 
+---
+
+## Environment Variables
+
+| Variable | Required | Description |
+|---|---|---|
+| `NEXT_PUBLIC_API_URL` | Yes | Backend API base URL |
+| `NEXT_PUBLIC_API_KEY` | Yes | API key for backend requests |
+| `NEXT_PUBLIC_BASE_URL` | Yes | Frontend base URL (for redirects) |
+
+See `.env` for local defaults. Contact a project administrator for staging and production values.
+
+---
+
 ## Available Scripts
 
-| Script        | Description                                             |
-| ------------- | ------------------------------------------------------- |
-| `npm run dev`   | Starts the development server with Turbopack.           |
-| `npm run build` | Builds the application for production.                  |
-| `npm run start` | Starts a production server.                             |
-| `npm run lint`  | Runs ESLint to check for code quality and style issues. |
+| Script | Description |
+|---|---|
+| `npm run dev` | Start development server with Turbopack (hot reload) |
+| `npm run build` | Build the application for production |
+| `npm run start` | Start the production server |
+| `npm run lint` | Run ESLint across the codebase |
+| `npm run format` | Format source files with Prettier |
+
+---
+
+## Deployment
+
+CI/CD is managed via GitHub Actions. The application is deployed to Vercel:
+
+| Branch | Environment |
+|---|---|
+| `main` | Production |
+| `dev` | Staging |
+
+---
+
+## Contributing
+
+Branch from `main`, make your changes, then open a pull request against `release`.
+
+```bash
+git checkout -b feat/your-feature-name
+```
+
+Before submitting:
+
+```bash
+npm run lint
+npm run build
+```
+
+---
+
+Built for Verboheit · [verboheit.org](https://verboheit.org)

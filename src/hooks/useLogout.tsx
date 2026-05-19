@@ -3,7 +3,7 @@ import { AuthService } from '@/services/auth.service'
 import { useMutation } from '@tanstack/react-query'
 
 export default function useLogout(onSuccessCallback: () => void) {
-  const { dispatch, authState } = useAuth()
+  const { dispatch } = useAuth()
   const { mutate } = useMutation({
     mutationFn: AuthService.logout,
     onSuccess: () => {
@@ -12,20 +12,10 @@ export default function useLogout(onSuccessCallback: () => void) {
     }
   })
 
-
-
-
   function onLogout() {
-    if (!authState?.refreshToken) {
-      return;
-    }
-    const payload = {
-      refresh: authState?.refreshToken
-    }
-
-    mutate(payload);
+    // The refresh token is sent via HttpOnly cookie automatically
+    mutate({});
   }
-
 
   return { onLogout }
 }
