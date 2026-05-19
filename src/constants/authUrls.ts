@@ -12,5 +12,5 @@ export const authUrls = {
   passwordChangeResendOtp: "/v1/auth/password-change/resend-otp/",
   logout: "/v1/auth/logout/",
   tokenRefresh: "/v1/auth/token/refresh/",
-  directAccess: "/v2/auth/direct-access/",
+  directAccess: "/v1/auth/direct-access/",
 };
