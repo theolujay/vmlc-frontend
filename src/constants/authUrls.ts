@@ -3,6 +3,7 @@ export const authUrls = {
   candidate_registeration: "/v1/register/candidate/",
   staff_registeration: "/v1/register/staff/",
   login: "/v1/auth/login/",
+  googleSignIn: "/v1/auth/google/",
   verify: "/v1/verify-email-otp/",
   sendOtp: "/v1/send-email-otp/",
   // resendOtp:'/v1/resend-email-otp/',

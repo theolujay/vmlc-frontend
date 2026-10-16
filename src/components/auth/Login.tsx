@@ -7,6 +7,7 @@ import { NeutralInput, OrdinaryPasswordInput } from '../ui/Input'
 import Spinner from '../ui/spinner/spinner'
 import { MailIcon, PasswordIcon } from '../ui/SvgAsset/GeneralAsset'
 import AuthLayout from './Layout/Layout'
+import GoogleSignInButton from './GoogleSignInButton'
 import config from '../../../config'
 import clsx from 'clsx'
 import { useSearchParams } from 'next/navigation'
@@ -127,7 +128,12 @@ export default function Login() {
                     )}
                   </button>
                 </div>
-
+                <div className="mt-5 flex items-center gap-3" aria-hidden="true">
+                  <span className="h-px flex-1 bg-gray-200" />
+                  <span className="text-[10px] font-bold uppercase tracking-widest text-gray-400">Or</span>
+                  <span className="h-px flex-1 bg-gray-200" />
+                </div>
+                <GoogleSignInButton />
                 <div className="flex flex-col items-center mt-4 pt-4 border-t border-gray-100">
                   <div className='flex items-center gap-2'>
                     <span className="text-[10px] font-medium text-gray-400 uppercase tracking-tight">{`Don't`} have an account?</span>
@@ -135,6 +141,7 @@ export default function Login() {
                   </div>
                 </div>
               </form>
+
             </FormProvider>
           </div>
         </div>

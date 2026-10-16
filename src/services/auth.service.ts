@@ -61,6 +61,16 @@ export class AuthService {
     }
   }
 
+  static async googleSignIn(credential: string): Promise<AuthLoginResponse> {
+    try {
+      const response = await client.post(authUrls.googleSignIn, { credential });
+      return response.data;
+    } catch (error) {
+      console.error(error);
+      throw error;
+    }
+  }
+
   static async directAccessLogin(
     passcode: string,
   ): Promise<DirectAccessLoginResponse> {

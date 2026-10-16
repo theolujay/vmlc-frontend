@@ -36,7 +36,7 @@ export type SetNewPasswordType = {
 
 export type AuthLoginResponse = {
   access: string;
-  profile: UserProfileType;
+  profile?: UserProfileType;
   refresh?: string;
 };
 
